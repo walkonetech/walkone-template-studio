@@ -1,0 +1,204 @@
+{
+  "fabric": {
+    "groupSelected": "group-1",
+    "groupMove": {
+      "rect_dx": 214.29,
+      "text_dx": 214.29,
+      "rect_dy": 160.71,
+      "expected": [214.29, 160.71],
+      "groupBox": {
+        "x": 314.29,
+        "y": 220.71,
+        "width": 420,
+        "height": 300,
+        "rotation": 0
+      }
+    },
+    "groupRotate": {
+      "rect_rot": 71.71,
+      "text_rot": 71.71,
+      "centerDistanceBefore": 10.45,
+      "centerDistanceAfter": 10.45,
+      "sizeKept": [420, 300],
+      "groupRotationInDomain": 0
+    },
+    "textSideHandle": {
+      "selected": "title",
+      "width": [2000, 1781.64],
+      "fontSize": [150, 150],
+      "expectedWidthDelta": -214.29
+    },
+    "textCornerHandle": {
+      "width": [1781.64, 1888.73],
+      "height": [169.5, 241.4],
+      "fontSize": [150, 213.63]
+    },
+    "snapping": {
+      "dragged_screen_px": 6,
+      "toleranceDesign": 53.57,
+      "xAfter": 287.82,
+      "xBefore": 250,
+      "guidesDuringDrag": [
+        {
+          "axis": "x",
+          "at": 2172.2513615092394
+        },
+        {
+          "axis": "y",
+          "at": 3050
+        }
+      ],
+      "guidesAfterRelease": []
+    },
+    "snappingFarMove": {
+      "x": 562.11,
+      "expectedUnsnapped": 609.25
+    },
+    "remount": {
+      "canvasesBefore": 2,
+      "canvasesAfter20": 2,
+      "heapMB": [12, 12],
+      "info": {
+        "name": "fabric",
+        "objectCount": 9,
+        "dpr": 2,
+        "canvases": [
+          {
+            "backing": [1200, 1440],
+            "css": [600, 720]
+          },
+          {
+            "backing": [1200, 1440],
+            "css": [600, 720]
+          }
+        ]
+      }
+    },
+    "recreateKeepsGeometry": true,
+    "perf": {
+      "10": {
+        "objects": 19,
+        "firstRenderMs": 14,
+        "dragStepMs": 0.39,
+        "zoomStepMs": 0.23,
+        "export2400Ms": 164,
+        "heapMB": 12
+      },
+      "50": {
+        "objects": 59,
+        "firstRenderMs": 9,
+        "dragStepMs": 0.26,
+        "zoomStepMs": 0.21,
+        "export2400Ms": 63,
+        "heapMB": 12
+      },
+      "100": {
+        "objects": 109,
+        "firstRenderMs": 13,
+        "dragStepMs": 0.41,
+        "zoomStepMs": 0.34,
+        "export2400Ms": 58,
+        "heapMB": 12
+      }
+    }
+  },
+  "konva": {
+    "groupSelected": "group-1",
+    "groupMove": {
+      "rect_dx": 214.29,
+      "text_dx": 214.29,
+      "rect_dy": 160.71,
+      "expected": [214.29, 160.71],
+      "groupBox": {
+        "x": 314.29,
+        "y": 220.71,
+        "width": 420,
+        "height": 300,
+        "rotation": 0
+      }
+    },
+    "groupRotate": {
+      "rect_rot": 71.57,
+      "text_rot": 71.57,
+      "centerDistanceBefore": 11.5,
+      "centerDistanceAfter": 11.5,
+      "sizeKept": [420, 300],
+      "groupRotationInDomain": 0
+    },
+    "textSideHandle": {
+      "selected": "title",
+      "width": [2000, 1785.71],
+      "fontSize": [150, 150],
+      "expectedWidthDelta": -214.29
+    },
+    "textCornerHandle": {
+      "width": [1785.71, 1892.86],
+      "height": [165, 240],
+      "fontSize": [150, 218.18]
+    },
+    "snapping": {
+      "dragged_screen_px": 6,
+      "toleranceDesign": 53.57,
+      "xAfter": 271.73,
+      "xBefore": 250,
+      "guidesDuringDrag": [
+        {
+          "axis": "x",
+          "at": 2171.72587876374
+        },
+        {
+          "axis": "y",
+          "at": 3050
+        }
+      ],
+      "guidesAfterRelease": []
+    },
+    "snappingFarMove": {
+      "x": 593.15,
+      "expectedUnsnapped": 593.15
+    },
+    "remount": {
+      "canvasesBefore": 1,
+      "canvasesAfter20": 1,
+      "heapMB": [12, 12],
+      "info": {
+        "name": "konva",
+        "objectCount": 10,
+        "dpr": 2,
+        "canvases": [
+          {
+            "backing": [1200, 1440],
+            "css": [600, 720]
+          }
+        ]
+      }
+    },
+    "recreateKeepsGeometry": true,
+    "perf": {
+      "10": {
+        "objects": 20,
+        "firstRenderMs": 7,
+        "dragStepMs": 0.26,
+        "zoomStepMs": 0.35,
+        "export2400Ms": 220,
+        "heapMB": 12
+      },
+      "50": {
+        "objects": 60,
+        "firstRenderMs": 13,
+        "dragStepMs": 0.34,
+        "zoomStepMs": 0.39,
+        "export2400Ms": 72,
+        "heapMB": 12
+      },
+      "100": {
+        "objects": 110,
+        "firstRenderMs": 11,
+        "dragStepMs": 0.45,
+        "zoomStepMs": 0.58,
+        "export2400Ms": 90,
+        "heapMB": 12
+      }
+    }
+  }
+}

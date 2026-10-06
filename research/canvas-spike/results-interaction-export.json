@@ -1,0 +1,207 @@
+{
+  "fabric": {
+    "scale": 0.19,
+    "selectClick": "photo-3",
+    "p3_before": {
+      "x": 250,
+      "y": 2160,
+      "w": 1900,
+      "h": 880,
+      "rot": 0
+    },
+    "drag": {
+      "dx_design": 321.43,
+      "dy_design": -214.29,
+      "expected": [321.43, -214.29]
+    },
+    "resize": {
+      "dw": 158.35,
+      "dh": 106.7,
+      "expected": [160.71, 107.14],
+      "x_unchanged": 0.04,
+      "y_unchanged": 0.06,
+      "after": {
+        "x": 571.47,
+        "y": 1945.77,
+        "w": 2058.35,
+        "h": 986.7,
+        "rot": 0
+      }
+    },
+    "rotate": {
+      "rotation": 81.19,
+      "size_kept": [2058.35, 986.7],
+      "center_kept": [0, 0]
+    },
+    "offCanvas": {
+      "x": -232.1,
+      "clamped": false
+    },
+    "zorder": {
+      "before": 2,
+      "after": 3,
+      "swappedWith_photo3": 2
+    },
+    "locked": {
+      "moved": false,
+      "selected": null
+    },
+    "deleteRecreate": {
+      "objects": [9, 8]
+    },
+    "selectionCycles": {
+      "ok": true,
+      "final": "accent",
+      "objects": 9
+    },
+    "zoomKeepsGeometry": true,
+    "export2400_view_100": {
+      "w": 2400,
+      "h": 3600,
+      "kb": 2171,
+      "ms": 109
+    },
+    "export2400_view_fit": {
+      "w": 2400,
+      "h": 3600,
+      "kb": 2171,
+      "ms": 53
+    },
+    "export1200": {
+      "w": 1200,
+      "h": 1800
+    },
+    "info": {
+      "name": "fabric",
+      "objectCount": 9,
+      "dpr": 2,
+      "canvases": [
+        {
+          "backing": [1200, 1440],
+          "css": [600, 720]
+        },
+        {
+          "backing": [1200, 1440],
+          "css": [600, 720]
+        }
+      ]
+    }
+  },
+  "konva": {
+    "scale": 0.19,
+    "selectClick": "photo-3",
+    "p3_before": {
+      "x": 250,
+      "y": 2160,
+      "w": 1900,
+      "h": 880,
+      "rot": 0
+    },
+    "drag": {
+      "dx_design": 321.43,
+      "dy_design": -214.29,
+      "expected": [321.43, -214.29]
+    },
+    "resize": {
+      "dw": 160.71,
+      "dh": 107.14,
+      "expected": [160.71, 107.14],
+      "x_unchanged": 0,
+      "y_unchanged": 0,
+      "after": {
+        "x": 571.43,
+        "y": 1945.71,
+        "w": 2060.71,
+        "h": 987.14,
+        "rot": 0
+      }
+    },
+    "rotate": {
+      "rotation": 81.2,
+      "size_kept": [2060.71, 987.14],
+      "center_kept": [0, 0]
+    },
+    "offCanvas": {
+      "x": -232.14,
+      "clamped": false
+    },
+    "zorder": {
+      "before": 2,
+      "after": 3,
+      "swappedWith_photo3": 2
+    },
+    "locked": {
+      "moved": false,
+      "selected": null
+    },
+    "deleteRecreate": {
+      "objects": [10, 9]
+    },
+    "selectionCycles": {
+      "ok": true,
+      "final": "accent",
+      "objects": 10
+    },
+    "zoomKeepsGeometry": true,
+    "export2400_view_100": {
+      "w": 2400,
+      "h": 3600,
+      "kb": 2171,
+      "ms": 166
+    },
+    "export2400_view_fit": {
+      "w": 2400,
+      "h": 3600,
+      "kb": 2171,
+      "ms": 80
+    },
+    "export1200": {
+      "w": 1200,
+      "h": 1800
+    },
+    "info": {
+      "name": "konva",
+      "objectCount": 10,
+      "dpr": 2,
+      "canvases": [
+        {
+          "backing": [1200, 1440],
+          "css": [600, 720]
+        }
+      ]
+    }
+  },
+  "compare": {
+    "w": 2400,
+    "h": 3600,
+    "sameSize": true,
+    "meanAbsDiff": 0.65,
+    "pctPixelsDiffOver48": 0.444,
+    "probes": {
+      "bgTopRight": {
+        "fabric": "239,233,223,255",
+        "konva": "239,233,223,255"
+      },
+      "photo3Tint": {
+        "fabric": "77,182,172,255",
+        "konva": "77,182,172,255"
+      },
+      "photo2Corner": {
+        "fabric": "255,255,255,255",
+        "konva": "255,255,255,255"
+      },
+      "accentOffcanvas": {
+        "fabric": "176,141,87,255",
+        "konva": "176,141,87,255"
+      },
+      "titleArea": {
+        "fabric": "43,43,43,255",
+        "konva": "43,43,43,255"
+      },
+      "designCorner": {
+        "fabric": "239,233,223,255",
+        "konva": "239,233,223,255"
+      }
+    }
+  }
+}
