@@ -1,0 +1,25 @@
+# Glossary
+
+- **Project** — A single editable working document for one event's template; saved as a native project.
+- **Native Project** — The app's own file (working extension `.boothproject`, not final) containing the vendor-neutral `TemplateProject` plus assets. See [DATA_MODEL.md](DATA_MODEL.md).
+- **Template** — A reusable, parameterized design (layout, placeholders, background, type, badge, palette roles) that can be applied to a new project.
+- **Design Recipe** — A set of creative rules (photo count, background style, frame style, type pairing, palette roles, asset search phrases) used to generate or suggest a starting design; distinct from a template.
+- **Canvas** — The editing surface in the editor, including pasteboard, guides, and rulers.
+- **Print Canvas** — The bounded area equal to the physical print size at the project DPI; what gets exported.
+- **Photo Placeholder** — The designated area where the booth software inserts a captured photo during an event.
+- **Photo Layer** — The internal layer type representing a photo placeholder (with photo number, frame, crop behavior); never just a rectangle.
+- **Badge** — A parameterized group of text/graphics showing event info (names, date, title, etc.).
+- **Overlay** — A graphic layer drawn above photos/other content (e.g., decorative frame, texture).
+- **Frame** — The border/decoration around a photo placeholder (solid, double line, Polaroid-style, custom PNG, etc.).
+- **Asset** — An imported file (PNG, JPG, WebP, SVG, …) used in a design.
+- **Project Asset** — An asset stored inside a project package.
+- **Library Asset** — An asset in the user's reusable local library; copied into a project when used.
+- **Palette** — A set of colors assigned to semantic roles (primary, secondary, accent, background, text, …).
+- **Preflight** — Validation run before export producing errors and warnings.
+- **Fixture** — A real DSLR Booth template export stored in `tests/fixtures/dslrbooth/` as a compatibility reference.
+- **Round Trip** — Converting DSLR Booth → internal → DSLR Booth (or reverse) and checking nothing is lost.
+- **DSLR Booth Adapter** — The importer/exporter pair that converts between the internal model and DSLR Booth's format.
+- **Flattened Export** — A single merged image (e.g., PNG) of the whole design.
+- **Two-Up Strip** — A print layout containing two 2x6 strips side by side on one larger print canvas (exact dimensions printer/template dependent; Needs Validation).
+- **Layer Package** — An export of separate PNGs per layer group (background, frames, overlay, badge, preview).
+- **Provider Adapter** — An isolated module integrating an external asset/AI service.
