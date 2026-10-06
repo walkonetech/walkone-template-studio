@@ -27,6 +27,8 @@ UI (React) ──► editor state (Zustand + commands/history)
 - **Canvas abstraction:** the editor talks to a `CanvasView` interface so the library can be swapped; the library never owns the source of truth (the domain model does).
 - **Rendering/export:** a deterministic renderer producing pixels from the domain model for preview and export, ideally sharing logic so preview == export (approach — e.g., Sharp-based compositing vs canvas-based — **Needs Validation**, may require parity tests).
 
+**Implemented (Phase 2):** `src/domain/` exists as a pure module with sub-folders `print/ layers/ palette/ assets/ color/ compatibility/ project/ validation/`, exposed through `src/domain/index.ts` and the `@domain` alias; zod is the runtime validator; Vitest runs `src/**/*.test.ts`. See ADR-018–024.
+
 ## 5. State management
 Zustand stores: document (project), selection/tool, UI/layout, preferences. Undo/redo by command or patch history on the document store. Autosave subscribes to document changes.
 
@@ -57,7 +59,7 @@ src/
   main/            Electron main: windows, IPC handlers, services wiring
   preload/         typed contextBridge API
   renderer/        React app, panels, dialogs
-  domain/          TemplateProject types, geometry, units, migrations
+  domain/          (IMPLEMENTED Phase 2) zod schemas/types, print math, composition, validation, serialization, migrations
   editor/          editor state, commands, history, selection
   canvas/          canvas abstraction + chosen-library implementation
   projects/        project package read/write, autosave, recents

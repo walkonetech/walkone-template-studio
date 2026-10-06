@@ -42,3 +42,6 @@ playwright-report/
 research/work/
 tests/fixtures/dslrbooth/generated/
 tests/fixtures/dslrbooth/work/
+
+# Other coding agents' rule files (duplicate CLAUDE.md; not project policy)
+AGENTS.md

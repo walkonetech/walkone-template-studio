@@ -1,6 +1,6 @@
 # Testing Strategy (Proposed)
 
-No test framework is installed. Framework choices (e.g., Vitest, Playwright) are deferred to Phase 1+ and recorded in [DECISIONS.md](DECISIONS.md). Honest reporting is mandatory ([CLAUDE.md](../CLAUDE.md)).
+Unit tests run on **Vitest** (`npm test`; ADR-019), covering the domain model (print math, composition, layers, serialization, validation, compatibility metadata). Component/E2E tooling (e.g., Playwright) is not chosen yet. No fixture-based tests exist yet; importer tests belong to Phase 13. Honest reporting is mandatory ([CLAUDE.md](../CLAUDE.md)).
 
 ## 1. Unit tests
 Calculations (inches↔px, DPI rescale, rounding), schema conversion and migrations, project serialization, palette logic (role resolution, extraction), coordinate/transform math, XML conversion, preflight rules, photo numbering.

@@ -1,49 +1,42 @@
 # Current State
 
-_Last updated: 2026-10-06 (after DSLR Booth fixture research)_
+_Last updated: 2026-10-06 (Phase 2 domain foundation)_
 
 ## Project status
-Phase 1 delivered a runnable, secured Electron + React + TypeScript shell. There is no editor, canvas, project model or persistence yet.
+Electron + React + TypeScript shell (Phase 1) plus a tested, vendor-neutral domain model and JSON project serialization (Phase 2, partial). No editor, canvas, file IO, DSLR Booth importer/exporter or asset library exists.
 
 ## Current phase
-**Phase 1 — Repository and desktop shell: COMPLETE.** **DSLR Booth fixture research: COMPLETE** (research only, no code). **Phase 2 has NOT begun**; awaiting owner approval.
+**Phase 2 — Domain model and native project foundation: domain, validation, serialization, tests COMPLETE.** File IO/package container, recents and autosave are NOT started (see [ROADMAP.md](ROADMAP.md)). Phase 3 has not begun. Awaiting owner approval.
 
 ## Completed
-- Phase 0: planning docs (see [ROADMAP.md](ROADMAP.md)).
-- Phase 1: `package.json` with electron-vite, Vite 7, React 19, TypeScript (strict), ESLint, Prettier. Sources in `src/main`, `src/preload`, `src/renderer`, `src/shared` (IPC contract). Secure defaults: contextIsolation on, nodeIntegration off, sandbox on, CSP, navigation and window-open blocked, IPC sender check. Typed `app:ping` IPC shown on an empty home screen.
-- Verified: `npm run typecheck`, `npm run lint`, `npm run format:check`, `npm run build` all pass. Built app launched on macOS; the renderer showed the IPC ping result and had no `require`/`process` access.
+- Phase 0 docs; Phase 1 shell (secure defaults, typed IPC ping); DSLR Booth fixture research ([../research/DSLRBOOTH_FIXTURE_ANALYSIS.md](../research/DSLRBOOTH_FIXTURE_ANALYSIS.md)).
+- Phase 2: `src/domain/` (zod 4 schemas; types inferred), print math and presets, design canvas vs output composition (`single`/`grid`), flat layers (photo, image with roles, text, shape, group), palette with literal/palette-reference colors, asset references with project-relative paths, optional adapter-scoped `sourceCompatibility`, `loadProject`/`serializeProject`/`deserializeProject` with schemaVersion check and an empty migration registry, `createProject` factory, explicit `rescaleProjectDpi`, integrity checks. Vitest with 39 tests.
+- Decisions: ADR-009 (persistence model), ADR-010, ADR-017 accepted; ADR-018–024 added ([DECISIONS.md](DECISIONS.md)). Model documented in [DATA_MODEL.md](DATA_MODEL.md).
 
-## DSLR Booth fixture research (complete)
-Five real exports analyzed; evidence in [../research/DSLRBOOTH_FIXTURE_ANALYSIS.md](../research/DSLRBOOTH_FIXTURE_ANALYSIS.md). Key findings: flat ZIP with `template.xml` + `preview.png` + PNGs; XML has only `Image` and `Photo` elements; integer pixel geometry at the stored `Resolution`, no physical size or orientation field; `PhotoNumber` is 1-based and repeats in two-up layouts; two-up is plain duplication on one canvas; `ZIndex` unique and XML listed in descending order; no text/shadow/border/corner-radius observed; several root flags have unknown meaning; assets are often at 300 effective DPI on 600 DPI canvases. Recommendation: hybrid coordinate model (ADR-010) and opaque vendor-data preservation (ADR-017, Proposed).
+## Verified (this phase)
+`npm run typecheck`, `lint`, `format:check`, `build`, `npm test` (39 passed) all ran and passed; the built Electron app launched on macOS and showed the IPC ping.
 
 ## In progress
 Nothing.
 
 ## Not started
-Phases 2–18.
+Project file IO and package container, recents/autosave, canvas (Phase 3 onward), importer/exporter, asset library, templates, recipes, badges.
 
 ## Open decisions
-ADR-009 container format; ADR-010 geometry units; **ADR-011 canvas library (Fabric vs Konva) — pending**; ADR-012 SQLite scope; ADR-014 render approach; ADR-015 fonts. See [DECISIONS.md](DECISIONS.md).
+ADR-009 container (folder vs zip); ADR-011 canvas library (Fabric vs Konva) — pending; ADR-012 SQLite scope; ADR-014 render approach; ADR-015 fonts. See [DECISIONS.md](DECISIONS.md).
 
 ## Known risks
-- DSLR Booth format is unvalidated; **fixtures still need to be analyzed**.
+- DSLR Booth semantics still unknown for `Dimensions`, `IsLegacy`, `print_2_per_page`, rotation pivot, text elements ([analysis §25](../research/DSLRBOOTH_FIXTURE_ANALYSIS.md)).
 - DSLR Booth is Windows-only; development is on macOS.
-- Sharp/SQLite native modules complicate packaging (not yet installed).
-- Preview/export render parity; provider APIs and licensing unknown.
-- Vite is held at 7 until electron-vite supports 8 (ADR-016).
+- Sharp/SQLite native modules complicate packaging (not installed).
+- Strict schema (unknown keys rejected) means every model change needs a version bump and migration.
+- Vite is held at 7 (ADR-016).
 
-## Known issues / not verified
-- No automated tests or test runner yet; verification was typecheck, lint, build and one manual launch.
-- Windows build and launch not verified.
-- `npm run dev` (HMR path) was not exercised; only the built app was launched.
-- When launched directly via `electron out/main`, the reported app version is Electron's; via npm scripts it uses package.json.
-- The renderer bundle is ~640 kB, so React dev mode is not an issue, but no size budget exists.
+## Known limitations of the domain model
+Inches only; photo frames limited to none/solid; no crop rectangles, gradients, shadows or blend modes; groups carry no rotation/opacity semantics; group geometry is not auto-derived; schema version 1 has no migrations; nothing populates `sourceCompatibility` yet; DPI rescale is a pure function with no UI. Integrity checks are not export preflight.
 
-## Known blockers
-None for Phase 2. Fixtures are private local data in `tests/fixtures/dslrbooth/source/` (never upload; no Git remote exists).
-
-## Remaining DSLR Booth open questions
-Meaning of `Dimensions`, `IsLegacy`, `print_2_per_page`, `PrintToSecondaryPrinter`, `Id`; whether `preview.png`/BOM/CRLF are required; rotation pivot; text and other element types; border/shadow units. Fixture requests are listed in analysis §24.
+## Housekeeping
+`AGENTS.md` (an untracked duplicate of CLAUDE.md for another agent) is git-ignored and untouched. No Git remote exists (intentional). Fixtures in `tests/fixtures/dslrbooth/source/` are private and unchanged.
 
 ## Next recommended action
-Owner reviews the research and confirms/adjusts ADR-010 and ADR-017, then approves Phase 2. Optionally collect the targeted extra fixtures (analysis §24) first, and run a Windows import test of a hand-modified copy to learn DSLR Booth's tolerance.
+Owner reviews the model, then approves either Phase 2b (file IO, package container, recents/autosave) or Phase 3 (canvas foundation, including the Fabric vs Konva decision).

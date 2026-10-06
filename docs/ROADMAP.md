@@ -20,6 +20,7 @@ Dependency note: Phases 13–15 (DSLR Booth) need real fixture analysis; analysi
 - **Non-goals:** editor, canvas, persistence.
 
 ## Phase 2 — Project model and persistence
+**Status: partly complete.** Done: domain model, validation, JSON serialization, schema-version/migration boundary, factories, DPI rescale function, Vitest. **Remaining (not started):** reading/writing project files and the package container (ADR-009 container), new/open/save/save as, recents, autosave/crash recovery — treat as Phase 2b or fold into a later persistence phase on approval.
 - **Objective:** Implement the vendor-neutral model and save/open.
 - **Deliverables:** domain types, units/geometry helpers, schemaVersion + migration scaffold, project package read/write, new/open/save/save as, recents, autosave basics.
 - **Dependencies:** Phase 1; ideally fixture findings reviewed for model gaps.
