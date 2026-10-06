@@ -1,6 +1,6 @@
 # Roadmap
 
-Phases are **Proposed** and refinable; later phases are intentionally less detailed. Work proceeds one phase at a time with owner approval ([CLAUDE.md](../CLAUDE.md)). Product scope: [PRODUCT_SPEC.md](PRODUCT_SPEC.md). Suggested insertion: a short **fixture analysis** (research) step before Phase 2/13 — DSLR Booth findings affect the data model.
+Phases are **Proposed** and refinable; later phases are intentionally less detailed. Work proceeds one phase at a time with owner approval ([CLAUDE.md](../CLAUDE.md)). Product scope: [PRODUCT_SPEC.md](PRODUCT_SPEC.md). The **fixture analysis** research step was completed before Phase 2 ([../research/DSLRBOOTH_FIXTURE_ANALYSIS.md](../research/DSLRBOOTH_FIXTURE_ANALYSIS.md)); no phase sequencing changes are needed. Phase 2 should account for layout cells (two-up), non-unique photo numbers, and opaque vendor-data preservation.
 
 Dependency note: Phases 13–15 (DSLR Booth) need real fixture analysis; analysis may start earlier as research without code.
 

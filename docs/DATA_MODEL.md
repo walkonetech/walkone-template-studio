@@ -14,6 +14,17 @@ Conceptual TypeScript only — **no runtime code exists**. The model is vendor-n
 
 Conventions: origin top-left, +x right, +y down; rotation in degrees clockwise about the layer's center (**Proposed**); opacity 0–1; units explicit in field names or `units` field.
 
+**Fixture evidence (2026-10-06):** five real DSLR Booth exports store integer pixel geometry at the template's resolution, with negative/off-canvas values, and no physical size ([research analysis](../research/DSLRBOOTH_FIXTURE_ANALYSIS.md) §18). This supports the recommendation above and does not change it.
+
+## 1a. Requirements surfaced by fixtures (vendor-neutral)
+- `photoNumber` is **1-based and not unique** per project: duplicated strip cells repeat the same numbers. Validation must treat "set of numbers" (not uniqueness) as the photo count; flag only genuinely suspicious cases.
+- Layer names are not unique; identity is the internal `id`.
+- Two-up/multi-strip prints need a notion of repeating **layout cells** (e.g., 2 strips of 1200×3600 on 2400×3600). DSLR Booth has none, so this is our concept and is flattened on export. Representation (group vs layout object) is a Phase 2/5 decision.
+- Layers may extend beyond the canvas (negative x/y, oversize); the model must allow it and preflight should warn only where useful.
+- Effective DPI (asset pixels ÷ placed inches) is a derived value; fixtures show assets at 300 effective DPI on 600 DPI canvases.
+- Placeholder frame/border/shadow styling is ours; DSLR export rasterizes it (fixtures only show defaults). Text layers are rasterized on DSLR export (no text element observed).
+- Vendor-only fields (`Id`, `IsLegacy`, `Dimensions`, print flags, `OriginalDevice`, etc.) never become core fields; they live in an opaque adapter-owned `source` block (ADR-017, Proposed). The existing `preserved` field in `TemplateProject` is the placeholder for this.
+
 ## 2. Conceptual interfaces
 
 ```ts
@@ -83,7 +94,7 @@ type Layer = BackgroundLayer|ImageLayer|PhotoLayer|TextLayer|ShapeLayer|OverlayL
 
 interface PhotoLayer extends BaseLayer {
   type: 'photo';
-  photoNumber: number;                      // 1-based
+  photoNumber: number;                      // 1-based; NOT unique across strip cells
   fit: 'cover'|'contain'|'stretch';         // crop/fill behavior
   frame?: FrameStyle;                       // none/solid/double/rounded/polaroid/offset/shadow/decorative/png
   cornerRadius?: number;
@@ -134,4 +145,4 @@ Proposed: array order is authoritative; `zIndex` is derived/normalized on save. 
 Importers store unmapped vendor data in `preserved` namespaced by adapter, plus `importReport`, so exporters can re-emit it where valid and users are warned. Details in [DSLRBOOTH_COMPATIBILITY.md](DSLRBOOTH_COMPATIBILITY.md).
 
 ## 7. Open questions
-Container format; whether `PhotoLayer` rotation is supported by DSLR Booth (Needs Validation); fonts embedding; group representation; ID scheme; text box auto-size semantics.
+Container format; DSLR Booth `Photo` elements do carry a `Rotation` (−3 observed) but its pivot is unconfirmed; how layout cells are modeled; fonts embedding; group representation; ID scheme; text box auto-size semantics.

@@ -37,3 +37,8 @@ playwright-report/
 *.sqlite
 *.sqlite-journal
 .tmp/
+
+# Research / fixture scratch output
+research/work/
+tests/fixtures/dslrbooth/generated/
+tests/fixtures/dslrbooth/work/

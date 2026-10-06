@@ -29,8 +29,8 @@ Statuses: **Accepted**, **Proposed**, **OPEN** (undecided — do not decide with
 ## ADR-009 — Native project container format — OPEN
 Options: zip package vs folder bundle vs single JSON + external assets. Leaning (non-binding): package with `project.json` + `assets/`. Resolve in Phase 2.
 
-## ADR-010 — Geometry units and coordinate space — OPEN (leaning proposed)
-Leaning: physical inches + DPI at project level, deterministic pixel canvas space for layers. Confirm in Phase 2. See [DATA_MODEL.md](DATA_MODEL.md) §1.
+## ADR-010 — Geometry units and coordinate space — OPEN (recommendation supported by fixtures; confirm in Phase 2)
+Recommendation: physical inches + DPI at project level, deterministic pixel canvas space (at project DPI) for layer geometry — Option D (hybrid). The five analyzed DSLR Booth exports use integer pixels at the template's resolution and store no physical size, which fits ([analysis §18](../research/DSLRBOOTH_FIXTURE_ANALYSIS.md)). Not implemented; needs owner confirmation in Phase 2. See [DATA_MODEL.md](DATA_MODEL.md) §1.
 
 ## ADR-011 — Canvas library (Fabric.js vs Konva.js, or other) — OPEN
 Criteria (preliminary): performance with large (up to 3600 px) canvases and HiDPI; rotation/resize handles; snapping/guides support; React integration; export fidelity/determinism; serialization independence from our model; maintenance/licensing; testability. Evaluate with prototypes in Phase 3. Not installed.
@@ -50,3 +50,7 @@ Decide in Phase 6.
 ## ADR-016 — Build tooling: electron-vite, Vite 7, ESLint + Prettier — Accepted (Phase 1)
 
 **Context:** Phase 1 needed one build pipeline for main, preload and renderer. **Decision:** use `electron-vite` (which wraps Vite). Vite is pinned to `^7` and `@vitejs/plugin-react` to `^5` because `electron-vite@5` supports Vite 5–7 only. Keep `package.json` without `"type": "module"` so the sandboxed preload stays CommonJS. Prettier skips Markdown to avoid churn in docs. **Consequences:** upgrade Vite only when electron-vite supports it. Zustand, Sharp, JSZip, fast-xml-parser and a test runner are not yet installed (ADR-013 stays Proposed).
+
+## ADR-017 — Preserve unmapped vendor data in an opaque adapter-owned block — Proposed (2026-10-06)
+
+**Context:** DSLR Booth fixtures contain fields with unknown meaning (`Dimensions`, `IsLegacy`, `print_2_per_page`, `PrintToSecondaryPrinter`, `Id`) and per-element optional attributes ([analysis §15–16, §19](../research/DSLRBOOTH_FIXTURE_ANALYSIS.md)). **Decision (proposed):** the importer stores unmapped values verbatim in an optional, namespaced `source`/`preserved` block on the project and layers; the editor ignores it; copying a layer does not copy it; canvas/DPI changes mark root values as possibly stale; the exporter re-emits only values it knows to be valid and reports the rest. The core model stays vendor-neutral. Exact syntax is not final. **Consequences:** round-trip fidelity and honest warnings, at the cost of staleness handling and extra schema surface. Confirm in Phase 2/13.
