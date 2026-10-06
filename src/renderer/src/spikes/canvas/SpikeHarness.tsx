@@ -1,7 +1,9 @@
-/** SPIKE (Phase 3A): harness hosting one engine at a time over the domain model. Experimental; delete after the decision. */
+/**
+ * SPIKE (Phase 3A, retained as reference after choosing Konva): harness hosting the engine over the domain
+ * model. Experimental; superseded by the Phase 3B editor canvas. The Fabric implementation was removed (see git history).
+ */
 import { StrictMode, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import type { Layer, TemplateProject } from '@domain/index'
-import { FabricEngine } from './fabric/FabricEngine'
 import { KonvaEngine } from './konva/KonvaEngine'
 import type { EngineHandle, GeometryChange, HandleName } from './shared/engine'
 import { createTestImages, type ImageMap } from './shared/images'
@@ -10,7 +12,7 @@ import type { Guide } from './shared/snap'
 import { centeredView, fitView, type ViewTransform } from './shared/viewport'
 
 const VIEWPORT = { width: 600, height: 720 }
-type EngineName = 'fabric' | 'konva'
+type EngineName = 'konva'
 type ViewMode = 'fit' | '100' | '50'
 
 type Action =
@@ -147,7 +149,7 @@ declare global {
 
 export function SpikeHarness(): React.JSX.Element {
   const [project, dispatch] = useReducer(reducer, undefined, createSpikeProject)
-  const [engine, setEngine] = useState<EngineName>('fabric')
+  const [engine, setEngine] = useState<EngineName>('konva') // single engine after the Phase 3A decision
   const [viewMode, setViewMode] = useState<ViewMode>('fit')
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [images, setImages] = useState<ImageMap | null>(null)
@@ -226,7 +228,7 @@ export function SpikeHarness(): React.JSX.Element {
     }
   })
 
-  const Engine = engine === 'fabric' ? FabricEngine : KonvaEngine
+  const Engine = KonvaEngine
 
   return (
     <StrictMode>
@@ -235,11 +237,6 @@ export function SpikeHarness(): React.JSX.Element {
       >
         <div>
           <div style={{ marginBottom: 8, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-            {(['fabric', 'konva'] as const).map((e) => (
-              <button key={e} onClick={() => setEngine(e)} disabled={engine === e}>
-                {e}
-              </button>
-            ))}
             {(['fit', '100', '50'] as const).map((m) => (
               <button key={m} onClick={() => setViewMode(m)} disabled={viewMode === m}>
                 {m === 'fit' ? 'Fit' : `${m}%`}

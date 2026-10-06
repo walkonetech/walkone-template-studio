@@ -1,12 +1,12 @@
 # Architecture Plan (Proposed)
 
-Nothing is implemented. The stack listed is a **preferred direction**, not a locked decision, except where [DECISIONS.md](DECISIONS.md) says Accepted. Canvas library is **OPEN** (ADR-011).
+Nothing is implemented. The stack listed is a **preferred direction**, not a locked decision, except where [DECISIONS.md](DECISIONS.md) says Accepted. Canvas library: **Konva with react-konva** (ADR-029, chosen in Phase 3A).
 
 ## 1. Principles
 Desktop-first, local-first; strict separation of UI, editor state, rendering, storage, and export adapters; vendor-neutral domain; testable pure modules; deterministic rendering; offline-capable; no speculative abstraction.
 
 ## 2. Preferred stack (Proposed)
-Electron, React, TypeScript (strict), Vite, Zustand, Sharp, JSZip, fast-xml-parser, SQLite where appropriate. Canvas: Fabric.js vs Konva.js (OPEN). Each is validated in its relevant phase and recorded in [DECISIONS.md](DECISIONS.md).
+Electron, React, TypeScript (strict), Vite, Zustand, Sharp, JSZip, fast-xml-parser, SQLite where appropriate. Canvas: Konva + react-konva (ADR-029). Each is validated in its relevant phase and recorded in [DECISIONS.md](DECISIONS.md).
 
 ## 3. Process model
 - **Main process:** app lifecycle, windows, filesystem, dialogs, ZIP/XML/image processing orchestration, SQLite, secrets, integrations. Heavy work in worker threads/utility processes to keep UI responsive.
@@ -24,7 +24,8 @@ UI (React) ──► editor state (Zustand + commands/history)
 ```
 - **Domain:** no Electron/React/DOM imports; unit-testable.
 - **Editor state:** commands over the domain model for undo/redo; selection and view state separate from document state.
-- **Canvas abstraction:** the editor talks to a `CanvasView` interface so the library can be swapped; the library never owns the source of truth (the domain model does).
+- **Canvas abstraction:** the editor talks to an engine contract (props in: domain project, images, selection, view transform, snapping; events out: normalized `GeometryChange[]`, selection, guides; handle: export/benchmark hooks) so the library stays swappable; the library never owns the source of truth (the domain model does). The Phase 3A spike (`src/renderer/src/spikes/canvas/`) prototyped this contract with both Fabric and Konva.
+- **Canvas rules from the spike (ADR-029):** design coordinates are in design pixels; the view (zoom/pan) is only a Stage transform; Konva nodes use a box-center origin (`offsetX/Y` = half size) so rotation matches the domain; after a transform, scale is folded into width/height and reset; group children are absolute in the domain and baked back from runtime-group matrices; photo placeholders are single custom-drawn `Shape`s (`sceneFunc` + `hitFunc`); text uses `Text` with an HTML overlay for editing; exports render in a neutral view at the requested pixel size with an explicit `pixelRatio`; snapping is a pure function with a screen-pixel tolerance converted to design units.
 - **Rendering/export:** a deterministic renderer producing pixels from the domain model for preview and export, ideally sharing logic so preview == export (approach — e.g., Sharp-based compositing vs canvas-based — **Needs Validation**, may require parity tests).
 
 **Implemented (Phase 2):** `src/domain/` exists as a pure module with sub-folders `print/ layers/ palette/ assets/ color/ compatibility/ project/ validation/`, exposed through `src/domain/index.ts` and the `@domain` alias; zod is the runtime validator; Vitest runs `src/**/*.test.ts`. See ADR-018–024.
@@ -68,7 +69,7 @@ src/
   renderer/        React app, panels, dialogs
   domain/          (IMPLEMENTED Phase 2) zod schemas/types, print math, composition, validation, serialization, migrations
   editor/          editor state, commands, history, selection
-  canvas/          canvas abstraction + chosen-library implementation
+  canvas/          (Phase 3B) engine contract + Konva implementation; pure geometry/viewport/snap promoted from the spike
   projects/        (IMPLEMENTED Phase 2B) package read/write, sessions, atomic save, recents, project service
   assets/          library + project asset services, metadata
   templates/       template library

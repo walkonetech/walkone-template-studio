@@ -1,4 +1,4 @@
-/** SPIKE (Phase 3A): the contract each engine implementation (Fabric, Konva) satisfies. */
+/** SPIKE (Phase 3A): the contract an engine implementation satisfies (Fabric and Konva were both built to it). */
 import type { TemplateProject } from '@domain/index'
 import type { Geometry } from './geometry'
 import type { ImageMap } from './images'

@@ -31,17 +31,21 @@ Dependency note: Phases 13–15 (DSLR Booth) need real fixture analysis; analysi
 - **Non-goals:** autosave scheduler, recovery UI, unsaved-changes prompts, project wizard/dashboard, Windows packaging, SQLite.
 Remaining for later phases: autosave timer, recovery UX, close/quit confirmation, asset import into sessions (Phase 6/9).
 
-## Phase 3 — Canvas foundation
-- **Objective:** Print-size canvas with zoom/pan and selection.
-- **Deliverables:** Fabric vs Konva evaluation and ADR-011 decision, canvas abstraction, render of simple layers, rulers/guides basics.
-- **Dependencies:** Phase 2.
-- **Acceptance:** accurate canvas size from print config; smooth zoom/pan; decision recorded with prototype evidence.
-- **Non-goals:** full layer tooling, photo logic.
+## Phase 3A — Canvas technology evaluation
+**Status: complete.** Fabric 7.4.0 vs Konva 10.7.1 + react-konva 19.3.0 compared on the same domain-built 2400×3600 scene; **Konva chosen** (ADR-029). Evidence: [../research/CANVAS_LIBRARY_EVALUATION.md](../research/CANVAS_LIBRARY_EVALUATION.md). Fabric removed; Konva spike retained as experimental reference.
+
+## Phase 3B — Canvas foundation (not started; needs approval)
+- **Objective:** production print-size canvas with zoom/pan and selection, built on Konva.
+- **Deliverables:** `src/canvas/` engine contract and Konva implementation, promoted pure geometry/viewport/snap, editor state store (domain project + selection + view) with command history foundation, rendering of all current layer types, high-resolution export, removal of the spike harness and diagnostics route.
+- **Dependencies:** Phases 2, 2B, 3A.
+- **Acceptance:** accurate canvas size from print config; smooth zoom/pan; transforms normalize into domain geometry; exports exact at design size; no engine objects in state or files.
+- **Non-goals:** layers panel and full tooling (Phase 4), photo workflow (Phase 5).
+- **Deferred persistence UX to schedule once the editor exists:** unsaved-changes prompt on close/quit, autosave timer, crash-recovery listing/UI (`ProjectService.close` currently deletes the session regardless of unsaved changes).
 
 ## Phase 4 — Layer management
 - **Objective:** Layer panel and core object manipulation.
 - **Deliverables:** layers panel, z-order, lock/hide, group, align/distribute, snapping/smart guides, undo/redo, copy/paste, shortcuts.
-- **Dependencies:** Phase 3.
+- **Dependencies:** Phase 3B.
 - **Acceptance:** all manipulations undoable and persisted; keyboard shortcuts work.
 - **Non-goals:** typography depth, palette.
 
