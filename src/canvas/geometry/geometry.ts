@@ -1,4 +1,4 @@
-/** SPIKE (Phase 3A): library-neutral geometry helpers. Pure functions, unit tested. */
+/** Library-neutral geometry helpers. Pure functions, unit tested. */
 
 /** Domain geometry: top-left of the UNROTATED box, rotation in degrees clockwise about the box center. */
 export interface Geometry {

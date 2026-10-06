@@ -48,3 +48,6 @@ AGENTS.md
 
 # Generated screenshots/exports from the canvas spike driver scripts
 research/canvas-spike/*.png
+
+# Screenshots written by research/editor-validation
+research/editor-validation/shots/

@@ -1,5 +1,7 @@
 import { basename } from 'node:path'
-import { loadProject, serializeProject, type TemplateProject } from '../domain'
+import { promises as fs } from 'node:fs'
+import { join, resolve, sep } from 'node:path'
+import { loadProject, serializeProject, type AssetReference, type TemplateProject } from '../domain'
 import { defaultFsOps, type FsOps } from './atomicFile'
 import { PersistenceError, fromFsError } from './errors'
 import { openPackage } from './packageReader'
@@ -32,7 +34,15 @@ export interface OpenProjectInfo {
 interface OpenEntry {
   session: WorkingSession
   filePath: string | null
+  /** Assets of the latest known project, by id (what readAsset may serve). */
+  assets: Map<string, AssetReference>
 }
+
+/** Largest single asset the renderer may request over IPC. */
+export const MAX_ASSET_READ_BYTES = 256 * 1024 * 1024
+
+const indexAssets = (project: TemplateProject): Map<string, AssetReference> =>
+  new Map(project.assets.map((a) => [a.id, a]))
 
 export interface ProjectServiceOptions {
   sessionsRoot: string
@@ -98,7 +108,7 @@ export class ProjectService {
       portableHash: null,
       initialAssets
     })
-    const entry: OpenEntry = { session, filePath: null }
+    const entry: OpenEntry = { session, filePath: null, assets: indexAssets(project) }
     this.open.set(session.id, entry)
     return this.info(entry, project, true)
   }
@@ -116,7 +126,7 @@ export class ProjectService {
         lastPortableSaveAt: new Date().toISOString()
       })
       await pkg.extractAssets(session.dir)
-      const entry: OpenEntry = { session, filePath: path }
+      const entry: OpenEntry = { session, filePath: path, assets: indexAssets(project) }
       this.open.set(session.id, entry)
       await this.options.recents.add({ path, projectId: project.id, name: project.metadata.name })
       const warnings = unreferencedEntries.length
@@ -138,7 +148,47 @@ export class ProjectService {
     sessionId: string,
     project: TemplateProject
   ): Promise<{ dirty: boolean }> {
-    return saveWorkingSession(this.entry(sessionId).session, project)
+    const entry = this.entry(sessionId)
+    const result = await saveWorkingSession(entry.session, project)
+    entry.assets = indexAssets(project)
+    return result
+  }
+
+  /**
+   * Bytes of a project-owned asset, addressed by session + asset id. The renderer never supplies a
+   * path: the path comes from the validated project record and is confined to the session's assets/.
+   */
+  async readAsset(
+    sessionId: string,
+    assetId: string
+  ): Promise<{ mediaType: string; data: Uint8Array }> {
+    const entry = this.entry(sessionId)
+    const asset = entry.assets.get(assetId)
+    if (!asset)
+      throw new PersistenceError('missing-asset', 'That asset is not part of the project.')
+    const root = resolve(entry.session.dir, 'assets') + sep
+    const file = resolve(join(entry.session.dir, ...asset.path.split('/')))
+    if (!file.startsWith(root)) {
+      throw new PersistenceError(
+        'unsafe-path',
+        'The asset path is outside the project.',
+        asset.path
+      )
+    }
+    try {
+      const stat = await fs.stat(file)
+      if (!stat.isFile())
+        throw new PersistenceError('missing-asset', 'The asset is not a file.', asset.path)
+      if (stat.size > MAX_ASSET_READ_BYTES) {
+        throw new PersistenceError('invalid-request', 'The asset is too large to load.', asset.path)
+      }
+      return { mediaType: asset.mediaType, data: new Uint8Array(await fs.readFile(file)) }
+    } catch (e) {
+      if ((e as NodeJS.ErrnoException).code === 'ENOENT') {
+        throw new PersistenceError('missing-asset', 'The asset file is missing.', asset.path, e)
+      }
+      throw fromFsError(e, 'missing-asset', 'The asset file could not be read.')
+    }
   }
 
   /** Saves to the project's existing package. Fails with `invalid-request` if it has none yet. */

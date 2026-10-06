@@ -184,3 +184,75 @@ describe('error mapping', () => {
     ).toEqual({ code: 'missing-asset', message: 'Missing logo' })
   })
 })
+
+describe('readAsset bridge', () => {
+  it('serves project asset bytes by session and asset id, never by path', async () => {
+    const { handlers } = await setup()
+    const sample = await handlers.newSampleProject()
+    if (sample.status !== 'ok') throw new Error('expected ok')
+    const asset = sample.value.project.assets[0]!
+    const res = await handlers.readAsset({ sessionId: sample.value.sessionId, assetId: asset.id })
+    if (res.status !== 'ok') throw new Error(JSON.stringify(res))
+    expect(res.value.mediaType).toBe('image/png')
+    expect(res.value.data.length).toBe(asset.byteSize)
+    expect(Array.from(res.value.data.slice(0, 4))).toEqual([0x89, 0x50, 0x4e, 0x47]) // PNG signature
+  })
+
+  it('rejects unknown assets, unknown sessions and malformed requests with safe errors', async () => {
+    const { handlers, env } = await setup()
+    const sample = await handlers.newSampleProject()
+    if (sample.status !== 'ok') throw new Error('expected ok')
+    expect(
+      await handlers.readAsset({ sessionId: sample.value.sessionId, assetId: 'nope' })
+    ).toMatchObject({ status: 'error', error: { code: 'missing-asset' } })
+    expect(await handlers.readAsset({ sessionId: 'nope', assetId: 'x' })).toMatchObject({
+      status: 'error',
+      error: { code: 'session-not-found' }
+    })
+    expect(
+      await handlers.readAsset({ sessionId: 'x', assetId: 'y', path: '/etc/passwd' })
+    ).toMatchObject({ status: 'error', error: { code: 'invalid-request' } })
+    expect(
+      JSON.stringify(
+        await handlers.readAsset({ sessionId: sample.value.sessionId, assetId: 'nope' })
+      )
+    ).not.toContain(env.sessionsRoot)
+  })
+
+  it('a missing file on disk is a missing-asset error', async () => {
+    const { handlers, env } = await setup()
+    const sample = await handlers.newSampleProject()
+    if (sample.status !== 'ok') throw new Error('expected ok')
+    const { rm } = await import('node:fs/promises')
+    await rm(join(env.sessionsRoot, sample.value.sessionId, 'assets/sample.png'))
+    const asset = sample.value.project.assets[0]!
+    expect(
+      await handlers.readAsset({ sessionId: sample.value.sessionId, assetId: asset.id })
+    ).toMatchObject({ status: 'error', error: { code: 'missing-asset' } })
+  })
+
+  it('assets added through updateWorkingCopy become readable', async () => {
+    const { handlers, env } = await setup()
+    const created = await handlers.newProject({ name: 'N', preset: 'strip-2x6-300' })
+    if (created.status !== 'ok') throw new Error('expected ok')
+    const { writeFile, mkdir } = await import('node:fs/promises')
+    const dir = join(env.sessionsRoot, created.value.sessionId, 'assets')
+    await mkdir(dir, { recursive: true })
+    await writeFile(join(dir, 'late.png'), Buffer.from('abc'))
+    const project = {
+      ...created.value.project,
+      assets: [
+        {
+          id: 'late',
+          filename: 'late.png',
+          mediaType: 'image/png' as const,
+          path: 'assets/late.png',
+          source: { kind: 'upload' as const }
+        }
+      ]
+    }
+    await env.service.updateWorkingCopy(created.value.sessionId, project)
+    const res = await handlers.readAsset({ sessionId: created.value.sessionId, assetId: 'late' })
+    expect(res).toMatchObject({ status: 'ok' })
+  })
+})

@@ -3,7 +3,17 @@ import tseslint from 'typescript-eslint'
 import reactHooks from 'eslint-plugin-react-hooks'
 
 export default tseslint.config(
-  { ignores: ['node_modules', 'out', 'dist', 'release', 'coverage', 'research/canvas-spike'] },
+  {
+    ignores: [
+      'node_modules',
+      'out',
+      'dist',
+      'release',
+      'coverage',
+      'research/canvas-spike',
+      'research/editor-validation'
+    ]
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {

@@ -1,4 +1,4 @@
-/** SPIKE (Phase 3A): library-neutral snapping, so feasibility cost per engine is only the hook-up. */
+/** Library-neutral snapping in design coordinates. Tolerance must be converted from screen pixels by the caller (see snapToleranceDesign). */
 
 export interface Rect {
   left: number

@@ -102,5 +102,9 @@ export function registerProjectIpc(
     IpcChannel.ProjectRecents,
     guard(() => handlers.recents())
   )
+  ipcMain.handle(
+    IpcChannel.ProjectReadAsset,
+    guard((_e, p: unknown) => handlers.readAsset(p))
+  )
   return service
 }

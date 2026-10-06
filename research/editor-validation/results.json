@@ -1,0 +1,337 @@
+[
+  {
+    "name": "renderer has no Node access",
+    "ok": true
+  },
+  {
+    "name": "debug hooks installed only via #debug",
+    "ok": true
+  },
+  {
+    "name": "sample project opened, 10 layers, dirty",
+    "ok": true,
+    "detail": {
+      "layers": 10
+    }
+  },
+  {
+    "name": "three canvases (workspace, printable, overlay)",
+    "ok": true
+  },
+  {
+    "name": "project image loaded through the asset bridge",
+    "ok": true,
+    "detail": "ready"
+  },
+  {
+    "name": "fit view scale matches viewport/design math",
+    "ok": true,
+    "detail": {
+      "fitLabel": "17%",
+      "exactScale": 0.17
+    }
+  },
+  {
+    "name": "click selects Photo 2",
+    "ok": true,
+    "detail": ["ff689926-1edf-4b63-8ad6-6a821ea39d91-photo-2"]
+  },
+  {
+    "name": "selection did not dirty/alter history",
+    "ok": true
+  },
+  {
+    "name": "drag moved by exact screen-delta / scale (snap off-axis tolerance considered)",
+    "ok": true,
+    "detail": {
+      "dx": 345.6,
+      "expected": 345.6,
+      "dy": 180
+    }
+  },
+  {
+    "name": "drag = ONE history entry",
+    "ok": true,
+    "detail": {
+      "past": 1
+    }
+  },
+  {
+    "name": "project dirty after drag",
+    "ok": true
+  },
+  {
+    "name": "resize: width/height grew, no scale left over (domain has only width/height)",
+    "ok": true,
+    "detail": {
+      "dw": 172.8,
+      "dh": 115.2,
+      "expected": [172.8, 115.2]
+    }
+  },
+  {
+    "name": "resize = ONE more history entry",
+    "ok": true,
+    "detail": {
+      "past": 2
+    }
+  },
+  {
+    "name": "rotate: rotation changed, size kept",
+    "ok": true,
+    "detail": {
+      "rot": 85.75599999999997,
+      "w": 2072.8
+    }
+  },
+  {
+    "name": "rotation = ONE more history entry",
+    "ok": true,
+    "detail": {
+      "past": 3
+    }
+  },
+  {
+    "name": "moved partly off-canvas without clamping (x < 0)",
+    "ok": true,
+    "detail": {
+      "x": -463.47
+    }
+  },
+  {
+    "name": "undo x2 returns to geometry before rotation? (past=1, future=2)",
+    "ok": true,
+    "detail": {
+      "past": 2,
+      "future": 2
+    }
+  },
+  {
+    "name": "redo works",
+    "ok": true,
+    "detail": {
+      "future": 1
+    }
+  },
+  {
+    "name": "locked layer renders but cannot be dragged",
+    "ok": true
+  },
+  {
+    "name": "locked layer is not selectable by click (selection cleared)",
+    "ok": true,
+    "detail": []
+  },
+  {
+    "name": "locked layer survives Delete key",
+    "ok": true
+  },
+  {
+    "name": "locked layer cannot be deleted from the store either",
+    "ok": true
+  },
+  {
+    "name": "hidden layer is not drawn (no canvas node) and keeps its domain state",
+    "ok": true
+  },
+  {
+    "name": "duplicate: new id, photoNumber preserved, offset, selected",
+    "ok": true,
+    "detail": {
+      "id": "746fafe7",
+      "n": 1
+    }
+  },
+  {
+    "name": "all layer ids unique",
+    "ok": true
+  },
+  {
+    "name": "Delete key removes the selected layer",
+    "ok": true
+  },
+  {
+    "name": "Cmd+Z restores the deleted layer",
+    "ok": true
+  },
+  {
+    "name": "Shift+Cmd+Z redoes the deletion",
+    "ok": true
+  },
+  {
+    "name": "arrow keys nudge (Shift = 10x), coalesced into few undo steps",
+    "ok": true,
+    "detail": {
+      "dx": 11.52,
+      "dy": 57.6,
+      "steps": 1
+    }
+  },
+  {
+    "name": "zoom controls change the view only",
+    "ok": true,
+    "detail": {
+      "z1": "27%",
+      "z2": "100%",
+      "z3": "17%"
+    }
+  },
+  {
+    "name": "zoom/fit did not change project coordinates or dirty state",
+    "ok": true
+  },
+  {
+    "name": "ctrl+wheel zooms; wheel pans; history untouched by view",
+    "ok": true,
+    "detail": {
+      "zw": "58%"
+    }
+  },
+  {
+    "name": "snapping shows guide lines during drag and clears them on release",
+    "ok": true,
+    "detail": {
+      "mid": [
+        {
+          "axis": "x",
+          "at": 239.7941212362595
+        },
+        {
+          "axis": "y",
+          "at": 3140
+        }
+      ],
+      "end": []
+    }
+  },
+  {
+    "name": "clicking inside a group selects the group layer",
+    "ok": true,
+    "detail": ["ff689926-1edf-4b63-8ad6-6a821ea39d91-group"]
+  },
+  {
+    "name": "group drag moves every child by the same delta; group box follows",
+    "ok": true,
+    "detail": {
+      "dxs": [255, 255],
+      "dys": [153.48, 153.48]
+    }
+  },
+  {
+    "name": "group layer box equals union of children",
+    "ok": true
+  },
+  {
+    "name": "double-click opens the text overlay aligned over the layer",
+    "ok": true,
+    "detail": {
+      "editing": true
+    }
+  },
+  {
+    "name": "Enter commits text as ONE history entry and removes the overlay",
+    "ok": true
+  },
+  {
+    "name": "Escape cancels the edit; content unchanged; overlay gone",
+    "ok": true
+  },
+  {
+    "name": "blur commits the edit",
+    "ok": true
+  },
+  {
+    "name": "text corner resize scales fontSize (scale folded into the domain)",
+    "ok": true,
+    "detail": {
+      "before": 150,
+      "after": 161.51
+    }
+  },
+  {
+    "name": "renderProjectToCanvas: exact 2400x3600 at fit zoom",
+    "ok": true,
+    "detail": {
+      "w": 2400,
+      "h": 3600,
+      "ms": 146,
+      "len": 4664014
+    }
+  },
+  {
+    "name": "render size independent of zoom (100%) and supports 1200x1800",
+    "ok": true,
+    "detail": {
+      "o2": {
+        "w": 2400,
+        "h": 3600,
+        "ms": 110
+      },
+      "o3": {
+        "w": 1200,
+        "h": 1800
+      }
+    }
+  },
+  {
+    "name": "render has only printable content: corners are the design background (no mask/guides/chrome)",
+    "ok": true,
+    "detail": {
+      "corner": ["239,233,223,255", "239,233,223,255", "239,233,223,255", "239,233,223,255"],
+      "bg": "239,233,223,255",
+      "accentOffcanvasVisible": "176,141,87,255"
+    }
+  },
+  {
+    "name": "off-canvas accent bar is clipped at the design edge and still drawn inside",
+    "ok": true,
+    "detail": "176,141,87,255"
+  },
+  {
+    "name": "Save (first time -> Save As dialog) wrote a .boothproject and made the project clean",
+    "ok": true,
+    "detail": {
+      "file": "Validation.boothproject",
+      "size": 1708
+    }
+  },
+  {
+    "name": "Close returns to the empty state",
+    "ok": true
+  },
+  {
+    "name": "reopened project geometry survives exactly",
+    "ok": true,
+    "detail": {
+      "diffs": [],
+      "savedName": "Diagnostic Sample",
+      "name": "Diagnostic Sample",
+      "dirty": false
+    }
+  },
+  {
+    "name": "asset survives save/reopen and loads again",
+    "ok": true,
+    "detail": "ready"
+  },
+  {
+    "name": "history boundary on open (no undo)",
+    "ok": true
+  },
+  {
+    "name": "canvases not leaked across close/open (still 3)",
+    "ok": true
+  },
+  {
+    "name": "2x6 @600 project renders at exactly 1200x3600",
+    "ok": true,
+    "detail": {
+      "w": 1200,
+      "h": 3600
+    }
+  },
+  {
+    "name": "renderer still has no Node access at the end",
+    "ok": true
+  }
+]

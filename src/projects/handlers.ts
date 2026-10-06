@@ -1,7 +1,9 @@
 import { z } from 'zod'
 import { createProject, IdSchema, PRINT_PRESET_IDS, type TemplateProject } from '../domain'
+import { createSampleTemplate } from './sampleProject'
 import type { IpcResult } from '../shared/persistence'
 import type {
+  AssetData,
   NewProjectRequest,
   OpenProjectInfo,
   OpenRecentRequest,
@@ -35,15 +37,10 @@ const NewSchema = z.strictObject({
   preset: z.enum(PRINT_PRESET_IDS)
 })
 const SessionSchema = z.strictObject({ sessionId: IdSchema })
+const AssetRequestSchema = z.strictObject({ sessionId: IdSchema, assetId: IdSchema })
 const OpenRecentSchema = z.strictObject({ path: z.string().min(1).max(4096) })
 // The project itself is fully validated by the domain loader inside the service.
 const SessionProjectSchema = z.strictObject({ sessionId: IdSchema, project: z.unknown() })
-
-/** 1×1 transparent PNG used by the diagnostic sample project. */
-const SAMPLE_PNG = Buffer.from(
-  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
-  'base64'
-)
 
 function ensureExtension(path: string): string {
   return path.toLowerCase().endsWith(PROJECT_EXTENSION) ? path : path + PROJECT_EXTENSION
@@ -98,44 +95,18 @@ export function createProjectHandlers(deps: HandlerDeps) {
         return ok(await service.createNew(createProject({ name: req.name, design: req.preset })))
       }),
 
-    /** Development diagnostic only: project with one image layer backed by a tiny real asset. */
+    /** Development diagnostic only: a realistic 4x6 @600 DPI sample project with one real asset. */
     newSampleProject: (): Promise<IpcResult<OpenProjectInfo>> =>
       run(async () => {
-        const project = createProject({
-          name: 'Diagnostic Sample',
-          design: 'photo-4x6-portrait-300'
-        })
-        const assetId = `${project.id}-sample`
-        const path = 'assets/sample.png'
-        project.assets.push({
-          id: assetId,
-          filename: 'sample.png',
-          mediaType: 'image/png',
-          path,
-          pixelWidth: 1,
-          pixelHeight: 1,
-          hasAlpha: true,
-          byteSize: SAMPLE_PNG.length,
-          source: { kind: 'upload', label: 'diagnostic' }
-        })
-        project.layers.push({
-          id: `${project.id}-layer`,
-          type: 'image',
-          name: 'Sample',
-          x: 100,
-          y: 100,
-          width: 200,
-          height: 200,
-          rotation: 0,
-          opacity: 1,
-          zIndex: 0,
-          visible: true,
-          locked: false,
-          assetId,
-          role: 'graphic',
-          fit: 'contain'
-        })
-        return ok(await service.createNew(project, [{ path, data: SAMPLE_PNG }]))
+        const { project, assets } = createSampleTemplate()
+        return ok(await service.createNew(project, assets))
+      }),
+
+    /** Reads a project-owned asset's bytes for the renderer (by session + asset id, never by path). */
+    readAsset: (payload: unknown): Promise<IpcResult<AssetData>> =>
+      run(async () => {
+        const req = parse(AssetRequestSchema, payload)
+        return ok(await service.readAsset(req.sessionId, req.assetId))
       }),
 
     open: (ctx: unknown): Promise<IpcResult<OpenProjectInfo>> =>

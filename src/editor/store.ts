@@ -1,0 +1,462 @@
+import { createStore, type StoreApi } from 'zustand/vanilla'
+import { getPixelSize, nowIso, type Layer, type TemplateProject } from '@domain'
+import {
+  centeredView,
+  panBy as panView,
+  resolveView,
+  toManual,
+  zoomAt,
+  zoomStep,
+  type Size,
+  type ViewState,
+  type ViewTransform
+} from '@canvas/viewport/viewport'
+import type { Guide } from '@canvas/snapping/snap'
+import { emptyHistory, pushHistory, redoHistory, undoHistory, type History } from './history'
+import {
+  addLayer as addLayerMutation,
+  commitGeometry,
+  duplicateLayer,
+  moveLayerBy,
+  removeLayer,
+  reorderLayer,
+  setLocked as setLockedMutation,
+  setVisibility as setVisibilityMutation,
+  updateLayer,
+  type GeometryChange,
+  type MutationContext
+} from './mutations'
+import type { EditorPorts } from './ports'
+import type { OpenProjectInfo } from '@shared/ipc'
+import type { IpcResult } from '@shared/persistence'
+import { isEditable } from '@domain'
+
+export type Interaction = 'idle' | 'transforming' | 'editingText'
+export type PhotoDisplay = 'placeholder' | 'preview'
+
+export interface EditorState {
+  session: { sessionId: string; fileName: string | null } | null
+  project: TemplateProject | null
+  /** Reference to the project as last saved/opened. dirty = project !== savedProject. */
+  savedProject: TemplateProject | null
+  /** Array so multi-selection can be added later; today at most one id. */
+  selectedIds: string[]
+  view: ViewState
+  viewport: Size
+  interaction: Interaction
+  editingTextId: string | null
+  snapping: { enabled: boolean; tolerancePx: number }
+  guidesVisible: boolean
+  /** Active snap guide lines (editor-only; never rendered into output or history). */
+  guides: Guide[]
+  photoDisplay: PhotoDisplay
+  history: History<TemplateProject>
+  lastMessage: string | null
+}
+
+export interface CommitOptions {
+  coalesceKey?: string
+}
+
+export type OpResult =
+  { status: 'ok' } | { status: 'cancelled' } | { status: 'error'; message: string }
+
+export interface EditorActions {
+  // ---- project lifecycle (via ports)
+  adopt(info: OpenProjectInfo): void
+  createProject(req: {
+    name: string
+    preset: Parameters<EditorPorts['create']>[0]['preset']
+  }): Promise<OpResult>
+  createSample(): Promise<OpResult>
+  openFromDialog(): Promise<OpResult>
+  openRecent(path: string): Promise<OpResult>
+  save(): Promise<OpResult>
+  saveAs(): Promise<OpResult>
+  closeProject(): Promise<OpResult>
+  // ---- content changes (each is one history entry)
+  commit(
+    mutate: (p: TemplateProject, ctx: MutationContext) => TemplateProject,
+    options?: CommitOptions
+  ): boolean
+  commitGeometry(changes: readonly GeometryChange[], options?: CommitOptions): boolean
+  addLayer(layer: Layer): void
+  updateLayer(id: string, patch: Parameters<typeof updateLayer>[2]): boolean
+  setVisibility(id: string, visible: boolean): boolean
+  setLocked(id: string, locked: boolean): boolean
+  reorder(id: string, direction: 'forward' | 'backward' | 'front' | 'back'): boolean
+  nudgeSelection(dx: number, dy: number): boolean
+  deleteSelection(): boolean
+  duplicateSelection(): boolean
+  commitText(id: string, content: string): boolean
+  undo(): boolean
+  redo(): boolean
+  clearHistory(): void
+  // ---- selection / interaction (never in history)
+  selectLayer(id: string | null): void
+  clearSelection(): void
+  beginTextEdit(id: string): void
+  endTextEdit(): void
+  setInteraction(i: Interaction): void
+  // ---- view (never in history, never dirty)
+  setViewport(size: Size): void
+  fitToWindow(): void
+  zoomIn(): void
+  zoomOut(): void
+  zoomToActualSize(): void
+  zoomAtPoint(factor: number, anchor: { x: number; y: number }): void
+  panBy(dx: number, dy: number): void
+  setSnapping(patch: Partial<EditorState['snapping']>): void
+  setGuides(guides: Guide[]): void
+  setGuidesVisible(visible: boolean): void
+  setPhotoDisplay(mode: PhotoDisplay): void
+  setMessage(message: string | null): void
+}
+
+export type EditorStore = StoreApi<EditorState & EditorActions>
+
+export interface EditorStoreOptions {
+  ports: EditorPorts
+  now?: () => string
+  /** Clock for history coalescing (injectable for tests). */
+  clock?: () => number
+  createId?: () => string
+}
+
+const initialState = (): EditorState => ({
+  session: null,
+  project: null,
+  savedProject: null,
+  selectedIds: [],
+  view: { mode: 'fit' },
+  viewport: { width: 800, height: 600 },
+  interaction: 'idle',
+  editingTextId: null,
+  snapping: { enabled: true, tolerancePx: 10 },
+  guidesVisible: true,
+  guides: [],
+  photoDisplay: 'placeholder',
+  history: emptyHistory<TemplateProject>(),
+  lastMessage: null
+})
+
+export const selectIsDirty = (s: EditorState): boolean =>
+  s.project !== null && s.project !== s.savedProject
+export const selectCanUndo = (s: EditorState): boolean => s.history.past.length > 0
+export const selectCanRedo = (s: EditorState): boolean => s.history.future.length > 0
+export const selectActiveId = (s: EditorState): string | null =>
+  s.selectedIds[s.selectedIds.length - 1] ?? null
+export function selectDesignSize(s: EditorState): Size | null {
+  return s.project ? getPixelSize(s.project.canvas.print) : null
+}
+export function selectViewTransform(s: EditorState): ViewTransform | null {
+  const design = selectDesignSize(s)
+  return design ? resolveView(s.view, design, s.viewport) : null
+}
+
+const sameGuides = (a: Guide[], b: Guide[]): boolean =>
+  a.length === b.length && a.every((g, i) => g.axis === b[i]?.axis && g.at === b[i]?.at)
+
+/**
+ * The editor store. Project data lives here exactly once (no second copy of layer geometry);
+ * Konva only renders it and reports finished interactions back through `commitGeometry`.
+ * History records project snapshots; selection, view, guides and interaction are outside history.
+ */
+export function createEditorStore(options: EditorStoreOptions): EditorStore {
+  const { ports } = options
+  const now = options.now ?? nowIso
+  const clock = options.clock ?? Date.now
+
+  // Working-copy write-through: latest wins, one request in flight (no timers).
+  let inFlight = false
+  let pending = false
+  const flushWorkingCopy = async (get: () => EditorState): Promise<void> => {
+    if (inFlight) {
+      pending = true
+      return
+    }
+    inFlight = true
+    try {
+      do {
+        pending = false
+        const { session, project } = get()
+        if (!session || !project) break
+        await ports.updateWorkingCopy(session.sessionId, project).catch(() => undefined)
+      } while (pending)
+    } finally {
+      inFlight = false
+    }
+  }
+
+  return createStore<EditorState & EditorActions>()((set, get) => {
+    const ctx = (): MutationContext => ({
+      now: now(),
+      ...(options.createId ? { createId: options.createId } : {})
+    })
+
+    const prune = (project: TemplateProject, selectedIds: string[]): string[] =>
+      selectedIds.filter((id) => project.layers.some((l) => l.id === id))
+
+    const apply = (next: TemplateProject, previous: TemplateProject, o: CommitOptions): void => {
+      const s = get()
+      const history = pushHistory(s.history, previous, { coalesceKey: o.coalesceKey, now: clock() })
+      const editingGone =
+        s.editingTextId !== null && !next.layers.some((l) => l.id === s.editingTextId)
+      set({
+        project: next,
+        history,
+        selectedIds: prune(next, s.selectedIds),
+        ...(editingGone ? { editingTextId: null, interaction: 'idle' as Interaction } : {})
+      })
+      void flushWorkingCopy(get)
+    }
+
+    const editableSelected = (): Layer[] => {
+      const { project, selectedIds } = get()
+      if (!project) return []
+      return selectedIds
+        .map((id) => project.layers.find((l) => l.id === id))
+        .filter((l): l is Layer => l !== undefined && isEditable(project.layers, l))
+    }
+
+    const adoptInfo = (info: OpenProjectInfo): void =>
+      set({
+        ...initialStateKeepingUi(get()),
+        session: { sessionId: info.sessionId, fileName: info.fileName },
+        project: info.project,
+        savedProject: info.dirty ? null : info.project,
+        history: emptyHistory<TemplateProject>()
+      })
+
+    const run = async (op: () => Promise<IpcResult<OpenProjectInfo>>): Promise<OpResult> => {
+      try {
+        const r = await op()
+        if (r.status === 'cancelled') return { status: 'cancelled' }
+        if (r.status === 'error') {
+          set({ lastMessage: r.error.message })
+          return { status: 'error', message: r.error.message }
+        }
+        const previous = get().session
+        adoptInfo(r.value)
+        // Replacing the open project: release the previous session's working directory.
+        if (previous && previous.sessionId !== r.value.sessionId)
+          void ports.close(previous.sessionId).catch(() => undefined)
+        return { status: 'ok' }
+      } catch (e) {
+        const message = e instanceof Error ? e.message : String(e)
+        set({ lastMessage: message })
+        return { status: 'error', message }
+      }
+    }
+
+    const saveWith = async (kind: 'save' | 'saveAs'): Promise<OpResult> => {
+      const { session, project } = get()
+      if (!session || !project) return { status: 'error', message: 'No project is open.' }
+      try {
+        const r = await ports[kind](session.sessionId, project)
+        if (r.status === 'cancelled') return { status: 'cancelled' }
+        if (r.status === 'error') {
+          set({ lastMessage: r.error.message })
+          return { status: 'error', message: r.error.message }
+        }
+        // Clean only relative to what was actually written; edits made while saving stay dirty.
+        set({
+          savedProject: project,
+          session: { sessionId: session.sessionId, fileName: r.value.fileName },
+          lastMessage: null
+        })
+        return { status: 'ok' }
+      } catch (e) {
+        const message = e instanceof Error ? e.message : String(e)
+        set({ lastMessage: message })
+        return { status: 'error', message }
+      }
+    }
+
+    return {
+      ...initialState(),
+
+      adopt: adoptInfo,
+      createProject: (req) => run(() => ports.create(req)),
+      createSample: () => run(() => ports.newSample()),
+      openFromDialog: () => run(() => ports.open()),
+      openRecent: (path) => run(() => ports.openRecent(path)),
+      save: () => saveWith('save'),
+      saveAs: () => saveWith('saveAs'),
+      async closeProject() {
+        const { session } = get()
+        if (!session) return { status: 'ok' }
+        const r = await ports.close(session.sessionId).catch(() => null)
+        if (r && r.status === 'error') {
+          set({ lastMessage: r.error.message })
+          return { status: 'error', message: r.error.message }
+        }
+        set({ ...initialState(), lastMessage: null })
+        return { status: 'ok' }
+      },
+
+      commit(mutate, o = {}) {
+        const { project } = get()
+        if (!project) return false
+        const next = mutate(project, ctx())
+        if (next === project) return false
+        apply(next, project, o)
+        return true
+      },
+      commitGeometry(changes, o = {}) {
+        const { project } = get()
+        if (!project) return false
+        const allowed = changes.filter((c) => {
+          const l = project.layers.find((x) => x.id === c.id)
+          return l !== undefined && isEditable(project.layers, l)
+        })
+        if (allowed.length === 0) return false
+        return get().commit((p, c) => commitGeometry(p, allowed, c), o)
+      },
+      addLayer(layer) {
+        get().commit((p, c) => addLayerMutation(p, layer, c))
+        set({ selectedIds: [layer.id] })
+      },
+      updateLayer: (id, patch) => get().commit((p, c) => updateLayer(p, id, patch, c)),
+      setVisibility: (id, visible) =>
+        get().commit((p, c) => setVisibilityMutation(p, id, visible, c)),
+      setLocked: (id, locked) => get().commit((p, c) => setLockedMutation(p, id, locked, c)),
+      reorder: (id, direction) => get().commit((p, c) => reorderLayer(p, id, direction, c)),
+      nudgeSelection(dx, dy) {
+        const layers = editableSelected()
+        if (layers.length === 0) return false
+        const key = `nudge:${layers.map((l) => l.id).join(',')}`
+        return get().commit(
+          (p, c) => layers.reduce((acc, l) => moveLayerBy(acc, l.id, dx, dy, c), p),
+          { coalesceKey: key }
+        )
+      },
+      deleteSelection() {
+        const layers = editableSelected()
+        if (layers.length === 0) return false
+        const ok = get().commit((p, c) =>
+          layers.reduce(
+            (acc, l) => (acc.layers.some((x) => x.id === l.id) ? removeLayer(acc, l.id, c) : acc),
+            p
+          )
+        )
+        if (ok) set({ selectedIds: [] })
+        return ok
+      },
+      duplicateSelection() {
+        const layers = editableSelected()
+        const first = layers[0]
+        if (!first) return false
+        let rootId = ''
+        const ok = get().commit((p, c) => {
+          const r = duplicateLayer(p, first.id, c)
+          rootId = r.rootId
+          return r.project
+        })
+        if (ok) set({ selectedIds: [rootId] })
+        return ok
+      },
+      commitText(id, content) {
+        const { project } = get()
+        const layer = project?.layers.find((l) => l.id === id)
+        if (!project || !layer || layer.type !== 'text' || layer.content === content) return false
+        return get().commit((p, c) => updateLayer(p, id, { content }, c))
+      },
+      undo() {
+        const { project, history } = get()
+        if (!project) return false
+        const r = undoHistory(history, project)
+        if (!r) return false
+        set({
+          project: r.value,
+          history: r.history,
+          selectedIds: prune(r.value, get().selectedIds),
+          interaction: 'idle',
+          editingTextId: null
+        })
+        void flushWorkingCopy(get)
+        return true
+      },
+      redo() {
+        const { project, history } = get()
+        if (!project) return false
+        const r = redoHistory(history, project)
+        if (!r) return false
+        set({
+          project: r.value,
+          history: r.history,
+          selectedIds: prune(r.value, get().selectedIds),
+          interaction: 'idle',
+          editingTextId: null
+        })
+        void flushWorkingCopy(get)
+        return true
+      },
+      clearHistory: () => set({ history: emptyHistory<TemplateProject>() }),
+
+      selectLayer(id) {
+        const { project } = get()
+        if (id === null) return set({ selectedIds: [] })
+        if (!project?.layers.some((l) => l.id === id)) return
+        set({ selectedIds: [id] })
+      },
+      clearSelection: () => set({ selectedIds: [] }),
+      beginTextEdit(id) {
+        const { project } = get()
+        const layer = project?.layers.find((l) => l.id === id)
+        if (!project || !layer || layer.type !== 'text' || !isEditable(project.layers, layer))
+          return
+        set({ selectedIds: [id], editingTextId: id, interaction: 'editingText' })
+      },
+      endTextEdit: () => set({ editingTextId: null, interaction: 'idle' }),
+      setInteraction: (interaction) => set({ interaction }),
+
+      setViewport(size) {
+        const v = get().viewport
+        if (v.width !== size.width || v.height !== size.height) set({ viewport: size })
+      },
+      fitToWindow: () => set({ view: { mode: 'fit' } }),
+      zoomIn() {
+        const s = get()
+        const t = selectViewTransform(s)
+        if (t) set({ view: toManual(zoomStep(t, 1, s.viewport)) })
+      },
+      zoomOut() {
+        const s = get()
+        const t = selectViewTransform(s)
+        if (t) set({ view: toManual(zoomStep(t, -1, s.viewport)) })
+      },
+      zoomToActualSize() {
+        const s = get()
+        const design = selectDesignSize(s)
+        if (design) set({ view: toManual(centeredView(design, s.viewport, 1)) })
+      },
+      zoomAtPoint(factor, anchor) {
+        const t = selectViewTransform(get())
+        if (t) set({ view: toManual(zoomAt(t, factor, anchor)) })
+      },
+      panBy(dx, dy) {
+        const t = selectViewTransform(get())
+        if (t) set({ view: toManual(panView(t, dx, dy)) })
+      },
+      setSnapping: (patch) => set((s) => ({ snapping: { ...s.snapping, ...patch } })),
+      setGuides(guides) {
+        if (!sameGuides(get().guides, guides)) set({ guides })
+      },
+      setGuidesVisible: (guidesVisible) => set({ guidesVisible }),
+      setPhotoDisplay: (photoDisplay) => set({ photoDisplay }),
+      setMessage: (lastMessage) => set({ lastMessage })
+    }
+  })
+}
+
+/** On project change keep user preferences (snapping, guide visibility, photo display, viewport size). */
+function initialStateKeepingUi(s: EditorState): EditorState {
+  return {
+    ...initialState(),
+    snapping: s.snapping,
+    guidesVisible: s.guidesVisible,
+    photoDisplay: s.photoDisplay,
+    viewport: s.viewport
+  }
+}

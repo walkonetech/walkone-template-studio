@@ -34,15 +34,12 @@ Remaining for later phases: autosave timer, recovery UX, close/quit confirmation
 ## Phase 3A — Canvas technology evaluation
 **Status: complete.** Fabric 7.4.0 vs Konva 10.7.1 + react-konva 19.3.0 compared on the same domain-built 2400×3600 scene; **Konva chosen** (ADR-029). Evidence: [../research/CANVAS_LIBRARY_EVALUATION.md](../research/CANVAS_LIBRARY_EVALUATION.md). Fabric removed; Konva spike retained as experimental reference.
 
-## Phase 3B — Canvas foundation (not started; needs approval)
-- **Objective:** production print-size canvas with zoom/pan and selection, built on Konva.
-- **Deliverables:** `src/canvas/` engine contract and Konva implementation, promoted pure geometry/viewport/snap, editor state store (domain project + selection + view) with command history foundation, rendering of all current layer types, high-resolution export, removal of the spike harness and diagnostics route.
-- **Dependencies:** Phases 2, 2B, 3A.
-- **Acceptance:** accurate canvas size from print config; smooth zoom/pan; transforms normalize into domain geometry; exports exact at design size; no engine objects in state or files.
-- **Non-goals:** layers panel and full tooling (Phase 4), photo workflow (Phase 5).
-- **Deferred persistence UX to schedule once the editor exists:** unsaved-changes prompt on close/quit, autosave timer, crash-recovery listing/UI (`ProjectService.close` currently deletes the session regardless of unsaved changes).
+## Phase 3B — Production canvas foundation
+**Status: complete.** Konva/react-konva canvas, Zustand editor store with pure mutations and snapshot undo/redo, transform normalization, one-spec rendering for editor and offscreen render, exact-size render API, image asset bridge, text overlay editing, snapping with guides, keyboard actions, dirty/working-copy integration, temporary editor shell, spike removed. See [ARCHITECTURE_PLAN.md](ARCHITECTURE_PLAN.md) §5–5a and ADR-030–032.
+- **Deferred (do not lose track):** unsaved-changes protection on window close/app quit (only replace/close-project prompts exist), autosave timer, crash-recovery listing/UI.
 
 ## Phase 4 — Layer management
+**Note:** Phase 3B already delivered undo/redo, snapping with guides, duplicate/delete, lock/hide, z-order actions and basic keyboard shortcuts at the store level; Phase 4 now centers on the layers panel, grouping UI, align/distribute, copy/paste and the full shortcut set.
 - **Objective:** Layer panel and core object manipulation.
 - **Deliverables:** layers panel, z-order, lock/hide, group, align/distribute, snapping/smart guides, undo/redo, copy/paste, shortcuts.
 - **Dependencies:** Phase 3B.

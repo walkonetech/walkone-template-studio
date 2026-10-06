@@ -1,6 +1,6 @@
 # WalkOne Template Studio
 
-> **Status: early development.** Phase 1 delivered an empty Electron desktop shell. There is no editor yet.
+> **Status: early development.** A temporary editor shell exists (canvas foundation, project save/open); the real editor UI is still to come.
 
 WalkOne Template Studio is a planned internal desktop application for **WalkOne Entertainment, LLC** that streamlines building custom photo booth print templates (4x6 and 2x6 strips) for **LumaSoft DSLR Booth / LumaBooth**. It aims to replace a manual Photoshop/Canva → DSLR Booth reconstruction workflow with one focused editor.
 
@@ -8,7 +8,7 @@ WalkOne Template Studio is a planned internal desktop application for **WalkOne 
 The owner/operator of WalkOne Entertainment (v1 is an internal production tool). Later commercialization is not ruled out but is out of scope for now.
 
 ## Current phase
-**Phase 1 — Repository and desktop shell: complete.** Next phases await approval. See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md).
+**Phase 3B — Production canvas foundation: complete.** Next phases await approval. See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md).
 
 ## Documentation
 - [CLAUDE.md](CLAUDE.md) — operating rules for AI coding sessions
@@ -21,5 +21,5 @@ The owner/operator of WalkOne Entertainment (v1 is an internal production tool).
 ## Planned capabilities (not yet built)
 Event-driven project setup, reusable templates and Design Recipes, a purpose-built canvas editor with first-class photo placeholders, palette roles, a badge builder, a local asset library, sample-photo preview, preflight validation, and DSLR Booth template ZIP import/export plus PNG/layer exports.
 
-## Development (Phase 1 shell)
+## Development
 Requires Node 20+ (tested on Node 24). Commands: `npm install`, `npm run dev`, `npm run build`, `npm run start` (preview of the build), `npm run typecheck`, `npm run lint`, `npm run format:check`.

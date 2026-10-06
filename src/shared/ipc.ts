@@ -13,7 +13,9 @@ export const IpcChannel = {
   ProjectSaveAs: 'project:saveAs',
   ProjectUpdateWorkingCopy: 'project:updateWorkingCopy',
   ProjectClose: 'project:close',
-  ProjectRecents: 'project:recents'
+  ProjectRecents: 'project:recents',
+  /** Reads a project-owned asset by session + asset id (never by path). */
+  ProjectReadAsset: 'project:readAsset'
 } as const
 
 export interface PingResult {
@@ -57,6 +59,14 @@ export interface RecentProjectItem {
   lastOpenedAt: string
   exists: boolean
 }
+export interface AssetRequest {
+  sessionId: string
+  assetId: string
+}
+export interface AssetData {
+  mediaType: string
+  data: Uint8Array
+}
 export interface WorkingCopyResult {
   dirty: boolean
 }
@@ -79,5 +89,7 @@ export interface RendererApi {
     updateWorkingCopy(req: SessionProjectRequest): Promise<IpcResult<WorkingCopyResult>>
     close(req: SessionRequest): Promise<IpcResult<null>>
     recents(): Promise<IpcResult<RecentProjectItem[]>>
+    /** Bytes of a project asset from the working session (the only way the renderer reads project images). */
+    readAsset(req: AssetRequest): Promise<IpcResult<AssetData>>
   }
 }

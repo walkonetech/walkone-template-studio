@@ -16,7 +16,10 @@
     "noEmit": true,
     "paths": {
       "@shared/*": ["./src/shared/*"],
-      "@domain/*": ["./src/domain/*"]
+      "@domain/*": ["./src/domain/*"],
+      "@domain": ["./src/domain/index.ts"],
+      "@canvas/*": ["./src/canvas/*"],
+      "@editor/*": ["./src/editor/*"]
     }
   }
 }

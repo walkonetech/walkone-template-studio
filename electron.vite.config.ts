@@ -10,7 +10,14 @@ export default defineConfig({
     resolve: { alias: { '@shared': resolve('src/shared'), '@domain': resolve('src/domain') } }
   },
   renderer: {
-    resolve: { alias: { '@shared': resolve('src/shared'), '@domain': resolve('src/domain') } },
+    resolve: {
+      alias: {
+        '@shared': resolve('src/shared'),
+        '@domain': resolve('src/domain'),
+        '@canvas': resolve('src/canvas'),
+        '@editor': resolve('src/editor')
+      }
+    },
     plugins: [react()]
   }
 })

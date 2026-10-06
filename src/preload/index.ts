@@ -12,7 +12,8 @@ const api: RendererApi = {
     saveAs: (req) => ipcRenderer.invoke(IpcChannel.ProjectSaveAs, req),
     updateWorkingCopy: (req) => ipcRenderer.invoke(IpcChannel.ProjectUpdateWorkingCopy, req),
     close: (req) => ipcRenderer.invoke(IpcChannel.ProjectClose, req),
-    recents: () => ipcRenderer.invoke(IpcChannel.ProjectRecents)
+    recents: () => ipcRenderer.invoke(IpcChannel.ProjectRecents),
+    readAsset: (req) => ipcRenderer.invoke(IpcChannel.ProjectReadAsset, req)
   }
 }
 

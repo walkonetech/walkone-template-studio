@@ -30,8 +30,24 @@ UI (React) ──► editor state (Zustand + commands/history)
 
 **Implemented (Phase 2):** `src/domain/` exists as a pure module with sub-folders `print/ layers/ palette/ assets/ color/ compatibility/ project/ validation/`, exposed through `src/domain/index.ts` and the `@domain` alias; zod is the runtime validator; Vitest runs `src/**/*.test.ts`. See ADR-018–024.
 
-## 5. State management
-Zustand stores: document (project), selection/tool, UI/layout, preferences. Undo/redo by command or patch history on the document store. Autosave subscribes to document changes.
+## 5. State management (implemented in Phase 3B)
+A Zustand **vanilla** store (`src/editor/store.ts`, ADR-030) holds the open project once, plus selection (`selectedIds` array, multi-select-ready), view state (`fit | manual`), viewport size, interaction mode, text-edit target, snapping/guide settings, photo display mode, snapshot history (ADR-031), and the saved-project reference for dirty state. Pure mutations (`src/editor/mutations.ts`): `addLayer`, `updateLayer`, `removeLayer`, `duplicateLayer`, `moveLayerBy`, `resizeLayer`, `rotateLayer`, `setLayerGeometry`, `commitGeometry` (one interaction, many layers), `setVisibility`, `setLocked`, `setLayerZIndex`, `reorderLayer`; each returns a new validated project with `updatedAt` refreshed. Store actions add lock checks, selection handling, history and working-copy write-through (latest-wins, no timers, no package rebuild). Rules: duplicate preserves `photoNumber`; deleting a group deletes its descendants; deleting the last child removes the empty group; locks/visibility inherit from ancestors; zIndex is dense per sibling set with array order as tie-break.
+
+## 5a. Canvas architecture (implemented in Phase 3B)
+```
+src/canvas/        pure + Konva-type-only modules (no React, no Electron)
+  geometry/        centre-box conversion, matrices, matrix -> domain geometry
+  viewport/        fit/zoom/pan math, ViewState, snap tolerance (CSS pixels; DPR never enters)
+  snapping/        computeSnap (canvas edges/centre, other layers)
+  transforms/      normalizeNodeTransform/Text/FromMatrix, min size, transformer options per layer type
+  rendering/       nodeSpec (how every layer type is drawn: one spec for editor AND offscreen render), draw
+                   (photo placeholder, fitted image), color, plan (pure render plan), renderProject (Konva offscreen)
+  adapters/        konvaCommit (Konva node -> domain geometry, scale reset), konvaSnap (drag snapping)
+  assets/          ImageCache (decoded images, injected loader)
+src/editor/        pure store, mutations, history, ports
+src/renderer/src/editor/   React: EditorCanvas (react-konva), TextEditOverlay, keyboard hook, EditorScreen, asset loader
+```
+Konva stage layers: `workspace` (backdrop + shadow, inert), `printable` (design background + layer nodes), `editor-overlay` (print-area dimming mask, snap guides, Transformer). Only the printable layer exists in `renderProjectToCanvas`, so editor chrome can never leak into output. Z-order is `sortedSiblings` (zIndex, then array order), never insertion order. All nodes use a box-centre origin; after a transform the scale is folded into width/height/fontSize and reset to 1. Photo placeholders are one custom `Shape`; groups are runtime `Konva.Group`s baked back to absolute child geometry. Zoom is a Stage transform only. Text editing is an HTML textarea overlay (Enter commits, Shift+Enter newline, Escape cancels, blur commits). Image bytes arrive through the `readAsset` bridge (ADR-032).
 
 ## 6. Persistence (implemented in Phase 2B)
 **Code layout:** `src/projects/` is Node-only and Electron-free (testable with Vitest): `packageReader` / `packageWriter` (yauzl / yazl), `atomicFile`, `session`, `recents`, `service` (`ProjectService`), `handlers` (pure IPC handlers with injected dialogs), `errors`. `src/main/projectIpc.ts` wires Electron dialogs and `ipcMain`; `src/preload` exposes `window.api.project.*`; `src/shared/ipc.ts` + `persistence.ts` hold the typed contract. The renderer never touches the filesystem and never receives session paths.
