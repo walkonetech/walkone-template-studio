@@ -59,5 +59,9 @@ All workflows are **Proposed** future behavior. UI details: [UX_SPEC.md](UX_SPEC
 **Edge:** project too custom to generalize → warn about non-parameterizable parts. (Recipe model **Future Research**.)
 
 ## O. Reopen existing project
-**Happy:** Recent list or Open → load → schema migrated if older → editor restored.
-**Edge:** newer schema than app understands → refuse read-only with message; missing referenced assets → relink dialog; corrupt file → recover from autosave if present; crash recovery prompt on launch.
+**Happy:** Recent list or Open… → the package is validated and unpacked into a working session → schema migrated if older → editor restored; the project starts clean.
+**Edge:** newer schema than the app understands → refuse with an "update the app" message; missing referenced assets or a damaged/unsafe package → clear error, nothing is opened; unused files in the package → opened with a warning; recent entry whose file is gone → shown as missing and removed when opening fails; crash recovery prompt on launch (not built; see ADR-027).
+
+## P. New / Save / Save As (native project lifecycle)
+**New:** creates an unsaved project (modified until first saved). **Save:** if the project has a file, rewrites it; if never saved, behaves like Save As. **Save As:** native dialog (`*.boothproject`), writes the new file, and only then switches the project to it; the original file is untouched. A project becomes *saved* only after a successful Save/Save As; working-copy autosave never marks it saved.
+**Edge:** cancelling a dialog is silent (not an error); a failed save keeps the previous file intact and reports a specific reason (missing asset, permission, replace failed). Unsaved-changes prompts on close/quit belong to the UI phase.

@@ -1,6 +1,8 @@
 # Testing Strategy (Proposed)
 
-Unit tests run on **Vitest** (`npm test`; ADR-019), covering the domain model (print math, composition, layers, serialization, validation, compatibility metadata). Component/E2E tooling (e.g., Playwright) is not chosen yet. No fixture-based tests exist yet; importer tests belong to Phase 13. Honest reporting is mandatory ([CLAUDE.md](../CLAUDE.md)).
+Unit tests run on **Vitest** (`npm test`; ADR-019), covering the domain model (print math, composition, layers, serialization, validation, compatibility metadata). Component/E2E tooling (e.g., Playwright) is not chosen yet. No fixture-based tests exist yet; importer tests belong to Phase 13.
+
+**Persistence tests (Phase 2B)** live in `src/projects/__tests__/` and run against temporary directories created per test (never inside the repo). They build packages dynamically (through the real writer, or a small raw-ZIP builder for hostile/malformed archives: traversal, absolute and drive paths, links, duplicates, case collisions, unexpected files/folders, bad manifests/versions, size/checksum mismatches). Atomic-save failures are simulated by injecting a failing `rename`. Handler tests use fake dialogs, covering cancellation, validation and error mapping without GUI automation. Manual macOS validation drives the built app over the DevTools protocol with dev-only dialog overrides. Windows behavior is untested. The real DSLR Booth ZIPs are not used for native persistence. Honest reporting is mandatory ([CLAUDE.md](../CLAUDE.md)).
 
 ## 1. Unit tests
 Calculations (inches↔px, DPI rescale, rounding), schema conversion and migrations, project serialization, palette logic (role resolution, extraction), coordinate/transform math, XML conversion, preflight rules, photo numbering.

@@ -1,4 +1,4 @@
-# Data Model (Implemented in Phase 2)
+# Data Model (Implemented in Phase 2 / 2B)
 
 Source of truth is the code in `src/domain/` (zod schemas; TypeScript types are inferred from them). This document explains the model and why. It is vendor-neutral: DSLR Booth structures are handled only by adapters ([DSLRBOOTH_COMPATIBILITY.md](DSLRBOOTH_COMPATIBILITY.md), ADR-002/003). Evidence behind the choices: [../research/DSLRBOOTH_FIXTURE_ANALYSIS.md](../research/DSLRBOOTH_FIXTURE_ANALYSIS.md). Decisions: [DECISIONS.md](DECISIONS.md).
 
@@ -51,8 +51,15 @@ Groups (ADR-021): **flat storage with `parentId`**; groups hold no child list. S
 ## 6. Assets
 `AssetReference { id, filename, mediaType (png|jpeg|webp|svg), path, pixelWidth?, pixelHeight?, hasAlpha?, byteSize?, sha256?, source{kind,label?,licenseNote?} }`. `path` is a project-relative POSIX path inside the project package (e.g. `assets/<id>.png`); absolute paths, `..`, backslashes and drive letters are rejected. Layers reference `assetId`; many layers may share one asset. The asset *library* is not implemented.
 
-## 7. Portability and native format (ADR-009)
-Decision: a native project is a **package** — a `project.json` manifest (the serialized `TemplateProject`) plus an `assets/` directory containing a copy of every asset used (library assets are copied in on use). It never depends on Downloads/Desktop paths. The physical container (folder bundle vs zip, `.boothproject`) is deferred to the file-IO phase; the manifest is container-independent. Implemented now: JSON manifest only, no files.
+## 7. Portability and native format (ADR-009, Accepted)
+A native project is **one file with the extension `.boothproject`**: a ZIP-compatible archive containing exactly
+```
+project.json          the serialized TemplateProject (the only authoritative manifest)
+assets/<file>         every asset the project references (copies; library assets are copied in on use)
+```
+Package rules (implemented in `src/projects/`): asset `path` values must live under `assets/`, be unique ignoring case, and be portable file names; the package never depends on external paths; **strict loading** — any entry other than `project.json` and files under `assets/` (including scripts, other folders, links, encrypted or duplicate entries, `..`/absolute/backslash paths) is rejected; files under `assets/` that no `AssetReference` uses are reported as a warning and not carried over (never silently kept or dropped); every referenced asset must be present, and recorded `byteSize`/`sha256` are verified on open.
+**One version number:** the archive adds no version of its own. Its layout is fixed by `project.json` + `assets/` and evolves under `TemplateProject.schemaVersion`. A second container version will be added only if the archive layout itself must change independently.
+**Working session (not part of the file):** while a project is open it lives in an app-managed directory (`<userData>/sessions/<sessionId>/` with `project.json`, `assets/`, `session.json`). `session.json` holds `projectId`, `originalPath`, `createdAt`, `lastWorkingSaveAt`, `lastPortableSaveAt`, `portableHash`, `hasUnsavedChanges`, `ownerPid`. See [ARCHITECTURE_PLAN.md](ARCHITECTURE_PLAN.md) §6 and ADR-027.
 
 ## 8. Serialization, validation, migrations
 - `serializeProject(project)` → deterministic JSON text (validates first; throws on invalid). `deserializeProject(text)` / `loadProject(unknown)` → `{ok:true, project}` or `{ok:false, errors:[{code,path,message}]}`; never throws on bad input, never drops unknown fields (rejects them).

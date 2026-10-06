@@ -1,6 +1,8 @@
 import { app, BrowserWindow, ipcMain, shell, type IpcMainInvokeEvent } from 'electron'
 import { join } from 'node:path'
 import { IpcChannel, type PingResult } from '../shared/ipc'
+import { registerProjectIpc } from './projectIpc'
+import type { ProjectService } from '../projects/service'
 
 const isDev = !app.isPackaged && Boolean(process.env['ELECTRON_RENDERER_URL'])
 
@@ -10,7 +12,7 @@ function isTrustedSender(event: IpcMainInvokeEvent): boolean {
   return url.startsWith('file://')
 }
 
-function registerIpc(): void {
+function registerIpc(): ProjectService {
   ipcMain.handle(IpcChannel.AppPing, (event): PingResult => {
     if (!isTrustedSender(event)) throw new Error('Untrusted IPC sender')
     return {
@@ -20,6 +22,7 @@ function registerIpc(): void {
       electronVersion: process.versions.electron
     }
   })
+  return registerProjectIpc(isTrustedSender)
 }
 
 function createWindow(): void {
@@ -57,12 +60,18 @@ function createWindow(): void {
   else void win.loadFile(join(__dirname, '../renderer/index.html'))
 }
 
+let projectService: ProjectService | undefined
+
 void app.whenReady().then(() => {
-  registerIpc()
+  projectService = registerIpc()
   createWindow()
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+})
+
+app.on('before-quit', () => {
+  void projectService?.shutdown()
 })
 
 app.on('window-all-closed', () => {

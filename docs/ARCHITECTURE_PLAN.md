@@ -32,11 +32,18 @@ UI (React) ──► editor state (Zustand + commands/history)
 ## 5. State management
 Zustand stores: document (project), selection/tool, UI/layout, preferences. Undo/redo by command or patch history on the document store. Autosave subscribes to document changes.
 
-## 6. Persistence
-- Native project package (`.boothproject`, container OPEN ADR-009) with `project.json` + `assets/`. Atomic writes (temp + rename). Schema migrations on load.
-- Autosave/crash recovery in an app data directory.
-- **SQLite** (scope OPEN, ADR-012): likely for library index, recents, template/recipe index — not for the project document itself.
-- Settings in app data JSON or SQLite.
+## 6. Persistence (implemented in Phase 2B)
+**Code layout:** `src/projects/` is Node-only and Electron-free (testable with Vitest): `packageReader` / `packageWriter` (yauzl / yazl), `atomicFile`, `session`, `recents`, `service` (`ProjectService`), `handlers` (pure IPC handlers with injected dialogs), `errors`. `src/main/projectIpc.ts` wires Electron dialogs and `ipcMain`; `src/preload` exposes `window.api.project.*`; `src/shared/ipc.ts` + `persistence.ts` hold the typed contract. The renderer never touches the filesystem and never receives session paths.
+**Two stores:** the **portable package** (`.boothproject`, used for Save/Save As/transfer) and the **working session** (`<userData>/sessions/<id>/` — `project.json`, `assets/`, `session.json`) used while a project is open. Autosave (not scheduled yet) calls `saveWorkingSession`, which rewrites only the small working `project.json` and metadata, never the archive.
+**Open:** validate extension → scan central directory (limits, path/link/encryption/duplicate checks) → read and validate `project.json` (schema + integrity + package asset-path rules) → verify referenced assets exist → create session → extract assets (size/sha256 checked) → return project, clean. Any failure removes the half-built session.
+**Save / Save As:** serialize and validate → verify assets in session → write `<dest>.tmp-xxxx` via yazl (fixed order, fixed timestamps/modes → deterministic bytes) → reopen and verify the temp package → fsync → atomic replace (below) → mark session clean and update recents. Save As changes the file association only after success.
+**Atomic replace (ADR-028):** `rename(tmp, dest)` replaces atomically on macOS/Linux and normally on Windows. If the OS refuses to rename over the existing file (EPERM/EEXIST/EBUSY/EACCES), the old file is moved to a backup name, the new file renamed in, and the backup deleted; if the second rename fails the backup is restored. The existing file is never truncated; temp files are removed on failure. Limits: no cross-volume atomicity (temp is created beside the destination), and directory fsync is best-effort.
+**Dirty state:** `dirty` means "differs from the last successful portable save/open", computed by comparing the SHA-256 of the serialized project with `portableHash`. Autosave never clears it; only Save/Save As (or opening a package) does. It lives in the session metadata and `ProjectService`, not React state.
+**Recovery foundation (proposed, UI not built):** on clean close the session is deleted; on app quit clean sessions are deleted and sessions with `hasUnsavedChanges` are kept. At launch, a future recovery step lists sessions (`listSessions`): ones with unsaved changes and a dead `ownerPid` are offered for recovery (compare `lastWorkingSaveAt` with the package), clean or unreadable ones are deleted, and very old ones are purged.
+**Recents (ADR-026):** `<userData>/recent-projects.json` (`{version:1, items:[{path, projectId?, name, lastOpenedAt}]}`), max 10, atomic writes, corrupted file set aside as `.corrupt`; missing files flagged `exists:false`. `openRecent` only accepts paths already in this list.
+**SQLite (ADR-012)** remains reserved for future library/index features, not project files or recents.
+**Errors:** every failure is a `PersistenceError` with a code (`file-not-found`, `invalid-project`, `unsupported-version`, `corrupted-package`, `missing-asset`, `unsafe-path`, `permission-denied`, `write-failed`, `replace-failed`, `session-not-found`, `not-allowed`, `invalid-request`, `unexpected`) and a user-safe message; internal detail is logged in main only. IPC returns `{status:'ok'|'cancelled'|'error'}` — cancellation is not an error.
+**Dev-only dialog override:** non-packaged builds honor `WALKONE_DEV_OPEN_PATH` / `WALKONE_DEV_SAVE_PATH` so scripted validation can answer native dialogs; packaged builds ignore them.
 
 ## 7. Image, ZIP, XML
 Sharp for raster ops/compositing (native module → packaging per-platform concern, **Risk**); JSZip for ZIP; fast-xml-parser for XML parse/build. All wrapped in thin modules so they are replaceable and testable.
@@ -62,7 +69,7 @@ src/
   domain/          (IMPLEMENTED Phase 2) zod schemas/types, print math, composition, validation, serialization, migrations
   editor/          editor state, commands, history, selection
   canvas/          canvas abstraction + chosen-library implementation
-  projects/        project package read/write, autosave, recents
+  projects/        (IMPLEMENTED Phase 2B) package read/write, sessions, atomic save, recents, project service
   assets/          library + project asset services, metadata
   templates/       template library
   recipes/         design recipes

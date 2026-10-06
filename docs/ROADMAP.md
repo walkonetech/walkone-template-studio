@@ -19,13 +19,17 @@ Dependency note: Phases 13–15 (DSLR Booth) need real fixture analysis; analysi
 - **Acceptance:** app launches on macOS (Windows build verified or tracked), context isolation on, typed IPC ping, typecheck passes. **Status: complete (macOS verified; Windows build not yet verified).**
 - **Non-goals:** editor, canvas, persistence.
 
-## Phase 2 — Project model and persistence
-**Status: partly complete.** Done: domain model, validation, JSON serialization, schema-version/migration boundary, factories, DPI rescale function, Vitest. **Remaining (not started):** reading/writing project files and the package container (ADR-009 container), new/open/save/save as, recents, autosave/crash recovery — treat as Phase 2b or fold into a later persistence phase on approval.
-- **Objective:** Implement the vendor-neutral model and save/open.
-- **Deliverables:** domain types, units/geometry helpers, schemaVersion + migration scaffold, project package read/write, new/open/save/save as, recents, autosave basics.
-- **Dependencies:** Phase 1; ideally fixture findings reviewed for model gaps.
-- **Acceptance:** round-trip save/load tests; px↔inches math tested; ADR-009/010 resolved.
-- **Non-goals:** UI editor, DSLR Booth.
+## Phase 2 — Project domain model
+**Status: complete.** Vendor-neutral domain model, validation, JSON serialization, schema-version/migration boundary, factories, DPI rescale, Vitest.
+
+## Phase 2B — Native project persistence and desktop file lifecycle
+**Status: complete.**
+- **Objective:** create/open/save/save as a single-file `.boothproject`, safely, with working sessions, recents and an autosave/recovery foundation.
+- **Deliverables:** `src/projects/` (package reader/writer, atomic replace, sessions, recents, `ProjectService`, pure IPC handlers), typed IPC + preload API, native dialogs, dev-diagnostic buttons, tests.
+- **Dependencies:** Phase 2.
+- **Acceptance:** round-trip with assets, failure leaves the old file intact, hostile packages rejected, cancellation distinct from errors, renderer has no Node access, all checks pass.
+- **Non-goals:** autosave scheduler, recovery UI, unsaved-changes prompts, project wizard/dashboard, Windows packaging, SQLite.
+Remaining for later phases: autosave timer, recovery UX, close/quit confirmation, asset import into sessions (Phase 6/9).
 
 ## Phase 3 — Canvas foundation
 - **Objective:** Print-size canvas with zoom/pan and selection.

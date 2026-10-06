@@ -1,42 +1,47 @@
 # Current State
 
-_Last updated: 2026-10-06 (Phase 2 domain foundation)_
+_Last updated: 2026-10-06 (end of Phase 2B)_
 
 ## Project status
-Electron + React + TypeScript shell (Phase 1) plus a tested, vendor-neutral domain model and JSON project serialization (Phase 2, partial). No editor, canvas, file IO, DSLR Booth importer/exporter or asset library exists.
+Electron + React + TypeScript shell, a tested vendor-neutral domain model, and a working native project lifecycle (create/open/save/save as of single-file `.boothproject` packages). There is still no editor, canvas, DSLR Booth importer/exporter or asset library. The home screen carries temporary dev-diagnostic buttons for the project lifecycle only.
 
 ## Current phase
-**Phase 2 — Domain model and native project foundation: domain, validation, serialization, tests COMPLETE.** File IO/package container, recents and autosave are NOT started (see [ROADMAP.md](ROADMAP.md)). Phase 3 has not begun. Awaiting owner approval.
+**Phase 2B — Native project persistence: COMPLETE.** Phase 2 (domain model) is complete. **Phase 3 (canvas) has not begun**; awaiting owner approval.
 
 ## Completed
-- Phase 0 docs; Phase 1 shell (secure defaults, typed IPC ping); DSLR Booth fixture research ([../research/DSLRBOOTH_FIXTURE_ANALYSIS.md](../research/DSLRBOOTH_FIXTURE_ANALYSIS.md)).
-- Phase 2: `src/domain/` (zod 4 schemas; types inferred), print math and presets, design canvas vs output composition (`single`/`grid`), flat layers (photo, image with roles, text, shape, group), palette with literal/palette-reference colors, asset references with project-relative paths, optional adapter-scoped `sourceCompatibility`, `loadProject`/`serializeProject`/`deserializeProject` with schemaVersion check and an empty migration registry, `createProject` factory, explicit `rescaleProjectDpi`, integrity checks. Vitest with 39 tests.
-- Decisions: ADR-009 (persistence model), ADR-010, ADR-017 accepted; ADR-018–024 added ([DECISIONS.md](DECISIONS.md)). Model documented in [DATA_MODEL.md](DATA_MODEL.md).
+- Phase 0 docs; Phase 1 shell; DSLR Booth fixture research ([../research/DSLRBOOTH_FIXTURE_ANALYSIS.md](../research/DSLRBOOTH_FIXTURE_ANALYSIS.md)); Phase 2 domain model ([DATA_MODEL.md](DATA_MODEL.md)).
+- Phase 2B (`src/projects/`): strict `.boothproject` reader/writer (yauzl/yazl), deterministic output, atomic replace with backup-swap fallback, working sessions with recovery metadata, dirty-state model, bounded JSON recents, `ProjectService`, pure IPC handlers, typed IPC (`window.api.project.*`), native Open/Save dialogs, structured error codes with distinct cancellation. ADR-009 finalized; ADR-025–028 added ([DECISIONS.md](DECISIONS.md)). Architecture in [ARCHITECTURE_PLAN.md](ARCHITECTURE_PLAN.md) §6.
 
 ## Verified (this phase)
-`npm run typecheck`, `lint`, `format:check`, `build`, `npm test` (39 passed) all ran and passed; the built Electron app launched on macOS and showed the IPC ping.
+`npm run typecheck`, `lint`, `format:check`, `build` all passed; `npm test` passed with 109 tests (39 domain + 70 persistence). Manual macOS validation on the built app (driven over the DevTools protocol with dev-only dialog overrides): created a sample project with an asset, saved a `.boothproject` (contents: `project.json` + `assets/sample.png`), closed, reopened it (same project id, metadata, asset path, clean state), recents listed it, a non-recent path was refused, and the renderer had no `require`/`process`/fs access.
 
 ## In progress
 Nothing.
 
 ## Not started
-Project file IO and package container, recents/autosave, canvas (Phase 3 onward), importer/exporter, asset library, templates, recipes, badges.
+Autosave scheduling, crash-recovery UI, unsaved-changes prompts on close/quit, asset import, project wizard/dashboard, canvas and editor (Phase 3+), DSLR Booth importer/exporter.
 
 ## Open decisions
-ADR-009 container (folder vs zip); ADR-011 canvas library (Fabric vs Konva) — pending; ADR-012 SQLite scope; ADR-014 render approach; ADR-015 fonts. See [DECISIONS.md](DECISIONS.md).
+ADR-011 canvas library (Fabric vs Konva) — pending; ADR-012 SQLite scope (not needed so far); ADR-014 render approach; ADR-015 fonts. See [DECISIONS.md](DECISIONS.md).
 
 ## Known risks
-- DSLR Booth semantics still unknown for `Dimensions`, `IsLegacy`, `print_2_per_page`, rotation pivot, text elements ([analysis §25](../research/DSLRBOOTH_FIXTURE_ANALYSIS.md)).
-- DSLR Booth is Windows-only; development is on macOS.
-- Sharp/SQLite native modules complicate packaging (not installed).
-- Strict schema (unknown keys rejected) means every model change needs a version bump and migration.
+- DSLR Booth semantics still unknown for several fields ([analysis §25](../research/DSLRBOOTH_FIXTURE_ANALYSIS.md)); Windows-only booth software vs macOS development.
+- Windows file replacement logic (backup-swap fallback) and path rules are implemented from Node semantics and not tested on Windows.
+- Strict schema: every model change needs a version bump and migration.
 - Vite is held at 7 (ADR-016).
 
-## Known limitations of the domain model
-Inches only; photo frames limited to none/solid; no crop rectangles, gradients, shadows or blend modes; groups carry no rotation/opacity semantics; group geometry is not auto-derived; schema version 1 has no migrations; nothing populates `sourceCompatibility` yet; DPI rescale is a pure function with no UI. Integrity checks are not export preflight.
+## Known limitations (Phase 2B)
+- Sessions of a crashed app remain on disk; nothing lists or recovers them yet (`listSessions` exists). Quitting normally removes clean sessions only.
+- No autosave timer and no unsaved-changes confirmation; `ProjectService.close` always deletes the session.
+- Asset hashes are verified on open, not on every save (save checks existence and recorded size).
+- Cross-volume atomicity is not provided (temp file is beside the destination); a network share may behave differently.
+- The renderer sees the full path of recent projects (user-chosen locations); session paths are never exposed.
+- A package with unused files under `assets/` opens with a warning and drops them on next save.
+- Dev-only env overrides (`WALKONE_DEV_OPEN_PATH`/`WALKONE_DEV_SAVE_PATH`) exist for non-packaged builds.
+- Only macOS was exercised manually.
 
 ## Housekeeping
-`AGENTS.md` (an untracked duplicate of CLAUDE.md for another agent) is git-ignored and untouched. No Git remote exists (intentional). Fixtures in `tests/fixtures/dslrbooth/source/` are private and unchanged.
+`AGENTS.md` stays git-ignored and untouched. No Git remote exists (intentional). Fixtures in `tests/fixtures/dslrbooth/source/` are private and unchanged.
 
 ## Next recommended action
-Owner reviews the model, then approves either Phase 2b (file IO, package container, recents/autosave) or Phase 3 (canvas foundation, including the Fabric vs Konva decision).
+Owner reviews Phase 2B, then approves Phase 3 (canvas foundation, including the Fabric vs Konva evaluation). Small follow-ups worth scheduling: unsaved-changes prompt, autosave timer and recovery listing, once an editor exists.

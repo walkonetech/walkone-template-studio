@@ -26,8 +26,8 @@ Statuses: **Accepted**, **Proposed**, **OPEN** (undecided — do not decide with
 ## ADR-008 — Real DSLR Booth exports are compatibility fixtures — Accepted
 **Decision:** owner-supplied exports in `tests/fixtures/dslrbooth/` are golden references; never fabricate. See [TESTING_STRATEGY.md](TESTING_STRATEGY.md).
 
-## ADR-009 — Native project persistence model — Accepted (container OPEN)
-A native project is a package: `project.json` manifest + `assets/` with copies of all used assets (hybrid; no external references). Manifest is container-independent; whether the package is a folder bundle or a zip (`.boothproject`) is decided in the file-IO phase. See [DATA_MODEL.md](DATA_MODEL.md) §7.
+## ADR-009 — Native project format: single-file `.boothproject` package — Accepted (Phase 2B)
+**Decision:** the portable project is one ZIP-compatible file, `.boothproject`, containing `project.json` and `assets/` (copies of all used assets). Loading is strict: only those two kinds of entries are accepted; unsafe paths, links, encryption, duplicates, case collisions and unreferenced assets are rejected or reported. No separate container version: the layout evolves under `TemplateProject.schemaVersion`. Active work happens in an app-managed working session, not by rewriting the archive. See [DATA_MODEL.md](DATA_MODEL.md) §7.
 
 ## ADR-010 — Geometry units and coordinate space — Accepted (Phase 2)
 Hybrid: project stores physical size (inches) + DPI; pixel size is derived; layer geometry is stored as numbers in design-canvas pixels at the design DPI. DPI changes only via the explicit `rescaleProjectDpi` operation. Evidence: [fixture analysis §18](../research/DSLRBOOTH_FIXTURE_ANALYSIS.md). Implemented in `src/domain/print`.
@@ -74,3 +74,15 @@ UUIDv4 via `crypto.randomUUID()`; ISO 8601 UTC strings; lowercase hex `#rrggbb[a
 
 ## ADR-024 — Design canvas vs output composition — Accepted (Phase 2)
 Authoring canvas and print sheet are separate; `single` or `grid` arrangement of unrotated copies at equal DPI. DSLR Booth two-up (duplicated elements on a larger canvas) is produced by the exporter.
+
+## ADR-025 — Archive implementation: yauzl + yazl — Accepted (Phase 2B)
+**Context:** need path-safe extraction, deterministic creation, low memory with large rasters, Node/Electron main only. **Options:** JSZip (promise API, but loads whole archives in memory, no built-in traversal protection), fflate (tiny and fast, in-memory buffers), yauzl/yazl (stream- and file-based, random-access reading, strict file-name validation, per-entry mtime/mode control). **Decision:** `yauzl` (read) and `yazl` (write), plus their type packages. Assets are streamed between disk and archive; hashes are computed while streaming. **Consequences:** two small CommonJS dependencies kept external in the main bundle; no browser/renderer ZIP capability (not needed). JSZip remains unnecessary for native projects; DSLR Booth ZIP handling can revisit the choice.
+
+## ADR-026 — Recent projects stored in a small JSON file — Accepted (Phase 2B)
+A bounded (10) JSON list in the app-data directory; no SQLite. It stores only path, name, project id and time, tolerates corruption, and flags missing files. SQLite stays reserved for library/index features (ADR-012).
+
+## ADR-027 — Working sessions and dirty state — Accepted (Phase 2B)
+Each open project has a unique session directory under `<userData>/sessions/` holding the working `project.json`, `assets/` and `session.json` recovery metadata. Autosave writes only the working manifest. "Dirty" = serialized project hash differs from the last successful portable save; only Save/Save As/Open make it clean. Clean sessions are deleted on close; sessions with unsaved changes survive an unclean exit for future recovery.
+
+## ADR-028 — Atomic save strategy — Accepted (Phase 2B)
+Write a temp file beside the destination, verify it by reopening, fsync, then rename over the destination; fall back to backup-and-swap when the OS refuses to rename over an existing file, restoring the backup on failure. The existing file is never truncated. Windows behavior is implemented per Node semantics but has not been tested on Windows.
