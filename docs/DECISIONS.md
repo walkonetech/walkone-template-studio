@@ -46,3 +46,7 @@ Single shared renderer (e.g., Sharp-based) vs canvas-library renderer with parit
 
 ## ADR-015 — Font strategy (system vs bundled, licensing) — OPEN
 Decide in Phase 6.
+
+## ADR-016 — Build tooling: electron-vite, Vite 7, ESLint + Prettier — Accepted (Phase 1)
+
+**Context:** Phase 1 needed one build pipeline for main, preload and renderer. **Decision:** use `electron-vite` (which wraps Vite). Vite is pinned to `^7` and `@vitejs/plugin-react` to `^5` because `electron-vite@5` supports Vite 5–7 only. Keep `package.json` without `"type": "module"` so the sandboxed preload stays CommonJS. Prettier skips Markdown to avoid churn in docs. **Consequences:** upgrade Vite only when electron-vite supports it. Zustand, Sharp, JSZip, fast-xml-parser and a test runner are not yet installed (ADR-013 stays Proposed).

@@ -16,7 +16,7 @@ Dependency note: Phases 13–15 (DSLR Booth) need real fixture analysis; analysi
 - **Objective:** Runnable Electron + React + TS shell with secure defaults.
 - **Deliverables:** package setup, Vite, strict TS, lint/format, secure main/preload/renderer skeleton, empty home screen, basic CI-less scripts.
 - **Dependencies:** Phase 0 approval.
-- **Acceptance:** app launches on macOS (Windows build verified or tracked), context isolation on, typed IPC ping, typecheck passes.
+- **Acceptance:** app launches on macOS (Windows build verified or tracked), context isolation on, typed IPC ping, typecheck passes. **Status: complete (macOS verified; Windows build not yet verified).**
 - **Non-goals:** editor, canvas, persistence.
 
 ## Phase 2 — Project model and persistence
