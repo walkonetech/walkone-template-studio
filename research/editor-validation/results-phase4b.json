@@ -106,7 +106,7 @@
   {
     "name": "status bar exposes the recovery-copy state",
     "ok": true,
-    "detail": "Recovery copy 4:22 AM"
+    "detail": "Recovery copy 4:57 AM"
   },
   {
     "name": "Quit → Cancel: app stays open",

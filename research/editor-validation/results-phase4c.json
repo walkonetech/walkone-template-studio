@@ -377,7 +377,7 @@
   {
     "name": "recovery dialog: Recover / Discard / Decide later, focus starts on Recover",
     "ok": true,
-    "detail": ["Recover", "Discard", "Decide later"]
+    "detail": ["Discard", "Decide later", "Recover"]
   },
   {
     "name": "recovery dialog is not color-only and has no file paths",
@@ -532,8 +532,8 @@
     "detail": {
       "sw": 1728,
       "iw": 1728,
-      "sh": 1006,
-      "ih": 1006
+      "sh": 1007,
+      "ih": 1007
     }
   },
   {
@@ -548,7 +548,7 @@
     "name": "1920×1080: Layers and Properties each ≥ 150 px tall",
     "ok": true,
     "detail": {
-      "layers": 373,
+      "layers": 374,
       "props": 560
     }
   },

@@ -30,6 +30,21 @@ describe('design tokens', () => {
   it.each(['c-app', 'c-panel', 'c-elevated'])('muted text meets AA on %s', (s) => {
     expect(contrast(token('c-text-3'), token(s))).toBeGreaterThanOrEqual(4.5)
   })
+  it('label text is readable on panels but stays below secondary text; planned tools are visible yet distinct', () => {
+    for (const surface of ['c-panel', 'c-elevated', 'c-app'])
+      expect(contrast(token('c-text-label'), token(surface))).toBeGreaterThanOrEqual(4.5)
+    expect(contrast(token('c-text-label'), token('c-panel'))).toBeLessThan(
+      contrast(token('c-text-2'), token('c-panel'))
+    )
+    expect(contrast(token('c-text-label'), token('c-panel'))).toBeGreaterThan(
+      contrast(token('c-text-3'), token('c-panel'))
+    )
+    // Disabled rail tools: clearly present (>= 3:1) yet dimmer than the enabled label text.
+    expect(contrast(token('c-text-faint'), token('c-app'))).toBeGreaterThanOrEqual(3)
+    expect(contrast(token('c-text-faint'), token('c-app'))).toBeLessThan(
+      contrast(token('c-text-2'), token('c-app'))
+    )
+  })
   it('accent button text, status colours and the focus ring are legible', () => {
     expect(contrast(token('c-on-accent'), token('c-accent'))).toBeGreaterThanOrEqual(4.5)
     for (const c of ['c-warning', 'c-error', 'c-success'])

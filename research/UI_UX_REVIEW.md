@@ -91,3 +91,26 @@ Scripted (automation, `validate-4c.js`, 97 checks; Phase 4 regression 97/97; Pha
 3. Persist panel sizes and drawer state with the recents store.
 4. Consider a Windows pass (menu bar, shortcuts shown as Ctrl, DPI scaling) before any Windows build.
 5. Replace the placeholder Export/Preview buttons with real ones in their phases rather than leaving inert controls long-term.
+
+## 12. Phase 4D — focused polish (after owner screenshot review)
+
+The approved direction was kept; only observed rough edges were changed.
+
+| Item | Change |
+|---|---|
+| Label contrast | New `--c-text-label` (`#aaadba`) for field labels, the X/Y/W/H/R tags, derived values and hints: readable (≥ 4.5:1 on every panel surface) but still dimmer than secondary text and brighter than muted text. Token test asserts the ordering |
+| Disabled tools | New `--c-text-faint` (`#7f8392`, ≈ 4.5:1 on the app surface) replaces the near-invisible disabled color; icons at 85%; cursor, `aria-disabled` and "later phase" tooltips unchanged |
+| Selection | Konva bounding outline is now 1 px at 55% accent; handles and the rotation handle are unchanged (same size, color and hit area) |
+| Recovery | Single candidate: footer reads `Discard  ·····  Decide later  [Recover]` (Recover primary and autofocused, Discard quiet and apart, one decision row). Confirming swaps the same row to a note, `Keep` and a red `Confirm discard (cannot be undone)`. Several candidates keep a Discard/Recover pair per item and a single `Decide later` in the footer |
+| Layers header | Grouped with hairline dividers: **Add** (accent-tinted) · Duplicate Group Ungroup · Arrange Delete (red hover) · shortcuts (muted). Add and Arrange now have tooltips ("Add layer", "Arrange: stacking order"). No new commands or labels |
+| Welcome | Logo 40→56 px, title 26→34 px, subtitle 16 px, wider column (720), top offset scales with window height. Still plain and calm |
+| Focus | Reviewed in screenshots: buttons, icon buttons, menu items, list, inputs, selects, checkboxes, slider, splitter. Slider thumb gets a ring in addition to the outline; splitter shows the accent bar in addition to the outline; scripted check still requires a visible ring on every Tab stop |
+| Hover/active | Added `:active` states and fast fades for rail, drawer items, menu items; hovered selected rows brighten slightly |
+| Slider | Filled accent track (`--pct`), 4 px track on a stronger border color, 16 px thumb with panel-colored rim, hover and focus rings; behavior unchanged |
+| Splitters | Hairline at rest; accent bar (70%) on hover/focus |
+| Selects, color control, status bar | Reviewed; no change needed (native selects kept; swatch/hex/picker alignment fine; status bar balanced at 1100–1920) |
+| Window shrink | **Observed:** shrinking to the minimum with the tool drawer open left the canvas at 491 px. The drawer now auto-collapses when the canvas would drop below 520 px (never reopens by itself); pure rule is unit-tested |
+
+**What was and was not tested.** Automation cannot send real keystrokes or drag the window frame in this environment (macOS refuses System Events keystrokes and window scripting for the app: "not allowed to send keystrokes (1002)", "Can't get bounds of window 1"). Therefore **not performed:** physical Cmd+Z / Cmd+Shift+Z on a keyboard, the red close button, dragging the frame, a physical Cmd+Q keypress. Cmd+Q-equivalent quit (Apple event) and CDP key events were exercised in earlier suites. A continuous layout sweep (21 sizes, 1100→1920 wide) was done by emulating the renderer viewport, which runs the same layout code but is not frame dragging: no overflow, clipping, collisions or panes under 150 px; fit zoom grew monotonically.
+
+Remaining visual issues: native select popups and the OS color picker are unthemed; the welcome column is left-aligned in a wide empty window by design; the Layers header is dense at the 280 px minimum sidebar (everything fits, tooltips carry names); Windows and real-display review still outstanding.

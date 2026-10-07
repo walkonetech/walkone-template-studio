@@ -1,6 +1,7 @@
 import { useStore } from 'zustand'
 import { createStore } from 'zustand/vanilla'
 import {
+  shouldAutoCollapseDrawer,
   LAYERS_SPLIT_DEFAULT,
   SIDEBAR_DEFAULT,
   clampLayersSplit,
@@ -51,3 +52,10 @@ export const layoutStore = createStore<LayoutState>((set, get) => ({
 }))
 
 export const useLayout = <T>(selector: (s: LayoutState) => T): T => useStore(layoutStore, selector)
+
+// Shrinking the window never leaves the canvas cramped by an open drawer (see `shouldAutoCollapseDrawer`).
+window.addEventListener('resize', () => {
+  const s = layoutStore.getState()
+  if (shouldAutoCollapseDrawer(window.innerWidth, s.drawerOpen, s.sidebarWidth))
+    layoutStore.setState({ drawerOpen: false })
+})

@@ -16,8 +16,10 @@
   /* Text (AA on every surface) */
   --c-text: #ededf1;
   --c-text-2: #b3b5c0;
+  --c-text-label: #aaadba; /* field labels, X/Y/W/H tags, metadata: subordinate but clearly readable */
   --c-text-3: #9a9dab;
   --c-text-disabled: #5d606c;
+  --c-text-faint: #7f8392; /* planned (disabled) tools: present, unmistakably inactive */
 
   /* Lines */
   --c-divider: #2a2b32;

@@ -18,6 +18,24 @@
   align-items: center;
   gap: 1px;
 }
+.panel-actions .ui-divider {
+  height: 14px;
+  margin: 0 var(--sp-2);
+}
+.panel-actions .add-btn {
+  color: var(--c-accent);
+}
+.panel-actions .add-btn:hover:not(:disabled) {
+  background: var(--c-selected);
+  color: var(--c-text);
+}
+.panel-actions .danger-btn:hover:not(:disabled) {
+  background: var(--c-error-bg);
+  color: var(--c-error);
+}
+.panel-actions .quiet-btn {
+  color: var(--c-text-3);
+}
 .panel-sub {
   padding: 0 var(--sp-3) var(--sp-2);
 }
@@ -62,6 +80,9 @@
 }
 .layer-row:hover {
   background: var(--c-hover);
+}
+.layer-row:hover.selected {
+  background: rgb(123 140 255 / 0.26);
 }
 .layer-row.selected {
   background: var(--c-selected);
@@ -248,7 +269,7 @@
   margin-top: 0;
 }
 .field-row > label {
-  color: var(--c-text-2);
+  color: var(--c-text-label);
   font-size: var(--fs-label);
   line-height: var(--lh-tight);
 }
@@ -292,7 +313,7 @@
   bottom: 0;
   display: flex;
   align-items: center;
-  color: var(--c-text-3);
+  color: var(--c-text-label);
   font-size: var(--fs-label);
   font-weight: 600;
   pointer-events: none;
@@ -312,7 +333,7 @@
 }
 .field-hint,
 .field-note {
-  color: var(--c-text-3);
+  color: var(--c-text-label);
   font-size: var(--fs-meta);
   margin-top: var(--sp-2);
 }
@@ -370,7 +391,7 @@
   display: contents;
 }
 .derived dt {
-  color: var(--c-text-3);
+  color: var(--c-text-label);
 }
 .derived dd {
   margin: 0;

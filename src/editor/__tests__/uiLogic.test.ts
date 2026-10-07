@@ -9,6 +9,7 @@ import {
   clampLayersSplit,
   clampSidebarWidth,
   drawerStartsOpen,
+  shouldAutoCollapseDrawer,
   workspaceWidth
 } from '../layout'
 import {
@@ -70,6 +71,17 @@ describe('layout rules', () => {
       1100 - RAIL_WIDTH
     )
     expect(DRAWER_WIDTH).toBeGreaterThan(0)
+  })
+})
+
+describe('drawer auto-collapse', () => {
+  it('collapses an open drawer only when the canvas would be cramped', () => {
+    expect(shouldAutoCollapseDrawer(1100, true, 320)).toBe(true)
+    expect(shouldAutoCollapseDrawer(1280, true, 320)).toBe(false)
+    expect(shouldAutoCollapseDrawer(1100, false, 320)).toBe(false)
+  })
+  it('a collapsed drawer never reopens by this rule (growing the window does nothing)', () => {
+    expect(shouldAutoCollapseDrawer(1920, false, 320)).toBe(false)
   })
 })
 

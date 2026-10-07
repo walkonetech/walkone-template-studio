@@ -35,16 +35,54 @@ export function RecoveryDialog(): React.JSX.Element | null {
     await st().recoverCandidate(id)
   }
 
+  const single = candidates.length === 1 ? candidates[0] : undefined
+  const discard = async (id: string): Promise<void> => {
+    setConfirming(null)
+    await st().discardCandidate(id)
+  }
+
+  /**
+   * One decision area. With a single candidate (the usual case) the footer reads, left to right:
+   * Discard · · · Decide later  [Recover]  — Recover is the primary action, Discard is quiet and sits apart on the
+   * left, and confirming a discard swaps the same row to Keep / Confirm. With several candidates each item keeps its
+   * own Recover/Discard pair and the footer only offers Decide later.
+   */
+  const footer = single ? (
+    confirming === single.sessionId ? (
+      <>
+        <span className="footer-note">This deletes the recovery copy. It cannot be undone.</span>
+        <Button variant="ghost" onClick={() => setConfirming(null)}>
+          Keep
+        </Button>
+        <Button variant="danger" onClick={() => void discard(single.sessionId)}>
+          Confirm discard (cannot be undone)
+        </Button>
+      </>
+    ) : (
+      <>
+        <Button
+          variant="ghost"
+          className="footer-start"
+          onClick={() => setConfirming(single.sessionId)}
+        >
+          Discard
+        </Button>
+        <Button onClick={() => st().dismissRecovery()}>Decide later</Button>
+        <Button variant="primary" data-autofocus onClick={() => void recover(single.sessionId)}>
+          Recover
+        </Button>
+      </>
+    )
+  ) : (
+    <Button onClick={() => st().dismissRecovery()}>Decide later</Button>
+  )
+
   return (
     <Dialog
       title="We found unsaved work from a previous session"
       description="Your project was open when the app closed unexpectedly. Nothing is restored unless you choose Recover."
       onEscape={() => st().dismissRecovery()}
-      footer={
-        <Button variant="ghost" onClick={() => st().dismissRecovery()}>
-          Decide later
-        </Button>
-      }
+      footer={footer}
     >
       <ul className="recovery-list" aria-label="Recoverable projects">
         {candidates.map((c, i) => (
@@ -69,37 +107,34 @@ export function RecoveryDialog(): React.JSX.Element | null {
                 restored.
               </p>
             )}
-            <div className="recovery-actions">
-              <Button
-                variant="primary"
-                size="sm"
-                {...(i === 0 ? { 'data-autofocus': true } : {})}
-                onClick={() => void recover(c.sessionId)}
-              >
-                Recover
-              </Button>
-              {confirming === c.sessionId ? (
-                <>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={async () => {
-                      setConfirming(null)
-                      await st().discardCandidate(c.sessionId)
-                    }}
-                  >
-                    Confirm discard (cannot be undone)
-                  </Button>
-                  <Button variant="ghost" size="sm" onClick={() => setConfirming(null)}>
-                    Keep
-                  </Button>
-                </>
-              ) : (
-                <Button variant="ghost" size="sm" onClick={() => setConfirming(c.sessionId)}>
-                  Discard
-                </Button>
-              )}
-            </div>
+            {!single && (
+              <div className="recovery-actions">
+                {confirming === c.sessionId ? (
+                  <>
+                    <Button variant="ghost" size="sm" onClick={() => setConfirming(null)}>
+                      Keep
+                    </Button>
+                    <Button variant="danger" size="sm" onClick={() => void discard(c.sessionId)}>
+                      Confirm discard (cannot be undone)
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="ghost" size="sm" onClick={() => setConfirming(c.sessionId)}>
+                      Discard
+                    </Button>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      {...(i === 0 ? { 'data-autofocus': true } : {})}
+                      onClick={() => void recover(c.sessionId)}
+                    >
+                      Recover
+                    </Button>
+                  </>
+                )}
+              </div>
+            )}
           </li>
         ))}
       </ul>

@@ -232,6 +232,7 @@ export function OpacityField({
         <input
           type="range"
           className="ui-range"
+          style={{ ['--pct' as string]: `${mixed && live === null ? 100 : shown}%` }}
           aria-label="Opacity slider"
           min={0}
           max={100}

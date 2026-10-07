@@ -45,3 +45,18 @@ export function workspaceWidth(
   const right = opts.hasProject ? clampSidebarWidth(opts.sidebarWidth, windowWidth) : 0
   return Math.max(0, windowWidth - left - right)
 }
+
+/** Below this canvas width an open tool drawer is closed automatically when the window shrinks. */
+export const MIN_WORKSPACE = 520
+
+/**
+ * Observed in Phase 4D: shrinking the window with the drawer open left the canvas under 500 px at the minimum size.
+ * The drawer then collapses (the user can reopen it); it never reopens by itself, and growing the window does nothing.
+ */
+export const shouldAutoCollapseDrawer = (
+  windowWidth: number,
+  drawerOpen: boolean,
+  sidebarWidth: number
+): boolean =>
+  drawerOpen &&
+  workspaceWidth(windowWidth, { drawerOpen, sidebarWidth, hasProject: true }) < MIN_WORKSPACE

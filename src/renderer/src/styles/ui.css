@@ -251,23 +251,40 @@ button.link {
   appearance: none;
   flex: 1;
   min-width: 0;
-  height: 16px;
+  height: 18px;
   background: transparent;
   cursor: pointer;
+  --pct: 100%;
 }
 .ui-range::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 2px;
-  background: var(--c-border);
+  background: linear-gradient(
+    to right,
+    var(--c-accent) var(--pct),
+    var(--c-border-strong) var(--pct)
+  );
 }
 .ui-range::-webkit-slider-thumb {
   appearance: none;
-  width: 14px;
-  height: 14px;
-  margin-top: -5px;
+  width: 16px;
+  height: 16px;
+  margin-top: -6px;
   border-radius: 50%;
   background: var(--c-text);
-  border: 0;
+  border: 2px solid var(--c-panel);
+  box-shadow: 0 0 0 1px var(--c-border-strong);
+  transition: box-shadow var(--t-fast);
+}
+.ui-range:hover::-webkit-slider-thumb {
+  box-shadow: 0 0 0 1px var(--c-accent);
+}
+.ui-range:focus-visible {
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.ui-range:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 2px var(--c-focus);
 }
 .ui-range:disabled {
   opacity: 0.4;
@@ -363,10 +380,16 @@ button.link {
   text-align: left;
   cursor: pointer;
 }
+.ui-menuitem {
+  transition: background var(--t-fast);
+}
 .ui-menuitem:hover:not(:disabled),
 .ui-menuitem:focus-visible {
   background: var(--c-selected);
   outline: none;
+}
+.ui-menuitem:active:not(:disabled) {
+  background: rgb(123 140 255 / 0.32);
 }
 .ui-menuitem:disabled {
   color: var(--c-text-disabled);
@@ -428,6 +451,15 @@ button.link {
   padding: var(--sp-3) var(--sp-6);
   overflow-y: auto;
   min-height: 0;
+}
+.ui-dialog > footer .footer-start {
+  margin-right: auto;
+}
+.ui-dialog > footer .footer-note {
+  margin-right: auto;
+  align-self: center;
+  color: var(--c-text-2);
+  font-size: var(--fs-meta);
 }
 .ui-dialog > footer {
   display: flex;

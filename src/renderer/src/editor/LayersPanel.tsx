@@ -22,6 +22,7 @@ import { editorStore, useEditor } from './editorStore'
 import { LayerTypeIcon } from './Icons'
 import { isMac, isPrimaryModifier } from './platform'
 import { Dialog } from '../ui/Dialog'
+import { Tooltip } from '../ui/Tooltip'
 import { Button } from '../ui/Button'
 import { EmptyState } from '../ui/EmptyState'
 import { IconButton } from '../ui/IconButton'
@@ -429,9 +430,17 @@ export function LayersPanel(): React.JSX.Element {
           Layers {layers && <span className="ui-badge">{layers.length}</span>}
         </h2>
         <div className="panel-actions" role="toolbar" aria-label="Layer actions">
-          <MenuButton label="Add layer" entries={addEntries} className="ui-iconbtn sm" align="end">
-            <Plus size={16} strokeWidth={1.9} aria-hidden="true" />
-          </MenuButton>
+          <Tooltip label="Add layer">
+            <MenuButton
+              label="Add layer"
+              entries={addEntries}
+              className="ui-iconbtn sm add-btn"
+              align="end"
+            >
+              <Plus size={16} strokeWidth={2} aria-hidden="true" />
+            </MenuButton>
+          </Tooltip>
+          <span className="ui-divider" aria-hidden="true" />
           <IconButton
             size="sm"
             icon={Copy}
@@ -456,26 +465,32 @@ export function LayersPanel(): React.JSX.Element {
             disabled={selectionCount === 0}
             onClick={() => st().ungroupSelection()}
           />
-          <MenuButton
-            label="Arrange"
-            entries={arrangeEntries}
-            className="ui-iconbtn sm"
-            align="end"
-          >
-            <Layers2 size={16} strokeWidth={1.75} aria-hidden="true" />
-          </MenuButton>
+          <span className="ui-divider" aria-hidden="true" />
+          <Tooltip label="Arrange: stacking order">
+            <MenuButton
+              label="Arrange"
+              entries={arrangeEntries}
+              className="ui-iconbtn sm"
+              align="end"
+            >
+              <Layers2 size={16} strokeWidth={1.75} aria-hidden="true" />
+            </MenuButton>
+          </Tooltip>
           <IconButton
             size="sm"
             icon={Trash2}
             label="Delete"
             shortcut={sc('edit.delete')}
+            className="danger-btn"
             disabled={selectionCount === 0}
             onClick={() => st().deleteSelection()}
           />
+          <span className="ui-divider" aria-hidden="true" />
           <IconButton
             size="sm"
             icon={Keyboard}
             label="Layer shortcuts"
+            className="quiet-btn"
             onClick={() => setHelpOpen(true)}
           />
         </div>

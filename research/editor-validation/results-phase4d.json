@@ -1,0 +1,39 @@
+[
+  {
+    "name": "continuous sweep 1100→1920 (21 sizes): no overflow, clipping, collisions or tiny panes",
+    "ok": true,
+    "detail": []
+  },
+  {
+    "name": "fit zoom grows smoothly with the window (no jumps backwards)",
+    "ok": true,
+    "detail": [16, 16, 17, 17, 18, 18, 19, 19, 20, 20, 21, 22, 22, 23, 23, 24, 24, 25, 25, 26, 26]
+  },
+  {
+    "name": "minimum width with the drawer opened by the user still leaves a usable canvas (≥ 440 px)",
+    "ok": true,
+    "detail": 491
+  },
+  {
+    "name": "sidebar growth is capped (≤ 45% of the window) so the canvas cannot be squeezed out",
+    "ok": true,
+    "detail": 495
+  },
+  {
+    "name": "disabled rail tools are dimmer than enabled ones but not near-invisible, cursor and aria-disabled kept",
+    "ok": true,
+    "detail": {
+      "railDisabled": "rgb(127, 131, 146)",
+      "railCursor": "default",
+      "railAria": "true",
+      "xTag": "rgb(170, 173, 186)",
+      "rangeHeight": "18px",
+      "addColor": "rgb(123, 140, 255)"
+    }
+  },
+  {
+    "name": "transform tags use the label color (not the muted one)",
+    "ok": true,
+    "detail": "rgb(170, 173, 186)"
+  }
+]

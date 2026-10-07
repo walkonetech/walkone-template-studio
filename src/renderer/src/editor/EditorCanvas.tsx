@@ -425,7 +425,8 @@ export function EditorCanvas(): React.JSX.Element | null {
             anchorCornerRadius={2}
             anchorFill={CANVAS_THEME.handleFill}
             anchorStroke={CANVAS_THEME.accent}
-            borderStroke={CANVAS_THEME.accent}
+            borderStroke={CANVAS_THEME.outline}
+            borderStrokeWidth={1}
             rotateAnchorOffset={28}
             ignoreStroke
             onTransformEnd={onTransformerEnd}

@@ -38,9 +38,9 @@
   box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.25);
 }
 .brand-mark.lg {
-  width: 40px;
-  height: 40px;
-  border-radius: 11px;
+  width: 56px;
+  height: 56px;
+  border-radius: 15px;
 }
 .menubar {
   display: flex;
@@ -110,6 +110,7 @@
   border-right: 1px solid var(--c-divider);
 }
 .toolrail-btn {
+  transition: background var(--t-fast);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -127,13 +128,19 @@
   background: var(--c-hover);
   color: var(--c-text);
 }
+.toolrail-btn:active:not([aria-disabled='true']) {
+  background: var(--c-pressed);
+}
 .toolrail-btn.active {
   background: var(--c-selected);
   color: var(--c-text);
 }
 .toolrail-btn[aria-disabled='true'] {
-  color: var(--c-text-disabled);
+  color: var(--c-text-faint);
   cursor: default;
+}
+.toolrail-btn[aria-disabled='true'] svg {
+  opacity: 0.85;
 }
 .tooldrawer {
   flex: none;
@@ -180,8 +187,14 @@
   text-align: left;
   cursor: pointer;
 }
+.drawer-item {
+  transition: background var(--t-fast);
+}
 .drawer-item:hover {
   background: var(--c-hover);
+}
+.drawer-item:active {
+  background: var(--c-pressed);
 }
 .drawer-item svg {
   color: var(--c-text-2);
@@ -243,7 +256,13 @@
 .splitter:hover::after,
 .splitter:focus-visible::after {
   background: var(--c-accent);
-  opacity: 0.55;
+  opacity: 0.7;
+}
+.splitter.v:focus-visible::after {
+  inset: 0 -2px;
+}
+.splitter.h:focus-visible::after {
+  inset: -2px 0;
 }
 
 .sidebar {
@@ -318,28 +337,28 @@
   overflow-y: auto;
   display: flex;
   justify-content: center;
-  padding: 8vh var(--sp-7) var(--sp-7);
+  padding: clamp(48px, 13vh, 160px) var(--sp-7) var(--sp-7);
   background: radial-gradient(ellipse at 50% 0%, #1b1d27 0%, var(--c-canvas-surround) 60%);
 }
 .welcome-inner {
-  width: min(640px, 100%);
+  width: min(720px, 100%);
 }
 .welcome-head {
   display: flex;
   flex-direction: column;
   gap: var(--sp-3);
   align-items: flex-start;
-  margin-bottom: var(--sp-6);
+  margin-bottom: var(--sp-7);
 }
 .welcome h1 {
-  font-size: var(--fs-display);
+  font-size: 34px;
   font-weight: 650;
   line-height: var(--lh-tight);
   letter-spacing: -0.01em;
 }
 .welcome-head p {
   color: var(--c-text-2);
-  font-size: 15px;
+  font-size: 16px;
 }
 .welcome-actions {
   display: flex;
@@ -455,6 +474,7 @@
   display: flex;
   gap: var(--sp-2);
   margin-top: var(--sp-3);
+  justify-content: flex-end;
 }
 .shortcut-list div {
   display: flex;

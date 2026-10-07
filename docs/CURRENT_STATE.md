@@ -1,12 +1,12 @@
 # Current State
 
-_Last updated: 2026-10-07 (end of Phase 4C)_
+_Last updated: 2026-10-07 (end of Phase 4D)_
 
 ## Project status
 The editor has a redesigned, original dark-neutral interface: welcome screen, File/Edit/View menus, document title with Modified/Saved state, tool rail + drawer, canvas workspace with a floating artboard, resizable Layers + Properties column, status bar with zoom/snap/preview controls, and one accessible dialog shell. Underneath: vendor-neutral domain model, `.boothproject` persistence with working sessions, autosave and crash recovery, snapshot undo/redo, exact-size render API. No DSLR Booth importer/exporter, asset library, templates, badges or palette manager exists.
 
 ## Current phase
-**Phase 4C — Editor UI/UX redesign and design system: COMPLETE (first pass, pending owner visual review).** Phase 5 has **not** begun; awaiting owner approval.
+**Phase 4D — Focused editor polish: COMPLETE** (on top of Phase 4C, whose direction the owner approved). Phase 5 has **not** begun; awaiting owner approval.
 
 ## Completed
 - Phases 0–3B (see [ROADMAP.md](ROADMAP.md)).
@@ -20,6 +20,9 @@ Nothing.
 
 ## Not started
 Asset browser/library, palette manager, templates, badge builder, recipes, DSLR Booth importer/exporter, preflight, context menu, copy/paste, align/distribute, project wizard/dashboard, final styling.
+
+## Phase 4D (done)
+Polish only (details in [../research/UI_UX_REVIEW.md](../research/UI_UX_REVIEW.md) §12): brighter label/metadata text, more visible disabled tools, quieter Konva selection outline, one-row recovery actions (Discard · Decide later · **Recover**), grouped Layers header actions with tooltips on the menu buttons, larger welcome composition, filled slider track, `:active`/hover refinements, drawer auto-collapse when shrinking would cramp the canvas. No behavior, schema, persistence or store changes. **Verified** (automation): 413 unit tests; `validate-4c.js` 97/97, Phase 4 regression 97/97, `validate-4b.js` 40/40, new `validate-4d.js` 6/6 (continuous layout sweep + computed-style facts). **Not done:** physical keyboard/close-button/frame-drag testing (the environment forbids synthetic OS input).
 
 ## Phase 4C (done)
 Design tokens (`styles/tokens.css`), small component library (`renderer/src/ui`), `lucide-react` icons (the only new dependency), welcome screen with recents, New project dialog, in-app menus driven by a single command model (`editor/commands.ts`), tool rail/drawer architecture (`editor/tools.ts`, only *Design* live), top bar hierarchy, restyled Layers panel (hover actions, Arrange menu, empty states, shortcuts dialog) and Properties inspector (collapsible sections, compact transform grid, opacity slider, swatch+hex color control), status bar redesign, resizable side panels (UI-only), restyled recovery dialog and quiet autosave-issue badge, minimal native menu, minimum window 1100×680, ⌘N/⌘O/⌘0/⌘1/⌘=/⌘− wired. ADR-035; [../research/UI_UX_REVIEW.md](../research/UI_UX_REVIEW.md). No domain, schema, persistence or store-behaviour change.
