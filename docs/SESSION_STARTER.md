@@ -2,7 +2,7 @@
 
 **Purpose:** a self-contained prompt for starting a brand-new Claude Code session with everything needed to continue. **It must be refreshed at the end of every session/phase** (CLAUDE.md makes this a required step). Copy everything inside the fenced block below into the first message of the new session.
 
-_Last refreshed: 2026-10-07, after the real-template validation (HEAD `edb2891`)._
+_Last refreshed: 2026-10-07, end of session: real-template validation done, GitHub backup created (HEAD is the latest commit on `main`)._
 
 ````text
 You are continuing work on WalkOne Template Studio, an internal Electron + React + TypeScript desktop tool for WalkOne Entertainment, LLC that builds custom photo-booth print templates (4x6 and 2x6 strips) for LumaSoft DSLR Booth / LumaBooth. Working directory: /Users/walkone/Projects/Apps/walkone-template-studio (git repository, macOS development; the booth software runs on Windows).
@@ -24,6 +24,7 @@ GOVERNANCE (strict)
 - Do not change the TemplateProject schema (schemaVersion 1) or the .boothproject format without asking me first.
 
 WHAT EXISTS (all committed; git log, newest first)
+1a1a54c chore: fixtures local-only + GitHub backup policy; ca196da docs: this starter prompt
 edb2891 research: validate real template workflow  (no code changes)
 9096a3c style: polish editor interface (Phase 4D)
 5a85fca feat: redesign editor interface and design system (Phase 4C, ADR-035)
