@@ -44,7 +44,28 @@ export const SessionMetaSchema = z.strictObject({
     .nullable(),
   /** True when the working manifest differs from the last portable save (may hold newer work). */
   hasUnsavedChanges: z.boolean(),
-  ownerPid: z.number().int().nonnegative()
+  ownerPid: z.number().int().nonnegative(),
+  /** Random token of the app run that owns the session: PIDs can be reused, a token cannot. */
+  ownerToken: z.string().max(64).default(''),
+  /** Display name of the project (kept current by each working save). */
+  projectName: z.string().max(200).default(''),
+  /** SHA-256 of the project when the session started or was last saved/opened portably. */
+  baselineHash: z
+    .string()
+    .regex(/^[0-9a-f]{64}$/)
+    .nullable()
+    .default(null),
+  /** True once the working copy differs from `baselineHash`: i.e. there is real work worth recovering. */
+  changedFromBaseline: z.boolean().default(false),
+  /** Size and modified time of the portable file after our last read/write of it (conflict detection). */
+  portableFileStamp: z
+    .strictObject({ mtimeMs: z.number(), size: z.number() })
+    .nullable()
+    .default(null),
+  /** Set when the session ended through a normal close/quit path. */
+  endedCleanly: z.boolean().default(false),
+  /** When the session was last adopted from a recovery. */
+  recoveredAt: IsoTimestampSchema.nullable().default(null)
 })
 export type SessionMeta = z.infer<typeof SessionMetaSchema>
 
@@ -95,6 +116,8 @@ export interface CreateSessionInput {
   portableHash: string | null
   lastPortableSaveAt?: string | null
   initialAssets?: InitialAsset[]
+  ownerToken?: string
+  portableFileStamp?: { mtimeMs: number; size: number } | null
 }
 
 /** Creates a fresh session directory (never reuses one) and writes its manifest and metadata. */
@@ -124,7 +147,14 @@ export async function createWorkingSession(
       lastPortableSaveAt: input.lastPortableSaveAt ?? null,
       portableHash: input.portableHash,
       hasUnsavedChanges: input.portableHash === null || input.portableHash !== hashText(text),
-      ownerPid: process.pid
+      ownerPid: process.pid,
+      ownerToken: input.ownerToken ?? '',
+      projectName: input.project.metadata.name,
+      baselineHash: hashText(text),
+      changedFromBaseline: false,
+      portableFileStamp: input.portableFileStamp ?? null,
+      endedCleanly: false,
+      recoveredAt: null
     })
   } catch (e) {
     await fs.rm(session.dir, { recursive: true, force: true })
@@ -151,7 +181,13 @@ export async function saveWorkingSession(
   const text = serializeProject(project)
   await writeFileAtomic(join(session.dir, MANIFEST_NAME), text)
   const dirty = meta.portableHash === null || meta.portableHash !== hashText(text)
-  await writeMeta(session, { ...meta, lastWorkingSaveAt: nowIso(), hasUnsavedChanges: dirty })
+  await writeMeta(session, {
+    ...meta,
+    lastWorkingSaveAt: nowIso(),
+    hasUnsavedChanges: dirty,
+    projectName: project.metadata.name,
+    changedFromBaseline: meta.baselineHash === null || meta.baselineHash !== hashText(text)
+  })
   return { dirty }
 }
 
@@ -159,7 +195,8 @@ export async function saveWorkingSession(
 export async function markPortableSaved(
   session: WorkingSession,
   project: TemplateProject,
-  path: string
+  path: string,
+  portableFileStamp: { mtimeMs: number; size: number } | null = null
 ): Promise<void> {
   const meta = await readSessionMeta(session.dir)
   const text = serializeProject(project)
@@ -171,7 +208,34 @@ export async function markPortableSaved(
     lastWorkingSaveAt: now,
     lastPortableSaveAt: now,
     portableHash: hashText(text),
-    hasUnsavedChanges: false
+    hasUnsavedChanges: false,
+    projectName: project.metadata.name,
+    baselineHash: hashText(text),
+    changedFromBaseline: false,
+    portableFileStamp
+  })
+}
+
+/** Flags a session as ended through a normal close, so a failed delete can never be offered for recovery. */
+export async function markEndedCleanly(session: WorkingSession): Promise<void> {
+  const meta = await readSessionMeta(session.dir)
+  await writeMeta(session, { ...meta, endedCleanly: true })
+}
+
+/** A recovered session now belongs to the current app run again. */
+export async function adoptSessionOwnership(
+  session: WorkingSession,
+  ownerToken: string,
+  originalPath: string | null
+): Promise<void> {
+  const meta = await readSessionMeta(session.dir)
+  await writeMeta(session, {
+    ...meta,
+    ownerPid: process.pid,
+    ownerToken,
+    originalPath,
+    endedCleanly: false,
+    recoveredAt: nowIso()
   })
 }
 
@@ -200,9 +264,7 @@ export interface SessionListing {
 
 /**
  * Lists sessions found on disk (for startup cleanup/recovery). Unreadable directories are
- * returned in `unreadable` rather than ignored. Recovery strategy (proposed, not built):
- * on launch, sessions with `hasUnsavedChanges` and a dead `ownerPid` are offered for recovery;
- * clean stale sessions and unreadable ones are deleted; closing a project normally deletes its session.
+ * returned in `unreadable` rather than ignored. The recovery policy lives in `recovery.ts`.
  */
 export async function listSessions(
   root: string

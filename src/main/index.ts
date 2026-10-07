@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import { IpcChannel, type PingResult } from '../shared/ipc'
 import { registerProjectIpc } from './projectIpc'
 import type { ProjectService } from '../projects/service'
+import { setupDocumentLifecycle } from './documentLifecycle'
 
 const isDev = !app.isPackaged && Boolean(process.env['ELECTRON_RENDERER_URL'])
 
@@ -25,7 +26,7 @@ function registerIpc(): ProjectService {
   return registerProjectIpc(isTrustedSender)
 }
 
-function createWindow(): void {
+function createWindow(attach: (win: BrowserWindow) => void): void {
   const win = new BrowserWindow({
     width: 1280,
     height: 800,
@@ -42,6 +43,7 @@ function createWindow(): void {
     }
   })
 
+  attach(win)
   win.once('ready-to-show', () => win.show())
 
   // Never open new app windows; send http(s) links to the OS browser only.
@@ -60,20 +62,21 @@ function createWindow(): void {
   else void win.loadFile(join(__dirname, '../renderer/index.html'))
 }
 
-let projectService: ProjectService | undefined
-
-void app.whenReady().then(() => {
-  projectService = registerIpc()
-  createWindow()
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+// One running instance per user-data folder: sessions found at startup therefore always belong to a dead run.
+if (!app.requestSingleInstanceLock()) {
+  app.quit()
+} else {
+  void app.whenReady().then(async () => {
+    const service: ProjectService = registerIpc()
+    await service.scanRecovery().catch((e) => console.error('[recovery] startup scan failed', e))
+    const lifecycle = setupDocumentLifecycle({ service, isTrustedSender })
+    createWindow(lifecycle.attachWindow)
+    app.on('activate', () => {
+      if (BrowserWindow.getAllWindows().length === 0) createWindow(lifecycle.attachWindow)
+    })
   })
-})
 
-app.on('before-quit', () => {
-  void projectService?.shutdown()
-})
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit()
-})
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') app.quit()
+  })
+}

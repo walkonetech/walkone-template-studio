@@ -32,7 +32,15 @@ import {
   type MutationContext
 } from './mutations'
 import type { EditorPorts } from './ports'
-import type { OpenProjectInfo } from '@shared/ipc'
+import type {
+  CloseReason,
+  DocumentRequestKind,
+  DocumentResult,
+  DocumentState,
+  OpenProjectInfo,
+  RecoveryCandidateInfo
+} from '@shared/ipc'
+import { createAutosaver, type AutosaveStatus, type AutosaveTimers } from './autosave'
 import type { IpcResult } from '@shared/persistence'
 import { isEditable, topmostIds } from '@domain'
 import { createNewLayer, type NewLayerKind } from './newLayers'
@@ -65,6 +73,18 @@ export interface EditorState {
   photoDisplay: PhotoDisplay
   history: History<TemplateProject>
   lastMessage: string | null
+  /** Recovery-copy status for the UI: saved / pending / saving / error (never affects Modified). */
+  autosave: AutosaveStatus
+  /** Persistent autosave trouble (two or more consecutive failures); null when fine. */
+  autosaveIssue: string | null
+  /** Startup recovery candidates found by the main process. */
+  recovery: {
+    candidates: RecoveryCandidateInfo[]
+    loaded: boolean
+    quarantined: number
+    /** The user chose "Decide later" for this run. */
+    dismissed: boolean
+  }
 }
 
 export interface CommitOptions {
@@ -141,6 +161,17 @@ export interface EditorActions {
   setGuidesVisible(visible: boolean): void
   setPhotoDisplay(mode: PhotoDisplay): void
   setMessage(message: string | null): void
+  // ---- document safety (close guard, recovery)
+  /** Asks the main process (unsaved-changes prompt) whether the open project may be closed/replaced. */
+  guardClose(reason: CloseReason): Promise<boolean>
+  /** Answers main-process requests for the document state or a save (close/quit protection). */
+  respondToDocumentRequest(kind: DocumentRequestKind): Promise<DocumentResult>
+  /** Writes the recovery copy now if anything is pending. */
+  flushRecovery(): Promise<void>
+  loadRecovery(): Promise<void>
+  recoverCandidate(sessionId: string): Promise<OpResult>
+  discardCandidate(sessionId: string): Promise<OpResult>
+  dismissRecovery(): void
 }
 
 export type EditorStore = StoreApi<EditorState & EditorActions>
@@ -151,6 +182,21 @@ export interface EditorStoreOptions {
   /** Clock for history coalescing (injectable for tests). */
   clock?: () => number
   createId?: () => string
+  /** Recovery-copy autosave timing (defaults: 2 s of quiet, at most 10 s between writes). */
+  autosave?: { debounceMs?: number; maxWaitMs?: number; timers?: AutosaveTimers }
+}
+
+export const AUTOSAVE_DEBOUNCE_MS = 2000
+export const AUTOSAVE_MAX_WAIT_MS = 10000
+
+/** What the main process needs to guard close/quit. */
+export function selectDocumentState(s: EditorState): DocumentState {
+  return {
+    hasProject: s.project !== null,
+    dirty: selectIsDirty(s),
+    name: s.project?.metadata.name ?? null,
+    neverSaved: s.session !== null && s.session.fileName === null
+  }
 }
 
 const initialState = (): EditorState => ({
@@ -170,7 +216,10 @@ const initialState = (): EditorState => ({
   guides: [],
   photoDisplay: 'placeholder',
   history: emptyHistory<TemplateProject>(),
-  lastMessage: null
+  lastMessage: null,
+  autosave: { state: 'idle', lastSavedAt: null, failures: 0, error: null },
+  autosaveIssue: null,
+  recovery: { candidates: [], loaded: false, quarantined: 0, dismissed: false }
 })
 
 export const selectIsDirty = (s: EditorState): boolean =>
@@ -200,28 +249,27 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
   const now = options.now ?? nowIso
   const clock = options.clock ?? Date.now
 
-  // Working-copy write-through: latest wins, one request in flight (no timers).
-  let inFlight = false
-  let pending = false
-  const flushWorkingCopy = async (get: () => EditorState): Promise<void> => {
-    if (inFlight) {
-      pending = true
-      return
-    }
-    inFlight = true
-    try {
-      do {
-        pending = false
-        const { session, project } = get()
-        if (!session || !project) break
-        await ports.updateWorkingCopy(session.sessionId, project).catch(() => undefined)
-      } while (pending)
-    } finally {
-      inFlight = false
-    }
-  }
-
   return createStore<EditorState & EditorActions>()((set, get) => {
+    // Recovery-copy autosave: debounced, latest content wins, never touches Modified or history (ADR-034).
+    const autosaver = createAutosaver({
+      debounceMs: options.autosave?.debounceMs ?? AUTOSAVE_DEBOUNCE_MS,
+      maxWaitMs: options.autosave?.maxWaitMs ?? AUTOSAVE_MAX_WAIT_MS,
+      ...(options.autosave?.timers ? { timers: options.autosave.timers } : {}),
+      write: async () => {
+        const { session, project } = get()
+        if (!session || !project) return
+        const r = await ports.updateWorkingCopy(session.sessionId, project)
+        if (r.status === 'error') throw new Error(r.error.message)
+      },
+      onStatus: (autosave) =>
+        set({
+          autosave,
+          autosaveIssue:
+            autosave.failures >= 2
+              ? 'Recovery copies could not be saved. Your work is still open; save the project to be safe.'
+              : null
+        })
+    })
     const ctx = (): MutationContext => ({
       now: now(),
       ...(options.createId ? { createId: options.createId } : {})
@@ -241,7 +289,7 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
         selectedIds: prune(next, s.selectedIds),
         ...(editingGone ? { editingTextId: null, interaction: 'idle' as Interaction } : {})
       })
-      void flushWorkingCopy(get)
+      autosaver.notify()
     }
 
     const editableSelected = (): Layer[] => {
@@ -253,14 +301,18 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
         .filter((l): l is Layer => l !== undefined && isEditable(project.layers, l))
     }
 
-    const adoptInfo = (info: OpenProjectInfo): void =>
+    // A newly opened/created/recovered project always starts with fresh undo history (history is not persisted).
+    const adoptInfo = (info: OpenProjectInfo): void => {
+      autosaver.reset()
       set({
         ...initialStateKeepingUi(get()),
         session: { sessionId: info.sessionId, fileName: info.fileName },
         project: info.project,
         savedProject: info.dirty ? null : info.project,
-        history: emptyHistory<TemplateProject>()
+        history: emptyHistory<TemplateProject>(),
+        lastMessage: info.warnings.length > 0 ? info.warnings.join(' ') : null
       })
+    }
 
     const run = async (op: () => Promise<IpcResult<OpenProjectInfo>>): Promise<OpResult> => {
       try {
@@ -325,7 +377,8 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
           set({ lastMessage: r.error.message })
           return { status: 'error', message: r.error.message }
         }
-        set({ ...initialState(), lastMessage: null })
+        autosaver.reset()
+        set({ ...initialStateKeepingUi(get()), lastMessage: null })
         return { status: 'ok' }
       },
 
@@ -502,7 +555,7 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
           interaction: 'idle',
           editingTextId: null
         })
-        void flushWorkingCopy(get)
+        autosaver.notify()
         return true
       },
       redo() {
@@ -517,7 +570,7 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
           interaction: 'idle',
           editingTextId: null
         })
-        void flushWorkingCopy(get)
+        autosaver.notify()
         return true
       },
       clearHistory: () => set({ history: emptyHistory<TemplateProject>() }),
@@ -593,7 +646,75 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
       },
       setGuidesVisible: (guidesVisible) => set({ guidesVisible }),
       setPhotoDisplay: (photoDisplay) => set({ photoDisplay }),
-      setMessage: (lastMessage) => set({ lastMessage })
+      setMessage: (lastMessage) => set({ lastMessage }),
+
+      async guardClose(reason) {
+        if (!selectIsDirty(get())) return true
+        try {
+          const r = await ports.requestClose(reason)
+          return r.status === 'ok' && r.value.proceed
+        } catch {
+          return false
+        }
+      },
+      async respondToDocumentRequest(kind) {
+        if (kind === 'state') return { kind: 'state', state: selectDocumentState(get()) }
+        const r = await get().save()
+        if (r.status === 'ok') return { kind: 'save', status: 'saved' }
+        if (r.status === 'cancelled') return { kind: 'save', status: 'cancelled' }
+        return { kind: 'save', status: 'failed', message: r.message }
+      },
+      flushRecovery: () => autosaver.flush(),
+      async loadRecovery() {
+        try {
+          const r = await ports.recoveryList()
+          if (r.status === 'ok') {
+            set((s) => ({
+              recovery: {
+                ...s.recovery,
+                candidates: r.value.candidates,
+                quarantined: r.value.quarantined,
+                loaded: true
+              }
+            }))
+          }
+        } catch {
+          set((s) => ({ recovery: { ...s.recovery, loaded: true } }))
+        }
+      },
+      async recoverCandidate(sessionId) {
+        const result = await run(() => ports.recover(sessionId))
+        if (result.status === 'ok') {
+          set((s) => ({
+            recovery: {
+              ...s.recovery,
+              candidates: s.recovery.candidates.filter((c) => c.sessionId !== sessionId)
+            }
+          }))
+        }
+        return result
+      },
+      async discardCandidate(sessionId) {
+        try {
+          const r = await ports.discardRecovery(sessionId)
+          if (r.status === 'error') {
+            set({ lastMessage: r.error.message })
+            return { status: 'error', message: r.error.message }
+          }
+          set((s) => ({
+            recovery: {
+              ...s.recovery,
+              candidates: s.recovery.candidates.filter((c) => c.sessionId !== sessionId)
+            }
+          }))
+          return { status: 'ok' }
+        } catch (e) {
+          const message = e instanceof Error ? e.message : String(e)
+          set({ lastMessage: message })
+          return { status: 'error', message }
+        }
+      },
+      dismissRecovery: () => set((s) => ({ recovery: { ...s.recovery, dismissed: true } }))
     }
   })
 }
@@ -605,6 +726,7 @@ function initialStateKeepingUi(s: EditorState): EditorState {
     snapping: s.snapping,
     guidesVisible: s.guidesVisible,
     photoDisplay: s.photoDisplay,
-    viewport: s.viewport
+    viewport: s.viewport,
+    recovery: s.recovery
   }
 }

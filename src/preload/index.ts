@@ -1,5 +1,10 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import { IpcChannel, type RendererApi } from '../shared/ipc'
+import {
+  IpcChannel,
+  type DocumentHandler,
+  type DocumentRequestMessage,
+  type RendererApi
+} from '../shared/ipc'
 
 const api: RendererApi = {
   ping: () => ipcRenderer.invoke(IpcChannel.AppPing),
@@ -14,6 +19,22 @@ const api: RendererApi = {
     close: (req) => ipcRenderer.invoke(IpcChannel.ProjectClose, req),
     recents: () => ipcRenderer.invoke(IpcChannel.ProjectRecents),
     readAsset: (req) => ipcRenderer.invoke(IpcChannel.ProjectReadAsset, req)
+  },
+  recovery: {
+    list: () => ipcRenderer.invoke(IpcChannel.RecoveryList),
+    recover: (req) => ipcRenderer.invoke(IpcChannel.RecoveryRecover, req),
+    discard: (req) => ipcRenderer.invoke(IpcChannel.RecoveryDiscard, req)
+  },
+  document: {
+    requestClose: (req) => ipcRenderer.invoke(IpcChannel.DocumentRequestClose, req),
+    setHandler: (handler: DocumentHandler) => {
+      ipcRenderer.removeAllListeners(IpcChannel.DocumentRequest)
+      ipcRenderer.on(IpcChannel.DocumentRequest, (_event, msg: DocumentRequestMessage) => {
+        void handler(msg.kind).then((result) =>
+          ipcRenderer.send(IpcChannel.DocumentResponse, { id: msg.id, result })
+        )
+      })
+    }
   }
 }
 

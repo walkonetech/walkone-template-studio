@@ -9,6 +9,7 @@ import {
   selectViewTransform
 } from '../store'
 import { fakePorts, photo, scene, text } from './helpers'
+import { fakeTimers } from './fakeTimers'
 
 function setup(opts: { clock?: () => number } = {}) {
   const ports = fakePorts()
@@ -29,6 +30,8 @@ async function open() {
   return x
 }
 
+const layerOf = (p: { layers: Layer[] } | null, id: string): Layer =>
+  p!.layers.find((l) => l.id === id) as Layer
 const layer = (p: { layers: Layer[] } | null, id: string): Layer =>
   p!.layers.find((l) => l.id === id) as Layer
 
@@ -155,25 +158,280 @@ describe('dirty state', () => {
   })
 })
 
-describe('working copy write-through (no package rebuild, no timer)', () => {
-  it('writes the working manifest after content changes, latest wins', async () => {
-    const { s, ports } = await open()
+describe('autosave to the recovery copy (debounced, never clears Modified)', () => {
+  function withTimers() {
+    const ports = fakePorts()
+    const timers = fakeTimers()
+    const store = createEditorStore({
+      ports,
+      autosave: { debounceMs: 2000, maxWaitMs: 10000, timers },
+      createId: (() => {
+        let n = 0
+        return () => `n-${++n}`
+      })()
+    })
+    return { ports, timers, store, s: () => store.getState() }
+  }
+
+  it('a content change schedules a recovery write after the debounce, with the LATEST project', async () => {
+    const { ports, timers, s } = withTimers()
+    await s().createSample()
     s().commitGeometry([
       { id: 'photo-1', geometry: { x: 1, y: 1, width: 400, height: 400, rotation: 0 } }
     ])
     s().setLocked('photo-2', true)
-    await new Promise((r) => setTimeout(r, 0))
-    expect(ports.workingCopies.length).toBeGreaterThan(0)
-    expect(ports.workingCopies.at(-1)).toBe(s().project)
+    expect(ports.workingCopies).toHaveLength(0)
+    await timers.advance(2000)
+    expect(ports.workingCopies).toHaveLength(1)
+    expect(ports.workingCopies[0]).toBe(s().project)
+    expect(s().autosave.state).toBe('saved')
     expect(ports.calls.some((c) => c.name === 'save' || c.name === 'saveAs')).toBe(false)
   })
 
-  it('does not write for view or selection changes', async () => {
-    const { s, ports } = await open()
+  it('autosave never marks the project clean and never touches undo history', async () => {
+    const { timers, s } = withTimers()
+    await s().openFromDialog()
+    s().editLayers(['photo-1'], { x: 9 })
+    const past = s().history.past.length
+    await timers.advance(5000)
+    expect(s().autosave.state).toBe('saved')
+    expect(selectIsDirty(s())).toBe(true)
+    expect(s().history.past).toHaveLength(past)
+    expect(s().undo()).toBe(true)
+    expect(selectIsDirty(s())).toBe(false)
+  })
+
+  it('viewport, selection, guides, snapping and UI-state changes do not schedule writes', async () => {
+    const { ports, timers, s } = withTimers()
+    await s().openFromDialog()
     s().selectLayer('photo-1')
     s().zoomIn()
-    await new Promise((r) => setTimeout(r, 0))
+    s().panBy(5, 5)
+    s().setGuides([{ axis: 'x', at: 1 }])
+    s().setSnapping({ enabled: false })
+    s().toggleCollapsed('g')
+    s().setLayerFilter('x')
+    await timers.advance(60_000)
     expect(ports.workingCopies).toHaveLength(0)
+    expect(s().autosave.state).toBe('idle')
+  })
+
+  it('repeated edits within the debounce window produce a single write', async () => {
+    const { ports, timers, s } = withTimers()
+    await s().openFromDialog()
+    for (let i = 0; i < 6; i++) {
+      s().editLayers(['photo-1'], { x: i + 1 })
+      await timers.advance(500)
+    }
+    await timers.advance(2000)
+    expect(ports.workingCopies).toHaveLength(1)
+    expect(ports.workingCopies[0]?.layers.find((l) => l.id === 'photo-1')).toMatchObject({ x: 6 })
+  })
+
+  it('undo and redo also refresh the recovery copy', async () => {
+    const { ports, timers, s } = withTimers()
+    await s().openFromDialog()
+    s().editLayers(['photo-1'], { x: 5 })
+    await timers.advance(2000)
+    s().undo()
+    await timers.advance(2000)
+    expect(ports.workingCopies).toHaveLength(2)
+    expect(ports.workingCopies[1]).toBe(s().project)
+  })
+
+  it('a failing recovery write never crashes the editor, keeps the work, and reports a persistent issue only after repeated failures', async () => {
+    const { ports, timers, s } = withTimers()
+    await s().openFromDialog()
+    ports.updateWorkingCopy = () =>
+      Promise.resolve({
+        status: 'error' as const,
+        error: { code: 'write-failed' as const, message: 'disk full' }
+      })
+    s().editLayers(['photo-1'], { x: 42 })
+    await timers.advance(2000)
+    expect(s().autosave).toMatchObject({ state: 'error', failures: 1 })
+    expect(s().autosaveIssue).toBeNull() // one failure is not announced
+    expect(layerOf(s().project, 'photo-1')).toMatchObject({ x: 42 }) // in-memory work retained
+    await timers.advance(5000)
+    expect(s().autosave.failures).toBeGreaterThanOrEqual(2)
+    expect(s().autosaveIssue).toMatch(/Recovery copies could not be saved/)
+    expect(selectIsDirty(s())).toBe(true)
+    // recovery: the next success clears the issue
+    ports.updateWorkingCopy = () =>
+      Promise.resolve({ status: 'ok' as const, value: { dirty: true } })
+    await timers.advance(60_000)
+    expect(s().autosave.state).toBe('saved')
+    expect(s().autosaveIssue).toBeNull()
+  })
+
+  it('opening or closing a project cancels pending recovery writes for the old one', async () => {
+    const { ports, timers, s } = withTimers()
+    await s().openFromDialog()
+    s().editLayers(['photo-1'], { x: 5 })
+    await s().closeProject()
+    await timers.advance(60_000)
+    expect(ports.workingCopies).toHaveLength(0)
+  })
+
+  it('flushRecovery writes pending work immediately', async () => {
+    const { ports, s } = withTimers()
+    await s().openFromDialog()
+    s().editLayers(['photo-1'], { x: 5 })
+    await s().flushRecovery()
+    expect(ports.workingCopies).toHaveLength(1)
+  })
+})
+
+describe('close guard and main-process document requests', () => {
+  it('a clean project closes without asking main', async () => {
+    const { s, ports } = setup()
+    await s().openFromDialog()
+    expect(await s().guardClose('close-project')).toBe(true)
+    expect(ports.calls.some((c) => c.name === 'requestClose')).toBe(false)
+  })
+
+  it('a modified project asks main and obeys its decision', async () => {
+    const { s, ports } = setup()
+    await s().openFromDialog()
+    s().editLayers(['photo-1'], { x: 5 })
+    expect(await s().guardClose('replace')).toBe(true)
+    ports.requestClose = () => Promise.resolve({ status: 'ok' as const, value: { proceed: false } })
+    expect(await s().guardClose('replace')).toBe(false)
+    ports.requestClose = () => Promise.reject(new Error('ipc down'))
+    expect(await s().guardClose('quit')).toBe(false) // when in doubt, do not close
+  })
+
+  it('answers the document state request used by quit protection', async () => {
+    const { s } = setup()
+    expect(await s().respondToDocumentRequest('state')).toMatchObject({
+      kind: 'state',
+      state: { hasProject: false, dirty: false }
+    })
+    await s().createSample()
+    expect(await s().respondToDocumentRequest('state')).toMatchObject({
+      state: { hasProject: true, dirty: true, neverSaved: true, name: 'Test' }
+    })
+    await s().saveAs()
+    expect(await s().respondToDocumentRequest('state')).toMatchObject({
+      state: { dirty: false, neverSaved: false }
+    })
+  })
+
+  it('save-before-close reports saved / cancelled / failed', async () => {
+    const { s, ports } = setup()
+    await s().createSample()
+    expect(await s().respondToDocumentRequest('save')).toEqual({ kind: 'save', status: 'saved' })
+    s().editLayers(['photo-1'], { x: 5 })
+    ports.save = () => Promise.resolve({ status: 'cancelled' as const })
+    expect(await s().respondToDocumentRequest('save')).toEqual({
+      kind: 'save',
+      status: 'cancelled'
+    })
+    ports.save = () =>
+      Promise.resolve({
+        status: 'error' as const,
+        error: { code: 'write-failed' as const, message: 'disk full' }
+      })
+    expect(await s().respondToDocumentRequest('save')).toMatchObject({
+      kind: 'save',
+      status: 'failed',
+      message: 'disk full'
+    })
+    expect(selectIsDirty(s())).toBe(true) // a failed save leaves the project Modified
+  })
+})
+
+describe('recovery actions', () => {
+  const candidate = {
+    sessionId: 'sess-r',
+    projectName: 'Lost work',
+    originalFileName: null,
+    neverSaved: true,
+    lastWorkingSaveAt: '2026-01-01T00:00:00.000Z',
+    lastPortableSaveAt: null,
+    conflict: 'none' as const,
+    missingAssets: 0
+  }
+
+  it('loads candidates and recovering adopts the project as Modified with fresh undo history', async () => {
+    const { s, ports } = setup()
+    ports.recoveryList = () =>
+      Promise.resolve({ status: 'ok' as const, value: { candidates: [candidate], quarantined: 2 } })
+    await s().loadRecovery()
+    expect(s().recovery).toMatchObject({ loaded: true, quarantined: 2 })
+    expect(s().recovery.candidates).toHaveLength(1)
+    expect((await s().recoverCandidate('sess-r')).status).toBe('ok')
+    expect(selectIsDirty(s())).toBe(true)
+    expect(selectCanUndo(s())).toBe(false)
+    expect(s().recovery.candidates).toHaveLength(0)
+  })
+
+  it('recovery warnings (conflicts) are surfaced as a message', async () => {
+    const { s, ports } = setup()
+    ports.recover = (id) =>
+      Promise.resolve({
+        status: 'ok' as const,
+        value: {
+          sessionId: id,
+          project: scene(),
+          fileName: null,
+          dirty: true,
+          warnings: ['The saved file changed after this recovery copy was made.']
+        }
+      })
+    await s().recoverCandidate('x')
+    expect(s().lastMessage).toMatch(/changed/)
+  })
+
+  it('a failed recovery leaves the candidate listed and the editor unchanged', async () => {
+    const { s, ports } = setup()
+    ports.recoveryList = () =>
+      Promise.resolve({ status: 'ok' as const, value: { candidates: [candidate], quarantined: 0 } })
+    await s().loadRecovery()
+    ports.recover = () =>
+      Promise.resolve({
+        status: 'error' as const,
+        error: { code: 'recovery-asset-missing' as const, message: 'Some image files are missing.' }
+      })
+    expect((await s().recoverCandidate('sess-r')).status).toBe('error')
+    expect(s().project).toBeNull()
+    expect(s().recovery.candidates).toHaveLength(1)
+  })
+
+  it('discard removes the candidate; failure keeps it', async () => {
+    const { s, ports } = setup()
+    ports.recoveryList = () =>
+      Promise.resolve({ status: 'ok' as const, value: { candidates: [candidate], quarantined: 0 } })
+    await s().loadRecovery()
+    ports.discardRecovery = () =>
+      Promise.resolve({
+        status: 'error' as const,
+        error: { code: 'recovery-discard-failed' as const, message: 'busy' }
+      })
+    expect((await s().discardCandidate('sess-r')).status).toBe('error')
+    expect(s().recovery.candidates).toHaveLength(1)
+    ports.discardRecovery = () => Promise.resolve({ status: 'ok' as const, value: null })
+    expect((await s().discardCandidate('sess-r')).status).toBe('ok')
+    expect(s().recovery.candidates).toHaveLength(0)
+  })
+
+  it('"Decide later" hides the list for this run without discarding anything', async () => {
+    const { s, ports } = setup()
+    ports.recoveryList = () =>
+      Promise.resolve({ status: 'ok' as const, value: { candidates: [candidate], quarantined: 0 } })
+    await s().loadRecovery()
+    s().dismissRecovery()
+    expect(s().recovery.dismissed).toBe(true)
+    expect(s().recovery.candidates).toHaveLength(1)
+  })
+
+  it('recovery state survives opening another project', async () => {
+    const { s, ports } = setup()
+    ports.recoveryList = () =>
+      Promise.resolve({ status: 'ok' as const, value: { candidates: [candidate], quarantined: 0 } })
+    await s().loadRecovery()
+    await s().openFromDialog()
+    expect(s().recovery.candidates).toHaveLength(1)
   })
 })
 

@@ -1,6 +1,7 @@
 import { basename } from 'node:path'
 import { promises as fs } from 'node:fs'
 import { join, resolve, sep } from 'node:path'
+import { randomBytes } from 'node:crypto'
 import { loadProject, serializeProject, type AssetReference, type TemplateProject } from '../domain'
 import { defaultFsOps, type FsOps } from './atomicFile'
 import { PersistenceError, fromFsError } from './errors'
@@ -8,9 +9,16 @@ import { openPackage } from './packageReader'
 import { verifySessionAssets, writePackage } from './packageWriter'
 import type { RecentProjectsStore } from './recents'
 import {
+  loadRecoverableProject,
+  scanRecovery,
+  type RecoveryCandidate,
+  type ScanResult
+} from './recovery'
+import {
+  adoptSessionOwnership,
   createWorkingSession,
   hashText,
-  listSessions,
+  markEndedCleanly,
   markPortableSaved,
   removeSession,
   saveWorkingSession,
@@ -41,11 +49,24 @@ interface OpenEntry {
 /** Largest single asset the renderer may request over IPC. */
 export const MAX_ASSET_READ_BYTES = 256 * 1024 * 1024
 
+async function stampOf(path: string): Promise<{ mtimeMs: number; size: number } | null> {
+  try {
+    const s = await fs.stat(path)
+    return { mtimeMs: s.mtimeMs, size: s.size }
+  } catch {
+    return null
+  }
+}
+
 const indexAssets = (project: TemplateProject): Map<string, AssetReference> =>
   new Map(project.assets.map((a) => [a.id, a]))
 
 export interface ProjectServiceOptions {
   sessionsRoot: string
+  /** Where unusable recovery sessions are set aside (default: a sibling of sessionsRoot). */
+  quarantineRoot?: string
+  /** Identifies this app run; sessions carrying it are never treated as abandoned. */
+  ownerToken?: string
   recents: RecentProjectsStore
   fsOps?: FsOps
 }
@@ -60,8 +81,15 @@ export class ProjectService {
   private readonly open = new Map<string, OpenEntry>()
   private readonly fsOps: FsOps
 
+  readonly ownerToken: string
+  private readonly quarantineRoot: string
+  private recovery: ScanResult = { candidates: [], removed: [], quarantined: [], purged: [] }
+
   constructor(private readonly options: ProjectServiceOptions) {
     this.fsOps = options.fsOps ?? defaultFsOps
+    this.ownerToken = options.ownerToken ?? randomBytes(8).toString('hex')
+    this.quarantineRoot =
+      options.quarantineRoot ?? join(options.sessionsRoot, '..', 'session-quarantine')
   }
 
   private entry(sessionId: string): OpenEntry {
@@ -106,7 +134,8 @@ export class ProjectService {
       project,
       originalPath: null,
       portableHash: null,
-      initialAssets
+      initialAssets,
+      ownerToken: this.ownerToken
     })
     const entry: OpenEntry = { session, filePath: null, assets: indexAssets(project) }
     this.open.set(session.id, entry)
@@ -123,7 +152,9 @@ export class ProjectService {
         project,
         originalPath: path,
         portableHash: hashText(serializeProject(project)),
-        lastPortableSaveAt: new Date().toISOString()
+        lastPortableSaveAt: new Date().toISOString(),
+        ownerToken: this.ownerToken,
+        portableFileStamp: await stampOf(path)
       })
       await pkg.extractAssets(session.dir)
       const entry: OpenEntry = { session, filePath: path, assets: indexAssets(project) }
@@ -226,7 +257,7 @@ export class ProjectService {
     await saveWorkingSession(e.session, project)
     await verifySessionAssets(e.session.dir, project)
     await writePackage({ sessionDir: e.session.dir, project, destPath, fsOps: this.fsOps })
-    await markPortableSaved(e.session, project, destPath)
+    await markPortableSaved(e.session, project, destPath, await stampOf(destPath))
     e.filePath = destPath
     await this.options.recents.add({
       path: destPath,
@@ -246,15 +277,99 @@ export class ProjectService {
   }
 
   /**
-   * For app shutdown: deletes sessions that are clean and keeps ones with unsaved changes on
-   * disk so a future recovery feature can offer them.
+   * Deletes the working sessions of every open project. Call ONLY after the user's close/quit was approved
+   * (clean, saved, or explicitly discarded): it is what makes a normal close leave no recovery data behind.
+   * A session whose delete fails is first flagged `endedCleanly` so it is never offered for recovery.
    */
-  async shutdown(): Promise<void> {
-    const { sessions } = await listSessions(this.options.sessionsRoot)
-    for (const s of sessions) {
-      if (this.open.has(s.id) && !s.meta.hasUnsavedChanges)
-        await removeSession(this.options.sessionsRoot, s.id)
+  async closeAll(): Promise<void> {
+    for (const [id, e] of [...this.open]) {
+      await markEndedCleanly(e.session).catch(() => undefined)
+      await removeSession(this.options.sessionsRoot, e.session.id).catch(() => undefined)
+      this.open.delete(id)
     }
-    this.open.clear()
+  }
+
+  /** Startup scan: classify sessions left by earlier runs (see recovery.ts). Never throws for bad sessions. */
+  async scanRecovery(): Promise<ScanResult> {
+    this.recovery = await scanRecovery({
+      sessionsRoot: this.options.sessionsRoot,
+      quarantineRoot: this.quarantineRoot,
+      ownerToken: this.ownerToken
+    })
+    return this.recovery
+  }
+
+  listRecovery(): RecoveryCandidate[] {
+    return this.recovery.candidates
+  }
+
+  lastScan(): ScanResult {
+    return this.recovery
+  }
+
+  /**
+   * Restores a recovery candidate into the open set WITHOUT touching the portable file. The project comes back
+   * Modified. The file association is kept only when the portable file still matches what the session last saw;
+   * on a conflict (changed or missing) the association is dropped, so Save becomes Save As and nothing is overwritten.
+   */
+  async recover(sessionId: string): Promise<OpenProjectInfo> {
+    const candidate = this.recovery.candidates.find((c) => c.sessionId === sessionId)
+    if (!candidate)
+      throw new PersistenceError('session-not-found', 'That recovery copy is no longer available.')
+    if (this.open.has(sessionId))
+      throw new PersistenceError('invalid-request', 'That recovery copy is already open.')
+    const { project } = await loadRecoverableProject(this.options.sessionsRoot, sessionId)
+    const keepAssociation = candidate.conflict === 'none' && candidate.originalPath !== null
+    const session: WorkingSession = {
+      id: sessionId,
+      dir: join(this.options.sessionsRoot, sessionId)
+    }
+    await adoptSessionOwnership(
+      session,
+      this.ownerToken,
+      keepAssociation ? candidate.originalPath : null
+    )
+    const entry: OpenEntry = {
+      session,
+      filePath: keepAssociation ? candidate.originalPath : null,
+      assets: indexAssets(project)
+    }
+    this.open.set(sessionId, entry)
+    this.recovery = {
+      ...this.recovery,
+      candidates: this.recovery.candidates.filter((c) => c.sessionId !== sessionId)
+    }
+    const warnings: string[] = []
+    if (candidate.conflict === 'portable-changed') {
+      warnings.push(
+        'The saved file changed after this recovery copy was made. Use Save As to keep both versions.'
+      )
+    } else if (candidate.conflict === 'portable-missing') {
+      warnings.push(
+        'The original saved file is no longer there. Use Save As to save this project again.'
+      )
+    }
+    return this.info(entry, project, true, warnings)
+  }
+
+  /** Permanently removes a recovery copy. Never touches any portable project file. */
+  async discardRecovery(sessionId: string): Promise<void> {
+    if (!this.recovery.candidates.some((c) => c.sessionId === sessionId)) {
+      throw new PersistenceError('session-not-found', 'That recovery copy is no longer available.')
+    }
+    try {
+      await removeSession(this.options.sessionsRoot, sessionId)
+    } catch (e) {
+      throw new PersistenceError(
+        'recovery-discard-failed',
+        'The recovery copy could not be removed.',
+        String(e),
+        e
+      )
+    }
+    this.recovery = {
+      ...this.recovery,
+      candidates: this.recovery.candidates.filter((c) => c.sessionId !== sessionId)
+    }
   }
 }

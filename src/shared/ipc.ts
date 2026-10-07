@@ -15,7 +15,16 @@ export const IpcChannel = {
   ProjectClose: 'project:close',
   ProjectRecents: 'project:recents',
   /** Reads a project-owned asset by session + asset id (never by path). */
-  ProjectReadAsset: 'project:readAsset'
+  ProjectReadAsset: 'project:readAsset',
+  /** Startup recovery: list candidates, restore one into the editor, or discard one. */
+  RecoveryList: 'recovery:list',
+  RecoveryRecover: 'recovery:recover',
+  RecoveryDiscard: 'recovery:discard',
+  /** Renderer asks main whether the open document may be closed/replaced (shows the unsaved-changes prompt). */
+  DocumentRequestClose: 'document:requestClose',
+  /** Main asks the renderer for its document state or to save; the renderer answers on DocumentResponse. */
+  DocumentRequest: 'document:request',
+  DocumentResponse: 'document:response'
 } as const
 
 export interface PingResult {
@@ -67,6 +76,50 @@ export interface AssetData {
   mediaType: string
   data: Uint8Array
 }
+export type CloseReason = 'window-close' | 'quit' | 'close-project' | 'replace'
+
+/** Facts the main process needs to guard close/quit. */
+export interface DocumentState {
+  hasProject: boolean
+  /** Modified: there are changes not written by an explicit Save / Save As. */
+  dirty: boolean
+  name: string | null
+  /** Never saved to a .boothproject (Save would need Save As). */
+  neverSaved: boolean
+}
+export type DocumentRequestKind = 'state' | 'save'
+export type DocumentResult =
+  | { kind: 'state'; state: DocumentState }
+  | { kind: 'save'; status: 'saved' | 'cancelled' | 'failed'; message?: string }
+export type DocumentHandler = (kind: DocumentRequestKind) => Promise<DocumentResult>
+export interface DocumentRequestMessage {
+  id: number
+  kind: DocumentRequestKind
+}
+export interface DocumentResponseMessage {
+  id: number
+  result: DocumentResult
+}
+export interface CloseDecision {
+  proceed: boolean
+}
+
+export type RecoveryConflictKind = 'none' | 'portable-changed' | 'portable-missing'
+export interface RecoveryCandidateInfo {
+  sessionId: string
+  projectName: string
+  originalFileName: string | null
+  neverSaved: boolean
+  lastWorkingSaveAt: string
+  lastPortableSaveAt: string | null
+  conflict: RecoveryConflictKind
+  missingAssets: number
+}
+export interface RecoveryOverview {
+  candidates: RecoveryCandidateInfo[]
+  /** Unusable sessions set aside at startup. */
+  quarantined: number
+}
 export interface WorkingCopyResult {
   dirty: boolean
 }
@@ -91,5 +144,17 @@ export interface RendererApi {
     recents(): Promise<IpcResult<RecentProjectItem[]>>
     /** Bytes of a project asset from the working session (the only way the renderer reads project images). */
     readAsset(req: AssetRequest): Promise<IpcResult<AssetData>>
+  }
+  recovery: {
+    list(): Promise<IpcResult<RecoveryOverview>>
+    /** Restores a recovery copy into the editor as a Modified project (never overwrites the portable file). */
+    recover(req: SessionRequest): Promise<IpcResult<OpenProjectInfo>>
+    discard(req: SessionRequest): Promise<IpcResult<null>>
+  }
+  document: {
+    /** Asks main whether the document may be closed/replaced; main shows the Save / Don't Save / Cancel prompt. */
+    requestClose(req: { reason: CloseReason }): Promise<IpcResult<CloseDecision>>
+    /** The renderer's single responder to main's requests (state, save). */
+    setHandler(handler: DocumentHandler): void
   }
 }

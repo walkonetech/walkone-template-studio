@@ -1,5 +1,11 @@
 import type { TemplateProject } from '@domain'
-import type { OpenProjectInfo, NewProjectRequest, RecentProjectItem } from '@shared/ipc'
+import type {
+  CloseReason,
+  NewProjectRequest,
+  OpenProjectInfo,
+  RecentProjectItem,
+  RecoveryOverview
+} from '@shared/ipc'
 import type { IpcResult } from '@shared/persistence'
 
 /**
@@ -20,4 +26,9 @@ export interface EditorPorts {
   ): Promise<IpcResult<{ dirty: boolean }>>
   close(sessionId: string): Promise<IpcResult<null>>
   recents(): Promise<IpcResult<RecentProjectItem[]>>
+  /** Asks the main process whether the document may be closed/replaced (it shows the unsaved-changes prompt). */
+  requestClose(reason: CloseReason): Promise<IpcResult<{ proceed: boolean }>>
+  recoveryList(): Promise<IpcResult<RecoveryOverview>>
+  recover(sessionId: string): Promise<IpcResult<OpenProjectInfo>>
+  discardRecovery(sessionId: string): Promise<IpcResult<null>>
 }

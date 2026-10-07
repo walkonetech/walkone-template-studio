@@ -19,7 +19,11 @@ const ports: EditorPorts = {
   saveAs: (sessionId, project) => api.saveAs({ sessionId, project }),
   updateWorkingCopy: (sessionId, project) => api.updateWorkingCopy({ sessionId, project }),
   close: (sessionId) => api.close({ sessionId }),
-  recents: () => api.recents()
+  recents: () => api.recents(),
+  requestClose: (reason) => window.api.document.requestClose({ reason }),
+  recoveryList: () => window.api.recovery.list(),
+  recover: (sessionId) => window.api.recovery.recover({ sessionId }),
+  discardRecovery: (sessionId) => window.api.recovery.discard({ sessionId })
 }
 
 export const editorStore = createEditorStore({ ports })

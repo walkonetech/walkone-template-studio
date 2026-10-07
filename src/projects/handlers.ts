@@ -3,6 +3,7 @@ import { createProject, IdSchema, PRINT_PRESET_IDS, type TemplateProject } from 
 import { createSampleTemplate } from './sampleProject'
 import type { IpcResult } from '../shared/persistence'
 import type {
+  RecoveryOverview,
   AssetData,
   NewProjectRequest,
   OpenProjectInfo,
@@ -100,6 +101,37 @@ export function createProjectHandlers(deps: HandlerDeps) {
       run(async () => {
         const { project, assets } = createSampleTemplate()
         return ok(await service.createNew(project, assets))
+      }),
+
+    /** Startup recovery candidates (no file-system paths). */
+    recoveryList: (): Promise<IpcResult<RecoveryOverview>> =>
+      run(async () =>
+        ok({
+          candidates: service.listRecovery().map((c) => ({
+            sessionId: c.sessionId,
+            projectName: c.projectName,
+            originalFileName: c.originalFileName,
+            neverSaved: c.neverSaved,
+            lastWorkingSaveAt: c.lastWorkingSaveAt,
+            lastPortableSaveAt: c.lastPortableSaveAt,
+            conflict: c.conflict,
+            missingAssets: c.missingAssets
+          })),
+          quarantined: service.lastScan().quarantined.length
+        })
+      ),
+
+    recoveryRecover: (payload: unknown): Promise<IpcResult<OpenProjectInfo>> =>
+      run(async () => {
+        const req: SessionRequest = parse(SessionSchema, payload)
+        return ok(await service.recover(req.sessionId))
+      }),
+
+    recoveryDiscard: (payload: unknown): Promise<IpcResult<null>> =>
+      run(async () => {
+        const req: SessionRequest = parse(SessionSchema, payload)
+        await service.discardRecovery(req.sessionId)
+        return ok(null)
       }),
 
     /** Reads a project-owned asset's bytes for the renderer (by session + asset id, never by path). */

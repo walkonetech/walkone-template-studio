@@ -60,7 +60,7 @@ All workflows are **Proposed** future behavior. UI details: [UX_SPEC.md](UX_SPEC
 
 ## O. Reopen existing project
 **Happy:** Recent list or Open… → the package is validated and unpacked into a working session → schema migrated if older → editor restored; the project starts clean.
-**Edge:** newer schema than the app understands → refuse with an "update the app" message; missing referenced assets or a damaged/unsafe package → clear error, nothing is opened; unused files in the package → opened with a warning; recent entry whose file is gone → shown as missing and removed when opening fails; crash recovery prompt on launch (not built; see ADR-027).
+**Edge:** newer schema than the app understands → refuse with an "update the app" message; missing referenced assets or a damaged/unsafe package → clear error, nothing is opened; unused files in the package → opened with a warning; recent entry whose file is gone → shown as missing and removed when opening fails; crash recovery prompt on launch (built in Phase 4B; see the last section and ADR-034).
 
 ## P. New / Save / Save As (native project lifecycle)
 **New:** creates an unsaved project (modified until first saved). **Save:** if the project has a file, rewrites it; if never saved, behaves like Save As. **Save As:** native dialog (`*.boothproject`), writes the new file, and only then switches the project to it; the original file is untouched. A project becomes *saved* only after a successful Save/Save As; working-copy autosave never marks it saved.
@@ -73,3 +73,8 @@ All workflows are **Proposed** future behavior. UI details: [UX_SPEC.md](UX_SPEC
 ## R. Edit properties (Phase 4)
 **Happy path:** select a layer → edit X/Y/size/rotation/opacity or type-specific fields in the inspector → Enter or blur commits one undo step → the canvas updates; moving a layer on the canvas updates the inspector.
 **Edge/failure states:** invalid numbers show an alert and revert; Escape discards the draft; repeated photo numbers are valid; locked layers' geometry fields are disabled; multi-selection offers only common bulk controls; a palette-linked color is not silently converted.
+
+## Unsaved changes, autosave and recovery (Phase 4B)
+**Closing with unsaved work.** Close Project, Open, New, New Sample, closing the window and quitting (Cmd+Q) all show the same native prompt: **Save** (Save As if never saved), **Don't Save**, **Cancel**. Cancel, a failed save or a cancelled Save As keeps the project open and the app running. Nothing is asked when the project is unchanged since its last save/open.
+**Autosave.** About 2 seconds after edits stop (at most 10 s while editing continuously) a recovery copy is written to the app's working area. It does not save the project file and the title stays **Modified**; the status bar shows "Recovery copy saved <time>" or an "Autosave issue" warning.
+**After a crash.** On next launch a **Recover unsaved work** dialog lists each recoverable project (name, file name or "never saved", last recovery copy time, warnings). **Recover** opens it as Modified (your saved file is untouched; Save writes it). If the saved file changed or disappeared since, the project opens without its file link so Save becomes Save As. **Discard** asks for confirmation and deletes only the recovery copy. **Decide later** keeps everything for the next launch. Undo history starts fresh after recovery.

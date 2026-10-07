@@ -42,6 +42,9 @@ Project save/open (atomic write, recovery), asset import/copy-into-project, impo
 ## 9. Cross-platform behavior
 Run core suites on macOS and Windows (CI later). Check path handling, filename case/illegal characters, line endings, fonts, Sharp/native module loading, HiDPI. Windows is also where DSLR Booth runs, so final export validation is manual on Windows.
 
+## 9b. Persistence safety (Phase 4B)
+Unit: `CloseCoordinator` decision table (all reasons, failed/cancelled save, dedupe), autosave scheduler with fake timers, store autosave/guard/recovery actions, `scanRecovery` (clean/untouched removal, corrupt and expired quarantine, retention purge, owner-token skip, conflicts, missing assets), service `recover`/`discardRecovery`/`closeAll`, handler validation and no path leakage. Scripted (built Electron, DevTools protocol, SIGKILL + relaunch on the same user-data dir): `research/editor-validation/validate-4b.js`, 40 checks. It is automation, not human testing; native dialogs are answered through dev-only env overrides, so real dialog rendering and a physical Cmd+Q keypress still need a human pass.
+
 ## 10. Manual QA
 Interaction (drag/drop, resize, rotate), guides/snapping, keyboard shortcuts, accessibility, UX flows ([USER_WORKFLOWS.md](USER_WORKFLOWS.md)); a checklist per phase.
 

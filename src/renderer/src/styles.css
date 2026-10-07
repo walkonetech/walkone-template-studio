@@ -418,3 +418,35 @@ button.link {
   gap: 6px;
   margin-top: 6px;
 }
+
+.recovery-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+}
+.recovery-box {
+  max-width: 640px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 18px 22px;
+  border-radius: 8px;
+  background: Canvas;
+  color: CanvasText;
+  border: 1px solid var(--line);
+}
+.recovery-list {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.recovery-list li {
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+}

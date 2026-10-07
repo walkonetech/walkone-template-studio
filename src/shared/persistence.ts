@@ -10,6 +10,11 @@ export const PERSISTENCE_ERROR_CODES = [
   'write-failed',
   'replace-failed',
   'session-not-found',
+  'autosave-failed',
+  'recovery-corrupt',
+  'recovery-asset-missing',
+  'recovery-conflict',
+  'recovery-discard-failed',
   'not-allowed',
   'invalid-request',
   'unexpected'

@@ -1,0 +1,266 @@
+[
+  {
+    "name": "renderer has no Node access",
+    "ok": true
+  },
+  {
+    "name": "new unsaved project opens Modified with empty history",
+    "ok": true,
+    "detail": {
+      "has": true,
+      "name": "Diagnostic Sample",
+      "dirty": true,
+      "file": null,
+      "past": 0,
+      "autosave": {
+        "state": "idle",
+        "lastSavedAt": null,
+        "failures": 0,
+        "error": null
+      },
+      "recovery": 0
+    }
+  },
+  {
+    "name": "edit makes the project Modified",
+    "ok": true
+  },
+  {
+    "name": "Close Project → Cancel: project stays open and Modified",
+    "ok": true,
+    "detail": {
+      "has": true,
+      "name": "Diagnostic Sample",
+      "dirty": true,
+      "file": null,
+      "past": 1,
+      "autosave": {
+        "state": "pending",
+        "lastSavedAt": null,
+        "failures": 0,
+        "error": null
+      },
+      "recovery": 0
+    }
+  },
+  {
+    "name": "Close Project → Save: file written, project closed",
+    "ok": true,
+    "detail": {
+      "has": false
+    }
+  },
+  {
+    "name": "closing removed the working session",
+    "ok": true,
+    "detail": []
+  },
+  {
+    "name": "saved package opens clean",
+    "ok": true,
+    "detail": {
+      "has": true,
+      "name": "Diagnostic Sample",
+      "dirty": false,
+      "file": "Client.boothproject",
+      "past": 0,
+      "autosave": {
+        "state": "idle",
+        "lastSavedAt": null,
+        "failures": 0,
+        "error": null
+      },
+      "recovery": 0
+    }
+  },
+  {
+    "name": "autosave updated the working session after the debounce",
+    "ok": true,
+    "detail": {
+      "ms": 2506
+    }
+  },
+  {
+    "name": "autosave wrote the edited content",
+    "ok": true
+  },
+  {
+    "name": "autosave does not clear Modified",
+    "ok": true
+  },
+  {
+    "name": "autosave not in undo history (one entry for one edit)",
+    "ok": true,
+    "detail": {
+      "past": 1
+    }
+  },
+  {
+    "name": "autosave never touched the portable file",
+    "ok": true
+  },
+  {
+    "name": "session metadata marks unsaved changes and the owner",
+    "ok": true
+  },
+  {
+    "name": "status bar exposes the recovery-copy state",
+    "ok": true,
+    "detail": "Recovery copy saved 8:49:00 PM"
+  },
+  {
+    "name": "Quit → Cancel: app stays open",
+    "ok": true
+  },
+  {
+    "name": "Quit → Cancel: session kept",
+    "ok": true
+  },
+  {
+    "name": "Quit → Don't Save: app exits",
+    "ok": true
+  },
+  {
+    "name": "Quit → Don't Save: working session removed (clean shutdown cleanup)",
+    "ok": true,
+    "detail": []
+  },
+  {
+    "name": "Quit → Don't Save: portable file unchanged",
+    "ok": true
+  },
+  {
+    "name": "Quit → Save: app exits",
+    "ok": true
+  },
+  {
+    "name": "Quit → Save: file now contains the edit",
+    "ok": true
+  },
+  {
+    "name": "Quit → Save: session removed",
+    "ok": true
+  },
+  {
+    "name": "Quit → Save → Save As cancelled: app stays open",
+    "ok": true
+  },
+  {
+    "name": "…and the work is still in its session",
+    "ok": true
+  },
+  {
+    "name": "abrupt termination left the session behind",
+    "ok": true
+  },
+  {
+    "name": "relaunch shows the recovery dialog (accessible role=dialog, aria-modal)",
+    "ok": true,
+    "detail": {
+      "label": "recovery-title"
+    }
+  },
+  {
+    "name": "the untitled candidate is listed by name",
+    "ok": true,
+    "detail": "Recover unsaved workWalkOne Template Studio closed before these projects were saved. Choose what to do with each; nothing is restored unless you choose Recover."
+  },
+  {
+    "name": "recovery list exposes no file-system paths",
+    "ok": true
+  },
+  {
+    "name": "untitled recovery: content restored, Modified, no file association",
+    "ok": true,
+    "detail": {
+      "has": true,
+      "name": "Diagnostic Sample",
+      "dirty": true,
+      "file": null,
+      "past": 0,
+      "autosave": {
+        "state": "idle",
+        "lastSavedAt": null,
+        "failures": 0,
+        "error": null
+      },
+      "recovery": 0
+    }
+  },
+  {
+    "name": "recovery starts with fresh undo history",
+    "ok": true,
+    "detail": {
+      "past": 0
+    }
+  },
+  {
+    "name": "recovered untitled project can Save As and becomes Saved",
+    "ok": true,
+    "detail": {
+      "has": true,
+      "name": "Diagnostic Sample",
+      "dirty": false,
+      "file": "Rescued.boothproject",
+      "past": 0,
+      "autosave": {
+        "state": "idle",
+        "lastSavedAt": null,
+        "failures": 0,
+        "error": null
+      },
+      "recovery": 0
+    }
+  },
+  {
+    "name": "SIGKILL left a modified session for the saved project",
+    "ok": true
+  },
+  {
+    "name": "portable file untouched by the crash",
+    "ok": true
+  },
+  {
+    "name": "relaunch lists the candidate with its file name",
+    "ok": true,
+    "detail": "Recover unsaved workWalkOne Template Studio closed before these projects were saved. Choose what to do with each; nothing is restored unless you choose Recover."
+  },
+  {
+    "name": "recovered: edit restored, Modified, association kept",
+    "ok": true,
+    "detail": {
+      "has": true,
+      "name": "Diagnostic Sample",
+      "dirty": true,
+      "file": "Client.boothproject",
+      "past": 0,
+      "autosave": {
+        "state": "idle",
+        "lastSavedAt": null,
+        "failures": 0,
+        "error": null
+      },
+      "recovery": 0
+    }
+  },
+  {
+    "name": "recovering did not overwrite the portable file",
+    "ok": true
+  },
+  {
+    "name": "Save after recovery succeeds and clears Modified",
+    "ok": true
+  },
+  {
+    "name": "recovery dialog no longer lists the session",
+    "ok": true
+  },
+  {
+    "name": "corrupt session metadata does not crash startup",
+    "ok": true
+  },
+  {
+    "name": "corrupt session was quarantined, not left behind",
+    "ok": true
+  }
+]

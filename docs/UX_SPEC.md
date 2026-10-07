@@ -81,7 +81,7 @@ Choose target: DSLR Booth ZIP, layer package, flattened PNG, native project. Pre
 - Empty states: no projects, no assets, no photo placeholders ("Add a photo placeholder to begin"), no search results.
 
 ## 14. Unsaved state & confirmations
-Title shows dirty indicator; autosave to recovery location; confirm on close with unsaved changes (Save / Don't Save / Cancel); offer crash recovery on next launch; confirm deleting library assets in use.
+Title shows dirty indicator; autosave to recovery location (status: Saved / Modified / Recovery copy saved / Autosave issue); native confirm on every close path with unsaved changes (Save / Don't Save / Cancel); crash-recovery dialog on next launch (temporary functional UI from Phase 4B: `role=dialog`, `aria-modal`, labelled, keyboard operable, Escape = decide later, state never conveyed by color alone; Phase 4C restyles it); confirm deleting library assets in use.
 
 ## 15. Keyboard workflows
 Proposed defaults (platform-adjusted Cmd/Ctrl): Undo/Redo, Copy/Paste/Duplicate, Delete, arrow nudge (Shift = larger), Save, Zoom in/out/fit, Group/Ungroup, bring forward/back, lock/hide, Space-drag pan, Tab through layers, Escape to deselect. Command palette is **Future Research**.

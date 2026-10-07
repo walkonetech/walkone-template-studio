@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { PRINT_PRESET_IDS, type PrintPresetId } from '@domain'
+import type { CloseReason } from '@shared/ipc'
 import type { RecentProjectItem } from '@shared/ipc'
 import { imageKey } from '@canvas/assets/imageCache'
 import { renderProjectToCanvas } from '@canvas/rendering/renderProject'
@@ -16,17 +17,19 @@ import { EditorCanvas } from './EditorCanvas'
 import { editorStore, imageCache, useEditor } from './editorStore'
 import { installDebug } from './debugHooks'
 import { LayersPanel } from './LayersPanel'
+import { RecoveryDialog } from './RecoveryDialog'
 import { PropertiesInspector } from './PropertiesInspector'
 import { primaryModifierLabel } from './platform'
 import { useEditorKeyboard } from './useEditorKeyboard'
 
 const st = editorStore.getState
 
-/** Replacing or closing the open project with unsaved changes asks first (window close/quit protection is a later phase). */
-const confirmDiscard = (): boolean =>
-  !selectIsDirty(st()) || window.confirm('Discard unsaved changes to the current project?')
-const guarded = (op: () => Promise<OpResult>) => async (): Promise<void> => {
-  if (confirmDiscard()) await op()
+/**
+ * Replacing or closing the open project asks the MAIN process (native Save / Don't Save / Cancel prompt) when the
+ * project is Modified. The same coordinator guards window close and quit, so there is one flow, not several.
+ */
+const guarded = (reason: CloseReason, op: () => Promise<OpResult>) => async (): Promise<void> => {
+  if (await st().guardClose(reason)) await op()
 }
 
 function Toolbar(): React.JSX.Element {
@@ -139,20 +142,15 @@ function ProjectRail(): React.JSX.Element {
           </option>
         ))}
       </select>
-      <button onClick={guarded(() => st().createProject({ name: 'Untitled', preset }))}>
+      <button onClick={guarded('replace', () => st().createProject({ name: 'Untitled', preset }))}>
         New project
       </button>
-      <button onClick={guarded(() => st().createSample())}>New sample project</button>
-      <button onClick={guarded(() => st().openFromDialog())}>Open…</button>
+      <button onClick={guarded('replace', () => st().createSample())}>New sample project</button>
+      <button onClick={guarded('replace', () => st().openFromDialog())}>Open…</button>
       <button disabled={!project} onClick={() => void st().saveAs()}>
         Save As…
       </button>
-      <button
-        disabled={!project}
-        onClick={async () => {
-          if (confirmDiscard()) await st().closeProject()
-        }}
-      >
+      <button disabled={!project} onClick={guarded('close-project', () => st().closeProject())}>
         Close project
       </button>
       {recents.length > 0 && (
@@ -161,7 +159,10 @@ function ProjectRail(): React.JSX.Element {
           <ul className="recent-list">
             {recents.map((r) => (
               <li key={r.path}>
-                <button disabled={!r.exists} onClick={guarded(() => st().openRecent(r.path))}>
+                <button
+                  disabled={!r.exists}
+                  onClick={guarded('replace', () => st().openRecent(r.path))}
+                >
                   {r.name}
                 </button>
                 {r.exists ? '' : ' (missing)'}
@@ -182,6 +183,8 @@ function StatusBar(): React.JSX.Element {
   const snapping = useEditor((s) => s.snapping.enabled)
   const photoDisplay = useEditor((s) => s.photoDisplay)
   const message = useEditor((s) => s.lastMessage)
+  const autosave = useEditor((s) => s.autosave)
+  const autosaveIssue = useEditor((s) => s.autosaveIssue)
   return (
     <footer className="statusbar" role="status">
       <span id="print-info">
@@ -190,6 +193,20 @@ function StatusBar(): React.JSX.Element {
       <span id="selection-info">
         {selectionCount === 0 ? 'No selection' : `${selectionCount} selected`}
       </span>
+      <span id="autosave-info">
+        {autosave.state === 'saved' && autosave.lastSavedAt
+          ? `Recovery copy saved ${new Date(autosave.lastSavedAt).toLocaleTimeString()}`
+          : autosave.state === 'pending' || autosave.state === 'saving'
+            ? 'Recovery copy pending'
+            : autosave.state === 'error'
+              ? 'Autosave issue'
+              : ''}
+      </span>
+      {autosaveIssue && (
+        <span id="autosave-issue" role="alert">
+          {autosaveIssue}
+        </span>
+      )}
       {message && (
         <span id="project-message" role="alert">
           {message}{' '}
@@ -244,6 +261,12 @@ export function EditorScreen(): React.JSX.Element {
   useEditorKeyboard()
   const project = useEditor((s) => s.project)
 
+  // Main-process requests (document state for close/quit protection, save-before-close) and startup recovery.
+  useEffect(() => {
+    window.api.document.setHandler((kind) => editorStore.getState().respondToDocumentRequest(kind))
+    void editorStore.getState().loadRecovery()
+  }, [])
+
   useEffect(() => {
     installDebug({
       store: editorStore,
@@ -278,6 +301,7 @@ export function EditorScreen(): React.JSX.Element {
 
   return (
     <div className="editor">
+      <RecoveryDialog />
       <Toolbar />
       <div className="editor-body">
         <ProjectRail />

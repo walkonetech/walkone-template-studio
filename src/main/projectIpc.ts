@@ -5,6 +5,7 @@ import { createProjectHandlers } from '../projects/handlers'
 import { RecentProjectsStore } from '../projects/recents'
 import { ProjectService } from '../projects/service'
 import { PROJECT_EXTENSION } from '../projects/constants'
+import { devValue } from './devOverrides'
 import type { ProjectDialogs } from '../projects/handlers'
 
 const FILTERS = [
@@ -12,18 +13,16 @@ const FILTERS = [
 ]
 
 /**
- * Native dialogs. In development builds only (never when packaged), WALKONE_DEV_OPEN_PATH /
- * WALKONE_DEV_SAVE_PATH let automated manual-validation scripts answer the dialogs.
+ * Native dialogs. In development builds only (never when packaged), WALKONE_DEV_OPEN_PATH / WALKONE_DEV_SAVE_PATH let
+ * automated validation scripts answer the dialogs ("CANCEL" simulates cancelling; ';' separates a sequence).
  */
 function createDialogs(): ProjectDialogs {
-  const devOverride = (name: string): string | undefined =>
-    app.isPackaged ? undefined : process.env[name]
   const windowOf = (ctx: unknown): BrowserWindow | undefined =>
     ctx instanceof BrowserWindow ? ctx : undefined
   return {
     async showOpen(ctx) {
-      const override = devOverride('WALKONE_DEV_OPEN_PATH')
-      if (override) return override
+      const override = devValue('WALKONE_DEV_OPEN_PATH')
+      if (override) return override === 'CANCEL' ? null : override
       const options = { title: 'Open Project', properties: ['openFile' as const], filters: FILTERS }
       const win = windowOf(ctx)
       const r = win
@@ -32,8 +31,8 @@ function createDialogs(): ProjectDialogs {
       return r.canceled || r.filePaths.length === 0 ? null : (r.filePaths[0] ?? null)
     },
     async showSave(ctx, suggestedName) {
-      const override = devOverride('WALKONE_DEV_SAVE_PATH')
-      if (override) return override
+      const override = devValue('WALKONE_DEV_SAVE_PATH')
+      if (override) return override === 'CANCEL' ? null : override
       const options = { title: 'Save Project', defaultPath: suggestedName, filters: FILTERS }
       const win = windowOf(ctx)
       const r = win
@@ -49,7 +48,11 @@ export function registerProjectIpc(
 ): ProjectService {
   const userData = app.getPath('userData')
   const recents = new RecentProjectsStore(join(userData, 'recent-projects.json'))
-  const service = new ProjectService({ sessionsRoot: join(userData, 'sessions'), recents })
+  const service = new ProjectService({
+    sessionsRoot: join(userData, 'sessions'),
+    quarantineRoot: join(userData, 'session-quarantine'),
+    recents
+  })
   const handlers = createProjectHandlers({
     service,
     recents,
@@ -105,6 +108,18 @@ export function registerProjectIpc(
   ipcMain.handle(
     IpcChannel.ProjectReadAsset,
     guard((_e, p: unknown) => handlers.readAsset(p))
+  )
+  ipcMain.handle(
+    IpcChannel.RecoveryList,
+    guard(() => handlers.recoveryList())
+  )
+  ipcMain.handle(
+    IpcChannel.RecoveryRecover,
+    guard((_e, p: unknown) => handlers.recoveryRecover(p))
+  )
+  ipcMain.handle(
+    IpcChannel.RecoveryDiscard,
+    guard((_e, p: unknown) => handlers.recoveryDiscard(p))
   )
   return service
 }

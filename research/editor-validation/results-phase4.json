@@ -1,464 +1,455 @@
 [
- {
-  "name": "renderer has no Node access",
-  "ok": true
- },
- {
-  "name": "sample project opened with 10 layers and the editor layout",
-  "ok": true
- },
- {
-  "name": "panel lists every layer, front-first, equal to the canvas stacking order reversed",
-  "ok": true,
-  "detail": {
-   "first": true
+  {
+    "name": "renderer has no Node access",
+    "ok": true
+  },
+  {
+    "name": "sample project opened with 10 layers and the editor layout",
+    "ok": true
+  },
+  {
+    "name": "panel lists every layer, front-first, equal to the canvas stacking order reversed",
+    "ok": true,
+    "detail": {
+      "first": true
+    }
+  },
+  {
+    "name": "children are indented under their group",
+    "ok": true
+  },
+  {
+    "name": "canvas click selects the object and highlights its panel row",
+    "ok": true,
+    "detail": 1
+  },
+  {
+    "name": "clicking a panel row selects that layer; the canvas shows the transformer on it",
+    "ok": true
+  },
+  {
+    "name": "clicking the already-selected row does not touch project state or history",
+    "ok": true
+  },
+  {
+    "name": "panel can select the group itself",
+    "ok": true
+  },
+  {
+    "name": "panel can select a group CHILD directly",
+    "ok": true
+  },
+  {
+    "name": "canvas click inside a group selects the group (default rule)",
+    "ok": true
+  },
+  {
+    "name": "Alt/Option-click on the canvas selects the clicked child",
+    "ok": true,
+    "detail": 1
+  },
+  {
+    "name": "clicking empty canvas clears selection and the panel",
+    "ok": true
+  },
+  {
+    "name": "double-click opens the rename field",
+    "ok": true
+  },
+  {
+    "name": "Enter commits the rename as ONE undo step and closes the field",
+    "ok": true
+  },
+  {
+    "name": "Escape cancels the rename",
+    "ok": true
+  },
+  {
+    "name": "empty name is rejected with a message (name kept)",
+    "ok": true
+  },
+  {
+    "name": "duplicate names are allowed; ids stay unique",
+    "ok": true,
+    "detail": {
+      "dup": ["Hero shot", "Hero shot"],
+      "total": 10
+    }
+  },
+  {
+    "name": "blur commits the rename",
+    "ok": true
+  },
+  {
+    "name": "lock button toggles direct lock; aria-pressed reflects it",
+    "ok": true
+  },
+  {
+    "name": "locked layer renders but cannot be transformed on the canvas",
+    "ok": true
+  },
+  {
+    "name": "a locked layer can still be selected from the panel (to unlock it)",
+    "ok": true
+  },
+  {
+    "name": "inspector disables geometry edits for a locked layer",
+    "ok": true
+  },
+  {
+    "name": "unlock restores editing",
+    "ok": true
+  },
+  {
+    "name": "child shows INHERITED lock distinctly from its own direct (unlocked) state",
+    "ok": true,
+    "detail": {
+      "label": "Lock layer Ornament text",
+      "pressed": "false",
+      "inherited": true,
+      "sr": " (locked by parent group)"
+    }
+  },
+  {
+    "name": "hide removes the layer from the canvas but keeps its domain state",
+    "ok": true
+  },
+  {
+    "name": "show brings it back",
+    "ok": true
+  },
+  {
+    "name": "hiding a group hides its children; the children keep their own direct visibility",
+    "ok": true
+  },
+  {
+    "name": "collapse hides children rows and is not project state (no dirty, no history, same project)",
+    "ok": true
+  },
+  {
+    "name": "expand restores the rows",
+    "ok": true
+  },
+  {
+    "name": "Bring to front puts the layer at the top of the panel and the canvas order, one undo step",
+    "ok": true,
+    "detail": {
+      "zBefore": 1
+    }
+  },
+  {
+    "name": "Send backward moves it one step back",
+    "ok": true
+  },
+  {
+    "name": "Send to back",
+    "ok": true
+  },
+  {
+    "name": "dragging a row above a sibling reorders stacking (one undo step); the canvas order follows",
+    "ok": true,
+    "detail": {
+      "z1": 3,
+      "z3": 2
+    }
+  },
+  {
+    "name": "panel order still equals reversed canvas order after the drag",
+    "ok": true
+  },
+  {
+    "name": "a child cannot be dragged out of its group (blocked with a message, nothing changes)",
+    "ok": true
+  },
+  {
+    "name": "Cmd+Z undoes the reorder",
+    "ok": true
+  },
+  {
+    "name": "X accepts negative values and commits on Enter (one undo step)",
+    "ok": true,
+    "detail": -150
+  },
+  {
+    "name": "typing partial values does not commit anything",
+    "ok": true
+  },
+  {
+    "name": "typing 1,12,120 then Enter = ONE history entry and width 120",
+    "ok": true
+  },
+  {
+    "name": "invalid numeric input is rejected with an alert and the old value restored",
+    "ok": true
+  },
+  {
+    "name": "non-positive height is rejected",
+    "ok": true
+  },
+  {
+    "name": "Escape restores the previous value",
+    "ok": true
+  },
+  {
+    "name": "decimals, rotation and opacity (percent -> 0..1) commit correctly",
+    "ok": true,
+    "detail": {
+      "y": 33.5,
+      "r": 30,
+      "o": 0.4
+    }
+  },
+  {
+    "name": "canvas drag updates the inspector X field",
+    "ok": true,
+    "detail": {
+      "x": 35,
+      "shown": "35"
+    }
+  },
+  {
+    "name": "inspector edit moves the canvas object (store and node agree)",
+    "ok": true
+  },
+  {
+    "name": "photo number editable",
+    "ok": true
+  },
+  {
+    "name": "duplicate photo numbers are accepted (no uniqueness error on the photo number field)",
+    "ok": true
+  },
+  {
+    "name": "photo number must be a positive integer",
+    "ok": true
+  },
+  {
+    "name": "Delete/Backspace/arrows inside an input do not delete or nudge layers",
+    "ok": true
+  },
+  {
+    "name": "text font size via inspector",
+    "ok": true
+  },
+  {
+    "name": "text align, letter spacing and line height via inspector",
+    "ok": true
+  },
+  {
+    "name": "text content edited in the inspector commits on blur",
+    "ok": true
+  },
+  {
+    "name": "canvas double-click text editing still works with the panels present",
+    "ok": true
+  },
+  {
+    "name": "canvas edit and inspector stay synchronized",
+    "ok": true
+  },
+  {
+    "name": "literal text color editable via hex",
+    "ok": true
+  },
+  {
+    "name": "invalid hex rejected with an alert, color kept",
+    "ok": true
+  },
+  {
+    "name": "shape fill color",
+    "ok": true
+  },
+  {
+    "name": "stroke can be enabled; stroke width editable",
+    "ok": true
+  },
+  {
+    "name": "stroke width via inspector",
+    "ok": true
+  },
+  {
+    "name": "image inspector shows asset filename and pixel size, never a filesystem path",
+    "ok": true,
+    "detail": "Asset | sample.png | Source | 32×32 px | Type | image/png"
+  },
+  {
+    "name": "group inspector shows derived bounds read-only and no rotation/opacity controls",
+    "ok": true
+  },
+  {
+    "name": "Add photo: selected, one undo step, NEW capture slot (max+1)",
+    "ok": true,
+    "detail": 4
+  },
+  {
+    "name": "Add text/rectangle/ellipse/line all work, are inside the design, unique ids",
+    "ok": true
+  },
+  {
+    "name": "undo removes added layers one at a time",
+    "ok": true
+  },
+  {
+    "name": "Duplicate: new id, name \"copy\", photoNumber PRESERVED, offset, selected",
+    "ok": true
+  },
+  {
+    "name": "Delete removes the layer and clears selection; undo restores",
+    "ok": true
+  },
+  {
+    "name": "undo restores the deleted duplicate",
+    "ok": true
+  },
+  {
+    "name": "Redo (toolbar button) re-applies the deletion",
+    "ok": true
+  },
+  {
+    "name": "Cmd-click toggles a second layer into the selection (panel)",
+    "ok": true
+  },
+  {
+    "name": "Cmd-click again deselects it",
+    "ok": true
+  },
+  {
+    "name": "Shift-click selects the contiguous visible range",
+    "ok": true,
+    "detail": 6
+  },
+  {
+    "name": "multi-selection inspector shows only common controls (no X/Y/Width)",
+    "ok": true
+  },
+  {
+    "name": "Cmd-click on the canvas adds to the selection",
+    "ok": true
+  },
+  {
+    "name": "dragging one selected layer moves all selected layers by the same delta, as ONE undo step",
+    "ok": true,
+    "detail": {
+      "d1": 223.6,
+      "d3": 223.6
+    }
+  },
+  {
+    "name": "bulk opacity edit applies to all selected in one undo step",
+    "ok": true
+  },
+  {
+    "name": "Group wraps the selected layers without moving them; one undo step",
+    "ok": true
+  },
+  {
+    "name": "Ungroup restores the layers to the parent; positions unchanged",
+    "ok": true
+  },
+  {
+    "name": "two undos revert ungroup then group",
+    "ok": true
+  },
+  {
+    "name": "50+ layers: panel lists all rows and scrolls",
+    "ok": true,
+    "detail": {
+      "rows": 56,
+      "scrollable": true,
+      "host": [730, 690]
+    }
+  },
+  {
+    "name": "scrolling the panel does not resize the canvas",
+    "ok": true
+  },
+  {
+    "name": "ArrowDown in the panel changes the selected row (and does not nudge layers)",
+    "ok": true
+  },
+  {
+    "name": "every button and form control has an accessible name/label; tree rows expose aria-selected",
+    "ok": true,
+    "detail": {
+      "issues": [],
+      "tree": "Layers, front to back",
+      "treeitems": 56,
+      "selectedAria": 56
+    }
+  },
+  {
+    "name": "[3B] canvas drag moves by screen delta / scale; one history entry",
+    "ok": true,
+    "detail": {
+      "dx": 336.45
+    }
+  },
+  {
+    "name": "[3B] corner resize folds scale into width/height",
+    "ok": true
+  },
+  {
+    "name": "[3B] rotation handle rotates",
+    "ok": true
+  },
+  {
+    "name": "[3B] moving partly off-canvas is not clamped",
+    "ok": true
+  },
+  {
+    "name": "[3B] snapping shows guides during drag and clears after",
+    "ok": true
+  },
+  {
+    "name": "[3B] zoom controls change only the view; fit restores",
+    "ok": true
+  },
+  {
+    "name": "[3B] high-resolution render exact sizes (2400×3600, 1200×1800) regardless of the panels/zoom",
+    "ok": true,
+    "detail": {
+      "r2400": {
+        "w": 2400,
+        "h": 3600
+      },
+      "r1200": {
+        "w": 1200,
+        "h": 1800
+      }
+    }
+  },
+  {
+    "name": "[3B] render contains printable content only (corners = design background)",
+    "ok": true,
+    "detail": ["239,233,223,255", "239,233,223,255"]
+  },
+  {
+    "name": "Save wrote the package and the document shows \"Saved\"",
+    "ok": true
+  },
+  {
+    "name": "the toolbar shows \"Modified\" after an edit",
+    "ok": true
+  },
+  {
+    "name": "Close returns to the empty state (panels disappear)",
+    "ok": true
+  },
+  {
+    "name": "reopened project keeps names, lock, visibility, stacking, photo numbers and geometry exactly",
+    "ok": true,
+    "detail": []
+  },
+  {
+    "name": "after reopen: panel rows reflect saved state (hidden/locked rows) and the project is clean",
+    "ok": true
+  },
+  {
+    "name": "asset still loads after reopen",
+    "ok": true
+  },
+  {
+    "name": "renderer still has no Node access at the end",
+    "ok": true
   }
- },
- {
-  "name": "children are indented under their group",
-  "ok": true
- },
- {
-  "name": "canvas click selects the object and highlights its panel row",
-  "ok": true,
-  "detail": 1
- },
- {
-  "name": "clicking a panel row selects that layer; the canvas shows the transformer on it",
-  "ok": true
- },
- {
-  "name": "clicking the already-selected row does not touch project state or history",
-  "ok": true
- },
- {
-  "name": "panel can select the group itself",
-  "ok": true
- },
- {
-  "name": "panel can select a group CHILD directly",
-  "ok": true
- },
- {
-  "name": "canvas click inside a group selects the group (default rule)",
-  "ok": true
- },
- {
-  "name": "Alt/Option-click on the canvas selects the clicked child",
-  "ok": true,
-  "detail": 1
- },
- {
-  "name": "clicking empty canvas clears selection and the panel",
-  "ok": true
- },
- {
-  "name": "double-click opens the rename field",
-  "ok": true
- },
- {
-  "name": "Enter commits the rename as ONE undo step and closes the field",
-  "ok": true
- },
- {
-  "name": "Escape cancels the rename",
-  "ok": true
- },
- {
-  "name": "empty name is rejected with a message (name kept)",
-  "ok": true
- },
- {
-  "name": "duplicate names are allowed; ids stay unique",
-  "ok": true,
-  "detail": {
-   "dup": [
-    "Hero shot",
-    "Hero shot"
-   ],
-   "total": 10
-  }
- },
- {
-  "name": "blur commits the rename",
-  "ok": true
- },
- {
-  "name": "lock button toggles direct lock; aria-pressed reflects it",
-  "ok": true
- },
- {
-  "name": "locked layer renders but cannot be transformed on the canvas",
-  "ok": true
- },
- {
-  "name": "a locked layer can still be selected from the panel (to unlock it)",
-  "ok": true
- },
- {
-  "name": "inspector disables geometry edits for a locked layer",
-  "ok": true
- },
- {
-  "name": "unlock restores editing",
-  "ok": true
- },
- {
-  "name": "child shows INHERITED lock distinctly from its own direct (unlocked) state",
-  "ok": true,
-  "detail": {
-   "label": "Lock layer Ornament text",
-   "pressed": "false",
-   "inherited": true,
-   "sr": " (locked by parent group)"
-  }
- },
- {
-  "name": "hide removes the layer from the canvas but keeps its domain state",
-  "ok": true
- },
- {
-  "name": "show brings it back",
-  "ok": true
- },
- {
-  "name": "hiding a group hides its children; the children keep their own direct visibility",
-  "ok": true
- },
- {
-  "name": "collapse hides children rows and is not project state (no dirty, no history, same project)",
-  "ok": true
- },
- {
-  "name": "expand restores the rows",
-  "ok": true
- },
- {
-  "name": "Bring to front puts the layer at the top of the panel and the canvas order, one undo step",
-  "ok": true,
-  "detail": {
-   "zBefore": 1
-  }
- },
- {
-  "name": "Send backward moves it one step back",
-  "ok": true
- },
- {
-  "name": "Send to back",
-  "ok": true
- },
- {
-  "name": "dragging a row above a sibling reorders stacking (one undo step); the canvas order follows",
-  "ok": true,
-  "detail": {
-   "z1": 3,
-   "z3": 2
-  }
- },
- {
-  "name": "panel order still equals reversed canvas order after the drag",
-  "ok": true
- },
- {
-  "name": "a child cannot be dragged out of its group (blocked with a message, nothing changes)",
-  "ok": true
- },
- {
-  "name": "Cmd+Z undoes the reorder",
-  "ok": true
- },
- {
-  "name": "X accepts negative values and commits on Enter (one undo step)",
-  "ok": true,
-  "detail": -150
- },
- {
-  "name": "typing partial values does not commit anything",
-  "ok": true
- },
- {
-  "name": "typing 1,12,120 then Enter = ONE history entry and width 120",
-  "ok": true
- },
- {
-  "name": "invalid numeric input is rejected with an alert and the old value restored",
-  "ok": true
- },
- {
-  "name": "non-positive height is rejected",
-  "ok": true
- },
- {
-  "name": "Escape restores the previous value",
-  "ok": true
- },
- {
-  "name": "decimals, rotation and opacity (percent -> 0..1) commit correctly",
-  "ok": true,
-  "detail": {
-   "y": 33.5,
-   "r": 30,
-   "o": 0.4
-  }
- },
- {
-  "name": "canvas drag updates the inspector X field",
-  "ok": true,
-  "detail": {
-   "x": 35,
-   "shown": "35"
-  }
- },
- {
-  "name": "inspector edit moves the canvas object (store and node agree)",
-  "ok": true
- },
- {
-  "name": "photo number editable",
-  "ok": true
- },
- {
-  "name": "duplicate photo numbers are accepted (no uniqueness error on the photo number field)",
-  "ok": true
- },
- {
-  "name": "photo number must be a positive integer",
-  "ok": true
- },
- {
-  "name": "Delete/Backspace/arrows inside an input do not delete or nudge layers",
-  "ok": true
- },
- {
-  "name": "text font size via inspector",
-  "ok": true
- },
- {
-  "name": "text align, letter spacing and line height via inspector",
-  "ok": true
- },
- {
-  "name": "text content edited in the inspector commits on blur",
-  "ok": true
- },
- {
-  "name": "canvas double-click text editing still works with the panels present",
-  "ok": true
- },
- {
-  "name": "canvas edit and inspector stay synchronized",
-  "ok": true
- },
- {
-  "name": "literal text color editable via hex",
-  "ok": true
- },
- {
-  "name": "invalid hex rejected with an alert, color kept",
-  "ok": true
- },
- {
-  "name": "shape fill color",
-  "ok": true
- },
- {
-  "name": "stroke can be enabled; stroke width editable",
-  "ok": true
- },
- {
-  "name": "stroke width via inspector",
-  "ok": true
- },
- {
-  "name": "image inspector shows asset filename and pixel size, never a filesystem path",
-  "ok": true,
-  "detail": "Asset | sample.png | Source | 32×32 px | Type | image/png"
- },
- {
-  "name": "group inspector shows derived bounds read-only and no rotation/opacity controls",
-  "ok": true
- },
- {
-  "name": "Add photo: selected, one undo step, NEW capture slot (max+1)",
-  "ok": true,
-  "detail": 4
- },
- {
-  "name": "Add text/rectangle/ellipse/line all work, are inside the design, unique ids",
-  "ok": true
- },
- {
-  "name": "undo removes added layers one at a time",
-  "ok": true
- },
- {
-  "name": "Duplicate: new id, name \"copy\", photoNumber PRESERVED, offset, selected",
-  "ok": true
- },
- {
-  "name": "Delete removes the layer and clears selection; undo restores",
-  "ok": true
- },
- {
-  "name": "undo restores the deleted duplicate",
-  "ok": true
- },
- {
-  "name": "Redo (toolbar button) re-applies the deletion",
-  "ok": true
- },
- {
-  "name": "Cmd-click toggles a second layer into the selection (panel)",
-  "ok": true
- },
- {
-  "name": "Cmd-click again deselects it",
-  "ok": true
- },
- {
-  "name": "Shift-click selects the contiguous visible range",
-  "ok": true,
-  "detail": 6
- },
- {
-  "name": "multi-selection inspector shows only common controls (no X/Y/Width)",
-  "ok": true
- },
- {
-  "name": "Cmd-click on the canvas adds to the selection",
-  "ok": true
- },
- {
-  "name": "dragging one selected layer moves all selected layers by the same delta, as ONE undo step",
-  "ok": true,
-  "detail": {
-   "d1": 223.6,
-   "d3": 223.6
-  }
- },
- {
-  "name": "bulk opacity edit applies to all selected in one undo step",
-  "ok": true
- },
- {
-  "name": "Group wraps the selected layers without moving them; one undo step",
-  "ok": true
- },
- {
-  "name": "Ungroup restores the layers to the parent; positions unchanged",
-  "ok": true
- },
- {
-  "name": "two undos revert ungroup then group",
-  "ok": true
- },
- {
-  "name": "50+ layers: panel lists all rows and scrolls",
-  "ok": true,
-  "detail": {
-   "rows": 56,
-   "scrollable": true,
-   "host": [
-    730,
-    690
-   ]
-  }
- },
- {
-  "name": "scrolling the panel does not resize the canvas",
-  "ok": true
- },
- {
-  "name": "ArrowDown in the panel changes the selected row (and does not nudge layers)",
-  "ok": true
- },
- {
-  "name": "every button and form control has an accessible name/label; tree rows expose aria-selected",
-  "ok": true,
-  "detail": {
-   "issues": [],
-   "tree": "Layers, front to back",
-   "treeitems": 56,
-   "selectedAria": 56
-  }
- },
- {
-  "name": "[3B] canvas drag moves by screen delta / scale; one history entry",
-  "ok": true,
-  "detail": {
-   "dx": 336.45
-  }
- },
- {
-  "name": "[3B] corner resize folds scale into width/height",
-  "ok": true
- },
- {
-  "name": "[3B] rotation handle rotates",
-  "ok": true
- },
- {
-  "name": "[3B] moving partly off-canvas is not clamped",
-  "ok": true
- },
- {
-  "name": "[3B] snapping shows guides during drag and clears after",
-  "ok": true
- },
- {
-  "name": "[3B] zoom controls change only the view; fit restores",
-  "ok": true
- },
- {
-  "name": "[3B] high-resolution render exact sizes (2400×3600, 1200×1800) regardless of the panels/zoom",
-  "ok": true,
-  "detail": {
-   "r2400": {
-    "w": 2400,
-    "h": 3600
-   },
-   "r1200": {
-    "w": 1200,
-    "h": 1800
-   }
-  }
- },
- {
-  "name": "[3B] render contains printable content only (corners = design background)",
-  "ok": true,
-  "detail": [
-   "239,233,223,255",
-   "239,233,223,255"
-  ]
- },
- {
-  "name": "Save wrote the package and the document shows \"Saved\"",
-  "ok": true
- },
- {
-  "name": "the toolbar shows \"Modified\" after an edit",
-  "ok": true
- },
- {
-  "name": "Close returns to the empty state (panels disappear)",
-  "ok": true
- },
- {
-  "name": "reopened project keeps names, lock, visibility, stacking, photo numbers and geometry exactly",
-  "ok": true,
-  "detail": []
- },
- {
-  "name": "after reopen: panel rows reflect saved state (hidden/locked rows) and the project is clean",
-  "ok": true
- },
- {
-  "name": "asset still loads after reopen",
-  "ok": true
- },
- {
-  "name": "renderer still has no Node access at the end",
-  "ok": true
- }
 ]

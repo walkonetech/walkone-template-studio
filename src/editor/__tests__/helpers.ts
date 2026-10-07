@@ -165,6 +165,14 @@ export function fakePorts(initial?: TemplateProject): FakePorts {
       })
     },
     close: (sessionId) => rec('close', [sessionId], { status: 'ok' as const, value: null }),
-    recents: () => rec('recents', [], { status: 'ok' as const, value: [] })
+    recents: () => rec('recents', [], { status: 'ok' as const, value: [] }),
+    requestClose: (reason) =>
+      rec('requestClose', [reason], { status: 'ok' as const, value: { proceed: true } }),
+    recoveryList: () =>
+      rec('recoveryList', [], { status: 'ok' as const, value: { candidates: [], quarantined: 0 } }),
+    recover: (sessionId) =>
+      rec('recover', [sessionId], { status: 'ok' as const, value: info(initial ?? scene(), true) }),
+    discardRecovery: (sessionId) =>
+      rec('discardRecovery', [sessionId], { status: 'ok' as const, value: null })
   }
 }
