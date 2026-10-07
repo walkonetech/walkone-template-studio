@@ -46,6 +46,11 @@ Remaining for later phases: autosave timer, recovery UX, close/quit confirmation
 - **Not delivered:** designed (non-temporary) dialogs and status UI (Phase 4C); multi-window; persisted undo history.
 - **Recommended next:** Phase 4C — UI/UX redesign — before Phase 5.
 
+## Phase 4C — Editor UI/UX redesign and design system
+**Status: complete (first pass; owner visual review pending).** Tokens, component library, icon set (`lucide-react`), welcome screen, menus, tool rail/drawer, top/status bars, redesigned Layers and Properties, resizable panels, restyled dialogs, focus/accessibility pass. See ADR-035 and [../research/UI_UX_REVIEW.md](../research/UI_UX_REVIEW.md).
+- **Not delivered:** layer thumbnails, context menu, light theme, persisted panel sizes, native-select theming.
+- **Recommended next:** owner review, then Phase 5 (photo placeholders).
+
 ## Phase 5 — Photo placeholders
 - **Objective:** First-class PhotoLayer.
 - **Deliverables:** PhotoLayer UI, numbering rules, frame styles v1, sample-photo preview basics.

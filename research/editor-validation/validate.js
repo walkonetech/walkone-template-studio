@@ -49,7 +49,7 @@ cdp.onEvent = (m) => {
   const rowName = (id) => `[data-layer-id="${id}"] .layer-name`
   const field = (label) =>
     S(
-      `(()=>{const l=[...document.querySelectorAll('.inspector-panel label')].find(x=>x.textContent.trim().startsWith(${JSON.stringify(label)})); if(!l||!l.htmlFor) return null; const el=document.getElementById(l.htmlFor); el.scrollIntoView({block:'nearest'}); const r=el.getBoundingClientRect(); return {x:r.left+r.width/2,y:r.top+r.height/2,value:el.value,disabled:el.disabled}})()`
+      `(()=>{const l=[...document.querySelectorAll('.inspector-panel label')].find(x=>(x.querySelector('.sr-only')?.textContent||x.textContent).trim().startsWith(${JSON.stringify(label)})); if(!l||!l.htmlFor) return null; const el=document.getElementById(l.htmlFor); el.scrollIntoView({block:'nearest'}); const r=el.getBoundingClientRect(); return {x:r.left+r.width/2,y:r.top+r.height/2,value:el.value,disabled:el.disabled}})()`
     )
   const typeInto = async (label, text, enter = true) => {
     const f = await field(label)
@@ -69,13 +69,40 @@ cdp.onEvent = (m) => {
     c.ev(
       `(()=>{const b=[...document.querySelectorAll('button')].find(x=>(x.getAttribute('aria-label')||x.textContent.trim())===${JSON.stringify(name)}); if(!b) return 'no button'; if (b.disabled) return 'disabled'; b.click(); return 'ok'})()`
     )
-  const clickBtn = async (name) => {
+  const clickPlain = async (name) => {
     const p = await S(
       `(()=>{const b=[...document.querySelectorAll('button')].find(x=>(x.getAttribute('aria-label')||x.textContent.trim())===${JSON.stringify(name)}); if(!b) return null; const r=b.getBoundingClientRect(); return {x:r.left+r.width/2,y:r.top+r.height/2,disabled:b.disabled}})()`
     )
     if (!p || p.disabled) return false
     await c.click(p)
     return true
+  }
+  // Phase 4C: some commands moved into menus (File menu, Arrange menu, Add menu).
+  const clickMenuItem = async (menuButton, text) => {
+    if (!(await clickPlain(menuButton))) return false
+    await c.sleep(200)
+    const p = await S(
+      `(()=>{const i=[...document.querySelectorAll('[role=menu] [role^=menuitem]')].find(x=>x.querySelector('.grow').textContent.trim()===${JSON.stringify(text)}); if(!i||i.disabled) return null; const r=i.getBoundingClientRect(); return {x:r.left+r.width/2,y:r.top+r.height/2}})()`
+    )
+    if (!p) {
+      await c.key('Escape', { code: 'Escape', vk: 27 })
+      return false
+    }
+    await c.click(p)
+    return true
+  }
+  const MENU_ROUTES = {
+    'Close project': ['File', 'Close project'],
+    'Open…': ['File', 'Open…'],
+    'Save As…': ['File', 'Save As…'],
+    'Bring to front': ['Arrange', 'Bring to front'],
+    'Bring forward': ['Arrange', 'Bring forward'],
+    'Send backward': ['Arrange', 'Send backward'],
+    'Send to back': ['Arrange', 'Send to back']
+  }
+  const clickBtn = async (name) => {
+    const r = MENU_ROUTES[name]
+    return r ? clickMenuItem(r[0], r[1]) : clickPlain(name)
   }
   const META = 4,
     SHIFT = 8
@@ -539,15 +566,19 @@ cdp.onEvent = (m) => {
   const grpUi = await c.ev('document.querySelector(".inspector-panel").innerText')
   check(
     'group inspector shows derived bounds read-only and no rotation/opacity controls',
-    /derived from children/.test(grpUi) && !/Rotation/.test(grpUi) && !/Opacity/.test(grpUi)
+    /follows its children/.test(grpUi) && !/Rotation/.test(grpUi) && !/Opacity/.test(grpUi)
   )
 
   // ================= ADD LAYERS
   await c.ev('__wts.store.getState().clearSelection()')
-  const addSel = async (label) =>
-    c.ev(
-      `(()=>{const el=document.querySelector('.toolbar select[aria-label="Add layer"]'); const set=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set; set.call(el, ${JSON.stringify(label)}); el.dispatchEvent(new Event('change',{bubbles:true}))})()`
-    )
+  const ADD_LABELS = {
+    photo: 'Photo placeholder',
+    text: 'Text',
+    rectangle: 'Rectangle',
+    ellipse: 'Ellipse',
+    line: 'Line'
+  }
+  const addSel = async (kind) => clickMenuItem('Add layer', ADD_LABELS[kind])
   const pastAdd = (await st()).past
   await addSel('photo')
   await c.sleep(200)
@@ -715,6 +746,8 @@ cdp.onEvent = (m) => {
   await c.ev(`(()=>{const s=__wts.store.getState(); s.clearSelection()})()`)
   await c.click(await center('#print-info')) // neutral click
   await confirmYes()
+  await clickBtn('Close project')
+  await c.sleep(600)
   await clickBtn('New sample project')
   await c.sleep(1500)
   s = await st()

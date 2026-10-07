@@ -112,4 +112,17 @@ Minimum window size defined later; panels collapsible and resizable; canvas gets
 - **Properties:** shared (name, visible, locked, X/Y/width/height in design pixels, rotation °, opacity %), then Photo (photo number — repeats allowed, fit, corner radius, frame), Image (role, fit, read-only asset filename/pixels/type; never a path), Text (content, font, size, weight, style, align, line height, letter spacing, color), Shape (type, fill, stroke, width, corner radius), Group (derived read-only bounds only). Multi-selection shows only common controls (visible, locked, opacity, duplicate, group, delete). Nothing selected shows a project summary.
 - **Numeric fields:** typing never commits partial values; Enter/blur commits; Escape restores; invalid input shows an inline alert and keeps the old value; negative X/Y and decimals are accepted; width/height must be positive.
 - **Color field:** hex text plus a native picker for literal colors; a palette-linked color is shown as such and only changes through the explicit "Use fixed color" button.
-- **Not built yet:** context menu, rulers, layer thumbnails, panel resizing, final visual design.
+- **Not built yet:** context menu, rulers, layer thumbnails, final visual design (Phase 4C delivered a first design system; see §20).
+
+## 20. Phase 4C — redesigned editor (implemented)
+Full rationale, measurements and remaining debt: [../research/UI_UX_REVIEW.md](../research/UI_UX_REVIEW.md); decision record: ADR-035.
+- **No project:** a welcome screen (New project, Open project…, recent-project cards with relative time, "File not found" for missing files). No rail, side panels or canvas exist in this state.
+- **Top bar:** File / Edit / View menus; project name with a Modified/Saved dot (and an "Autosave issue" badge only when autosave is failing); Undo/Redo icons; primary **Save**; disabled Export placeholder.
+- **Left:** 64 px tool rail (Design live; Templates, Photos, Assets visibly disabled) and a 224 px drawer for the active tool (collapsed by default below 1360 px wide).
+- **Right:** Layers above Properties, each with collapsible/resizable regions; width and split resizable by mouse and keyboard (UI-only, never marks the project Modified).
+- **Layers rows:** type icon, name, photo-number/role badge, hover-revealed visibility and lock toggles (kept visible when hidden/locked, warning color), selected row highlight with an edge bar, inherited-state dimming; header actions Add, Duplicate, Group, Ungroup, Arrange, Delete, Layer shortcuts.
+- **Properties:** collapsible sections (Layer, Transform, Appearance, type-specific). Transform uses compact X|Y, W|H, R cells; opacity is a slider plus an exact field; color is swatch + hex + picker button (palette links shown with "Use fixed color").
+- **Status bar:** format/DPI/pixels, selection, quiet recovery-copy time while Modified, Snap and Preview-photos toggles, zoom `− % + Fit 100%`.
+- **Dialogs:** New project, Recovery ("We found unsaved work from a previous session" — Recover / Discard (confirm) / Decide later), Layer shortcuts; one accessible shell. Native unsaved-changes prompts remain native.
+- **Shortcuts (menus and tooltips show them):** ⌘N, ⌘O, ⌘S, ⇧⌘S, ⌘Z, ⇧⌘Z, ⌘D, ⌘G, ⇧⌘G, ⌘0 fit, ⌘1 100%, ⌘= / ⌘− zoom, ⌫ delete, ⌘] / ⌘[ stacking (Ctrl on Windows).
+- **Window:** minimum 1100×680, default 1360×860.

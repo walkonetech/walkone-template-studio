@@ -1,0 +1,76 @@
+import type { CloseReason } from '@shared/ipc'
+import type { OpResult } from '@editor/store'
+import type { CommandId } from '@editor/commands'
+import { editorStore } from './editorStore'
+import { layoutStore } from './layoutStore'
+
+const st = editorStore.getState
+
+/**
+ * Replacing or closing the open project asks the MAIN process (native Save / Don't Save / Cancel prompt) when the
+ * project is Modified. The same coordinator guards window close and quit, so there is one flow, not several.
+ */
+export const guarded =
+  (reason: CloseReason, op: () => Promise<OpResult>) => async (): Promise<void> => {
+    if (await st().guardClose(reason)) await op()
+  }
+
+/** Maps command ids (see `@editor/commands`) to store actions. Menus, buttons and shortcuts all route through here. */
+export function runCommand(id: CommandId): void {
+  const s = st()
+  switch (id) {
+    case 'file.new':
+      void s
+        .guardClose('replace')
+        .then((ok) => ok && layoutStore.getState().setNewProjectOpen(true))
+      return
+    case 'file.open':
+      void guarded('replace', () => s.openFromDialog())()
+      return
+    case 'file.save':
+      void s.save()
+      return
+    case 'file.saveAs':
+      void s.saveAs()
+      return
+    case 'file.close':
+      void guarded('close-project', () => s.closeProject())()
+      return
+    case 'edit.undo':
+      s.undo()
+      return
+    case 'edit.redo':
+      s.redo()
+      return
+    case 'edit.duplicate':
+      s.duplicateSelection()
+      return
+    case 'edit.delete':
+      s.deleteSelection()
+      return
+    case 'edit.group':
+      s.groupSelection()
+      return
+    case 'edit.ungroup':
+      s.ungroupSelection()
+      return
+    case 'view.fit':
+      s.fitToWindow()
+      return
+    case 'view.actual':
+      s.zoomToActualSize()
+      return
+    case 'view.zoomIn':
+      s.zoomIn()
+      return
+    case 'view.zoomOut':
+      s.zoomOut()
+      return
+    case 'view.snap':
+      s.setSnapping({ enabled: !s.snapping.enabled })
+      return
+    case 'view.previewPhotos':
+      s.setPhotoDisplay(s.photoDisplay === 'preview' ? 'placeholder' : 'preview')
+      return
+  }
+}

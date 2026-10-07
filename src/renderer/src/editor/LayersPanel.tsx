@@ -1,9 +1,31 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { NEW_LAYER_KINDS, type NewLayerKind } from '@editor/newLayers'
+import {
+  ChevronRight,
+  Copy,
+  Eye,
+  EyeOff,
+  Group,
+  Keyboard,
+  Layers as LayersIcon,
+  ListFilter,
+  Lock,
+  LockOpen,
+  Plus,
+  Trash2,
+  Ungroup,
+  Layers2
+} from 'lucide-react'
+import { COMMANDS, shortcutLabel } from '@editor/commands'
+import { NEW_LAYER_KINDS } from '@editor/newLayers'
 import { buildPanelRows, layerTypeLabel, type PanelRow } from '@editor/layerTree'
 import { editorStore, useEditor } from './editorStore'
-import { Icon, iconNameFor } from './Icons'
-import { isPrimaryModifier } from './platform'
+import { LayerTypeIcon } from './Icons'
+import { isMac, isPrimaryModifier } from './platform'
+import { Dialog } from '../ui/Dialog'
+import { Button } from '../ui/Button'
+import { EmptyState } from '../ui/EmptyState'
+import { IconButton } from '../ui/IconButton'
+import { MenuButton, type MenuEntry } from '../ui/Menu'
 
 const store = editorStore
 type Placement = 'above' | 'below'
@@ -101,7 +123,7 @@ function RenameInput({
   }
   return (
     <input
-      className="rename-input"
+      className="ui-input rename-input"
       aria-label="Layer name"
       defaultValue={initial}
       autoFocus
@@ -171,6 +193,7 @@ const LayerRow = memo(function LayerRow({
         selected ? 'selected' : '',
         active ? 'active' : '',
         !row.effectivelyVisible ? 'is-hidden' : '',
+        !row.directVisible || row.directLocked ? 'has-state' : '',
         dragging ? 'dragging' : '',
         mark === 'above'
           ? 'drop-above'
@@ -180,7 +203,7 @@ const LayerRow = memo(function LayerRow({
               ? 'drop-blocked'
               : ''
       ].join(' ')}
-      style={{ paddingLeft: 6 + row.depth * 16 }}
+      style={{ paddingLeft: 6 + row.depth * 14 }}
       onClick={(e) => onRowClick(e, layer.id)}
       onPointerDown={(e) => onRowPointerDown(e, layer.id)}
       onDoubleClick={() => startRename(layer.id)}
@@ -189,20 +212,20 @@ const LayerRow = memo(function LayerRow({
         <button
           type="button"
           tabIndex={-1}
-          className={`icon-btn chevron ${row.collapsed ? '' : 'open'}`}
+          className={`row-chevron ${row.collapsed ? '' : 'open'}`}
           aria-label={`${row.collapsed ? 'Expand' : 'Collapse'} group ${layer.name}`}
           onClick={(e) => {
             e.stopPropagation()
             store.getState().toggleCollapsed(layer.id)
           }}
         >
-          <Icon name="chevron" size={14} />
+          <ChevronRight size={14} aria-hidden="true" />
         </button>
       ) : (
-        <span className="chevron-spacer" />
+        <span className="row-chevron-spacer" />
       )}
       <span className="type-icon" title={layerTypeLabel(layer)}>
-        <Icon name={iconNameFor(layer)} />
+        <LayerTypeIcon layer={layer} />
         <span className="sr-only">{layerTypeLabel(layer)}: </span>
       </span>
       {renaming ? (
@@ -213,36 +236,46 @@ const LayerRow = memo(function LayerRow({
         </span>
       )}
       {meta && <span className="layer-meta">{meta}</span>}
-      <button
-        type="button"
-        tabIndex={-1}
-        className={`icon-btn toggle ${row.directVisible ? '' : 'off'} ${row.hiddenByAncestor ? 'inherited' : ''}`}
-        aria-label={visLabel}
-        aria-pressed={!row.directVisible}
-        title={row.hiddenByAncestor ? `${visLabel} (also hidden by a parent group)` : visLabel}
-        onClick={(e) => {
-          e.stopPropagation()
-          store.getState().setVisibility(layer.id, !row.directVisible)
-        }}
-      >
-        <Icon name={row.directVisible ? 'eye' : 'eye-off'} />
-        {row.hiddenByAncestor && <span className="sr-only"> (hidden by parent group)</span>}
-      </button>
-      <button
-        type="button"
-        tabIndex={-1}
-        className={`icon-btn toggle ${row.directLocked ? 'on' : ''} ${row.lockedByAncestor ? 'inherited' : ''}`}
-        aria-label={lockLabel}
-        aria-pressed={row.directLocked}
-        title={row.lockedByAncestor ? `${lockLabel} (also locked by a parent group)` : lockLabel}
-        onClick={(e) => {
-          e.stopPropagation()
-          store.getState().setLocked(layer.id, !row.directLocked)
-        }}
-      >
-        <Icon name={row.directLocked ? 'lock' : 'unlock'} />
-        {row.lockedByAncestor && <span className="sr-only"> (locked by parent group)</span>}
-      </button>
+      <span className="row-actions">
+        <button
+          type="button"
+          tabIndex={-1}
+          className={`row-toggle ${row.directVisible ? 'on-state' : 'off-state'} ${row.hiddenByAncestor ? 'inherited' : ''}`}
+          aria-label={visLabel}
+          aria-pressed={!row.directVisible}
+          title={row.hiddenByAncestor ? `${visLabel} (also hidden by a parent group)` : visLabel}
+          onClick={(e) => {
+            e.stopPropagation()
+            store.getState().setVisibility(layer.id, !row.directVisible)
+          }}
+        >
+          {row.directVisible ? (
+            <Eye size={15} aria-hidden="true" />
+          ) : (
+            <EyeOff size={15} aria-hidden="true" />
+          )}
+          {row.hiddenByAncestor && <span className="sr-only"> (hidden by parent group)</span>}
+        </button>
+        <button
+          type="button"
+          tabIndex={-1}
+          className={`row-toggle ${row.directLocked ? 'off-state' : 'on-state'} ${row.lockedByAncestor ? 'inherited' : ''}`}
+          aria-label={lockLabel}
+          aria-pressed={row.directLocked}
+          title={row.lockedByAncestor ? `${lockLabel} (also locked by a parent group)` : lockLabel}
+          onClick={(e) => {
+            e.stopPropagation()
+            store.getState().setLocked(layer.id, !row.directLocked)
+          }}
+        >
+          {row.directLocked ? (
+            <Lock size={15} aria-hidden="true" />
+          ) : (
+            <LockOpen size={15} aria-hidden="true" />
+          )}
+          {row.lockedByAncestor && <span className="sr-only"> (locked by parent group)</span>}
+        </button>
+      </span>
     </li>
   )
 })
@@ -352,70 +385,112 @@ export function LayersPanel(): React.JSX.Element {
     return drag.valid ? drag.placement : 'blocked'
   }
 
+  const st = store.getState
+  const [helpOpen, setHelpOpen] = useState(false)
+  const selectionCount = selectedIds.length
+  const mac = isMac()
+  const sc = (id: keyof typeof COMMANDS): string => shortcutLabel(COMMANDS[id].shortcut, mac)
+  const addEntries: MenuEntry[] = NEW_LAYER_KINDS.map((k) => ({
+    id: k.kind,
+    label: k.label,
+    onSelect: () => st().addNewLayer(k.kind)
+  }))
+  const arrangeEntries: MenuEntry[] = [
+    {
+      id: 'front',
+      label: 'Bring to front',
+      shortcut: mac ? '⇧⌘]' : 'Ctrl+Shift+]',
+      onSelect: () => st().stackSelection('front')
+    },
+    {
+      id: 'forward',
+      label: 'Bring forward',
+      shortcut: mac ? '⌘]' : 'Ctrl+]',
+      onSelect: () => st().stackSelection('forward')
+    },
+    {
+      id: 'backward',
+      label: 'Send backward',
+      shortcut: mac ? '⌘[' : 'Ctrl+[',
+      onSelect: () => st().stackSelection('backward')
+    },
+    {
+      id: 'back',
+      label: 'Send to back',
+      shortcut: mac ? '⇧⌘[' : 'Ctrl+Shift+[',
+      onSelect: () => st().stackSelection('back')
+    }
+  ].map((e) => ({ ...e, disabled: !activeId }))
+
   return (
     <section className="panel layers-panel" aria-label="Layers" data-editor-panel>
       <header className="panel-header">
-        <h2>Layers{layers ? ` (${layers.length})` : ''}</h2>
-        <select
-          aria-label="Add layer"
-          value=""
-          onChange={(e) => {
-            if (e.target.value) store.getState().addNewLayer(e.target.value as NewLayerKind)
-          }}
-        >
-          <option value="">Add…</option>
-          {NEW_LAYER_KINDS.map((k) => (
-            <option key={k.kind} value={k.kind}>
-              {k.label}
-            </option>
-          ))}
-        </select>
+        <h2 className="panel-heading">
+          Layers {layers && <span className="ui-badge">{layers.length}</span>}
+        </h2>
+        <div className="panel-actions" role="toolbar" aria-label="Layer actions">
+          <MenuButton label="Add layer" entries={addEntries} className="ui-iconbtn sm" align="end">
+            <Plus size={16} strokeWidth={1.9} aria-hidden="true" />
+          </MenuButton>
+          <IconButton
+            size="sm"
+            icon={Copy}
+            label="Duplicate"
+            shortcut={sc('edit.duplicate')}
+            disabled={selectionCount === 0}
+            onClick={() => st().duplicateSelection()}
+          />
+          <IconButton
+            size="sm"
+            icon={Group}
+            label="Group"
+            shortcut={sc('edit.group')}
+            disabled={selectionCount === 0}
+            onClick={() => st().groupSelection()}
+          />
+          <IconButton
+            size="sm"
+            icon={Ungroup}
+            label="Ungroup"
+            shortcut={sc('edit.ungroup')}
+            disabled={selectionCount === 0}
+            onClick={() => st().ungroupSelection()}
+          />
+          <MenuButton
+            label="Arrange"
+            entries={arrangeEntries}
+            className="ui-iconbtn sm"
+            align="end"
+          >
+            <Layers2 size={16} strokeWidth={1.75} aria-hidden="true" />
+          </MenuButton>
+          <IconButton
+            size="sm"
+            icon={Trash2}
+            label="Delete"
+            shortcut={sc('edit.delete')}
+            disabled={selectionCount === 0}
+            onClick={() => st().deleteSelection()}
+          />
+          <IconButton
+            size="sm"
+            icon={Keyboard}
+            label="Layer shortcuts"
+            onClick={() => setHelpOpen(true)}
+          />
+        </div>
       </header>
       <div className="panel-sub">
-        <input
-          type="search"
-          aria-label="Filter layers by name"
-          placeholder="Filter layers"
-          value={filter}
-          onChange={(e) => store.getState().setLayerFilter(e.target.value)}
-        />
-        <div className="stack-buttons" role="group" aria-label="Stacking order">
-          <button
-            type="button"
-            aria-label="Bring to front"
-            title="Bring to front"
-            disabled={!activeId}
-            onClick={() => store.getState().stackSelection('front')}
-          >
-            ⤒
-          </button>
-          <button
-            type="button"
-            aria-label="Bring forward"
-            title="Bring forward"
-            disabled={!activeId}
-            onClick={() => store.getState().stackSelection('forward')}
-          >
-            ↑
-          </button>
-          <button
-            type="button"
-            aria-label="Send backward"
-            title="Send backward"
-            disabled={!activeId}
-            onClick={() => store.getState().stackSelection('backward')}
-          >
-            ↓
-          </button>
-          <button
-            type="button"
-            aria-label="Send to back"
-            title="Send to back"
-            disabled={!activeId}
-            onClick={() => store.getState().stackSelection('back')}
-          >
-            ⤓
-          </button>
+        <div className="search-wrap">
+          <ListFilter size={14} aria-hidden="true" />
+          <input
+            type="search"
+            className="ui-input"
+            aria-label="Filter layers by name"
+            placeholder="Filter layers"
+            value={filter}
+            onChange={(e) => store.getState().setLayerFilter(e.target.value)}
+          />
         </div>
       </div>
       <ul
@@ -443,18 +518,61 @@ export function LayersPanel(): React.JSX.Element {
           />
         ))}
         {rows.length === 0 && (
-          <li className="empty">
-            {filter ? 'No layers match the filter.' : 'No layers yet. Use Add… to create one.'}
+          <li role="presentation">
+            {filter ? (
+              <EmptyState icon={ListFilter} title="No matching layers">
+                Nothing in this project matches “{filter}”.
+              </EmptyState>
+            ) : (
+              <EmptyState icon={LayersIcon} title="No layers yet">
+                Use the + button, or the Design tools on the left, to add a photo, text or shape.
+              </EmptyState>
+            )}
           </li>
         )}
       </ul>
-      <details className="panel-help">
-        <summary>Keyboard and layer order help</summary>
-        <p>
-          Top of the list is the front of the artwork. Arrow keys move; Shift extends; Enter or F2
-          renames; L locks; V shows/hides; drag a row to reorder within its group.
-        </p>
-      </details>
+      {helpOpen && <ShortcutsDialog onClose={() => setHelpOpen(false)} />}
     </section>
+  )
+}
+
+function ShortcutsDialog({ onClose }: { onClose: () => void }): React.JSX.Element {
+  const mac = isMac()
+  const mod = mac ? '⌘' : 'Ctrl+'
+  const rows: [string, string][] = [
+    ['Move between layers', '↑ ↓'],
+    ['Extend selection', 'Shift + ↑ ↓'],
+    ['Expand / collapse group', '→ ←'],
+    ['Rename', 'Enter or F2'],
+    ['Lock / unlock', 'L'],
+    ['Show / hide', 'V'],
+    ['Delete', mac ? '⌫' : 'Delete'],
+    ['Toggle in selection', `${mod}click`],
+    ['Select a range', 'Shift + click'],
+    ['Reorder', 'Drag a row (within its group)']
+  ]
+  return (
+    <Dialog
+      title="Layer panel shortcuts"
+      description="The top of the list is the front of the artwork."
+      onEscape={onClose}
+      width={440}
+      footer={
+        <Button variant="primary" data-autofocus onClick={onClose}>
+          Done
+        </Button>
+      }
+    >
+      <dl className="shortcut-list">
+        {rows.map(([what, keys]) => (
+          <div key={what}>
+            <dt>{what}</dt>
+            <dd>
+              <kbd>{keys}</kbd>
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </Dialog>
   )
 }

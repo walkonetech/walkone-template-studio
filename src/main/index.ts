@@ -3,6 +3,8 @@ import { join } from 'node:path'
 import { IpcChannel, type PingResult } from '../shared/ipc'
 import { registerProjectIpc } from './projectIpc'
 import type { ProjectService } from '../projects/service'
+import { devValue } from './devOverrides'
+import { installAppMenu } from './appMenu'
 import { setupDocumentLifecycle } from './documentLifecycle'
 
 const isDev = !app.isPackaged && Boolean(process.env['ELECTRON_RENDERER_URL'])
@@ -27,11 +29,15 @@ function registerIpc(): ProjectService {
 }
 
 function createWindow(attach: (win: BrowserWindow) => void): void {
+  // Development/validation only (ignored when packaged): WALKONE_DEV_WINDOW_SIZE=1440x900
+  const forced = /^(\d{3,4})x(\d{3,4})$/.exec(devValue('WALKONE_DEV_WINDOW_SIZE') ?? '')
   const win = new BrowserWindow({
-    width: 1280,
-    height: 800,
-    minWidth: 960,
-    minHeight: 600,
+    width: forced ? Number(forced[1]) : 1360,
+    height: forced ? Number(forced[2]) : 860,
+    // Below this the canvas (with the side panels) stops being usable; see docs/UX_SPEC.md.
+    minWidth: 1100,
+    minHeight: 680,
+    backgroundColor: '#17181c', // matches --c-app so there is no white flash before the renderer paints
     show: false,
     title: 'WalkOne Template Studio',
     webPreferences: {
@@ -67,6 +73,7 @@ if (!app.requestSingleInstanceLock()) {
   app.quit()
 } else {
   void app.whenReady().then(async () => {
+    installAppMenu()
     const service: ProjectService = registerIpc()
     await service.scanRecovery().catch((e) => console.error('[recovery] startup scan failed', e))
     const lifecycle = setupDocumentLifecycle({ service, isTrustedSender })

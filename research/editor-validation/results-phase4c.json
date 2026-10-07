@@ -1,0 +1,559 @@
+[
+  {
+    "name": "renderer has no Node access",
+    "ok": true
+  },
+  {
+    "name": "welcome appears with no project (no rail, no side panels, no canvas)",
+    "ok": true,
+    "detail": {
+      "h1": "WalkOne Template Studio",
+      "rail": false,
+      "side": false,
+      "canvas": 0,
+      "newBtn": true,
+      "openBtn": true,
+      "recentEmpty": true,
+      "saveDisabled": true,
+      "sample": true
+    }
+  },
+  {
+    "name": "welcome offers New and Open, empty recents message, Save disabled",
+    "ok": true
+  },
+  {
+    "name": "File menu lists New, Open, Save, Save As, Close",
+    "ok": true,
+    "detail": ["New project…", "Open…", "Save", "Save As…", "Close project"]
+  },
+  {
+    "name": "File menu: only New and Open enabled with no project",
+    "ok": true
+  },
+  {
+    "name": "menu exposes no diagnostic entries",
+    "ok": true
+  },
+  {
+    "name": "Escape closes the menu",
+    "ok": true
+  },
+  {
+    "name": "⌘N opens the New project dialog (welcome screen)",
+    "ok": true
+  },
+  {
+    "name": "New project opens an accessible dialog with focus inside",
+    "ok": true,
+    "detail": {
+      "modal": "true",
+      "title": "New project",
+      "focus": "INPUT",
+      "labelled": true
+    }
+  },
+  {
+    "name": "Escape closes the dialog without creating a project",
+    "ok": true
+  },
+  {
+    "name": "Enter in the dialog creates the project (name + format)",
+    "ok": true,
+    "detail": {
+      "has": true,
+      "name": "Studio Test",
+      "dirty": true,
+      "past": 0,
+      "sel": [],
+      "layers": 0,
+      "snapping": true,
+      "preview": "placeholder",
+      "file": null,
+      "scale": "fit"
+    }
+  },
+  {
+    "name": "New project opens Modified (never saved)",
+    "ok": true
+  },
+  {
+    "name": "top bar shows project name and Modified; status bar shows the format",
+    "ok": true,
+    "detail": {
+      "name": "Studio Test",
+      "state": "Modified",
+      "print": "2×6 Portrait • 600 DPI • 1200×3600 px"
+    }
+  },
+  {
+    "name": "rail, drawer, canvas and side panels appear with a project",
+    "ok": true
+  },
+  {
+    "name": "empty project: Layers shows its empty state, Properties shows the project",
+    "ok": true
+  },
+  {
+    "name": "Save (primary button) writes the file and the title shows Saved",
+    "ok": true,
+    "detail": {
+      "state": "Saved",
+      "file": "Studio.boothproject"
+    }
+  },
+  {
+    "name": "recent project card appears with a relative time and no path",
+    "ok": true,
+    "detail": [
+      {
+        "t": "Studio TestOpened just now",
+        "dis": false
+      }
+    ]
+  },
+  {
+    "name": "clicking a recent project opens it clean",
+    "ok": true,
+    "detail": {
+      "has": true,
+      "name": "Studio Test",
+      "dirty": false,
+      "past": 0,
+      "sel": [],
+      "layers": 0,
+      "snapping": true,
+      "preview": "placeholder",
+      "file": "Studio.boothproject",
+      "scale": "fit"
+    }
+  },
+  {
+    "name": "missing recent file shows \"File not found\" and is disabled",
+    "ok": true,
+    "detail": [
+      {
+        "t": "Studio Test File not found",
+        "dis": true
+      }
+    ]
+  },
+  {
+    "name": "sample project: tool drawer open at 1440 width",
+    "ok": true
+  },
+  {
+    "name": "tool rail: Design active, others disabled with honest tooltips",
+    "ok": true
+  },
+  {
+    "name": "Layers: clicking a row selects it",
+    "ok": true
+  },
+  {
+    "name": "Properties: shows Transform / Appearance / Text sections for text",
+    "ok": true
+  },
+  {
+    "name": "inspector numeric edit: X commits on Enter",
+    "ok": true
+  },
+  {
+    "name": "numeric edit is one undo step and marks Modified",
+    "ok": true
+  },
+  {
+    "name": "invalid number keeps the old value and shows an inline error state",
+    "ok": true
+  },
+  {
+    "name": "opacity numeric field commits (50%)",
+    "ok": true
+  },
+  {
+    "name": "rename via inspector name field",
+    "ok": true
+  },
+  {
+    "name": "rename in the Layers panel (double-click, Enter)",
+    "ok": true
+  },
+  {
+    "name": "text content edit (textarea commit on blur)",
+    "ok": true
+  },
+  {
+    "name": "color control: swatch + hex + picker button (native picker is secondary)",
+    "ok": true
+  },
+  {
+    "name": "color hex edit commits",
+    "ok": true,
+    "detail": {
+      "kind": "literal",
+      "value": "#ff0000"
+    }
+  },
+  {
+    "name": "invalid hex is rejected (fill unchanged) with an alert",
+    "ok": true
+  },
+  {
+    "name": "inspector section collapses (aria-expanded false)",
+    "ok": true
+  },
+  {
+    "name": "collapse state persists across selection; photo sections shown",
+    "ok": true
+  },
+  {
+    "name": "collapsing a section does not touch history",
+    "ok": true
+  },
+  {
+    "name": "photo number edit",
+    "ok": true
+  },
+  {
+    "name": "hide layer via row eye button",
+    "ok": true
+  },
+  {
+    "name": "hidden state stays visible in the row without hover (warning treatment)",
+    "ok": true
+  },
+  {
+    "name": "lock layer via row button",
+    "ok": true
+  },
+  {
+    "name": "Duplicate (panel action) adds a layer",
+    "ok": true
+  },
+  {
+    "name": "⌘Z undoes the duplicate (shortcut works from the canvas/panel)",
+    "ok": true
+  },
+  {
+    "name": "Arrange menu offers four stacking commands",
+    "ok": true
+  },
+  {
+    "name": "Send to back changes stacking",
+    "ok": true
+  },
+  {
+    "name": "filter with no match shows the empty state",
+    "ok": true
+  },
+  {
+    "name": "filter narrows the list",
+    "ok": true
+  },
+  {
+    "name": "Cmd-click extends selection to two layers",
+    "ok": true
+  },
+  {
+    "name": "multi-selection inspector shows count + actions",
+    "ok": true
+  },
+  {
+    "name": "Group works from the panel header",
+    "ok": true
+  },
+  {
+    "name": "Undo (icon button) steps history back",
+    "ok": true
+  },
+  {
+    "name": "Redo (icon button) steps history forward",
+    "ok": true
+  },
+  {
+    "name": "icon buttons have accessible names (Undo, Redo, Duplicate, Group, Delete)",
+    "ok": true
+  },
+  {
+    "name": "Edit menu shows shortcut hints and enablement",
+    "ok": true,
+    "detail": ["Undo", "Redo(off)", "Duplicate", "Delete", "Group", "Ungroup"]
+  },
+  {
+    "name": "Edit > Duplicate routes to the store",
+    "ok": true
+  },
+  {
+    "name": "View menu shows Snap as a checked item",
+    "ok": true,
+    "detail": "true"
+  },
+  {
+    "name": "View > Snap toggles snapping off and the status button reflects it",
+    "ok": true
+  },
+  {
+    "name": "status bar Snap button toggles it back",
+    "ok": true
+  },
+  {
+    "name": "status bar Preview photos toggles photo display",
+    "ok": true
+  },
+  {
+    "name": "zoom controls: in changes, 100% = 100%, Fit returns to fit",
+    "ok": true,
+    "detail": {
+      "z0": "21%",
+      "z1": "26%",
+      "z100": "100%",
+      "zfit": "21%"
+    }
+  },
+  {
+    "name": "⌘1 = 100%, ⌘0 = fit, ⌘= zooms in",
+    "ok": true,
+    "detail": {
+      "zk1": "100%",
+      "zk0": "21%",
+      "zkp": "26%"
+    }
+  },
+  {
+    "name": "canvas drag still moves a layer (real mouse)",
+    "ok": true
+  },
+  {
+    "name": "artboard is an editor-only effect: exact-size render has no shadow/edge",
+    "ok": true
+  },
+  {
+    "name": "sidebar resizes from the keyboard (ArrowLeft grows it) within limits",
+    "ok": true,
+    "detail": {
+      "w0": 320,
+      "w1": 352
+    }
+  },
+  {
+    "name": "resizing a panel does not touch history",
+    "ok": true
+  },
+  {
+    "name": "Layers/Properties splitter drags (mouse)",
+    "ok": true,
+    "detail": {
+      "split0": 319.6015625,
+      "split1": 399.5
+    }
+  },
+  {
+    "name": "inputs protect global shortcuts (Delete/Backspace/⌘D/⌘Z in a field change nothing)",
+    "ok": true,
+    "detail": {
+      "layers": 11,
+      "count": 11
+    }
+  },
+  {
+    "name": "Tab traversal reaches many distinct controls (≥ 25)",
+    "ok": true,
+    "detail": 44
+  },
+  {
+    "name": "every keyboard-focused control shows a visible focus ring",
+    "ok": true,
+    "detail": []
+  },
+  {
+    "name": "abrupt termination (SIGKILL) left a recoverable session",
+    "ok": true
+  },
+  {
+    "name": "recovery dialog: calm title, project name, time and file status",
+    "ok": true,
+    "detail": "We found unsaved work from a previous session"
+  },
+  {
+    "name": "recovery dialog: Recover / Discard / Decide later, focus starts on Recover",
+    "ok": true,
+    "detail": ["Recover", "Discard", "Decide later"]
+  },
+  {
+    "name": "recovery dialog is not color-only and has no file paths",
+    "ok": true
+  },
+  {
+    "name": "Decide later closes the dialog and keeps the session",
+    "ok": true
+  },
+  {
+    "name": "after Decide later the welcome screen is usable",
+    "ok": true
+  },
+  {
+    "name": "session still offered on the next launch",
+    "ok": true
+  },
+  {
+    "name": "Discard asks for confirmation first (session still on disk)",
+    "ok": true
+  },
+  {
+    "name": "Keep cancels the discard",
+    "ok": true
+  },
+  {
+    "name": "Confirm discard removes the recovery copy and closes the dialog",
+    "ok": true
+  },
+  {
+    "name": "Recover opens the project Modified with the edit",
+    "ok": true,
+    "detail": {
+      "has": true,
+      "name": "Diagnostic Sample",
+      "dirty": true,
+      "past": 0,
+      "sel": [],
+      "layers": 10,
+      "snapping": true,
+      "preview": "placeholder",
+      "file": null,
+      "scale": "fit"
+    }
+  },
+  {
+    "name": "top bar shows Modified after recovery; dialog gone",
+    "ok": true
+  },
+  {
+    "name": "autosave failure shows a restrained \"Autosave issue\" badge (no modal)",
+    "ok": true,
+    "detail": {
+      "text": "Autosave issue",
+      "role": "alert",
+      "modal": false
+    }
+  },
+  {
+    "name": "1100×680: no horizontal or vertical page overflow",
+    "ok": true,
+    "detail": {
+      "sw": 1100,
+      "iw": 1100,
+      "sh": 652,
+      "ih": 652
+    }
+  },
+  {
+    "name": "1100×680: canvas workspace ≥ 500 px wide, sidebar fully on screen",
+    "ok": true,
+    "detail": {
+      "ws": 715,
+      "drawer": false
+    }
+  },
+  {
+    "name": "1100×680: Layers and Properties each ≥ 150 px tall",
+    "ok": true,
+    "detail": {
+      "layers": 232,
+      "props": 347
+    }
+  },
+  {
+    "name": "1100×680: top bar does not clip",
+    "ok": true
+  },
+  {
+    "name": "1280×800: no horizontal or vertical page overflow",
+    "ok": true,
+    "detail": {
+      "sw": 1280,
+      "iw": 1280,
+      "sh": 772,
+      "ih": 772
+    }
+  },
+  {
+    "name": "1280×800: canvas workspace ≥ 500 px wide, sidebar fully on screen",
+    "ok": true,
+    "detail": {
+      "ws": 895,
+      "drawer": false
+    }
+  },
+  {
+    "name": "1280×800: Layers and Properties each ≥ 150 px tall",
+    "ok": true,
+    "detail": {
+      "layers": 280,
+      "props": 419
+    }
+  },
+  {
+    "name": "1280×800: top bar does not clip",
+    "ok": true
+  },
+  {
+    "name": "1440×900: no horizontal or vertical page overflow",
+    "ok": true,
+    "detail": {
+      "sw": 1440,
+      "iw": 1440,
+      "sh": 872,
+      "ih": 872
+    }
+  },
+  {
+    "name": "1440×900: canvas workspace ≥ 500 px wide, sidebar fully on screen",
+    "ok": true,
+    "detail": {
+      "ws": 831,
+      "drawer": true
+    }
+  },
+  {
+    "name": "1440×900: Layers and Properties each ≥ 150 px tall",
+    "ok": true,
+    "detail": {
+      "layers": 320,
+      "props": 479
+    }
+  },
+  {
+    "name": "1440×900: top bar does not clip",
+    "ok": true
+  },
+  {
+    "name": "1920×1080: no horizontal or vertical page overflow",
+    "ok": true,
+    "detail": {
+      "sw": 1728,
+      "iw": 1728,
+      "sh": 1006,
+      "ih": 1006
+    }
+  },
+  {
+    "name": "1920×1080: canvas workspace ≥ 500 px wide, sidebar fully on screen",
+    "ok": true,
+    "detail": {
+      "ws": 1119,
+      "drawer": true
+    }
+  },
+  {
+    "name": "1920×1080: Layers and Properties each ≥ 150 px tall",
+    "ok": true,
+    "detail": {
+      "layers": 373,
+      "props": 560
+    }
+  },
+  {
+    "name": "1920×1080: top bar does not clip",
+    "ok": true
+  }
+]

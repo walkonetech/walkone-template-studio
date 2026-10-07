@@ -1,7 +1,10 @@
+import { Link2, Pipette } from 'lucide-react'
 import { useId, useRef, useState } from 'react'
 import type { ColorValue, Palette } from '@domain'
 import { resolveColor } from '@canvas/rendering/color'
 import { formatNumber, normalizeHex, parseNumberInput, type NumberRule } from '@editor/numberInput'
+import { Button } from '../ui/Button'
+import { IconButton } from '../ui/IconButton'
 
 /**
  * Draft text for a field while the user types. `take()` returns the draft AND clears it synchronously, so the
@@ -56,25 +59,27 @@ export function FieldRow({
   )
 }
 
-export function NumberField({
-  label,
+/**
+ * The numeric text input (no label): keeps a draft while typing, commits on Enter/blur, Escape discards, and shows an
+ * inline error for input it cannot parse. Shared by NumberField, CompactNumber and OpacityField.
+ */
+function NumberInput({
+  id,
   value,
   onCommit,
   rule,
-  unit,
   disabled,
-  mixed
+  mixed,
+  className
 }: {
-  label: string
+  id: string
   value: number
   onCommit: (value: number) => void
-  rule?: NumberRule
-  unit?: string
-  disabled?: boolean
-  /** Several layers with different values: shown empty with a "Mixed" placeholder. */
-  mixed?: boolean
+  rule: NumberRule | undefined
+  disabled: boolean | undefined
+  mixed: boolean | undefined
+  className?: string
 }): React.JSX.Element {
-  const id = useId()
   const { draft, set: setDraft, take } = useDraft()
   const [error, setError] = useState<string | null>(null)
   const shown = draft ?? (mixed ? '' : formatNumber(value))
@@ -92,13 +97,14 @@ export function NumberField({
   }
 
   return (
-    <FieldRow label={unit ? `${label} (${unit})` : label} htmlFor={id}>
+    <>
       <input
         id={id}
         type="text"
         inputMode="decimal"
         autoComplete="off"
         spellCheck={false}
+        className={`ui-input num ${className ?? ''}`}
         value={shown}
         placeholder={mixed ? 'Mixed' : undefined}
         disabled={disabled}
@@ -129,6 +135,124 @@ export function NumberField({
           {error}
         </span>
       )}
+    </>
+  )
+}
+
+interface NumberFieldProps {
+  label: string
+  value: number
+  onCommit: (value: number) => void
+  rule?: NumberRule
+  unit?: string
+  disabled?: boolean
+  /** Several layers with different values: shown empty with a "Mixed" placeholder. */
+  mixed?: boolean
+}
+
+export function NumberField({
+  label,
+  value,
+  onCommit,
+  rule,
+  unit,
+  disabled,
+  mixed
+}: NumberFieldProps): React.JSX.Element {
+  const id = useId()
+  return (
+    <FieldRow label={unit ? `${label} (${unit})` : label} htmlFor={id}>
+      <NumberInput
+        id={id}
+        value={value}
+        onCommit={onCommit}
+        rule={rule}
+        disabled={disabled}
+        mixed={mixed}
+      />
+    </FieldRow>
+  )
+}
+
+/**
+ * Compact transform cell: a short visible tag ("X", "W", "°") inside the field, the full name for assistive tech
+ * ("Width (px)"). Two of these sit side by side (X | Y, W | H).
+ */
+export function CompactNumber({
+  label,
+  short,
+  value,
+  onCommit,
+  rule,
+  unit,
+  disabled,
+  mixed
+}: NumberFieldProps & { short: string }): React.JSX.Element {
+  const id = useId()
+  return (
+    <div className="compact-num">
+      <label htmlFor={id}>
+        <span aria-hidden="true">{short}</span>
+        <span className="sr-only">{unit ? `${label} (${unit})` : label}</span>
+      </label>
+      <NumberInput
+        id={id}
+        value={value}
+        onCommit={onCommit}
+        rule={rule}
+        disabled={disabled}
+        mixed={mixed}
+      />
+    </div>
+  )
+}
+
+/** Opacity: a slider for quick scrubbing (commits on release) plus the exact numeric field. Keyboard precision kept. */
+export function OpacityField({
+  value,
+  onCommit,
+  disabled,
+  mixed
+}: {
+  value: number
+  onCommit: (percent: number) => void
+  disabled?: boolean
+  mixed?: boolean
+}): React.JSX.Element {
+  const id = useId()
+  const [live, setLive] = useState<number | null>(null)
+  const shown = live ?? value
+  const release = (): void => {
+    if (live !== null && live !== value) onCommit(live)
+    setLive(null)
+  }
+  return (
+    <FieldRow label="Opacity (%)" htmlFor={id}>
+      <div className="opacity-row">
+        <input
+          type="range"
+          className="ui-range"
+          aria-label="Opacity slider"
+          min={0}
+          max={100}
+          step={1}
+          value={mixed && live === null ? 100 : shown}
+          disabled={disabled}
+          onChange={(e) => setLive(Number(e.target.value))}
+          onPointerUp={release}
+          onKeyUp={release}
+          onBlur={release}
+        />
+        <NumberInput
+          id={id}
+          className="narrow"
+          value={shown}
+          onCommit={onCommit}
+          rule={{ min: 0, max: 100 }}
+          disabled={disabled}
+          mixed={mixed && live === null}
+        />
+      </div>
     </FieldRow>
   )
 }
@@ -159,6 +283,7 @@ export function TextField({
       <input
         id={id}
         type="text"
+        className="ui-input"
         list={list}
         autoComplete="off"
         spellCheck={false}
@@ -208,6 +333,7 @@ export function TextAreaField({
     <FieldRow label={label} htmlFor={id}>
       <textarea
         id={id}
+        className="ui-textarea"
         rows={3}
         value={draft ?? value}
         disabled={disabled}
@@ -248,6 +374,7 @@ export function SelectField<T extends string | number>({
     <FieldRow label={label} htmlFor={id}>
       <select
         id={id}
+        className="ui-select"
         value={String(value)}
         disabled={disabled}
         onChange={(e) => {
@@ -286,6 +413,7 @@ export function CheckboxField({
       <input
         id={id}
         type="checkbox"
+        className="ui-check"
         checked={checked}
         disabled={disabled}
         ref={(el) => {
@@ -300,7 +428,8 @@ export function CheckboxField({
 }
 
 /**
- * Color control. A LITERAL color is editable (native picker + hex text). A PALETTE reference is shown as such
+ * Color control. A LITERAL color shows a swatch, an editable hex value and a secondary eyedropper button that opens
+ * the system picker (the native input is hidden; it is never the primary UI). A PALETTE reference is shown as linked
  * and is never silently rewritten: the only way to leave the palette link is the explicit "Use fixed color" button.
  */
 export function ColorField({
@@ -320,6 +449,7 @@ export function ColorField({
   const resolved = resolveColor(palette, value)
   const { draft, set: setDraft, take } = useDraft()
   const [error, setError] = useState<string | null>(null)
+  const picker = useRef<HTMLInputElement>(null)
 
   if (value.kind === 'palette') {
     const entry = palette.colors.find((c) => c.id === value.paletteColorId)
@@ -327,15 +457,17 @@ export function ColorField({
       <FieldRow label={label}>
         <span className="swatch" style={{ background: resolved }} aria-hidden="true" />
         <span className="palette-note">
-          Palette: {entry ? `${entry.name} (${entry.value})` : 'missing color'}
+          <Link2 size={12} aria-hidden="true" /> Palette:{' '}
+          {entry ? `${entry.name} (${entry.value})` : 'missing color'}
         </span>
-        <button
-          type="button"
+        <Button
+          size="sm"
+          variant="ghost"
           disabled={disabled}
           onClick={() => onCommit({ kind: 'literal', value: resolved })}
         >
           Use fixed color
-        </button>
+        </Button>
       </FieldRow>
     )
   }
@@ -354,44 +486,56 @@ export function ColorField({
 
   return (
     <FieldRow label={label} htmlFor={id}>
-      <input
-        type="color"
-        aria-label={`${label} picker`}
-        className="color-picker"
-        value={value.value.slice(0, 7)}
-        disabled={disabled}
-        onChange={(e) =>
-          onCommit({ kind: 'literal', value: `${e.target.value}${value.value.slice(7)}` }, true)
-        }
-      />
-      <input
-        id={id}
-        type="text"
-        className="hex-input"
-        spellCheck={false}
-        autoComplete="off"
-        value={draft ?? value.value}
-        disabled={disabled}
-        aria-invalid={error ? true : undefined}
-        onFocus={(e) => {
-          setDraft(value.value)
-          e.currentTarget.select()
-        }}
-        onChange={(e) => setDraft(e.target.value)}
-        onBlur={commitHex}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault()
-            commitHex()
-            e.currentTarget.blur()
-          } else if (e.key === 'Escape') {
-            e.preventDefault()
-            take()
-            setError(null)
-            e.currentTarget.blur()
+      <span className="color-input">
+        <span className="swatch lg" style={{ background: value.value }} aria-hidden="true" />
+        <input
+          id={id}
+          type="text"
+          className="ui-input hex-input"
+          spellCheck={false}
+          autoComplete="off"
+          value={draft ?? value.value}
+          disabled={disabled}
+          aria-invalid={error ? true : undefined}
+          onFocus={(e) => {
+            setDraft(value.value)
+            e.currentTarget.select()
+          }}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={commitHex}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              commitHex()
+              e.currentTarget.blur()
+            } else if (e.key === 'Escape') {
+              e.preventDefault()
+              take()
+              setError(null)
+              e.currentTarget.blur()
+            }
+          }}
+        />
+        <IconButton
+          size="sm"
+          icon={Pipette}
+          label={`Open ${label} color picker`}
+          disabled={disabled}
+          onClick={() => picker.current?.showPicker?.()}
+        />
+        <input
+          ref={picker}
+          type="color"
+          tabIndex={-1}
+          aria-label={`${label} picker`}
+          className="native-color"
+          value={value.value.slice(0, 7)}
+          disabled={disabled}
+          onChange={(e) =>
+            onCommit({ kind: 'literal', value: `${e.target.value}${value.value.slice(7)}` }, true)
           }
-        }}
-      />
+        />
+      </span>
       {error && (
         <span role="alert" className="field-error">
           {error}

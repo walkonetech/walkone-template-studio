@@ -79,7 +79,18 @@ const rename = (c, name) =>
     `(()=>{const s=__wts.store.getState(); s.renameLayer(s.project.layers[0].id, ${JSON.stringify(name)}); return true})()`
   )
 const projectName = (c) => c.ev('__wts.store.getState().project.layers[0].name')
-const click = (c, label) => c.clickButton(label)
+// Phase 4C: file commands live in the File menu (the old project rail is gone).
+const FILE_MENU = new Set(['Close project', 'Open…', 'Save As…'])
+const click = async (c, label) => {
+  if (!FILE_MENU.has(label)) return c.clickButton(label)
+  await c.ev(
+    `[...document.querySelectorAll('.menubar-btn')].find(b=>b.textContent==='File').click(); 1`
+  )
+  await sleep(250)
+  return c.ev(
+    `(()=>{const i=[...document.querySelectorAll('[role=menu] [role^=menuitem]')].find(x=>x.querySelector('.grow').textContent.trim()===${JSON.stringify(label)}); if(!i||i.disabled) return 'no item'; i.click(); return 'ok'})()`
+  )
+}
 
 ;(async () => {
   const savePath = path.join(tmp, 'Client.boothproject')

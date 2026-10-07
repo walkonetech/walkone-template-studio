@@ -1,3 +1,4 @@
+import { CANVAS_THEME } from './canvasTheme'
 import { useEffect, useLayoutEffect, useRef, type ComponentType } from 'react'
 import {
   Ellipse,
@@ -382,10 +383,13 @@ export function EditorCanvas(): React.JSX.Element | null {
             width={design.width}
             height={design.height}
             fill="#ffffff"
+            stroke={CANVAS_THEME.artboardEdge}
+            strokeWidth={1}
+            strokeScaleEnabled={false}
             shadowColor="#000000"
-            shadowBlur={30}
-            shadowOpacity={0.35}
-            shadowOffsetY={8}
+            shadowBlur={36}
+            shadowOpacity={0.55}
+            shadowOffsetY={10}
             shadowForStrokeEnabled={false}
           />
         </KLayer>
@@ -408,7 +412,7 @@ export function EditorCanvas(): React.JSX.Element | null {
                 key={`${g.axis}-${g.at}`}
                 listening={false}
                 points={g.axis === 'x' ? [g.at, -1e5, g.at, 1e5] : [-1e5, g.at, 1e5, g.at]}
-                stroke="#e91e63"
+                stroke={CANVAS_THEME.guide}
                 strokeWidth={1.5}
                 strokeScaleEnabled={false}
               />
@@ -419,9 +423,9 @@ export function EditorCanvas(): React.JSX.Element | null {
             rotationSnapTolerance={4}
             anchorSize={13}
             anchorCornerRadius={2}
-            anchorFill="#ffffff"
-            anchorStroke="#1a73e8"
-            borderStroke="#1a73e8"
+            anchorFill={CANVAS_THEME.handleFill}
+            anchorStroke={CANVAS_THEME.accent}
+            borderStroke={CANVAS_THEME.accent}
             rotateAnchorOffset={28}
             ignoreStroke
             onTransformEnd={onTransformerEnd}

@@ -1,12 +1,12 @@
 # Current State
 
-_Last updated: 2026-10-06 (end of Phase 4B)_
+_Last updated: 2026-10-07 (end of Phase 4C)_
 
 ## Project status
-The editor now has a functional production layout: toolbar, project rail, Konva canvas, a **Layers panel** and a **Properties inspector**, all operating on the same Zustand store and `TemplateProject`. Underneath: vendor-neutral domain model, `.boothproject` persistence with working sessions, snapshot undo/redo, exact-size render API. No DSLR Booth importer/exporter, asset library, templates, badges, palette manager or final visual design exists.
+The editor has a redesigned, original dark-neutral interface: welcome screen, File/Edit/View menus, document title with Modified/Saved state, tool rail + drawer, canvas workspace with a floating artboard, resizable Layers + Properties column, status bar with zoom/snap/preview controls, and one accessible dialog shell. Underneath: vendor-neutral domain model, `.boothproject` persistence with working sessions, autosave and crash recovery, snapshot undo/redo, exact-size render API. No DSLR Booth importer/exporter, asset library, templates, badges or palette manager exists.
 
 ## Current phase
-**Phase 4B — Persistence safety, autosave and crash recovery: COMPLETE.** Phase 4C (UI redesign) and Phase 5 have **not** begun; awaiting owner approval.
+**Phase 4C — Editor UI/UX redesign and design system: COMPLETE (first pass, pending owner visual review).** Phase 5 has **not** begun; awaiting owner approval.
 
 ## Completed
 - Phases 0–3B (see [ROADMAP.md](ROADMAP.md)).
@@ -20,6 +20,12 @@ Nothing.
 
 ## Not started
 Asset browser/library, palette manager, templates, badge builder, recipes, DSLR Booth importer/exporter, preflight, context menu, copy/paste, align/distribute, project wizard/dashboard, final styling.
+
+## Phase 4C (done)
+Design tokens (`styles/tokens.css`), small component library (`renderer/src/ui`), `lucide-react` icons (the only new dependency), welcome screen with recents, New project dialog, in-app menus driven by a single command model (`editor/commands.ts`), tool rail/drawer architecture (`editor/tools.ts`, only *Design* live), top bar hierarchy, restyled Layers panel (hover actions, Arrange menu, empty states, shortcuts dialog) and Properties inspector (collapsible sections, compact transform grid, opacity slider, swatch+hex color control), status bar redesign, resizable side panels (UI-only), restyled recovery dialog and quiet autosave-issue badge, minimal native menu, minimum window 1100×680, ⌘N/⌘O/⌘0/⌘1/⌘=/⌘− wired. ADR-035; [../research/UI_UX_REVIEW.md](../research/UI_UX_REVIEW.md). No domain, schema, persistence or store-behaviour change.
+**Verified:** `typecheck`, `lint`, `format:check`, `build`, `npm test` (410 tests) and three scripted built-app suites on macOS — **automation, not human testing**: `validate-4c.js` (97 checks: welcome, menus, dialogs, recents, editor flows, input edits, keyboard/focus rings, recovery Decide later/Discard/Recover, autosave issue, 4 window sizes), `validate.js` Phase 4 regression (97/97, adapted to menus), `validate-4b.js` (40/40). Screenshots (git-ignored): `research/editor-validation/shots/`.
+**Not verified:** a human visual review on a real display, VoiceOver, Windows, ⌘Z on a physical keyboard with the native Edit menu, window resizing by dragging the frame (sizes were set at launch), the native `<select>` popup and OS color-picker appearance.
+**Known UX limitations:** see [../research/UI_UX_REVIEW.md](../research/UI_UX_REVIEW.md) §10; notably no layer thumbnails/context menu, stacking via a menu (one extra click), placeholder Export/Templates/Photos/Assets, panel sizes not persisted, one theme.
 
 ## Phase 4B (done)
 Native Save / Don't Save / Cancel on every close path via a main-process coordinator; debounced autosave to the working session only; session metadata with owner token; startup recovery scan (clean removed, corrupt/very old quarantined, others offered); temporary accessible recovery dialog (Recover / Discard / Decide later); conflict-aware recovery that never overwrites the portable file. ADR-034. Verified by unit tests plus 40/40 scripted checks on the built macOS app (`research/editor-validation/validate-4b.js`, **automation, not human testing**).
@@ -42,4 +48,4 @@ No context menu, no drag into/out of groups (cross-group drops are refused), no 
 `AGENTS.md` stays git-ignored. No Git remote exists (intentional). DSLR Booth fixtures are private and unchanged. Generated screenshots are git-ignored; the `#debug` hook is development-only.
 
 ## Next recommended action
-Owner reviews Phase 4B (ideally by hand: quit with unsaved work, force-quit, relaunch), then approves Phase 4C (UI redesign) before Phase 5.
+Owner reviews Phase 4C on a real display (and Phase 4B by hand: quit with unsaved work, force-quit, relaunch), then approves Phase 5 (photo placeholders) or a short visual polish pass first.

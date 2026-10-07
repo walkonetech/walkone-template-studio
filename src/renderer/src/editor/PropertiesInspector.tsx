@@ -13,11 +13,18 @@ import { wrapDegrees } from '@canvas/geometry/geometry'
 import { describePrint } from '@editor/describe'
 import { opacityToPercent, percentToOpacity } from '@editor/numberInput'
 import { layerTypeLabel } from '@editor/layerTree'
+import { Copy, Group, MousePointerClick, Trash2 } from 'lucide-react'
 import { editorStore, useEditor } from './editorStore'
+import { layoutStore, useLayout } from './layoutStore'
+import { PanelSection } from '../ui/PanelSection'
+import { Button } from '../ui/Button'
+import { EmptyState } from '../ui/EmptyState'
 import {
   CheckboxField,
   ColorField,
+  CompactNumber,
   NumberField,
+  OpacityField,
   SelectField,
   TextAreaField,
   TextField
@@ -58,17 +65,26 @@ const WEIGHTS = [100, 200, 300, 400, 500, 600, 700, 800, 900].map((w) => ({
 }))
 
 function Section({
+  id,
   title,
-  children
+  children,
+  aside
 }: {
+  id: string
   title: string
   children: React.ReactNode
+  aside?: React.ReactNode
 }): React.JSX.Element {
+  const collapsed = useLayout((st) => st.collapsedSections.includes(id))
   return (
-    <fieldset className="inspector-section">
-      <legend>{title}</legend>
+    <PanelSection
+      title={title}
+      open={!collapsed}
+      onToggle={() => layoutStore.getState().toggleSection(id)}
+      {...(aside ? { aside } : {})}
+    >
       {children}
-    </fieldset>
+    </PanelSection>
   )
 }
 
@@ -83,39 +99,38 @@ function GeneralSection({
 }): React.JSX.Element {
   const inheritedLock = !layer.locked && !isEditable(project.layers, layer)
   return (
-    <Section title="Layer">
+    <Section id="layer" title="Layer">
       <TextField
         label="Name"
         value={layer.name}
         allowEmpty={false}
         onCommit={(name) => store.getState().renameLayer(layer.id, name)}
       />
-      <CheckboxField
-        label="Visible"
-        checked={layer.visible}
-        onCommit={(visible) => edit([layer.id], { visible })}
-      />
-      <CheckboxField
-        label="Locked"
-        checked={layer.locked}
-        onCommit={(v) => edit([layer.id], { locked: v })}
-        {...(inheritedLock ? { hint: 'Also locked by a parent group' } : {})}
-      />
-      <p className="field-note">
-        {layerTypeLabel(layer)}
-        {locked ? ' · editing is disabled while locked' : ''}
-      </p>
+      <div className="check-pair">
+        <CheckboxField
+          label="Visible"
+          checked={layer.visible}
+          onCommit={(visible) => edit([layer.id], { visible })}
+        />
+        <CheckboxField
+          label="Locked"
+          checked={layer.locked}
+          onCommit={(v) => edit([layer.id], { locked: v })}
+          {...(inheritedLock ? { hint: 'Also locked by a parent group' } : {})}
+        />
+      </div>
+      {locked && <p className="field-note">Editing is disabled while this layer is locked.</p>}
     </Section>
   )
 }
 
-function GeometrySection({ layer, locked }: { layer: Layer; locked: boolean }): React.JSX.Element {
+function TransformSection({ layer, locked }: { layer: Layer; locked: boolean }): React.JSX.Element {
   const isGroup = layer.type === 'group'
   const heightRule =
     layer.type === 'shape' && layer.shape === 'line' ? { min: 0 } : { positive: true }
   if (isGroup) {
     return (
-      <Section title="Position & size (design px, derived from children)">
+      <Section id="transform" title="Transform">
         <dl className="derived">
           {(['x', 'y', 'width', 'height'] as const).map((k) => (
             <div key={k}>
@@ -125,58 +140,78 @@ function GeometrySection({ layer, locked }: { layer: Layer; locked: boolean }): 
           ))}
         </dl>
         <p className="field-note">
-          Move or resize the group on the canvas; its box follows its children.
+          A group's box follows its children. Move or resize it on the canvas.
         </p>
       </Section>
     )
   }
   return (
-    <Section title="Position & size (design px)">
-      <NumberField
-        label="X"
-        unit="px"
-        value={layer.x}
-        disabled={locked}
-        onCommit={(x) => edit([layer.id], { x })}
-      />
-      <NumberField
-        label="Y"
-        unit="px"
-        value={layer.y}
-        disabled={locked}
-        onCommit={(y) => edit([layer.id], { y })}
-      />
-      <NumberField
-        label="Width"
-        unit="px"
-        value={layer.width}
-        rule={{ positive: true }}
-        disabled={locked}
-        onCommit={(width) => edit([layer.id], { width })}
-      />
-      <NumberField
-        label="Height"
-        unit="px"
-        value={layer.height}
-        rule={heightRule}
-        disabled={locked}
-        onCommit={(height) => edit([layer.id], { height })}
-      />
-      <NumberField
-        label="Rotation"
-        unit="°"
-        value={layer.rotation}
-        disabled={locked}
-        onCommit={(r) => edit([layer.id], { rotation: wrapDegrees(r) })}
-      />
-      <NumberField
-        label="Opacity"
-        unit="%"
+    <Section id="transform" title="Transform">
+      <div className="grid-2">
+        <CompactNumber
+          label="X"
+          short="X"
+          unit="px"
+          value={layer.x}
+          disabled={locked}
+          onCommit={(x) => edit([layer.id], { x })}
+        />
+        <CompactNumber
+          label="Y"
+          short="Y"
+          unit="px"
+          value={layer.y}
+          disabled={locked}
+          onCommit={(y) => edit([layer.id], { y })}
+        />
+        <CompactNumber
+          label="Width"
+          short="W"
+          unit="px"
+          value={layer.width}
+          rule={{ positive: true }}
+          disabled={locked}
+          onCommit={(width) => edit([layer.id], { width })}
+        />
+        <CompactNumber
+          label="Height"
+          short="H"
+          unit="px"
+          value={layer.height}
+          rule={heightRule}
+          disabled={locked}
+          onCommit={(height) => edit([layer.id], { height })}
+        />
+        <CompactNumber
+          label="Rotation"
+          short="R"
+          unit="°"
+          value={layer.rotation}
+          disabled={locked}
+          onCommit={(r) => edit([layer.id], { rotation: wrapDegrees(r) })}
+        />
+      </div>
+    </Section>
+  )
+}
+
+function AppearanceSection({
+  layer,
+  locked,
+  children
+}: {
+  layer: Layer
+  locked: boolean
+  children?: React.ReactNode
+}): React.JSX.Element {
+  return (
+    <Section id="appearance" title="Appearance">
+      <OpacityField
         value={opacityToPercent(layer.opacity)}
-        rule={{ min: 0, max: 100 }}
         disabled={locked}
         onCommit={(p) => edit([layer.id], { opacity: percentToOpacity(p) })}
       />
+      {children}
     </Section>
   )
 }
@@ -195,7 +230,7 @@ function PhotoSection({
     : undefined
   const solid = layer.frame.style === 'solid' ? layer.frame : null
   return (
-    <Section title="Photo placeholder">
+    <Section id="photo" title="Photo placeholder">
       <NumberField
         label="Photo number"
         value={layer.photoNumber}
@@ -273,7 +308,7 @@ function ImageSection({
 }): React.JSX.Element {
   const asset = project.assets.find((a) => a.id === layer.assetId)
   return (
-    <Section title="Image">
+    <Section id="image" title="Image">
       <SelectField
         label="Role"
         value={layer.role}
@@ -322,7 +357,7 @@ function TextSection({
   locked: boolean
 }): React.JSX.Element {
   return (
-    <Section title="Text">
+    <Section id="text" title="Text">
       <TextAreaField
         label="Content"
         value={layer.content}
@@ -404,7 +439,7 @@ function TextSection({
   )
 }
 
-function ShapeSection({
+function ShapeAppearance({
   layer,
   project,
   locked
@@ -414,18 +449,7 @@ function ShapeSection({
   locked: boolean
 }): React.JSX.Element {
   return (
-    <Section title="Shape">
-      <SelectField
-        label="Shape"
-        value={layer.shape}
-        options={[
-          { value: 'rectangle', label: 'Rectangle' },
-          { value: 'ellipse', label: 'Ellipse' },
-          { value: 'line', label: 'Line' }
-        ]}
-        disabled={locked}
-        onCommit={(shape) => edit([layer.id], { shape })}
-      />
+    <>
       <CheckboxField
         label="Fill"
         checked={layer.fill !== null}
@@ -472,6 +496,30 @@ function ShapeSection({
           />
         </>
       )}
+    </>
+  )
+}
+
+function ShapeSection({
+  layer,
+  locked
+}: {
+  layer: ShapeLayer
+  locked: boolean
+}): React.JSX.Element {
+  return (
+    <Section id="shape" title="Shape">
+      <SelectField
+        label="Shape"
+        value={layer.shape}
+        options={[
+          { value: 'rectangle', label: 'Rectangle' },
+          { value: 'ellipse', label: 'Ellipse' },
+          { value: 'line', label: 'Line' }
+        ]}
+        disabled={locked}
+        onCommit={(shape) => edit([layer.id], { shape })}
+      />
       {layer.shape === 'rectangle' && (
         <NumberField
           label="Corner radius"
@@ -497,11 +545,19 @@ function SingleInspector({
   return (
     <>
       <GeneralSection layer={layer} project={project} locked={locked} />
-      <GeometrySection layer={layer} locked={locked} />
+      <TransformSection layer={layer} locked={locked} />
+      {/* Group opacity is intentionally not exposed (children carry their own). */}
+      {layer.type !== 'group' && (
+        <AppearanceSection layer={layer} locked={locked}>
+          {layer.type === 'shape' && (
+            <ShapeAppearance layer={layer} project={project} locked={locked} />
+          )}
+        </AppearanceSection>
+      )}
       {layer.type === 'photo' && <PhotoSection layer={layer} project={project} locked={locked} />}
       {layer.type === 'image' && <ImageSection layer={layer} project={project} locked={locked} />}
       {layer.type === 'text' && <TextSection layer={layer} project={project} locked={locked} />}
-      {layer.type === 'shape' && <ShapeSection layer={layer} project={project} locked={locked} />}
+      {layer.type === 'shape' && <ShapeSection layer={layer} locked={locked} />}
     </>
   )
 }
@@ -520,7 +576,7 @@ function MultiInspector({
   const editableIds = layers.filter((l) => isEditable(project.layers, l)).map((l) => l.id)
   return (
     <>
-      <Section title={`${layers.length} layers selected`}>
+      <Section id="multi" title={`${layers.length} layers selected`}>
         <CheckboxField
           label="Visible"
           checked={all((l) => l.visible)}
@@ -534,26 +590,28 @@ function MultiInspector({
           onCommit={(locked) => edit(ids, { locked })}
         />
         {opacities.size >= 1 && (
-          <NumberField
-            label="Opacity"
-            unit="%"
+          <OpacityField
             value={opacityToPercent(layers[0]?.opacity ?? 1)}
             mixed={opacities.size > 1}
-            rule={{ min: 0, max: 100 }}
             disabled={editableIds.length === 0}
             onCommit={(p) => edit(editableIds, { opacity: percentToOpacity(p) })}
           />
         )}
         <div className="button-row">
-          <button type="button" onClick={() => store.getState().duplicateSelection()}>
+          <Button size="sm" icon={Copy} onClick={() => store.getState().duplicateSelection()}>
             Duplicate
-          </button>
-          <button type="button" onClick={() => store.getState().groupSelection()}>
+          </Button>
+          <Button size="sm" icon={Group} onClick={() => store.getState().groupSelection()}>
             Group
-          </button>
-          <button type="button" onClick={() => store.getState().deleteSelection()}>
+          </Button>
+          <Button
+            size="sm"
+            variant="danger"
+            icon={Trash2}
+            onClick={() => store.getState().deleteSelection()}
+          >
             Delete
-          </button>
+          </Button>
         </div>
         <p className="field-note">
           Position and size are edited per layer: select one layer, or move the whole selection on
@@ -567,32 +625,33 @@ function MultiInspector({
 function ProjectSummary({ project }: { project: TemplateProject }): React.JSX.Element {
   const px = getPixelSize(project.canvas.print)
   return (
-    <Section title="Project">
-      <dl className="derived">
-        <div>
-          <dt>Name</dt>
-          <dd>{project.metadata.name}</dd>
-        </div>
-        <div>
-          <dt>Canvas</dt>
-          <dd>{describePrint(project.canvas.print)}</dd>
-        </div>
-        <div>
-          <dt>Layers</dt>
-          <dd>{project.layers.length}</dd>
-        </div>
-        <div>
-          <dt>Print area</dt>
-          <dd>
-            {px.width}×{px.height} px
-          </dd>
-        </div>
-      </dl>
-      <p className="field-note">
-        Select a layer on the canvas or in the Layers panel to edit its properties. Geometry is in
-        design pixels.
-      </p>
-    </Section>
+    <>
+      <Section id="project" title="Project">
+        <dl className="derived">
+          <div>
+            <dt>Name</dt>
+            <dd>{project.metadata.name}</dd>
+          </div>
+          <div>
+            <dt>Format</dt>
+            <dd>{describePrint(project.canvas.print).split(' • ').slice(0, 2).join(' · ')}</dd>
+          </div>
+          <div>
+            <dt>Layers</dt>
+            <dd>{project.layers.length}</dd>
+          </div>
+          <div>
+            <dt>Print area</dt>
+            <dd>
+              {px.width}×{px.height} px
+            </dd>
+          </div>
+        </dl>
+      </Section>
+      <EmptyState icon={MousePointerClick} title="No layer selected">
+        Select a layer on the canvas or in the Layers panel to edit it.
+      </EmptyState>
+    </>
   )
 }
 
@@ -603,16 +662,16 @@ export function PropertiesInspector(): React.JSX.Element | null {
   const layers = selectedIds
     .map((id) => project.layers.find((l) => l.id === id))
     .filter((l): l is Layer => l !== undefined)
+  const only = layers.length === 1 ? layers[0] : undefined
   return (
     <section className="panel inspector-panel" aria-label="Properties" data-editor-panel>
       <header className="panel-header">
-        <h2>Properties</h2>
+        <h2 className="panel-heading">Properties</h2>
+        {only && <span className="ui-badge">{layerTypeLabel(only)}</span>}
       </header>
       <div className="inspector-body">
         {layers.length === 0 && <ProjectSummary project={project} />}
-        {layers.length === 1 && layers[0] && (
-          <SingleInspector key={layers[0].id} layer={layers[0]} project={project} />
-        )}
+        {only && <SingleInspector key={only.id} layer={only} project={project} />}
         {layers.length > 1 && <MultiInspector layers={layers} project={project} />}
       </div>
     </section>

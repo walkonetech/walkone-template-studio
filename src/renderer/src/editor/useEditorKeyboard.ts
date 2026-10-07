@@ -1,10 +1,15 @@
 import { useEffect } from 'react'
 import { selectViewTransform } from '@editor/store'
 import { editorStore } from './editorStore'
+import { commandForKey } from '@editor/commands'
+import { runCommand } from './commandRunner'
 import { isPrimaryModifier } from './platform'
 
 const isTypingTarget = (t: EventTarget | null): boolean => {
   if (!(t instanceof HTMLElement)) return false
+  // Keys belong to the control itself: splitters (arrows resize), menus, dialogs, radio groups.
+  if (t.closest('[role=separator],[role=menu],[role=menubar],[role=dialog],[role=radiogroup]'))
+    return true
   return (
     t.tagName === 'INPUT' ||
     t.tagName === 'TEXTAREA' ||
@@ -21,8 +26,25 @@ export function useEditorKeyboard(): void {
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent): void => {
       const s = editorStore.getState()
-      if (!s.project || isTypingTarget(e.target) || s.editingTextId) return
       const mod = isPrimaryModifier(e)
+      // New / Open work from anywhere, including the welcome screen and inside text fields.
+      if (mod) {
+        const global = commandForKey(e, true)
+        if (global === 'file.new' || global === 'file.open') {
+          e.preventDefault()
+          if (!e.repeat) runCommand(global)
+          return
+        }
+      }
+      if (!s.project || isTypingTarget(e.target) || s.editingTextId) return
+      if (mod) {
+        const view = commandForKey(e, true)
+        if (view?.startsWith('view.')) {
+          e.preventDefault()
+          runCommand(view)
+          return
+        }
+      }
       const key = e.key
       if (mod && key.toLowerCase() === 'z') {
         e.preventDefault()

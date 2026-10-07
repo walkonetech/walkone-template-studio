@@ -1,0 +1,89 @@
+/*
+ * Design tokens. The editor ships ONE theme (dark neutral); every colour, size and radius used by components comes
+ * from here, so a second theme means redefining these variables, nothing else. Canvas overlay colours that Konva
+ * needs as JS values live in `editor/canvasTheme.ts` and mirror --accent / --guide.
+ */
+:root {
+  color-scheme: dark;
+
+  /* Surfaces (darkest → lightest) */
+  --c-canvas-surround: #101114; /* behind the artboard */
+  --c-app: #17181c; /* top bar, status bar, rail */
+  --c-panel: #1e1f24; /* side panels */
+  --c-elevated: #2a2c33; /* menus, popovers, dialogs, inputs on panels */
+  --c-input: #15161a;
+
+  /* Text (AA on every surface) */
+  --c-text: #ededf1;
+  --c-text-2: #b3b5c0;
+  --c-text-3: #9a9dab;
+  --c-text-disabled: #5d606c;
+
+  /* Lines */
+  --c-divider: #2a2b32;
+  --c-border: #3a3c45;
+  --c-border-strong: #50535f;
+
+  /* Accent and states */
+  --c-accent: #7b8cff;
+  --c-accent-strong: #6275f5;
+  --c-on-accent: #0b0e24;
+  --c-hover: rgb(255 255 255 / 0.06);
+  --c-pressed: rgb(255 255 255 / 0.1);
+  --c-selected: rgb(123 140 255 / 0.2);
+  --c-selected-edge: rgb(123 140 255 / 0.9);
+  --c-focus: #9fb0ff;
+  --c-guide: #ff5f8f; /* snapping guides on the canvas */
+
+  --c-warning: #f2b04c;
+  --c-error: #f27d78;
+  --c-success: #4cc38a;
+  --c-warning-bg: rgb(242 176 76 / 0.14);
+  --c-error-bg: rgb(242 125 120 / 0.14);
+
+  /* Typography */
+  --font-ui: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --fs-app-title: 13px; /* application name */
+  --fs-project-title: 14px; /* project name in the top bar */
+  --fs-panel-heading: 12px; /* "LAYERS", "PROPERTIES" */
+  --fs-section-heading: 12px;
+  --fs-body: 13px;
+  --fs-label: 12px;
+  --fs-input: 13px;
+  --fs-meta: 12px;
+  --fs-status: 12px;
+  --fs-tooltip: 12px;
+  --fs-display: 26px; /* welcome screen title */
+  --lh-tight: 1.25;
+  --lh-body: 1.45;
+
+  /* Spacing scale */
+  --sp-1: 4px;
+  --sp-2: 6px;
+  --sp-3: 8px;
+  --sp-4: 12px;
+  --sp-5: 16px;
+  --sp-6: 20px;
+  --sp-7: 24px;
+
+  /* Radii */
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 10px;
+
+  /* Elevation (floating UI only; flat panels have none) */
+  --shadow-popover: 0 8px 24px rgb(0 0 0 / 0.45), 0 0 0 1px rgb(255 255 255 / 0.06);
+  --shadow-dialog: 0 24px 64px rgb(0 0 0 / 0.55), 0 0 0 1px rgb(255 255 255 / 0.07);
+
+  /* Sizes */
+  --h-control: 28px;
+  --h-control-sm: 24px;
+  --h-topbar: 44px;
+  --h-statusbar: 28px;
+  --w-rail: 64px;
+  --w-drawer: 224px;
+
+  /* Motion (hover/popover only) */
+  --t-fast: 110ms ease;
+}

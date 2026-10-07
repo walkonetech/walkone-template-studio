@@ -1,262 +1,72 @@
-import { useEffect, useState } from 'react'
-import { PRINT_PRESET_IDS, type PrintPresetId } from '@domain'
-import type { CloseReason } from '@shared/ipc'
-import type { RecentProjectItem } from '@shared/ipc'
+import { useEffect, useRef, useState } from 'react'
 import { imageKey } from '@canvas/assets/imageCache'
 import { renderProjectToCanvas } from '@canvas/rendering/renderProject'
-import { describePrint } from '@editor/describe'
-import { NEW_LAYER_KINDS, type NewLayerKind } from '@editor/newLayers'
-import {
-  selectCanRedo,
-  selectCanUndo,
-  selectIsDirty,
-  selectViewTransform,
-  type OpResult
-} from '@editor/store'
+import { SIDEBAR_MAX, SIDEBAR_MIN } from '@editor/layout'
 import { EditorCanvas } from './EditorCanvas'
 import { editorStore, imageCache, useEditor } from './editorStore'
 import { installDebug } from './debugHooks'
+import { layoutStore, useLayout } from './layoutStore'
 import { LayersPanel } from './LayersPanel'
-import { RecoveryDialog } from './RecoveryDialog'
+import { NewProjectDialog } from './NewProjectDialog'
 import { PropertiesInspector } from './PropertiesInspector'
-import { primaryModifierLabel } from './platform'
+import { RecoveryDialog } from './RecoveryDialog'
+import { StatusBar } from './StatusBar'
+import { ToolDrawer, ToolRail } from './ToolRail'
+import { TopBar } from './TopBar'
+import { Welcome } from './Welcome'
 import { useEditorKeyboard } from './useEditorKeyboard'
-
-const st = editorStore.getState
+import { Splitter } from '../ui/Splitter'
 
 /**
- * Replacing or closing the open project asks the MAIN process (native Save / Don't Save / Cancel prompt) when the
- * project is Modified. The same coordinator guards window close and quit, so there is one flow, not several.
+ * Right-hand column: Layers above Properties (both stay visible so selecting and editing never needs a tab switch),
+ * with a draggable/keyboard splitter between them and another on the column's left edge for its width. Sizes are UI
+ * state only (layoutStore): resizing never touches the project, history or autosave.
  */
-const guarded = (reason: CloseReason, op: () => Promise<OpResult>) => async (): Promise<void> => {
-  if (await st().guardClose(reason)) await op()
-}
-
-function Toolbar(): React.JSX.Element {
-  const project = useEditor((s) => s.project)
-  const dirty = useEditor(selectIsDirty)
-  const canUndo = useEditor(selectCanUndo)
-  const canRedo = useEditor(selectCanRedo)
-  const selectionCount = useEditor((s) => s.selectedIds.length)
-  const mod = primaryModifierLabel()
-  return (
-    <header className="toolbar" role="toolbar" aria-label="Editor toolbar">
-      <div className="doc-title" role="status">
-        <strong id="doc-name">{project ? project.metadata.name : 'WalkOne Template Studio'}</strong>
-        {project && (
-          <span id="doc-state" className={dirty ? 'modified' : 'saved'}>
-            {dirty ? '• Modified' : '• Saved'}
-          </span>
-        )}
-      </div>
-      <div className="group" role="group" aria-label="File">
-        <button disabled={!project} onClick={() => void st().save()} title={`Save (${mod}S)`}>
-          Save
-        </button>
-      </div>
-      <div className="group" role="group" aria-label="History">
-        <button disabled={!canUndo} onClick={() => st().undo()} title={`Undo (${mod}Z)`}>
-          Undo
-        </button>
-        <button disabled={!canRedo} onClick={() => st().redo()} title={`Redo (Shift+${mod}Z)`}>
-          Redo
-        </button>
-      </div>
-      <div className="group" role="group" aria-label="Layers">
-        <select
-          aria-label="Add layer"
-          disabled={!project}
-          value=""
-          onChange={(e) => {
-            if (e.target.value) st().addNewLayer(e.target.value as NewLayerKind)
-          }}
-        >
-          <option value="">Add layer…</option>
-          {NEW_LAYER_KINDS.map((k) => (
-            <option key={k.kind} value={k.kind}>
-              {k.label}
-            </option>
-          ))}
-        </select>
-        <button
-          disabled={selectionCount === 0}
-          onClick={() => st().duplicateSelection()}
-          title={`Duplicate (${mod}D)`}
-        >
-          Duplicate
-        </button>
-        <button
-          disabled={selectionCount === 0}
-          onClick={() => st().deleteSelection()}
-          title="Delete (Delete)"
-        >
-          Delete
-        </button>
-        <button
-          disabled={selectionCount === 0}
-          onClick={() => st().groupSelection()}
-          title={`Group (${mod}G)`}
-        >
-          Group
-        </button>
-        <button
-          disabled={selectionCount === 0}
-          onClick={() => st().ungroupSelection()}
-          title={`Ungroup (Shift+${mod}G)`}
-        >
-          Ungroup
-        </button>
-      </div>
-    </header>
-  )
-}
-
-function ProjectRail(): React.JSX.Element {
-  const project = useEditor((s) => s.project)
-  const [preset, setPreset] = useState<PrintPresetId>('photo-4x6-portrait-600')
-  const [recents, setRecents] = useState<RecentProjectItem[]>([])
-  const fileName = useEditor((s) => s.session?.fileName ?? null)
-
+function Sidebar(): React.JSX.Element {
+  const width = useLayout((s) => s.sidebarWidth)
+  const split = useLayout((s) => s.layersSplit)
+  const column = useRef<HTMLDivElement>(null)
+  const [height, setHeight] = useState(600)
   useEffect(() => {
-    let live = true
-    void window.api.project.recents().then((r) => {
-      if (live && r.status === 'ok') setRecents(r.value)
-    })
-    return () => {
-      live = false
-    }
-  }, [project, fileName])
-
+    const el = column.current
+    if (!el) return
+    const ro = new ResizeObserver(() => setHeight(el.clientHeight))
+    ro.observe(el)
+    setHeight(el.clientHeight)
+    return () => ro.disconnect()
+  }, [])
   return (
-    <nav className="rail" aria-label="Project" data-editor-panel>
-      <h2>Project</h2>
-      <label htmlFor="preset">Print format</label>
-      <select
-        id="preset"
-        value={preset}
-        onChange={(e) => setPreset(e.target.value as PrintPresetId)}
-      >
-        {PRINT_PRESET_IDS.map((p) => (
-          <option key={p} value={p}>
-            {p}
-          </option>
-        ))}
-      </select>
-      <button onClick={guarded('replace', () => st().createProject({ name: 'Untitled', preset }))}>
-        New project
-      </button>
-      <button onClick={guarded('replace', () => st().createSample())}>New sample project</button>
-      <button onClick={guarded('replace', () => st().openFromDialog())}>Open…</button>
-      <button disabled={!project} onClick={() => void st().saveAs()}>
-        Save As…
-      </button>
-      <button disabled={!project} onClick={guarded('close-project', () => st().closeProject())}>
-        Close project
-      </button>
-      {recents.length > 0 && (
-        <>
-          <h3>Recent</h3>
-          <ul className="recent-list">
-            {recents.map((r) => (
-              <li key={r.path}>
-                <button
-                  disabled={!r.exists}
-                  onClick={guarded('replace', () => st().openRecent(r.path))}
-                >
-                  {r.name}
-                </button>
-                {r.exists ? '' : ' (missing)'}
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
-      <p className="rail-note">Assets and design tools arrive in later phases.</p>
-    </nav>
+    <>
+      <Splitter
+        orientation="vertical"
+        label="Resize side panels"
+        value={width}
+        min={SIDEBAR_MIN}
+        max={SIDEBAR_MAX}
+        invert
+        onChange={(w) => layoutStore.getState().setSidebarWidth(w)}
+      />
+      <aside className="sidebar" aria-label="Layers and properties" style={{ width }} ref={column}>
+        <div className="sidebar-pane" style={{ flex: `${split} 1 0` }}>
+          <LayersPanel />
+        </div>
+        <Splitter
+          orientation="horizontal"
+          label="Resize Layers and Properties"
+          value={split * height}
+          min={0}
+          max={height}
+          invert={false}
+          onChange={(px) => layoutStore.getState().setLayersSplit(px / height)}
+        />
+        <div className="sidebar-pane" style={{ flex: `${1 - split} 1 0` }}>
+          <PropertiesInspector />
+        </div>
+      </aside>
+    </>
   )
 }
 
-function StatusBar(): React.JSX.Element {
-  const project = useEditor((s) => s.project)
-  const scale = useEditor((s) => selectViewTransform(s)?.scale ?? null)
-  const selectionCount = useEditor((s) => s.selectedIds.length)
-  const snapping = useEditor((s) => s.snapping.enabled)
-  const photoDisplay = useEditor((s) => s.photoDisplay)
-  const message = useEditor((s) => s.lastMessage)
-  const autosave = useEditor((s) => s.autosave)
-  const autosaveIssue = useEditor((s) => s.autosaveIssue)
-  return (
-    <footer className="statusbar" role="status">
-      <span id="print-info">
-        {project ? describePrint(project.canvas.print) : 'No project open'}
-      </span>
-      <span id="selection-info">
-        {selectionCount === 0 ? 'No selection' : `${selectionCount} selected`}
-      </span>
-      <span id="autosave-info">
-        {autosave.state === 'saved' && autosave.lastSavedAt
-          ? `Recovery copy saved ${new Date(autosave.lastSavedAt).toLocaleTimeString()}`
-          : autosave.state === 'pending' || autosave.state === 'saving'
-            ? 'Recovery copy pending'
-            : autosave.state === 'error'
-              ? 'Autosave issue'
-              : ''}
-      </span>
-      {autosaveIssue && (
-        <span id="autosave-issue" role="alert">
-          {autosaveIssue}
-        </span>
-      )}
-      {message && (
-        <span id="project-message" role="alert">
-          {message}{' '}
-          <button className="link" onClick={() => st().setMessage(null)}>
-            Dismiss
-          </button>
-        </span>
-      )}
-      <span className="spacer" />
-      <div className="group" role="group" aria-label="View">
-        <button disabled={!project} onClick={() => st().zoomOut()} aria-label="Zoom out">
-          −
-        </button>
-        <span className="zoom-label" id="zoom-label" aria-live="polite">
-          {scale ? `${Math.round(scale * 100)}%` : '—'}
-        </span>
-        <button disabled={!project} onClick={() => st().zoomIn()} aria-label="Zoom in">
-          +
-        </button>
-        <button disabled={!project} onClick={() => st().fitToWindow()}>
-          Fit
-        </button>
-        <button disabled={!project} onClick={() => st().zoomToActualSize()}>
-          100%
-        </button>
-        <label>
-          <input
-            type="checkbox"
-            checked={snapping}
-            onChange={(e) => st().setSnapping({ enabled: e.target.checked })}
-          />{' '}
-          Snap
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={photoDisplay === 'preview'}
-            onChange={(e) => st().setPhotoDisplay(e.target.checked ? 'preview' : 'placeholder')}
-          />{' '}
-          Preview photos
-        </label>
-      </div>
-    </footer>
-  )
-}
-
-/**
- * Phase 4 editor layout: toolbar, project rail (left), canvas (center), Layers + Properties (right), status bar.
- * Canvas, Layers panel and Inspector are three views over the same store; none keeps its own copy of the layers.
- */
 export function EditorScreen(): React.JSX.Element {
   useEditorKeyboard()
   const project = useEditor((s) => s.project)
@@ -302,26 +112,15 @@ export function EditorScreen(): React.JSX.Element {
   return (
     <div className="editor">
       <RecoveryDialog />
-      <Toolbar />
+      <NewProjectDialog />
+      <TopBar />
       <div className="editor-body">
-        <ProjectRail />
-        <main className="workspace">
-          {project ? (
-            <EditorCanvas />
-          ) : (
-            <section className="home">
-              <h1>WalkOne Template Studio</h1>
-              <p className="subtitle">Photo booth print template builder</p>
-              <p>Create or open a project from the Project panel to begin.</p>
-            </section>
-          )}
+        {project && <ToolRail />}
+        {project && <ToolDrawer />}
+        <main className="workspace" aria-label="Canvas workspace">
+          {project ? <EditorCanvas /> : <Welcome />}
         </main>
-        {project && (
-          <aside className="side" aria-label="Layers and properties">
-            <LayersPanel />
-            <PropertiesInspector />
-          </aside>
-        )}
+        {project && <Sidebar />}
       </div>
       <StatusBar />
     </div>

@@ -77,7 +77,7 @@
     "name": "autosave updated the working session after the debounce",
     "ok": true,
     "detail": {
-      "ms": 2506
+      "ms": 2507
     }
   },
   {
@@ -106,7 +106,7 @@
   {
     "name": "status bar exposes the recovery-copy state",
     "ok": true,
-    "detail": "Recovery copy saved 8:49:00 PM"
+    "detail": "Recovery copy 4:22 AM"
   },
   {
     "name": "Quit → Cancel: app stays open",
@@ -157,13 +157,13 @@
     "name": "relaunch shows the recovery dialog (accessible role=dialog, aria-modal)",
     "ok": true,
     "detail": {
-      "label": "recovery-title"
+      "label": "_r_0_"
     }
   },
   {
     "name": "the untitled candidate is listed by name",
     "ok": true,
-    "detail": "Recover unsaved workWalkOne Template Studio closed before these projects were saved. Choose what to do with each; nothing is restored unless you choose Recover."
+    "detail": "We found unsaved work from a previous sessionYour project was open when the app closed unexpectedly. Nothing is restored unless you choose Recover.Diagnostic Sa"
   },
   {
     "name": "recovery list exposes no file-system paths",
@@ -223,7 +223,7 @@
   {
     "name": "relaunch lists the candidate with its file name",
     "ok": true,
-    "detail": "Recover unsaved workWalkOne Template Studio closed before these projects were saved. Choose what to do with each; nothing is restored unless you choose Recover."
+    "detail": "We found unsaved work from a previous sessionYour project was open when the app closed unexpectedly. Nothing is restored unless you choose Recover.Diagnostic Sa"
   },
   {
     "name": "recovered: edit restored, Modified, association kept",
