@@ -2,7 +2,7 @@
 
 **Purpose:** a self-contained prompt for starting a brand-new Claude Code session with everything needed to continue. **It must be refreshed at the end of every session/phase** (CLAUDE.md makes this a required step). Copy everything inside the fenced block below into the first message of the new session.
 
-_Last refreshed: 2026-10-07, after the real-template validation (HEAD `269f243`)._
+_Last refreshed: 2026-10-07, after the real-template validation (HEAD `edb2891`)._
 
 ````text
 You are continuing work on WalkOne Template Studio, an internal Electron + React + TypeScript desktop tool for WalkOne Entertainment, LLC that builds custom photo-booth print templates (4x6 and 2x6 strips) for LumaSoft DSLR Booth / LumaBooth. Working directory: /Users/walkone/Projects/Apps/walkone-template-studio (git repository, macOS development; the booth software runs on Windows).
@@ -19,21 +19,21 @@ GOVERNANCE (strict)
 - Do ONLY the phase/task I request. When it is done: update docs, run the quality gate, commit, report, then STOP and WAIT for my approval. Never start the next phase on your own.
 - Phase-end checklist (CLAUDE.md): update docs/CURRENT_STATE.md, ROADMAP.md if appropriate, DECISIONS.md for real decisions, REFRESH docs/SESSION_STARTER.md, summarize files changed, tests run, known issues, recommend the next phase.
 - Honesty: never fabricate test results; label DSLR Booth claims Confirmed/Proposed/Assumption/Unknown/Needs Validation; clearly distinguish scripted automation from human testing (automation cannot send real OS keystrokes or drag the window frame here).
-- Never commit secrets, client data, recovery/session data, temp projects, generated screenshots/PNGs. Commit trailers (always): "Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>" and "Claude-Session: <the session URL given to you>". Do not push unless I explicitly ask.
-- DSLR Booth fixtures in tests/fixtures/dslrbooth/source/ are PRIVATE client data and immutable (never modify, never upload to public services). AGENTS.md stays git-ignored. Fabric is removed and must stay absent.
+- Never commit secrets, client data, recovery/session data, temp projects, generated screenshots/PNGs. Commit trailers (always): "Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>" and "Claude-Session: <the session URL given to you>". The repository is backed up to a PRIVATE GitHub repo (remote `origin`, account walkonetech). Push only when I ask (or tell you to at session end). The fixture ZIPs were purged from git history before the first push and are git-ignored: never `git add -f` them.
+- DSLR Booth fixtures in tests/fixtures/dslrbooth/source/ are PRIVATE client data and immutable (never modify; they are local-only and NOT on GitHub; a fresh clone has an empty source/ folder; their SHA-256s are in research/DSLRBOOTH_FIXTURE_ANALYSIS.md). AGENTS.md stays git-ignored. Fabric is removed and must stay absent.
 - Do not change the TemplateProject schema (schemaVersion 1) or the .boothproject format without asking me first.
 
 WHAT EXISTS (all committed; git log, newest first)
-269f243 research: validate real template workflow  (no code changes)
-cce8b67 style: polish editor interface (Phase 4D)
-dee03b2 feat: redesign editor interface and design system (Phase 4C, ADR-035)
-36eb45c feat: add autosave and crash recovery (Phase 4B, ADR-034)
-4fd8af6 feat: add layer management and inspector (Phase 4, ADR-033)
-2319a27 feat: establish production canvas foundation (Phase 3B, ADR-030–032)
-3d86f98/2349f7f Konva vs Fabric spike → Konva chosen (ADR-029)
-93261ce feat: add native project persistence (Phase 2B, ADR-025–028)
-4222b07 feat: establish project domain model (Phase 2)
-e8d460f research: analyze DSLR Booth template fixtures
+edb2891 research: validate real template workflow  (no code changes)
+9096a3c style: polish editor interface (Phase 4D)
+5a85fca feat: redesign editor interface and design system (Phase 4C, ADR-035)
+8cb5e86 feat: add autosave and crash recovery (Phase 4B, ADR-034)
+33235b1 feat: add layer management and inspector (Phase 4, ADR-033)
+066e14d feat: establish production canvas foundation (Phase 3B, ADR-030–032)
+8aece5f/693be9e Konva vs Fabric spike → Konva chosen (ADR-029)
+143a72e feat: add native project persistence (Phase 2B, ADR-025–028)
+7c95e95 feat: establish project domain model (Phase 2)
+b63160a research: analyze DSLR Booth template fixtures
 745230a Phase 1 shell; 9690f45 Phase 0 docs.
 Status: 413 unit tests passing; the app builds and runs. Not started: asset import, export of any kind, DSLR Booth importer/exporter, palette UI, badge builder, asset/template library, recipes, providers.
 

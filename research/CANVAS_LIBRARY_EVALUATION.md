@@ -126,4 +126,4 @@ What would flip the decision: if on-canvas inline text editing with rich per-cha
 - Stable-callback pattern (e.g., `useEffectEvent`/store selectors) to satisfy `react-hooks/refs`.
 
 ## Reproducing
-`canvas-spike/` holds the driver scripts and recorded results. The dual-engine spike code lives in git history at commit `2349f7f`; the cleanup commit that follows removes the Fabric implementation.
+`canvas-spike/` holds the driver scripts and recorded results. The dual-engine spike code lives in git history at commit `693be9e`; the cleanup commit that follows removes the Fabric implementation.

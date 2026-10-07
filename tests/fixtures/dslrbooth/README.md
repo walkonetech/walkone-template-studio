@@ -7,6 +7,9 @@ Real DSLR Booth / LumaSoft template exports used as compatibility evidence. Stra
 - `expected/` — *(future, not created yet)* human-reviewed expected normalized representations used by tests.
 - `generated/` — *(future, not created yet)* outputs written by automated compatibility tests. Should be git-ignored.
 
+## Local-only (important)
+The five source ZIPs are **not in git and not on GitHub**: `source/*` is git-ignored (the history was rewritten before the first push to purge them). They exist only on the owner's machine (and in a local backup folder outside the repo). A fresh clone has an empty `source/`; tests do not currently read it, and the analysis in `research/DSLRBOOTH_FIXTURE_ANALYSIS.md` records each file's SHA-256 so a restored copy can be verified.
+
 ## Rules
 - Source fixtures are **private repository data**. Do not upload or publish them anywhere (public repos, gists, paste sites, online XML viewers, external storage).
 - They contain event/client-specific creative assets and may include licensed third-party artwork and machine/client names. Respect privacy and licensing.

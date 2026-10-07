@@ -51,3 +51,7 @@ research/canvas-spike/*.png
 
 # Screenshots written by research/editor-validation
 research/editor-validation/shots/
+
+# Private client fixtures: kept on disk, NEVER committed or pushed (see tests/fixtures/dslrbooth/README.md)
+tests/fixtures/dslrbooth/source/*
+!tests/fixtures/dslrbooth/source/.gitkeep
