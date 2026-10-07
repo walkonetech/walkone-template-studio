@@ -51,6 +51,9 @@ Remaining for later phases: autosave timer, recovery UX, close/quit confirmation
 - **Not delivered:** layer thumbnails, context menu, light theme, persisted panel sizes, native-select theming.
 - **Recommended next:** owner review, then Phase 5 (photo placeholders).
 
+## Real-template validation (findings, no phase)
+A real recreation ([../research/REAL_TEMPLATE_VALIDATION.md](../research/REAL_TEMPLATE_VALIDATION.md)) shows the ordering below should change: **P0** image import into projects and flattened PNG export; **P1** sample photos, strip mirroring/group geometry, canvas background and palette basics, font strategy (ADR-015), align/distribute. Phase 5's photo-placeholder scope is largely already delivered; its remaining items (duplicate/missing-number detection, sample-photo preview) fold into the asset-and-export work. Awaiting owner approval before the roadmap is rewritten.
+
 ## Phase 5 — Photo placeholders
 - **Objective:** First-class PhotoLayer.
 - **Deliverables:** PhotoLayer UI, numbering rules, frame styles v1, sample-photo preview basics.

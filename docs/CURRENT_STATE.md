@@ -21,6 +21,9 @@ Nothing.
 ## Not started
 Asset browser/library, palette manager, templates, badge builder, recipes, DSLR Booth importer/exporter, preflight, context menu, copy/paste, align/distribute, project wizard/dashboard, final styling.
 
+## Real-template validation (done, no code changes)
+One production template (Chaney Wedding F1) was recreated through the real UI: layout skeleton, photo grid/numbering, text hierarchy and strips were reproducible (209 gestures, 15 layers); **all raster artwork was not**, because the UI has no image import. Findings, bug/friction/feature classification and P0–P3 ranking: [../research/REAL_TEMPLATE_VALIDATION.md](../research/REAL_TEMPLATE_VALIDATION.md). Biggest blockers: image asset import and any export. No bugs confirmed.
+
 ## Phase 4D (done)
 Polish only (details in [../research/UI_UX_REVIEW.md](../research/UI_UX_REVIEW.md) §12): brighter label/metadata text, more visible disabled tools, quieter Konva selection outline, one-row recovery actions (Discard · Decide later · **Recover**), grouped Layers header actions with tooltips on the menu buttons, larger welcome composition, filled slider track, `:active`/hover refinements, drawer auto-collapse when shrinking would cramp the canvas. No behavior, schema, persistence or store changes. **Verified** (automation): 413 unit tests; `validate-4c.js` 97/97, Phase 4 regression 97/97, `validate-4b.js` 40/40, new `validate-4d.js` 6/6 (continuous layout sweep + computed-style facts). **Not done:** physical keyboard/close-button/frame-drag testing (the environment forbids synthetic OS input).
 
@@ -51,4 +54,4 @@ No context menu, no drag into/out of groups (cross-group drops are refused), no 
 `AGENTS.md` stays git-ignored. No Git remote exists (intentional). DSLR Booth fixtures are private and unchanged. Generated screenshots are git-ignored; the `#debug` hook is development-only.
 
 ## Next recommended action
-Owner reviews Phase 4C on a real display (and Phase 4B by hand: quit with unsaved work, force-quit, relaunch), then approves Phase 5 (photo placeholders) or a short visual polish pass first.
+Owner reviews [../research/REAL_TEMPLATE_VALIDATION.md](../research/REAL_TEMPLATE_VALIDATION.md) and approves the next phase. Recommendation: **asset import + sample photos + flattened PNG export** before roadmap Phase 5 (photo placeholders already work well).
