@@ -1,5 +1,6 @@
 import {
   childrenOf,
+  topmostIds,
   createId as defaultCreateId,
   descendantIds,
   LayerSchema,
@@ -12,6 +13,7 @@ import {
   type TemplateProject,
   type TextLayer
 } from '@domain'
+import { uniqueName } from './naming'
 
 /**
  * Explicit, pure project mutations. Every function returns a NEW project (structural sharing keeps
@@ -182,6 +184,11 @@ export function updateLayer(
       throw new MutationError(`"${forbidden}" cannot be changed with updateLayer`)
   }
   const current = find(project, id)
+  // Idempotent: a patch that changes nothing is a no-op (no new project object, so no history entry).
+  const same = (Object.keys(patch) as (keyof typeof patch)[]).every(
+    (k) => JSON.stringify((current as Record<string, unknown>)[k]) === JSON.stringify(patch[k])
+  )
+  if (same) return project
   const merged = validate({ ...current, ...patch })
   let layers = project.layers.map((l) => (l.id === id ? merged : l))
   layers = recomputeGroupBounds(layers, merged.parentId)
@@ -390,4 +397,194 @@ export function duplicateLayer(
     rootId: idMap.get(root.id) as string,
     newIds: copies.map((c) => c.id)
   }
+}
+
+/** Renames a layer (a label, not an identifier). Empty names are rejected; an unchanged name is a no-op. */
+export function renameLayer(
+  project: TemplateProject,
+  id: string,
+  name: string,
+  ctx: MutationContext = {}
+): TemplateProject {
+  const trimmed = name.trim()
+  if (trimmed === '') throw new MutationError('A layer name cannot be empty')
+  if (find(project, id).name === trimmed) return project
+  return updateLayer(project, id, { name: trimmed }, ctx)
+}
+
+const renumber = (layers: Layer[], order: Layer[], parentId: string | undefined): Layer[] => {
+  const z = new Map(order.map((l, i) => [l.id, i]))
+  return layers.map((l) =>
+    l.parentId === parentId && z.has(l.id) && z.get(l.id) !== l.zIndex
+      ? { ...l, zIndex: z.get(l.id) as number }
+      : l
+  )
+}
+
+/**
+ * Moves a layer directly in front of ('above') or behind ('below') a SIBLING. Cross-parent moves are not
+ * supported (a child can never be dragged out of its group by this).
+ */
+export function moveLayerRelative(
+  project: TemplateProject,
+  id: string,
+  targetId: string,
+  placement: 'above' | 'below',
+  ctx: MutationContext = {}
+): TemplateProject {
+  if (id === targetId) return project
+  const layer = find(project, id)
+  const target = find(project, targetId)
+  if (layer.parentId !== target.parentId)
+    throw new MutationError('Layers can only be reordered within the same group')
+  const before = sortedSiblings(project.layers, layer.parentId)
+  const order = before.filter((l) => l.id !== id)
+  const ti = order.findIndex((l) => l.id === targetId)
+  order.splice(placement === 'above' ? ti + 1 : ti, 0, layer)
+  if (order.every((l, i) => l.id === before[i]?.id)) return project
+  return withLayers(project, renumber(project.layers, order, layer.parentId), ctx)
+}
+
+/** Stacking command for one or more SIBLING layers, moving them as a block while keeping their relative order. */
+export function reorderLayers(
+  project: TemplateProject,
+  ids: readonly string[],
+  direction: 'forward' | 'backward' | 'front' | 'back',
+  ctx: MutationContext = {}
+): TemplateProject {
+  if (ids.length === 0) return project
+  const first = find(project, ids[0] as string)
+  for (const id of ids) {
+    if (find(project, id).parentId !== first.parentId)
+      throw new MutationError('Select layers that share the same group to reorder them')
+  }
+  const picked = new Set(ids)
+  const before = sortedSiblings(project.layers, first.parentId)
+  let arr = [...before]
+  const sel = before.filter((l) => picked.has(l.id))
+  const rest = before.filter((l) => !picked.has(l.id))
+  if (direction === 'front') arr = [...rest, ...sel]
+  else if (direction === 'back') arr = [...sel, ...rest]
+  else if (direction === 'forward') {
+    for (let i = arr.length - 2; i >= 0; i--) {
+      if (picked.has((arr[i] as Layer).id) && !picked.has((arr[i + 1] as Layer).id))
+        [arr[i], arr[i + 1]] = [arr[i + 1] as Layer, arr[i] as Layer]
+    }
+  } else {
+    for (let i = 1; i < arr.length; i++) {
+      if (picked.has((arr[i] as Layer).id) && !picked.has((arr[i - 1] as Layer).id))
+        [arr[i], arr[i - 1]] = [arr[i - 1] as Layer, arr[i] as Layer]
+    }
+  }
+  if (arr.every((l, i) => l.id === before[i]?.id)) return project
+  return withLayers(project, renumber(project.layers, arr, first.parentId), ctx)
+}
+
+export interface GroupResult {
+  project: TemplateProject
+  groupId: string
+}
+
+/**
+ * Groups sibling layers under a new GroupLayer. Children keep their absolute coordinates (so nothing moves
+ * visually); the group takes the stacking position of the topmost member; members are renumbered 0..n-1 in
+ * their previous relative order. Layers that are not siblings cannot be grouped together.
+ */
+export function groupLayers(
+  project: TemplateProject,
+  ids: readonly string[],
+  ctx: MutationContext = {}
+): GroupResult {
+  const roots = topmostIds(project.layers, ids)
+  if (roots.length === 0) throw new MutationError('Nothing to group')
+  const members = roots.map((id) => find(project, id))
+  const parentId = members[0]?.parentId
+  if (members.some((m) => m.parentId !== parentId))
+    throw new MutationError('Select layers that share the same group to group them')
+  const ordered = sortedSiblings(project.layers, parentId).filter((l) => roots.includes(l.id))
+  const newId = (ctx.createId ?? defaultCreateId)()
+  const topZ = Math.max(...ordered.map((l) => l.zIndex))
+  let left = Infinity
+  let top = Infinity
+  let right = -Infinity
+  let bottom = -Infinity
+  for (const l of ordered) {
+    const b = boundsOf(l)
+    left = Math.min(left, b.left)
+    top = Math.min(top, b.top)
+    right = Math.max(right, b.right)
+    bottom = Math.max(bottom, b.bottom)
+  }
+  const group = validate({
+    id: newId,
+    type: 'group',
+    name: uniqueName('Group', project.layers),
+    x: left,
+    y: top,
+    width: right - left,
+    height: bottom - top,
+    rotation: 0,
+    opacity: 1,
+    zIndex: topZ,
+    visible: true,
+    locked: false,
+    ...(parentId !== undefined ? { parentId } : {})
+  })
+  const index = new Map(ordered.map((l, i) => [l.id, i]))
+  let layers: Layer[] = project.layers.map((l) =>
+    index.has(l.id) ? validate({ ...l, parentId: newId, zIndex: index.get(l.id) as number }) : l
+  )
+  layers = [...layers, group]
+  layers = normalizeSiblings(layers, parentId)
+  return { project: withLayers(project, layers, ctx), groupId: newId }
+}
+
+export interface UngroupResult {
+  project: TemplateProject
+  childIds: string[]
+}
+
+/**
+ * Dissolves a group. Children return to the group's parent, replacing the group in the stacking order (keeping
+ * their relative order) with dense zIndex. Because the group's own flags would otherwise be lost, they are folded
+ * into the children so nothing changes visually: opacity multiplies, hidden/locked propagate.
+ */
+export function ungroupLayer(
+  project: TemplateProject,
+  groupId: string,
+  ctx: MutationContext = {}
+): UngroupResult {
+  const group = find(project, groupId)
+  if (group.type !== 'group') throw new MutationError('Only a group can be ungrouped')
+  const kids = childrenOf(project.layers, groupId)
+  const parentId = group.parentId
+  const order: Layer[] = []
+  for (const sibling of sortedSiblings(project.layers, parentId)) {
+    if (sibling.id === groupId) order.push(...kids)
+    else order.push(sibling)
+  }
+  const z = new Map(order.map((l, i) => [l.id, i]))
+  const kidIds = new Set(kids.map((k) => k.id))
+  const layers: Layer[] = []
+  for (const l of project.layers) {
+    if (l.id === groupId) continue
+    if (kidIds.has(l.id)) {
+      const { parentId: _drop, ...rest } = l
+      void _drop
+      layers.push(
+        validate({
+          ...rest,
+          ...(parentId !== undefined ? { parentId } : {}),
+          zIndex: z.get(l.id) as number,
+          opacity: Math.round(l.opacity * group.opacity * 10000) / 10000,
+          visible: l.visible && group.visible,
+          locked: l.locked || group.locked
+        })
+      )
+    } else if (l.parentId === parentId && z.has(l.id)) {
+      layers.push({ ...l, zIndex: z.get(l.id) as number })
+    } else layers.push(l)
+  }
+  const result = recomputeGroupBounds(layers, parentId)
+  return { project: withLayers(project, result, ctx), childIds: kids.map((k) => k.id) }
 }

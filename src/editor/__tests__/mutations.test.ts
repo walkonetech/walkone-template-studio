@@ -271,3 +271,170 @@ describe('text layers', () => {
     expect(photo('p', 1).type).toBe('photo')
   })
 })
+
+import {
+  groupLayers,
+  moveLayerRelative,
+  renameLayer,
+  reorderLayers,
+  ungroupLayer
+} from '../mutations'
+
+const order = (p: TemplateProject, parent?: string): string[] =>
+  p.layers
+    .filter((l) => l.parentId === parent)
+    .sort((a, b) => a.zIndex - b.zIndex)
+    .map((l) => l.id)
+
+describe('rename', () => {
+  it('trims, allows duplicates, rejects empty, and an unchanged name is a no-op', () => {
+    const p = scene()
+    expect(get(renameLayer(p, 'photo-1', '  Hero  ', ctx), 'photo-1').name).toBe('Hero')
+    const dup = renameLayer(p, 'photo-1', 'Photo 2', ctx)
+    expect(get(dup, 'photo-1').name).toBe('Photo 2')
+    expect(get(dup, 'photo-1').id).toBe('photo-1') // name is a label, not an identifier
+    expect(() => renameLayer(p, 'photo-1', '   ')).toThrow(MutationError)
+    expect(renameLayer(p, 'photo-1', 'Photo 1')).toBe(p)
+  })
+})
+
+describe('reorder relative to a sibling and as a block', () => {
+  it('moveLayerRelative puts a layer directly above/below a sibling', () => {
+    const p = scene()
+    const top = order(p)
+    const q = moveLayerRelative(p, top[0] as string, top[3] as string, 'above', ctx)
+    expect(order(q).indexOf(top[0] as string)).toBe(order(q).indexOf(top[3] as string) + 1)
+    valid(q)
+    const r = moveLayerRelative(q, top[0] as string, top[3] as string, 'below', ctx)
+    expect(order(r).indexOf(top[0] as string)).toBe(order(r).indexOf(top[3] as string) - 1)
+    valid(r)
+    expect(moveLayerRelative(p, top[1] as string, top[1] as string, 'above')).toBe(p)
+  })
+
+  it('refuses to move a layer out of (or into) another group', () => {
+    expect(() => moveLayerRelative(scene(), 'g-a', 'photo-1', 'above')).toThrow(MutationError)
+  })
+
+  it('a no-op reorder returns the same project object (no history entry)', () => {
+    const p = scene()
+    const top = order(p)
+    expect(moveLayerRelative(p, top[2] as string, top[1] as string, 'above')).toBe(p)
+  })
+
+  it('reorderLayers moves a block, keeps relative order and stays within the parent', () => {
+    const p = scene()
+    const q = reorderLayers(p, ['photo-1', 'photo-3'], 'front', ctx)
+    const o = order(q)
+    expect(o.slice(-2)).toEqual(['photo-1', 'photo-3'])
+    valid(q)
+    const back = reorderLayers(p, ['photo-2', 'photo-3'], 'back', ctx)
+    expect(order(back).slice(0, 2)).toEqual(['photo-2', 'photo-3'])
+    const fwd = reorderLayers(p, ['photo-1'], 'forward', ctx)
+    expect(order(fwd).indexOf('photo-1')).toBe(order(p).indexOf('photo-1') + 1)
+    const bwd = reorderLayers(p, ['photo-3'], 'backward', ctx)
+    expect(order(bwd).indexOf('photo-3')).toBe(order(p).indexOf('photo-3') - 1)
+    expect(() => reorderLayers(p, ['photo-1', 'g-a'], 'front')).toThrow(MutationError)
+  })
+
+  it('children never leave their group when reordered', () => {
+    const q = reorderLayers(scene(), ['g-a'], 'front', ctx)
+    expect(get(q, 'g-a').parentId).toBe('g')
+    expect(order(q, 'g')).toEqual(['g-b', 'g-a'])
+    valid(q)
+  })
+
+  it('zIndex stays dense and unique after every command', () => {
+    let p = scene()
+    for (const d of ['front', 'back', 'forward', 'backward'] as const) {
+      p = reorderLayers(p, ['photo-2'], d, ctx)
+      const z = p.layers
+        .filter((l) => !l.parentId)
+        .map((l) => l.zIndex)
+        .sort((a, b) => a - b)
+      expect(z).toEqual([...z.keys()])
+    }
+  })
+})
+
+describe('group and ungroup', () => {
+  it('groups siblings without moving them, taking the topmost stacking slot', () => {
+    let n = 0
+    const p = scene()
+    const r = groupLayers(p, ['photo-1', 'photo-2'], { now: NOW, createId: () => `grp-${++n}` })
+    const q = r.project
+    valid(q)
+    expect(get(q, 'photo-1')).toMatchObject({ parentId: r.groupId, x: 250, y: 200 })
+    expect(get(q, 'photo-2')).toMatchObject({ parentId: r.groupId })
+    expect(order(q, r.groupId)).toEqual(['photo-1', 'photo-2'])
+    const grp = get(q, r.groupId)
+    expect(grp).toMatchObject({ type: 'group', rotation: 0 })
+    // the group sits where photo-2 (the topmost member) was; other layers keep their relative order
+    expect(order(q)).toEqual(['bg-bar', r.groupId, 'photo-3', 'title', 'g'])
+  })
+
+  it('rejects grouping layers from different parents', () => {
+    expect(() => groupLayers(scene(), ['photo-1', 'g-a'])).toThrow(MutationError)
+  })
+
+  it('grouping a group and its own child groups only the group (no double handling)', () => {
+    const r = groupLayers(scene(), ['g', 'g-a', 'photo-1'], { createId: () => 'wrap' })
+    valid(r.project)
+    expect(get(r.project, 'g').parentId).toBe('wrap')
+    expect(get(r.project, 'g-a').parentId).toBe('g')
+  })
+
+  it('ungroup restores children to the parent in place with dense zIndex and unchanged positions', () => {
+    const p = scene()
+    const before = (id: string) => ({ x: get(p, id).x, y: get(p, id).y })
+    const r = ungroupLayer(p, 'g', ctx)
+    valid(r.project)
+    expect(r.project.layers.some((l) => l.id === 'g')).toBe(false)
+    expect(r.childIds.sort()).toEqual(['g-a', 'g-b'])
+    for (const id of r.childIds) expect(get(r.project, id)).toMatchObject({ ...before(id) })
+    expect(get(r.project, 'g-a').parentId).toBeUndefined()
+    const o = order(r.project)
+    expect(o.slice(-2)).toEqual(['g-a', 'g-b']) // the group was on top; its children replace it in order
+    const z = r.project.layers
+      .filter((l) => !l.parentId)
+      .map((l) => l.zIndex)
+      .sort((a, b) => a - b)
+    expect(z).toEqual([...z.keys()])
+  })
+
+  it('ungroup folds the group flags into children so the picture does not change', () => {
+    const p = {
+      ...scene(),
+      layers: scene().layers.map((l) =>
+        l.id === 'g' ? ({ ...l, opacity: 0.5, locked: true, visible: false } as Layer) : l
+      )
+    }
+    const r = ungroupLayer(p, 'g')
+    expect(get(r.project, 'g-a')).toMatchObject({ opacity: 0.5, locked: true, visible: false })
+    valid(r.project)
+  })
+
+  it('group then ungroup round-trips structure', () => {
+    const p = scene()
+    const g = groupLayers(p, ['photo-1', 'photo-2', 'photo-3'], { createId: () => 'tmp' })
+    const u = ungroupLayer(g.project, 'tmp')
+    valid(u.project)
+    expect(order(u.project)).toEqual(order(p))
+  })
+
+  it('ungroup of a non-group is rejected', () => {
+    expect(() => ungroupLayer(scene(), 'photo-1')).toThrow(MutationError)
+  })
+})
+
+describe('idempotent updates', () => {
+  it('a patch that changes nothing returns the same project (so no history entry can be created)', () => {
+    const p = scene()
+    expect(updateLayer(p, 'photo-1', { x: get(p, 'photo-1').x })).toBe(p)
+    expect(
+      updateLayer(p, 'photo-1', {
+        frame: { style: 'solid', thickness: 12, color: { kind: 'literal', value: '#ffffff' } }
+      })
+    ).toBe(p)
+    expect(updateLayer(p, 'photo-1', { x: 5 })).not.toBe(p)
+  })
+})

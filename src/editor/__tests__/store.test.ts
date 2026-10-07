@@ -418,3 +418,187 @@ describe('viewport', () => {
     expect(checkProjectIntegrity(scene())).toEqual([])
   })
 })
+
+describe('Phase 4 store actions', () => {
+  it('multi-selection: click, toggle, range, and deselect', async () => {
+    const { s } = await open()
+    s().selectLayer('photo-1')
+    s().toggleSelection('photo-2')
+    expect(s().selectedIds).toEqual(['photo-1', 'photo-2'])
+    s().toggleSelection('photo-1')
+    expect(s().selectedIds).toEqual(['photo-2'])
+    s().selectLayer('photo-1')
+    s().selectRange(['photo-3', 'photo-2', 'photo-1', 'bg-bar'], 'photo-3')
+    expect(s().selectedIds).toEqual(['photo-3', 'photo-2', 'photo-1'])
+    s().clearSelection()
+    expect(s().selectedIds).toEqual([])
+    expect(selectCanUndo(s())).toBe(false) // selection never creates history
+  })
+
+  it('collapse, filter and selection are editor UI state: never dirty, never history', async () => {
+    const { s } = setup()
+    await s().openFromDialog() // a saved (clean) project
+    const p = s().project
+    s().toggleCollapsed('g')
+    s().setLayerFilter('photo')
+    s().selectLayers(['photo-1', 'photo-2'])
+    expect(s().collapsedGroups).toEqual(['g'])
+    s().toggleCollapsed('g')
+    expect(s().collapsedGroups).toEqual([])
+    expect(s().project).toBe(p)
+    expect(selectIsDirty(s())).toBe(false)
+    expect(selectCanUndo(s())).toBe(false)
+  })
+
+  it('collapsed state and filter reset when another project is opened', async () => {
+    const { s } = await open()
+    s().toggleCollapsed('g')
+    s().setLayerFilter('x')
+    await s().openFromDialog()
+    expect(s().collapsedGroups).toEqual([])
+    expect(s().layerFilter).toBe('')
+  })
+
+  it('rename is ONE history entry, allows duplicate names, rejects empty names with a message', async () => {
+    const { s } = await open()
+    expect(s().renameLayer('photo-1', 'Hero')).toBe(true)
+    expect(s().history.past).toHaveLength(1)
+    expect(s().renameLayer('photo-2', 'Hero')).toBe(true)
+    expect(s().project!.layers.filter((l) => l.name === 'Hero')).toHaveLength(2)
+    expect(s().renameLayer('photo-3', '  ')).toBe(false)
+    expect(s().lastMessage).toMatch(/empty/)
+    expect(s().renameLayer('photo-1', 'Hero')).toBe(false) // unchanged: no history entry
+    expect(s().history.past).toHaveLength(2)
+    s().undo()
+    expect(layer(s().project, 'photo-2').name).toBe('Photo 2')
+  })
+
+  it('editing a property is one entry; locked layers accept only name/locked/visible', async () => {
+    const { s } = await open()
+    expect(s().editLayers(['photo-1'], { x: -120, y: 33.5, opacity: 0.4 })).toBe(true)
+    expect(layer(s().project, 'photo-1')).toMatchObject({ x: -120, y: 33.5, opacity: 0.4 })
+    expect(s().history.past).toHaveLength(1)
+    s().setLocked('photo-2', true)
+    const p = s().project
+    expect(s().editLayers(['photo-2'], { x: 5 })).toBe(false)
+    expect(s().project).toBe(p)
+    expect(s().editLayers(['photo-2'], { name: 'Renamed locked' })).toBe(true)
+    expect(s().editLayers(['photo-2'], { locked: false })).toBe(true)
+    expect(layer(s().project, 'photo-2')).toMatchObject({ locked: false, name: 'Renamed locked' })
+  })
+
+  it('bulk edit updates every selected layer in one undo step', async () => {
+    const { s } = await open()
+    const before = s().history.past.length
+    s().editLayers(['photo-1', 'photo-2', 'photo-3'], { opacity: 0.25 })
+    expect(s().history.past.length).toBe(before + 1)
+    s().undo()
+    expect(layer(s().project, 'photo-2').opacity).toBe(1)
+  })
+
+  it('adding a layer selects it, is one undo step, and a new photo takes the next slot', async () => {
+    const { s } = await open()
+    expect(s().addNewLayer('photo')).toBe(true)
+    const id = s().selectedIds[0]!
+    expect(layer(s().project, id)).toMatchObject({ type: 'photo', photoNumber: 4 })
+    expect(s().history.past).toHaveLength(1)
+    expect(selectIsDirty(s())).toBe(true)
+    for (const k of ['text', 'rectangle', 'ellipse', 'line'] as const)
+      expect(s().addNewLayer(k)).toBe(true)
+    expect(checkProjectIntegrity(s().project!)).toEqual([])
+    s().undo()
+    expect(
+      s().project!.layers.filter((l) => l.type === 'shape' && l.shape === 'line')
+    ).toHaveLength(0)
+  })
+
+  it('duplicate preserves the photoNumber while add increments it', async () => {
+    const { s } = await open()
+    s().selectLayer('photo-2')
+    s().duplicateSelection()
+    const dup = layer(s().project, s().selectedIds[0]!)
+    expect(dup).toMatchObject({ type: 'photo', photoNumber: 2 })
+    s().addNewLayer('photo')
+    const added = layer(s().project, s().selectedIds[0]!)
+    expect(added).toMatchObject({ photoNumber: 4 })
+    expect(checkProjectIntegrity(s().project!)).toEqual([])
+  })
+
+  it('bulk delete/duplicate use topmost layers only (no double handling of group + child)', async () => {
+    const { s } = await open()
+    s().selectLayers(['g', 'g-a', 'photo-1'])
+    s().duplicateSelection()
+    expect(s().selectedIds).toHaveLength(2)
+    expect(checkProjectIntegrity(s().project!)).toEqual([])
+    s().undo()
+    s().selectLayers(['g', 'g-a', 'photo-1'])
+    expect(s().deleteSelection()).toBe(true)
+    expect(s().project!.layers.some((l) => ['g', 'g-a', 'g-b', 'photo-1'].includes(l.id))).toBe(
+      false
+    )
+    expect(checkProjectIntegrity(s().project!)).toEqual([])
+  })
+
+  it('stacking commands work on selections and refuse mixed parents with a message', async () => {
+    const { s } = await open()
+    s().selectLayers(['photo-1', 'photo-2'])
+    expect(s().stackSelection('front')).toBe(true)
+    expect(s().stackSelection('front')).toBe(false) // already there: no history entry
+    s().selectLayers(['photo-1', 'g-a'])
+    expect(s().stackSelection('front')).toBe(false)
+    expect(s().lastMessage).toMatch(/same group/)
+  })
+
+  it('panel drag reorder commits one entry and cannot cross groups', async () => {
+    const { s } = await open()
+    expect(s().moveLayerRelative('photo-1', 'photo-3', 'above')).toBe(true)
+    expect(s().history.past).toHaveLength(1)
+    expect(s().moveLayerRelative('g-a', 'photo-1', 'above')).toBe(false)
+    expect(s().lastMessage).toMatch(/same group/)
+    expect(checkProjectIntegrity(s().project!)).toEqual([])
+  })
+
+  it('group / ungroup are single undoable operations and keep selection coherent', async () => {
+    const { s } = await open()
+    s().selectLayers(['photo-1', 'photo-2'])
+    expect(s().groupSelection()).toBe(true)
+    const gid = s().selectedIds[0]!
+    expect(layer(s().project, gid).type).toBe('group')
+    expect(s().history.past).toHaveLength(1)
+    expect(s().ungroupSelection()).toBe(true)
+    expect(s().selectedIds.sort()).toEqual(['photo-1', 'photo-2'])
+    expect(checkProjectIntegrity(s().project!)).toEqual([])
+    s().undo()
+    expect(layer(s().project, gid).type).toBe('group')
+    s().undo()
+    expect(s().project!.layers.some((l) => l.id === gid)).toBe(false)
+  })
+
+  it('locking and hiding through the panel are undoable direct-state changes', async () => {
+    const { s } = await open()
+    s().setLocked('g', true)
+    s().setVisibility('g', false)
+    expect(layer(s().project, 'g-a')).toMatchObject({ locked: false, visible: true }) // direct flags of the child are untouched
+    s().undo()
+    s().undo()
+    expect(layer(s().project, 'g')).toMatchObject({ locked: false, visible: true })
+  })
+
+  it('property edits survive save and reopen semantics at the store level (saved project equals current)', async () => {
+    const { s } = await open()
+    s().editLayers(['photo-1'], { x: 1, y: 2 })
+    await s().save()
+    expect(selectIsDirty(s())).toBe(false)
+    s().editLayers(['photo-1'], { x: 3 })
+    expect(selectIsDirty(s())).toBe(true)
+  })
+})
+
+describe('Phase 4: repeated identical edits', () => {
+  it('committing the same value twice (Enter then blur) creates exactly one history entry', async () => {
+    const { s } = await open()
+    s().editLayers(['photo-1'], { x: 77 })
+    s().editLayers(['photo-1'], { x: 77 })
+    expect(s().history.past).toHaveLength(1)
+  })
+})

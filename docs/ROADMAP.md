@@ -38,13 +38,10 @@ Remaining for later phases: autosave timer, recovery UX, close/quit confirmation
 **Status: complete.** Konva/react-konva canvas, Zustand editor store with pure mutations and snapshot undo/redo, transform normalization, one-spec rendering for editor and offscreen render, exact-size render API, image asset bridge, text overlay editing, snapping with guides, keyboard actions, dirty/working-copy integration, temporary editor shell, spike removed. See [ARCHITECTURE_PLAN.md](ARCHITECTURE_PLAN.md) §5–5a and ADR-030–032.
 - **Deferred (do not lose track):** unsaved-changes protection on window close/app quit (only replace/close-project prompts exist), autosave timer, crash-recovery listing/UI.
 
-## Phase 4 — Layer management
-**Note:** Phase 3B already delivered undo/redo, snapping with guides, duplicate/delete, lock/hide, z-order actions and basic keyboard shortcuts at the store level; Phase 4 now centers on the layers panel, grouping UI, align/distribute, copy/paste and the full shortcut set.
-- **Objective:** Layer panel and core object manipulation.
-- **Deliverables:** layers panel, z-order, lock/hide, group, align/distribute, snapping/smart guides, undo/redo, copy/paste, shortcuts.
-- **Dependencies:** Phase 3B.
-- **Acceptance:** all manipulations undoable and persisted; keyboard shortcuts work.
-- **Non-goals:** typography depth, palette.
+## Phase 4 — Layer management, selection and properties inspector
+**Status: complete.** Layers panel (front-first tree, groups, lock/visibility with inherited state, rename, drag reorder, stacking commands, filter), Properties inspector for every layer type with draft-then-commit fields, add/duplicate/delete, multi-selection with shared transformer, group/ungroup, toolbar/status bar, modified indicator. See [ARCHITECTURE_PLAN.md](ARCHITECTURE_PLAN.md) §5b, [UX_SPEC.md](UX_SPEC.md) §19, ADR-033.
+- **Not delivered (deferred):** context menu, drag into/out of groups, rulers, layer thumbnails, palette manager, copy/paste, align/distribute.
+- **Recommended next:** a focused **persistence-safety phase** (window close/quit protection, autosave timer, crash-recovery listing/UI) before Phase 5 and before the editor grows further.
 
 ## Phase 5 — Photo placeholders
 - **Objective:** First-class PhotoLayer.

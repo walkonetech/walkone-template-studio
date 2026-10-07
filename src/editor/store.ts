@@ -20,6 +20,11 @@ import {
   moveLayerBy,
   removeLayer,
   reorderLayer,
+  reorderLayers,
+  groupLayers,
+  ungroupLayer,
+  moveLayerRelative,
+  renameLayer as renameLayerMutation,
   setLocked as setLockedMutation,
   setVisibility as setVisibilityMutation,
   updateLayer,
@@ -29,7 +34,9 @@ import {
 import type { EditorPorts } from './ports'
 import type { OpenProjectInfo } from '@shared/ipc'
 import type { IpcResult } from '@shared/persistence'
-import { isEditable } from '@domain'
+import { isEditable, topmostIds } from '@domain'
+import { createNewLayer, type NewLayerKind } from './newLayers'
+import { rangeIds, toggleId } from './selection'
 
 export type Interaction = 'idle' | 'transforming' | 'editingText'
 export type PhotoDisplay = 'placeholder' | 'preview'
@@ -39,8 +46,14 @@ export interface EditorState {
   project: TemplateProject | null
   /** Reference to the project as last saved/opened. dirty = project !== savedProject. */
   savedProject: TemplateProject | null
-  /** Array so multi-selection can be added later; today at most one id. */
+  /** Selected layer ids, in selection order (multi-selection). */
   selectedIds: string[]
+  /** Anchor for Shift-range selection in the Layers Panel. */
+  anchorId: string | null
+  /** Collapsed group ids: editor UI state only, never in the project, history or dirty state. */
+  collapsedGroups: readonly string[]
+  /** Layers Panel name filter (editor UI state). */
+  layerFilter: string
   view: ViewState
   viewport: Size
   interaction: Interaction
@@ -92,8 +105,25 @@ export interface EditorActions {
   undo(): boolean
   redo(): boolean
   clearHistory(): void
+  addNewLayer(kind: NewLayerKind): boolean
+  renameLayer(id: string, name: string): boolean
+  /** Edits properties of layers; locked layers only accept `name`, `locked` and `visible`. */
+  editLayers(
+    ids: readonly string[],
+    patch: Parameters<typeof updateLayer>[2],
+    options?: CommitOptions
+  ): boolean
+  stackSelection(direction: 'forward' | 'backward' | 'front' | 'back'): boolean
+  moveLayerRelative(id: string, targetId: string, placement: 'above' | 'below'): boolean
+  groupSelection(): boolean
+  ungroupSelection(): boolean
   // ---- selection / interaction (never in history)
   selectLayer(id: string | null): void
+  selectLayers(ids: readonly string[]): void
+  toggleSelection(id: string): void
+  selectRange(orderedIds: readonly string[], targetId: string): void
+  toggleCollapsed(id: string): void
+  setLayerFilter(filter: string): void
   clearSelection(): void
   beginTextEdit(id: string): void
   endTextEdit(): void
@@ -128,6 +158,9 @@ const initialState = (): EditorState => ({
   project: null,
   savedProject: null,
   selectedIds: [],
+  anchorId: null,
+  collapsedGroups: [],
+  layerFilter: '',
   view: { mode: 'fit' },
   viewport: { width: 800, height: 600 },
   interaction: 'idle',
@@ -214,7 +247,8 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
     const editableSelected = (): Layer[] => {
       const { project, selectedIds } = get()
       if (!project) return []
-      return selectedIds
+      // Topmost only: a group and its own child are never processed twice by a bulk operation.
+      return topmostIds(project.layers, selectedIds)
         .map((id) => project.layers.find((l) => l.id === id))
         .filter((l): l is Layer => l !== undefined && isEditable(project.layers, l))
     }
@@ -345,15 +379,109 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
       },
       duplicateSelection() {
         const layers = editableSelected()
-        const first = layers[0]
-        if (!first) return false
-        let rootId = ''
-        const ok = get().commit((p, c) => {
-          const r = duplicateLayer(p, first.id, c)
-          rootId = r.rootId
-          return r.project
+        if (layers.length === 0) return false
+        const roots: string[] = []
+        const ok = get().commit((p, c) =>
+          layers.reduce((acc, l) => {
+            const r = duplicateLayer(acc, l.id, c)
+            roots.push(r.rootId)
+            return r.project
+          }, p)
+        )
+        if (ok) set({ selectedIds: roots, anchorId: roots[roots.length - 1] ?? null })
+        return ok
+      },
+      addNewLayer(kind) {
+        const { project } = get()
+        if (!project) return false
+        const layer = createNewLayer(project, kind, options.createId)
+        const ok = get().commit((p, c) => addLayerMutation(p, layer, c))
+        if (ok) set({ selectedIds: [layer.id], anchorId: layer.id })
+        return ok
+      },
+      renameLayer(id, name) {
+        if (name.trim() === '') {
+          set({ lastMessage: 'A layer name cannot be empty.' })
+          return false
+        }
+        return get().commit((p, c) => renameLayerMutation(p, id, name, c))
+      },
+      editLayers(ids, patch, o = {}) {
+        const { project } = get()
+        if (!project) return false
+        const alwaysAllowed = new Set(['name', 'locked', 'visible'])
+        const onlyLabels = Object.keys(patch).every((k) => alwaysAllowed.has(k))
+        const targets = ids.filter((id) => {
+          const l = project.layers.find((x) => x.id === id)
+          return l !== undefined && (onlyLabels || isEditable(project.layers, l))
         })
-        if (ok) set({ selectedIds: [rootId] })
+        if (targets.length === 0) return false
+        return get().commit(
+          (p, c) => targets.reduce((acc, id) => updateLayer(acc, id, patch, c), p),
+          o
+        )
+      },
+      stackSelection(direction) {
+        const layers = editableSelected()
+        if (layers.length === 0) return false
+        try {
+          return get().commit((p, c) =>
+            reorderLayers(
+              p,
+              layers.map((l) => l.id),
+              direction,
+              c
+            )
+          )
+        } catch (e) {
+          set({ lastMessage: e instanceof Error ? e.message : String(e) })
+          return false
+        }
+      },
+      moveLayerRelative(id, targetId, placement) {
+        const { project } = get()
+        const layer = project?.layers.find((l) => l.id === id)
+        if (!project || !layer || !isEditable(project.layers, layer)) return false
+        try {
+          return get().commit((p, c) => moveLayerRelative(p, id, targetId, placement, c))
+        } catch (e) {
+          set({ lastMessage: e instanceof Error ? e.message : String(e) })
+          return false
+        }
+      },
+      groupSelection() {
+        const layers = editableSelected()
+        if (layers.length === 0) return false
+        let groupId = ''
+        try {
+          const ok = get().commit((p, c) => {
+            const r = groupLayers(
+              p,
+              layers.map((l) => l.id),
+              c
+            )
+            groupId = r.groupId
+            return r.project
+          })
+          if (ok) set({ selectedIds: [groupId], anchorId: groupId })
+          return ok
+        } catch (e) {
+          set({ lastMessage: e instanceof Error ? e.message : String(e) })
+          return false
+        }
+      },
+      ungroupSelection() {
+        const groups = editableSelected().filter((l) => l.type === 'group')
+        if (groups.length === 0) return false
+        const kids: string[] = []
+        const ok = get().commit((p, c) =>
+          groups.reduce((acc, g) => {
+            const r = ungroupLayer(acc, g.id, c)
+            kids.push(...r.childIds)
+            return r.project
+          }, p)
+        )
+        if (ok) set({ selectedIds: kids, anchorId: kids[kids.length - 1] ?? null })
         return ok
       },
       commitText(id, content) {
@@ -396,11 +524,31 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
 
       selectLayer(id) {
         const { project } = get()
-        if (id === null) return set({ selectedIds: [] })
+        if (id === null) return set({ selectedIds: [], anchorId: null })
         if (!project?.layers.some((l) => l.id === id)) return
-        set({ selectedIds: [id] })
+        set({ selectedIds: [id], anchorId: id })
       },
-      clearSelection: () => set({ selectedIds: [] }),
+      selectLayers(ids) {
+        const { project } = get()
+        const valid = ids.filter((id) => project?.layers.some((l) => l.id === id))
+        set({ selectedIds: valid, anchorId: valid[valid.length - 1] ?? null })
+      },
+      toggleSelection(id) {
+        const { project, selectedIds } = get()
+        if (!project?.layers.some((l) => l.id === id)) return
+        const next = toggleId(selectedIds, id)
+        set({ selectedIds: next, anchorId: next.includes(id) ? id : get().anchorId })
+      },
+      selectRange(orderedIds, targetId) {
+        const ids = rangeIds(orderedIds, get().anchorId, targetId)
+        if (ids.length > 0) set({ selectedIds: ids })
+      },
+      toggleCollapsed(id) {
+        const c = get().collapsedGroups
+        set({ collapsedGroups: c.includes(id) ? c.filter((x) => x !== id) : [...c, id] })
+      },
+      setLayerFilter: (layerFilter) => set({ layerFilter }),
+      clearSelection: () => set({ selectedIds: [], anchorId: null }),
       beginTextEdit(id) {
         const { project } = get()
         const layer = project?.layers.find((l) => l.id === id)

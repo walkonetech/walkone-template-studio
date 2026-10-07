@@ -70,3 +70,12 @@ export function isEditable(layers: readonly Layer[], layer: Layer): boolean {
 export function isEffectivelyVisible(layers: readonly Layer[], layer: Layer): boolean {
   return layer.visible && !ancestorsOf(layers, layer.id).some((a) => !a.visible)
 }
+
+/**
+ * Ids from `ids` that have no ancestor in the same set, in the given order. Bulk operations (delete,
+ * duplicate, move, group) use this so a group and its own child are never processed twice.
+ */
+export function topmostIds(layers: readonly Layer[], ids: readonly string[]): string[] {
+  const set = new Set(ids)
+  return ids.filter((id) => !ancestorsOf(layers, id).some((a) => set.has(a.id)))
+}

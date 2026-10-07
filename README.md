@@ -8,7 +8,7 @@ WalkOne Template Studio is a planned internal desktop application for **WalkOne 
 The owner/operator of WalkOne Entertainment (v1 is an internal production tool). Later commercialization is not ruled out but is out of scope for now.
 
 ## Current phase
-**Phase 3B — Production canvas foundation: complete.** Next phases await approval. See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md).
+**Phase 4 — Layers panel and properties inspector: complete.** Next phases await approval. See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md).
 
 ## Documentation
 - [CLAUDE.md](CLAUDE.md) — operating rules for AI coding sessions

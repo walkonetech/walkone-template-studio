@@ -34,6 +34,8 @@ export interface RenderEnv {
   /** Show the "PHOTO n" label (editor aid). */
   photoLabels: boolean
   editingTextId?: string | null
+  /** Directly selected layer ids: a child of a group is draggable on its own only while directly selected. */
+  selectedIds?: readonly string[]
   allLayers: readonly Layer[]
 }
 
@@ -53,7 +55,7 @@ function base(layer: Layer, env: RenderEnv, insideGroup: boolean): Konva.NodeCon
     opacity: layer.opacity,
     // Locked layers render but do not listen: clicks pass through to whatever is beneath.
     listening: editable,
-    draggable: editable && !insideGroup
+    draggable: editable && (!insideGroup || (env.selectedIds?.includes(layer.id) ?? false))
   }
 }
 

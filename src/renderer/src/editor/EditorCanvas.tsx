@@ -14,8 +14,6 @@ import type Konva from 'konva'
 import {
   childrenOf,
   getPixelSize,
-  isEditable,
-  isEffectivelyVisible,
   selectableRoot,
   topLevelLayers,
   type Layer,
@@ -32,6 +30,9 @@ import {
 } from '@canvas/rendering/nodeSpec'
 import { finalizeTextNode } from '@canvas/rendering/finalize'
 import { ROTATION_SNAPS, boxTooSmall, transformerOptionsFor } from '@canvas/transforms/normalize'
+import { transformTargets } from '@canvas/transforms/targets'
+import type { GeometryChange } from '@editor/mutations'
+import { isPrimaryModifier } from './platform'
 import { selectDesignSize, selectViewTransform } from '@editor/store'
 import { editorStore, useEditor, useViewTransform } from './editorStore'
 import { useProjectImages } from './useProjectImages'
@@ -46,12 +47,16 @@ const COMPONENTS = { Group, Rect, Ellipse, Line, Text, Shape } as unknown as Rec
 
 const store = editorStore
 
-/** Domain layer id for a Konva target; clicks inside a group select the outermost group. */
-function layerIdFor(target: Konva.Node, layers: readonly Layer[]): string | null {
+/**
+ * Domain layer id for a Konva target. By default a click inside a group selects the OUTERMOST group (so a group
+ * behaves as one object); with `deep` (Alt/Option-click) it selects the clicked layer itself.
+ */
+function layerIdFor(target: Konva.Node, layers: readonly Layer[], deep: boolean): string | null {
   let node: Konva.Node | null = target
   while (node) {
     const id = node.id()
-    if (id && layers.some((l) => l.id === id)) return selectableRoot(layers, id)?.id ?? id
+    if (id && layers.some((l) => l.id === id))
+      return deep ? id : (selectableRoot(layers, id)?.id ?? id)
     node = node.getParent()
   }
   return null
@@ -75,42 +80,104 @@ function restoreNode(node: Konva.Node, layer: Layer): void {
   node.getLayer()?.batchDraw()
 }
 
-function onNodeDragMove(e: Konva.KonvaEventObject<DragEvent>): void {
-  const s = store.getState()
-  if (!s.snapping.enabled) return
-  const design = selectDesignSize(s)
-  const view = selectViewTransform(s)
-  if (!design || !view) return
-  const node = e.currentTarget
-  const r = snapDraggedNode(node, design, view, s.snapping.tolerancePx)
-  if (!r) return
-  if (r.dx !== 0 || r.dy !== 0) node.position({ x: node.x() + r.dx, y: node.y() + r.dy })
-  s.setGuides(r.guides)
+const nodeFor = (stage: Konva.Stage | null, id: string): Konva.Node | undefined =>
+  stage?.findOne((n: Konva.Node) => n.id() === id) ?? undefined
+
+function onNodeDragStart(): void {
+  store.getState().setInteraction('transforming')
 }
 
-/** Interaction finished: normalize, commit ONE mutation (one history entry), reset runtime scale. */
-function onNodeEnd(node: Konva.Node): void {
+function onNodeDragMove(e: Konva.KonvaEventObject<DragEvent>): void {
   const s = store.getState()
-  const layer = s.project?.layers.find((l) => l.id === node.id())
-  if (!s.project || !layer) return
-  const changes =
-    layer.type === 'group'
-      ? commitGroupNode(node as Konva.Group, s.project.layers)
-      : [commitTopLevelNode(node, layer)]
+  const node = e.currentTarget
+  if (s.snapping.enabled) {
+    const design = selectDesignSize(s)
+    const view = selectViewTransform(s)
+    if (design && view) {
+      const r = snapDraggedNode(node, design, view, s.snapping.tolerancePx)
+      if (r) {
+        if (r.dx !== 0 || r.dy !== 0) node.position({ x: node.x() + r.dx, y: node.y() + r.dy })
+        s.setGuides(r.guides)
+      }
+    }
+  }
+}
+
+/** Reads one finished node into domain changes (scale folded in and reset). */
+function changesFor(node: Konva.Node, layers: readonly Layer[]): GeometryChange[] {
+  const layer = layers.find((l) => l.id === node.id())
+  if (!layer) return []
+  return layer.type === 'group'
+    ? commitGroupNode(node as Konva.Group, layers)
+    : [commitTopLevelNode(node, layer)]
+}
+
+/** Interaction finished: normalize every moved node, commit ONE mutation (one history entry). */
+function finishInteraction(nodes: Konva.Node[]): void {
+  const s = store.getState()
+  if (!s.project) return
+  const layers = s.project.layers
+  const changes = nodes.flatMap((n) => changesFor(n, layers))
   const committed = s.commitGeometry(changes)
   s.setGuides([])
   s.setInteraction('idle')
-  if (!committed) restoreNode(node, layer)
+  if (!committed) {
+    for (const n of nodes) {
+      const layer = layers.find((l) => l.id === n.id())
+      if (layer) restoreNode(n, layer)
+    }
+  }
 }
 
-function handlersFor(layer: Layer, insideGroup: boolean): Record<string, unknown> {
-  if (insideGroup) return {}
+/**
+ * With several layers selected, Konva's shared Transformer drags all attached nodes together and fires `dragend`
+ * on each of them in the same tick; the first one commits every target as ONE mutation and the rest are ignored.
+ */
+let multiEndHandled = false
+
+function onNodeDragEnd(e: Konva.KonvaEventObject<DragEvent>): void {
+  const node = e.currentTarget
+  const s = store.getState()
+  const targets = s.project ? transformTargets(s.project.layers, s.selectedIds) : []
+  if (targets.length > 1 && targets.some((l) => l.id === node.id())) {
+    if (multiEndHandled) return
+    multiEndHandled = true
+    queueMicrotask(() => {
+      multiEndHandled = false
+    })
+    const stage = node.getStage()
+    finishInteraction(targets.map((l) => nodeFor(stage, l.id)).filter((n): n is Konva.Node => !!n))
+    return
+  }
+  finishInteraction([node])
+}
+
+/** Single-selection transforms commit per node; multi-selection commits once from the shared Transformer. */
+function onNodeTransformEnd(e: Konva.KonvaEventObject<Event>): void {
+  const s = store.getState()
+  if (s.project && transformTargets(s.project.layers, s.selectedIds).length > 1) return
+  finishInteraction([e.currentTarget])
+}
+
+function onTransformerEnd(e: Konva.KonvaEventObject<Event>): void {
+  const tr = e.currentTarget as Konva.Transformer
+  const nodes = tr.nodes()
+  if (nodes.length > 1) finishInteraction([...nodes])
+}
+
+function handlersFor(
+  layer: Layer,
+  insideGroup: boolean,
+  selectedDirectly: boolean
+): Record<string, unknown> {
+  // Group children move with their group unless selected on their own (e.g. from the Layers Panel).
+  if (insideGroup && !selectedDirectly) return {}
   const base: Record<string, unknown> = {
-    onDragStart: () => store.getState().setInteraction('transforming'),
+    onDragStart: onNodeDragStart,
     onTransformStart: () => store.getState().setInteraction('transforming'),
     onDragMove: onNodeDragMove,
-    onDragEnd: (e: Konva.KonvaEventObject<DragEvent>) => onNodeEnd(e.currentTarget),
-    onTransformEnd: (e: Konva.KonvaEventObject<Event>) => onNodeEnd(e.currentTarget)
+    onDragEnd: onNodeDragEnd,
+    onTransformEnd: onNodeTransformEnd
   }
   if (layer.type === 'text') {
     base.onDblClick = () => store.getState().beginTextEdit(layer.id)
@@ -135,7 +202,10 @@ function LayerView({
     if (nodeRef.current) finalizeTextNode(nodeRef.current, layer)
   })
   if (!spec) return null
-  const props: Record<string, unknown> = { ...spec.config, ...handlersFor(layer, insideGroup) }
+  const props: Record<string, unknown> = {
+    ...spec.config,
+    ...handlersFor(layer, insideGroup, env.selectedIds?.includes(layer.id) ?? false)
+  }
   const Node = COMPONENTS[spec.className]
   if (layer.type === 'group') {
     // Children are rendered by domain order; the runtime group rests at identity.
@@ -219,27 +289,38 @@ export function EditorCanvas(): React.JSX.Element | null {
     return () => host.removeEventListener('wheel', onWheel)
   }, [])
 
-  // Attach the transformer to the selected, editable, visible node (never while editing text).
-  const activeId = selectedIds[selectedIds.length - 1] ?? null
+  // Attach the shared transformer to every selected, editable, visible, topmost node (never while editing text).
   useEffect(() => {
     const tr = trRef.current
     const stage = stageRef.current
     if (!tr || !stage) return
-    const layer = project?.layers.find((l) => l.id === activeId)
-    let node: Konva.Node | undefined
-    if (
-      project &&
-      layer &&
-      !editingTextId &&
-      isEditable(project.layers, layer) &&
-      isEffectivelyVisible(project.layers, layer)
-    ) {
-      node = stage.findOne((n: Konva.Node) => n.id() === layer.id) ?? undefined
-      tr.setAttrs(transformerOptionsFor(layer))
+    const targets = project && !editingTextId ? transformTargets(project.layers, selectedIds) : []
+    const nodes = targets
+      .map((l) => stage.findOne((n: Konva.Node) => n.id() === l.id))
+      .filter((n): n is Konva.Node => !!n)
+    const only = targets.length === 1 ? targets[0] : undefined
+    tr.setAttrs(
+      only
+        ? transformerOptionsFor(only)
+        : { keepRatio: false, enabledAnchors: [], rotateEnabled: true, flipEnabled: false }
+    )
+    if (targets.length > 1) {
+      tr.setAttrs({
+        enabledAnchors: [
+          'top-left',
+          'top-center',
+          'top-right',
+          'middle-left',
+          'middle-right',
+          'bottom-left',
+          'bottom-center',
+          'bottom-right'
+        ]
+      })
     }
-    tr.nodes(node ? [node] : [])
+    tr.nodes(nodes)
     tr.getLayer()?.batchDraw()
-  }, [activeId, project, editingTextId, viewState, viewport])
+  }, [selectedIds, project, editingTextId, viewState, viewport])
 
   useEffect(
     () => registerCanvasDebug(() => ({ stage: stageRef.current, transformer: trRef.current })),
@@ -255,6 +336,7 @@ export function EditorCanvas(): React.JSX.Element | null {
     interactive: true,
     photoLabels: true,
     editingTextId,
+    selectedIds,
     allLayers: project.layers
   }
 
@@ -262,13 +344,22 @@ export function EditorCanvas(): React.JSX.Element | null {
     const t = e.target
     const s = store.getState()
     if (!s.project) return
+    const additive = e.evt.shiftKey || isPrimaryModifier(e.evt)
     if (t === t.getStage() || t.id() === DESIGN_NODE_ID) {
-      s.clearSelection()
+      if (!additive) s.clearSelection()
       return
     }
     if (t.getParent()?.getClassName() === 'Transformer') return // handles manage themselves
-    const id = layerIdFor(t, s.project.layers)
-    if (id) s.selectLayer(id)
+    const layers = s.project.layers
+    const deepId = layerIdFor(t, layers, true)
+    if (!deepId) return
+    // Pressing something that is already selected keeps the selection (so a multi-selection can be dragged,
+    // and a child selected from the Layers Panel can be moved on its own).
+    if (!additive && s.selectedIds.includes(deepId)) return
+    const id = e.evt.altKey ? deepId : layerIdFor(t, layers, false)
+    if (!id) return
+    if (additive) s.toggleSelection(id)
+    else s.selectLayer(id)
   }
 
   return (
@@ -333,6 +424,7 @@ export function EditorCanvas(): React.JSX.Element | null {
             borderStroke="#1a73e8"
             rotateAnchorOffset={28}
             ignoreStroke
+            onTransformEnd={onTransformerEnd}
             boundBoxFunc={(oldBox, newBox) => (boxTooSmall(newBox) ? oldBox : newBox)}
           />
         </KLayer>

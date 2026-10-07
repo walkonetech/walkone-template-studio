@@ -51,7 +51,8 @@ export function installDebug(
     ...api,
     handlePoint: (name) => {
       const { stage, transformer } = canvasTargets()
-      const anchor = transformer?.findOne(`.${name}`)
+      if (!transformer || transformer.nodes().length === 0) return null
+      const anchor = transformer.findOne(`.${name}`)
       if (!stage || !anchor) return null
       const p = anchor.getAbsolutePosition()
       const r = stage.container().getBoundingClientRect()

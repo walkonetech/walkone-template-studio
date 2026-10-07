@@ -125,3 +125,45 @@ exports.extend = (c) => {
     )
   return { ...c, key, dblclick, insertText, clickButton }
 }
+
+exports.extend2 = (c) => {
+  const e = exports.extend(c)
+  const mouseMod = async (type, x, y, modifiers = 0) =>
+    c.send('Input.dispatchMouseEvent', {
+      type,
+      x,
+      y,
+      button: 'left',
+      buttons: type === 'mouseReleased' ? 0 : 1,
+      clickCount: 1,
+      modifiers
+    })
+  const clickMod = async (p, modifiers = 0) => {
+    await c.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: p.x, y: p.y, modifiers })
+    await mouseMod('mousePressed', p.x, p.y, modifiers)
+    await mouseMod('mouseReleased', p.x, p.y, modifiers)
+    await c.sleep(150)
+  }
+  const dragMod = async (from, to, steps = 8, modifiers = 0) => {
+    await c.send('Input.dispatchMouseEvent', {
+      type: 'mouseMoved',
+      x: from.x,
+      y: from.y,
+      modifiers
+    })
+    await mouseMod('mousePressed', from.x, from.y, modifiers)
+    for (let i = 1; i <= steps; i++) {
+      await c.send('Input.dispatchMouseEvent', {
+        type: 'mouseMoved',
+        x: from.x + ((to.x - from.x) * i) / steps,
+        y: from.y + ((to.y - from.y) * i) / steps,
+        buttons: 1,
+        modifiers
+      })
+      await c.sleep(15)
+    }
+    await mouseMod('mouseReleased', to.x, to.y, modifiers)
+    await c.sleep(150)
+  }
+  return { ...e, clickMod, dragMod }
+}

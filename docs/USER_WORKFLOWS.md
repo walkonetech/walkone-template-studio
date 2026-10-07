@@ -65,3 +65,11 @@ All workflows are **Proposed** future behavior. UI details: [UX_SPEC.md](UX_SPEC
 ## P. New / Save / Save As (native project lifecycle)
 **New:** creates an unsaved project (modified until first saved). **Save:** if the project has a file, rewrites it; if never saved, behaves like Save As. **Save As:** native dialog (`*.boothproject`), writes the new file, and only then switches the project to it; the original file is untouched. A project becomes *saved* only after a successful Save/Save As; working-copy autosave never marks it saved.
 **Edge:** cancelling a dialog is silent (not an error); a failed save keeps the previous file intact and reports a specific reason (missing asset, permission, replace failed). Unsaved-changes prompts on close/quit belong to the UI phase.
+
+## Q. Manage layers (Phase 4)
+**Happy path:** open a project → select by clicking the canvas or a Layers row (both stay in sync) → rename (double-click), lock/hide with the row buttons, drag rows or use the stacking buttons to reorder, group/ungroup, duplicate, delete, add a photo/text/rectangle/ellipse/line → every change is one undo step and marks the project Modified → Save.
+**Edge/failure states:** locked layers render but cannot be moved; they stay selectable from the panel to unlock them; a layer hidden or locked by a parent shows that distinctly; reordering across groups is refused with a message; empty names are rejected; an added photo takes the next capture slot while a duplicated photo keeps its number (two-up strips); deleting a group deletes its contents.
+
+## R. Edit properties (Phase 4)
+**Happy path:** select a layer → edit X/Y/size/rotation/opacity or type-specific fields in the inspector → Enter or blur commits one undo step → the canvas updates; moving a layer on the canvas updates the inspector.
+**Edge/failure states:** invalid numbers show an alert and revert; Escape discards the draft; repeated photo numbers are valid; locked layers' geometry fields are disabled; multi-selection offers only common bulk controls; a palette-linked color is not silently converted.
