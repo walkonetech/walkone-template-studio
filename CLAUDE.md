@@ -3,7 +3,7 @@
 This file is the persistent rulebook for every Claude Code session on this project. Follow it before anything else.
 
 ## Project in one paragraph
-WalkOne Template Studio is an internal desktop tool (Electron + React + TypeScript, **not yet initialized**) for WalkOne Entertainment, LLC that speeds up creating custom photo booth print templates for LumaSoft DSLR Booth / LumaBooth. It is a focused print-template tool, not a general design app. See [docs/PRODUCT_SPEC.md](docs/PRODUCT_SPEC.md).
+WalkOne Template Studio is an internal desktop tool (Electron + React + TypeScript; see docs/CURRENT_STATE.md for what exists) for WalkOne Entertainment, LLC that speeds up creating custom photo booth print templates for LumaSoft DSLR Booth / LumaBooth. It is a focused print-template tool, not a general design app. See [docs/PRODUCT_SPEC.md](docs/PRODUCT_SPEC.md).
 
 ## Before beginning any work
 1. Read this file.
@@ -24,6 +24,7 @@ WalkOne Template Studio is an internal desktop tool (Electron + React + TypeScri
 | Decisions (incl. OPEN) | docs/DECISIONS.md |
 | Testing | docs/TESTING_STRATEGY.md |
 | Terms | docs/GLOSSARY.md |
+| Fresh-session prompt (refresh every session) | docs/SESSION_STARTER.md |
 | Research notes (not decisions) | research/ |
 
 ## Non-negotiable architecture rules
@@ -62,7 +63,8 @@ WalkOne Template Studio is an internal desktop tool (Electron + React + TypeScri
 5. Summarize tests performed.
 6. List known issues.
 7. Recommend the next phase.
-8. **STOP and await approval.**
+8. **Refresh docs/SESSION_STARTER.md** (commit list, test count, architecture/gotchas, findings, and the "where I left off" block) so a brand-new session can resume from it alone.
+9. **STOP and await approval.**
 
 ## Version control and secrets
 - Commit at stable milestones (Git is initialized as of Phase 0). Use clear, conventional messages.
