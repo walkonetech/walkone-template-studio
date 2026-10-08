@@ -273,7 +273,7 @@
     "detail": "Asset | sample.png | Source | 32×32 px | Displayed | 560×560 px · 0.93×0.93 in | Print quality | 34 DPI · Low resolution | Type | image/png"
   },
   {
-    "name": "group inspector shows derived bounds read-only and no rotation/opacity controls",
+    "name": "group inspector: X/Y move the group (Phase 5B), W/H derived read-only, no rotation/opacity controls",
     "ok": true
   },
   {
@@ -319,7 +319,7 @@
     "detail": 6
   },
   {
-    "name": "multi-selection inspector shows only common controls (no X/Y/Width)",
+    "name": "multi-selection inspector: common controls + Selection position X/Y (Phase 5B), no per-layer Width/Rotation",
     "ok": true
   },
   {

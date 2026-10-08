@@ -22,6 +22,16 @@ export type CommandId =
   | 'view.zoomOut'
   | 'view.snap'
   | 'view.previewPhotos'
+  | 'view.design'
+  | 'view.printPreview'
+  | 'arrange.alignLeft'
+  | 'arrange.alignCenter'
+  | 'arrange.alignRight'
+  | 'arrange.alignTop'
+  | 'arrange.alignMiddle'
+  | 'arrange.alignBottom'
+  | 'arrange.distributeH'
+  | 'arrange.distributeV'
 
 /** Platform-neutral shortcut: `mod` is Command on macOS and Ctrl elsewhere. */
 export interface Shortcut {
@@ -40,6 +50,9 @@ export interface CommandContext {
   selectionCount: number
   snapping: boolean
   previewPhotos: boolean
+  /** The project prints several copies per sheet, so a Print Preview exists. */
+  hasPrintPreview: boolean
+  viewMode: 'design' | 'preview'
 }
 
 interface CommandDef {
@@ -113,6 +126,40 @@ export const COMMANDS: Readonly<Record<CommandId, CommandDef>> = {
     needsProject: true
   },
   'view.snap': { label: 'Snap to guides', needsProject: true, checked: (c) => c.snapping },
+  'view.design': {
+    label: 'Design view',
+    needsProject: true,
+    checked: (c) => c.viewMode === 'design'
+  },
+  'view.printPreview': {
+    label: 'Print Preview',
+    needsProject: true,
+    checked: (c) => c.viewMode === 'preview'
+  },
+  'arrange.alignLeft': { label: 'Align left', needsProject: true, needsSelection: true },
+  'arrange.alignCenter': {
+    label: 'Align horizontal centers',
+    needsProject: true,
+    needsSelection: true
+  },
+  'arrange.alignRight': { label: 'Align right', needsProject: true, needsSelection: true },
+  'arrange.alignTop': { label: 'Align top', needsProject: true, needsSelection: true },
+  'arrange.alignMiddle': {
+    label: 'Align vertical centers',
+    needsProject: true,
+    needsSelection: true
+  },
+  'arrange.alignBottom': { label: 'Align bottom', needsProject: true, needsSelection: true },
+  'arrange.distributeH': {
+    label: 'Distribute horizontally',
+    needsProject: true,
+    needsSelection: true
+  },
+  'arrange.distributeV': {
+    label: 'Distribute vertically',
+    needsProject: true,
+    needsSelection: true
+  },
   'view.previewPhotos': {
     label: 'Preview photos',
     needsProject: true,
@@ -126,6 +173,14 @@ export function isCommandEnabled(id: CommandId, ctx: CommandContext): boolean {
   if (def.needsSelection && ctx.selectionCount === 0) return false
   if (id === 'edit.undo') return ctx.canUndo
   if (id === 'edit.redo') return ctx.canRedo
+  if (id === 'view.printPreview' || id === 'view.design') return ctx.hasPrintPreview
+  // Arranging edits artwork, which only Design mode does. Align needs one layer (to the canvas) or more; distribute three.
+  if (id.startsWith('arrange.')) {
+    if (ctx.viewMode !== 'design') return false
+    return id === 'arrange.distributeH' || id === 'arrange.distributeV'
+      ? ctx.selectionCount >= 3
+      : ctx.selectionCount >= 1
+  }
   // Sample photos do not exist yet (Phase 5C), so there is nothing to preview.
   if (id === 'view.previewPhotos') return false
   return true
@@ -165,9 +220,28 @@ export const MENUS: readonly { id: string; label: string; items: readonly (Comma
       ]
     },
     {
+      id: 'align',
+      label: 'Align',
+      items: [
+        'arrange.alignLeft',
+        'arrange.alignCenter',
+        'arrange.alignRight',
+        '-',
+        'arrange.alignTop',
+        'arrange.alignMiddle',
+        'arrange.alignBottom',
+        '-',
+        'arrange.distributeH',
+        'arrange.distributeV'
+      ]
+    },
+    {
       id: 'view',
       label: 'View',
       items: [
+        'view.design',
+        'view.printPreview',
+        '-',
         'view.fit',
         'view.actual',
         'view.zoomIn',

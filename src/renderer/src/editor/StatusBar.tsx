@@ -1,6 +1,6 @@
 import { ImageIcon, Magnet, Minus, Plus } from 'lucide-react'
-import { describePrint } from '@editor/describe'
-import { selectViewTransform } from '@editor/store'
+import { describeWorkspace } from '@editor/describe'
+import { selectViewMode, selectViewTransform } from '@editor/store'
 import { runCommand } from './commandRunner'
 import { editorStore, useEditor } from './editorStore'
 import { shortcutFor } from './TopBar'
@@ -11,6 +11,7 @@ const st = editorStore.getState
 
 export function StatusBar(): React.JSX.Element {
   const project = useEditor((s) => s.project)
+  const viewMode = useEditor(selectViewMode)
   const scale = useEditor((s) => selectViewTransform(s)?.scale ?? null)
   const selectionCount = useEditor((s) => s.selectedIds.length)
   const snapping = useEditor((s) => s.snapping.enabled)
@@ -26,7 +27,7 @@ export function StatusBar(): React.JSX.Element {
   return (
     <footer className="statusbar" aria-label="Status bar">
       <span id="print-info" className="status-item">
-        {project ? describePrint(project.canvas.print) : 'No project open'}
+        {project ? describeWorkspace(project, viewMode) : 'No project open'}
       </span>
       {project && (
         <span id="selection-info" className="status-item muted">

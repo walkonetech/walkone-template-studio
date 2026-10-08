@@ -58,6 +58,7 @@ A real production template recreated through the UI ([../research/REAL_TEMPLATE_
 **Status: complete (2026-10-07).** Import PNG/JPEG/WebP/SVG into the project (native picker + drag and drop), project-owned assets with content-hash de-duplication, Assets drawer with thumbnails, add-to-canvas, image roles, Set as Background (cover/contain/original), canvas background colour, effective-DPI readout, per-layer Replace, unused-asset removal, undo/redo, save/Save As/reopen/recovery with assets, safe-SVG policy. ADR-036. Not delivered (by design): export, sample photos, 2×6 composition, palette/font managers, global library.
 
 ### Phase 5B — Photo Strip Authoring & Print Composition
+**Status: complete (2026-10-08).** Derived 2-up composition, Design / Print Preview, strip New Project, exact selection X/Y, align/distribute, design-pixel nudging; ADR-037. Original scope:
 - logical **2×6** authoring (one design); 2-up 4×6 output derived from it (`OutputComposition` already models this); Design / Print Preview
 - exact group/multi-selection positioning; alignment/distribution
 

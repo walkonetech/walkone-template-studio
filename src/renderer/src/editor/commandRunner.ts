@@ -69,6 +69,36 @@ export function runCommand(id: CommandId): void {
     case 'view.snap':
       s.setSnapping({ enabled: !s.snapping.enabled })
       return
+    case 'view.design':
+      s.setViewMode('design')
+      return
+    case 'view.printPreview':
+      s.setViewMode('preview')
+      return
+    case 'arrange.alignLeft':
+      s.alignSelection('left')
+      return
+    case 'arrange.alignCenter':
+      s.alignSelection('hcenter')
+      return
+    case 'arrange.alignRight':
+      s.alignSelection('right')
+      return
+    case 'arrange.alignTop':
+      s.alignSelection('top')
+      return
+    case 'arrange.alignMiddle':
+      s.alignSelection('vcenter')
+      return
+    case 'arrange.alignBottom':
+      s.alignSelection('bottom')
+      return
+    case 'arrange.distributeH':
+      s.distributeSelection('horizontal')
+      return
+    case 'arrange.distributeV':
+      s.distributeSelection('vertical')
+      return
     case 'view.previewPhotos':
       s.setPhotoDisplay(s.photoDisplay === 'preview' ? 'placeholder' : 'preview')
       return

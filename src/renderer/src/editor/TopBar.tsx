@@ -8,7 +8,8 @@ import {
   type CommandContext,
   type CommandId
 } from '@editor/commands'
-import { selectCanRedo, selectCanUndo, selectIsDirty } from '@editor/store'
+import { hasDerivedCopies } from '@canvas/rendering/composition'
+import { selectCanRedo, selectCanUndo, selectIsDirty, selectViewMode } from '@editor/store'
 import { runCommand } from './commandRunner'
 import { editorStore, useEditor } from './editorStore'
 import { isMac } from './platform'
@@ -25,7 +26,18 @@ export function useCommandContext(): CommandContext {
   const selectionCount = useEditor((s) => s.selectedIds.length)
   const snapping = useEditor((s) => s.snapping.enabled)
   const previewPhotos = useEditor((s) => s.photoDisplay === 'preview')
-  return { hasProject, canUndo, canRedo, selectionCount, snapping, previewPhotos }
+  const hasPrintPreview = useEditor((s) => s.project !== null && hasDerivedCopies(s.project))
+  const viewMode = useEditor(selectViewMode)
+  return {
+    hasProject,
+    canUndo,
+    canRedo,
+    selectionCount,
+    snapping,
+    previewPhotos,
+    hasPrintPreview,
+    viewMode
+  }
 }
 
 export const shortcutFor = (id: CommandId): string => shortcutLabel(COMMANDS[id].shortcut, isMac())

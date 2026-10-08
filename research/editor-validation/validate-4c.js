@@ -181,7 +181,7 @@ async function session(opts, fn) {
       })
       await c.insertText('Studio Test')
       await c.ev(
-        `(()=>{const s=document.querySelector('[role=dialog] select'); const set=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set; set.call(s,'strip-2x6-600'); s.dispatchEvent(new Event('change',{bubbles:true}))})()`
+        `(()=>{[...document.querySelectorAll('[role=dialog] [role=radio]')].find(x=>x.textContent.trim()==='2×6 Photo Strip').click()})()`
       )
       await c.key('Enter', { code: 'Enter', vk: 13 })
       await sleep(1000)

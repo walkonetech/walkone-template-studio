@@ -45,6 +45,9 @@ exports.launch = async ({ port, userData, env = {}, size }) => {
   await sleep(2000)
   const c = cdp.extend2(await cdp.connect(port))
   await c.send('Runtime.enable')
+  // Scripted pointer/key input and resize events need the window in front; another foreground app makes them flaky.
+  await c.send('Page.bringToFront').catch(() => {})
+  await sleep(300)
   for (let i = 0; i < 40 && !(await c.ev('!!window.__wts')); i++) await sleep(250)
   return { proc, c }
 }

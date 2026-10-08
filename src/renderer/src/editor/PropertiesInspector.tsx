@@ -11,7 +11,9 @@ import {
   type TextLayer
 } from '@domain'
 import { wrapDegrees } from '@canvas/geometry/geometry'
-import { describePrint } from '@editor/describe'
+import { copiesPerSheet, describePrint, printSizeName } from '@editor/describe'
+import { selectionBounds } from '@editor/arrange'
+import { ArrangeControls } from './ArrangeControls'
 import { opacityToPercent, percentToOpacity } from '@editor/numberInput'
 import { layerTypeLabel } from '@editor/layerTree'
 import { Copy, Group, MousePointerClick, Trash2 } from 'lucide-react'
@@ -130,18 +132,38 @@ function TransformSection({ layer, locked }: { layer: Layer; locked: boolean }):
   const heightRule =
     layer.type === 'shape' && layer.shape === 'line' ? { min: 0 } : { positive: true }
   if (isGroup) {
+    // A group has no stored geometry of its own: its box is derived from its children. X/Y therefore MOVE the group
+    // (translating every child); the size is shown but changes only by transforming the group on the canvas.
     return (
       <Section id="transform" title="Transform">
+        <div className="grid-2">
+          <CompactNumber
+            label="X"
+            short="X"
+            unit="px"
+            value={layer.x}
+            disabled={locked}
+            onCommit={(x) => store.getState().moveSelectionTo({ x })}
+          />
+          <CompactNumber
+            label="Y"
+            short="Y"
+            unit="px"
+            value={layer.y}
+            disabled={locked}
+            onCommit={(y) => store.getState().moveSelectionTo({ y })}
+          />
+        </div>
         <dl className="derived">
-          {(['x', 'y', 'width', 'height'] as const).map((k) => (
+          {(['width', 'height'] as const).map((k) => (
             <div key={k}>
-              <dt>{k.toUpperCase()}</dt>
+              <dt>{k === 'width' ? 'W' : 'H'}</dt>
               <dd>{Math.round(layer[k] * 1000) / 1000}</dd>
             </div>
           ))}
         </dl>
         <p className="field-note">
-          A group's box follows its children. Move or resize it on the canvas.
+          Moving a group keeps its children&apos;s relative positions. Resize it on the canvas.
         </p>
       </Section>
     )
@@ -620,6 +642,11 @@ function SingleInspector({
           )}
         </AppearanceSection>
       )}
+      {!locked && (
+        <Section id="arrange" title="Align to canvas">
+          <ArrangeControls count={1} />
+        </Section>
+      )}
       {layer.type === 'photo' && <PhotoSection layer={layer} project={project} locked={locked} />}
       {layer.type === 'image' && <ImageSection layer={layer} project={project} locked={locked} />}
       {layer.type === 'text' && <TextSection layer={layer} project={project} locked={locked} />}
@@ -640,6 +667,7 @@ function MultiInspector({
   const some = (f: (l: Layer) => boolean): boolean => layers.some(f)
   const opacities = new Set(layers.map((l) => l.opacity))
   const editableIds = layers.filter((l) => isEditable(project.layers, l)).map((l) => l.id)
+  const bounds = selectionBounds(project, ids)
   return (
     <>
       <Section id="multi" title={`${layers.length} layers selected`}>
@@ -679,10 +707,45 @@ function MultiInspector({
             Delete
           </Button>
         </div>
+      </Section>
+      <Section id="selection-bounds" title="Selection position">
+        <div className="grid-2">
+          <CompactNumber
+            label="X"
+            short="X"
+            unit="px"
+            value={bounds?.x ?? 0}
+            disabled={!bounds}
+            onCommit={(x) => store.getState().moveSelectionTo({ x })}
+          />
+          <CompactNumber
+            label="Y"
+            short="Y"
+            unit="px"
+            value={bounds?.y ?? 0}
+            disabled={!bounds}
+            onCommit={(y) => store.getState().moveSelectionTo({ y })}
+          />
+        </div>
+        {bounds && (
+          <dl className="derived">
+            <div>
+              <dt>W</dt>
+              <dd>{Math.round(bounds.width * 1000) / 1000}</dd>
+            </div>
+            <div>
+              <dt>H</dt>
+              <dd>{Math.round(bounds.height * 1000) / 1000}</dd>
+            </div>
+          </dl>
+        )}
         <p className="field-note">
-          Position and size are edited per layer: select one layer, or move the whole selection on
-          the canvas.
+          X and Y move the whole selection, keeping the spacing between layers. Resize on the
+          canvas.
         </p>
+      </Section>
+      <Section id="arrange" title="Align and distribute">
+        <ArrangeControls count={editableIds.length} />
       </Section>
     </>
   )
@@ -690,6 +753,8 @@ function MultiInspector({
 
 function ProjectSummary({ project }: { project: TemplateProject }): React.JSX.Element {
   const px = getPixelSize(project.canvas.print)
+  const sheet = getPixelSize(project.output.print)
+  const copies = copiesPerSheet(project)
   return (
     <>
       <Section id="project" title="Project">
@@ -707,12 +772,34 @@ function ProjectSummary({ project }: { project: TemplateProject }): React.JSX.El
             <dd>{project.layers.length}</dd>
           </div>
           <div>
-            <dt>Print area</dt>
+            <dt>{copies > 1 ? 'Design size' : 'Print area'}</dt>
             <dd>
               {px.width}×{px.height} px
             </dd>
           </div>
+          {copies > 1 && (
+            <>
+              <div>
+                <dt>Print sheet</dt>
+                <dd>
+                  {printSizeName(project.output.print)} · {sheet.width}×{sheet.height} px
+                </dd>
+              </div>
+              <div>
+                <dt>Copies per sheet</dt>
+                <dd>{copies}</dd>
+              </div>
+            </>
+          )}
         </dl>
+        {copies > 1 && (
+          <p className="sheet-info" data-testid="printer-guidance">
+            Prints as {copies} identical {printSizeName(project.canvas.print)} copies on one{' '}
+            {printSizeName(project.output.print)} sheet. Design one strip; Template Studio places
+            the copies. Printer finishing: configure DSLR Booth and your printer for the 2-inch
+            center cut.
+          </p>
+        )}
       </Section>
       <EmptyState icon={MousePointerClick} title="No layer selected">
         Select a layer on the canvas or in the Layers panel to edit it.

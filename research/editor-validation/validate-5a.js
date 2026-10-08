@@ -267,7 +267,7 @@ const sessionAssetFiles = (ud, sid) => {
     check(
       '6 move by drag changes x/y',
       afterMove.x !== marbleLayer.x || afterMove.y !== marbleLayer.y,
-      { from: [marbleLayer.x, marbleLayer.y], to: [afterMove.x, afterMove.y] }
+      { from: [marbleLayer.x, marbleLayer.y], to: [afterMove.x, afterMove.y], center, dbg0 }
     )
     const br = await c.ev(`JSON.stringify(__wts.handlePoint('bottom-right'))`).then(JSON.parse)
     await c.drag(br, { x: br.x - 40, y: br.y - 40 }, 6)

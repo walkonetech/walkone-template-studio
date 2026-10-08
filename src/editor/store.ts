@@ -67,9 +67,22 @@ import {
   type BackgroundMode
 } from './assetMutations'
 import { DUPLICATE_OFFSET } from './mutations'
+import {
+  MIN_DISTRIBUTE,
+  alignLayers,
+  arrangeTargets,
+  distributeLayers,
+  moveSelectionTo,
+  type AlignMode,
+  type AlignTarget,
+  type DistributeAxis
+} from './arrange'
+import { hasDerivedCopies } from '@canvas/rendering/composition'
 
 export type Interaction = 'idle' | 'transforming' | 'editingText'
 export type PhotoDisplay = 'placeholder' | 'preview'
+/** Design edits the authored (logical) design; Print Preview shows the derived print sheet, read-only. */
+export type ViewMode = 'design' | 'preview'
 
 export interface EditorState {
   session: { sessionId: string; fileName: string | null } | null
@@ -84,6 +97,8 @@ export interface EditorState {
   collapsedGroups: readonly string[]
   /** Layers Panel name filter (editor UI state). */
   layerFilter: string
+  /** Workspace mode (editor UI state: never in the project, history or dirty state). */
+  viewMode: ViewMode
   view: ViewState
   viewport: Size
   interaction: Interaction
@@ -189,6 +204,12 @@ export interface EditorActions {
   setCanvasBackgroundColor(color: ColorValue, options?: CommitOptions): boolean
   /** Deletes the design's background image layer (even though it is locked by default). */
   removeBackgroundImage(): boolean
+  // ---- exact position, align, distribute (each one history entry; design coordinates)
+  moveSelectionTo(to: { x?: number; y?: number }): boolean
+  alignSelection(mode: AlignMode, target?: AlignTarget): boolean
+  distributeSelection(axis: DistributeAxis): boolean
+  // ---- workspace mode (never in history, never dirty)
+  setViewMode(mode: ViewMode): void
   // ---- selection / interaction (never in history)
   selectLayer(id: string | null): void
   selectLayers(ids: readonly string[]): void
@@ -259,6 +280,7 @@ const initialState = (): EditorState => ({
   anchorId: null,
   collapsedGroups: [],
   layerFilter: '',
+  viewMode: 'design',
   view: { mode: 'fit' },
   viewport: { width: 800, height: 600 },
   interaction: 'idle',
@@ -283,10 +305,32 @@ export const selectActiveId = (s: EditorState): string | null =>
 export function selectDesignSize(s: EditorState): Size | null {
   return s.project ? getPixelSize(s.project.canvas.print) : null
 }
-export function selectViewTransform(s: EditorState): ViewTransform | null {
-  const design = selectDesignSize(s)
-  return design ? resolveView(s.view, design, s.viewport) : null
+/** The mode actually shown: Print Preview only exists while the project prints several copies per sheet. */
+export const selectViewMode = (s: EditorState): ViewMode =>
+  s.viewMode === 'preview' && s.project !== null && hasDerivedCopies(s.project)
+    ? 'preview'
+    : 'design'
+/** What the workspace frames: the design in Design mode, the print sheet in Print Preview. */
+export function selectWorkspaceSize(s: EditorState): Size | null {
+  if (!s.project) return null
+  return selectViewMode(s) === 'preview'
+    ? getPixelSize(s.project.output.print)
+    : getPixelSize(s.project.canvas.print)
 }
+export function selectViewTransform(s: EditorState): ViewTransform | null {
+  const size = selectWorkspaceSize(s)
+  // Print Preview leaves room around the sheet for its editor-only labels (copy names, cut line).
+  return size
+    ? resolveView(
+        s.view,
+        size,
+        s.viewport,
+        selectViewMode(s) === 'preview' ? PREVIEW_PADDING : undefined
+      )
+    : null
+}
+export const PREVIEW_PADDING = 56
+const READ_ONLY_MESSAGE = 'Print Preview is read-only. Switch to Design to edit.'
 
 const sameGuides = (a: Guide[], b: Guide[]): boolean =>
   a.length === b.length && a.every((g, i) => g.axis === b[i]?.axis && g.at === b[i]?.at)
@@ -539,6 +583,11 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
       commit(mutate, o = {}) {
         const { project } = get()
         if (!project) return false
+        if (selectViewMode(get()) === 'preview') {
+          // Print Preview shows derived copies; artwork is edited only in Design mode.
+          set({ lastMessage: READ_ONLY_MESSAGE })
+          return false
+        }
         const next = mutate(project, ctx())
         if (next === project) return false
         apply(next, project, o)
@@ -672,6 +721,38 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
       setCanvasBackgroundColor: (color, o = {}) =>
         tryCommit((p, c) => setCanvasBackgroundColor(p, color, c), o),
 
+      moveSelectionTo(to) {
+        const { project, selectedIds } = get()
+        if (!project || arrangeTargets(project, selectedIds).length === 0) return false
+        return get().commit((p, c) => moveSelectionTo(p, selectedIds, to, c))
+      },
+      alignSelection(mode, target) {
+        const { project, selectedIds } = get()
+        if (!project) return false
+        const count = arrangeTargets(project, selectedIds).length
+        if (count === 0) return false
+        // One layer can only be aligned to the canvas; several default to the selection.
+        const effective: AlignTarget = count === 1 ? 'canvas' : (target ?? 'selection')
+        return get().commit((p, c) => alignLayers(p, selectedIds, mode, effective, c))
+      },
+      distributeSelection(axis) {
+        const { project, selectedIds } = get()
+        if (!project || arrangeTargets(project, selectedIds).length < MIN_DISTRIBUTE) return false
+        return get().commit((p, c) => distributeLayers(p, selectedIds, axis, c))
+      },
+      setViewMode(mode) {
+        const s = get()
+        if (s.viewMode === mode) return
+        // The workspace frames a different size, so go back to "fit"; end any text edit. Nothing here is document state.
+        set({
+          lastMessage: s.lastMessage === READ_ONLY_MESSAGE ? null : s.lastMessage,
+          viewMode: mode,
+          view: { mode: 'fit' },
+          guides: [],
+          editingTextId: null,
+          interaction: 'idle'
+        })
+      },
       renameLayer(id, name) {
         if (name.trim() === '') {
           set({ lastMessage: 'A layer name cannot be empty.' })
@@ -849,8 +930,8 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
       },
       zoomToActualSize() {
         const s = get()
-        const design = selectDesignSize(s)
-        if (design) set({ view: toManual(centeredView(design, s.viewport, 1)) })
+        const size = selectWorkspaceSize(s)
+        if (size) set({ view: toManual(centeredView(size, s.viewport, 1)) })
       },
       zoomAtPoint(factor, anchor) {
         const t = selectViewTransform(get())

@@ -30,6 +30,11 @@ export interface DebugApi {
     width?: number,
     height?: number
   ) => Promise<{ width: number; height: number; dataUrl: string; ms: number }>
+  /** Renders the PRINT SHEET (output composition: every copy, clipped to its cell) at an exact size. */
+  renderSheetToDataUrl: (
+    width?: number,
+    height?: number
+  ) => Promise<{ width: number; height: number; dataUrl: string; ms: number }>
   /** Client coordinates of a transformer handle ('top-left', 'rotater', …) or null. */
   handlePoint: (name: string) => { x: number; y: number } | null
   /** Client coordinates of a layer node's center. */

@@ -91,3 +91,9 @@ All workflows are **Proposed** future behavior. UI details: [UX_SPEC.md](UX_SPEC
 3. Choose a **role** (overlay for transparent petals, frame art, badge, logo, graphic) in Properties; check **Print quality**.
 4. **Background:** *Background* on a card, or Design → Background → Background image…; the result is a locked, full-canvas layer at the back.
 5. Remove an asset only when unused; Replace image… swaps one layer's image. Save/Save As/reopen and crash recovery keep every image. Identical files imported twice are stored once.
+
+## S. Design a photo strip once, print it twice (Phase 5B, implemented)
+1. File → New project → **2×6 Photo Strip** → Create. The artboard is the single 2×6 strip.
+2. Add photo placeholders 1-2-3, artwork, text; use **Selection position**, **Align/Distribute** and the arrow keys for exact placement.
+3. Switch to **Print Preview** to see the 4×6 sheet: both copies, the cut line and labels. Nothing in Print Preview is editable; edit in Design and the preview follows.
+4. Save as usual. The project holds one set of layers. Cutting the sheet in two is configured in DSLR Booth / the printer, not here.

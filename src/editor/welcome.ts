@@ -43,3 +43,40 @@ export const PRESET_OPTIONS: readonly { value: PrintPresetId; label: string }[] 
     label: presetLabel(id)
   }))
 export const DEFAULT_PRESET: PrintPresetId = 'photo-4x6-portrait-600'
+
+export type PrintType = 'photo-4x6' | 'strip-2x6'
+export type SheetOrientation = 'portrait' | 'landscape'
+export type PrintDpi = 300 | 600
+export const PRINT_DPIS: readonly PrintDpi[] = [300, 600]
+
+/** The preset for the New Project choices ("what are you printing" + orientation + resolution). */
+export function presetIdFor(
+  type: PrintType,
+  orientation: SheetOrientation,
+  dpi: PrintDpi
+): PrintPresetId {
+  if (type === 'strip-2x6') return dpi === 300 ? 'strip-2x6-300' : 'strip-2x6-600'
+  return `photo-4x6-${orientation}-${dpi}` as PrintPresetId
+}
+
+/** Plain-language description of what a New Project choice will create (design size, print sheet, copies). */
+export function describeNewProject(
+  type: PrintType,
+  orientation: SheetOrientation,
+  dpi: PrintDpi
+): { design: string; sheet: string | null; note: string } {
+  const p = PRINT_PRESETS[presetIdFor(type, orientation, dpi)]
+  const px = (w: number, h: number): string => `${Math.round(w * dpi)}×${Math.round(h * dpi)} px`
+  if (type === 'strip-2x6') {
+    return {
+      design: `Design size: 2×6 in (${px(p.width, p.height)}), vertical`,
+      sheet: `Print sheet: 4×6 in (${px(p.width * 2, p.height)}), 2 copies side by side`,
+      note: 'Design one 2×6 strip. Template Studio will place two identical copies on the 4×6 print sheet. Printer finishing: configure DSLR Booth and your printer for the 2-inch center cut.'
+    }
+  }
+  return {
+    design: `Design size: ${p.width}×${p.height} in (${px(p.width, p.height)}), ${orientation}`,
+    sheet: null,
+    note: 'The design is printed as is: one copy per 4×6 print.'
+  }
+}

@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { selectViewTransform } from '@editor/store'
+import { nudgeDelta } from '@editor/nudge'
 import { editorStore } from './editorStore'
 import { commandForKey } from '@editor/commands'
 import { runCommand } from './commandRunner'
@@ -93,13 +93,10 @@ export function useEditorKeyboard(): void {
       if (key.startsWith('Arrow')) {
         // Arrow keys navigate the Layers Panel when focus is inside it; they nudge only from the canvas.
         if (e.target instanceof HTMLElement && e.target.closest('[data-editor-panel]')) return
-        const view = selectViewTransform(s)
-        if (!view || s.selectedIds.length === 0) return
-        // One screen pixel per press (ten with Shift), expressed in design pixels so it is zoom-independent on screen.
-        const step = (e.shiftKey ? 10 : 1) / view.scale
-        const dx = key === 'ArrowLeft' ? -step : key === 'ArrowRight' ? step : 0
-        const dy = key === 'ArrowUp' ? -step : key === 'ArrowDown' ? step : 0
-        if (s.nudgeSelection(dx, dy)) e.preventDefault()
+        if (s.selectedIds.length === 0) return
+        // Design pixels, never screen pixels: one per press, ten with Shift, at every zoom level.
+        const d = nudgeDelta(key, e.shiftKey)
+        if (d && s.nudgeSelection(d.dx, d.dy)) e.preventDefault()
       }
     }
     window.addEventListener('keydown', onKeyDown)

@@ -1,6 +1,10 @@
 import { createId, nowIso, type Id, type IsoTimestamp } from '../primitives'
 import { literalColor } from '../color/color'
-import { createSingleOutput, type OutputComposition } from '../print/composition'
+import {
+  createSingleOutput,
+  createTwoUpStripOutput,
+  type OutputComposition
+} from '../print/composition'
 import { getPrintPreset, type PrintConfiguration, type PrintPresetId } from '../print/print'
 import { CURRENT_SCHEMA_VERSION, PROJECT_FORMAT, type TemplateProject } from './project'
 
@@ -8,7 +12,10 @@ export interface CreateProjectOptions {
   name: string
   /** Design canvas size: a preset id or an explicit configuration. */
   design: PrintPresetId | PrintConfiguration
-  /** Defaults to a single-up output equal to the design. */
+  /**
+   * Defaults to a single-up output equal to the design, except for the 2×6 strip presets, which default to a
+   * two-up 4×6 sheet (two identical copies side by side, no gap).
+   */
   output?: OutputComposition
   /** Injectable for deterministic tests. */
   now?: IsoTimestamp
@@ -29,7 +36,11 @@ export function createProject(options: CreateProjectOptions): TemplateProject {
     event: {},
     design: { styleTags: [] },
     canvas: { print, backgroundColor: literalColor('#ffffff') },
-    output: options.output ?? createSingleOutput(print),
+    output:
+      options.output ??
+      (typeof options.design === 'string' && options.design.startsWith('strip-')
+        ? createTwoUpStripOutput(print)
+        : createSingleOutput(print)),
     palette: { colors: [] },
     layers: [],
     assets: [],

@@ -565,8 +565,8 @@ cdp.onEvent = (m) => {
   await c.click(await center(rowName(grp)))
   const grpUi = await c.ev('document.querySelector(".inspector-panel").innerText')
   check(
-    'group inspector shows derived bounds read-only and no rotation/opacity controls',
-    /follows its children/.test(grpUi) && !/Rotation/.test(grpUi) && !/Opacity/.test(grpUi)
+    'group inspector: X/Y move the group (Phase 5B), W/H derived read-only, no rotation/opacity controls',
+    /relative positions/.test(grpUi) && !/Rotation/.test(grpUi) && !/Opacity/.test(grpUi)
   )
 
   // ================= ADD LAYERS
@@ -648,8 +648,10 @@ cdp.onEvent = (m) => {
   )
   const multiUi = await c.ev('document.querySelector(".inspector-panel").innerText')
   check(
-    'multi-selection inspector shows only common controls (no X/Y/Width)',
-    /layers selected/.test(multiUi) && !/\bX \(px\)/.test(multiUi)
+    'multi-selection inspector: common controls + Selection position X/Y (Phase 5B), no per-layer Width/Rotation',
+    /layers selected/.test(multiUi) &&
+      /Selection position/.test(multiUi) &&
+      !/Rotation/.test(multiUi)
   )
   // canvas multi-select + drag together (one undo step)
   await c.click(await center(rowName(p1)))

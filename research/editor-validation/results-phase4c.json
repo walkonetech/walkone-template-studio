@@ -83,7 +83,7 @@
     "detail": {
       "name": "Studio Test",
       "state": "Modified",
-      "print": "2×6 Portrait • 600 DPI • 1200×3600 px"
+      "print": "2×6 Strip • 600 DPI • Design 1200×3600 px"
     }
   },
   {
@@ -532,8 +532,8 @@
     "detail": {
       "sw": 1728,
       "iw": 1728,
-      "sh": 1004,
-      "ih": 1004
+      "sh": 1007,
+      "ih": 1007
     }
   },
   {
@@ -548,8 +548,8 @@
     "name": "1920×1080: Layers and Properties each ≥ 150 px tall",
     "ok": true,
     "detail": {
-      "layers": 372,
-      "props": 559
+      "layers": 374,
+      "props": 560
     }
   },
   {
