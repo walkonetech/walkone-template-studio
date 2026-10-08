@@ -1,6 +1,6 @@
 import { createProject, literalColor, type Layer, type TemplateProject } from '@domain'
 import type { EditorPorts } from '../ports'
-import type { OpenProjectInfo } from '@shared/ipc'
+import type { ImportAssetsResult, OpenProjectInfo } from '@shared/ipc'
 
 export const T0 = '2026-01-01T00:00:00.000Z'
 
@@ -107,12 +107,15 @@ export const scene = (): TemplateProject =>
 export interface FakePorts extends EditorPorts {
   calls: { name: string; args: unknown[] }[]
   workingCopies: TemplateProject[]
+  /** Results the next import calls (dialog or dropped bytes) return, in order; empty → the dialog is cancelled. */
+  importQueue: ImportAssetsResult[]
 }
 
 /** Ports that behave like a successful main process, recording every call. */
 export function fakePorts(initial?: TemplateProject): FakePorts {
   const calls: { name: string; args: unknown[] }[] = []
   const workingCopies: TemplateProject[] = []
+  const importQueue: ImportAssetsResult[] = []
   let file: string | null = null
   const info = (project: TemplateProject, dirty: boolean): OpenProjectInfo => ({
     sessionId: 'sess-1',
@@ -128,6 +131,23 @@ export function fakePorts(initial?: TemplateProject): FakePorts {
   return {
     calls,
     workingCopies,
+    importQueue,
+    importAssets: (sessionId, multiple) => {
+      const next = importQueue.shift()
+      return rec(
+        'importAssets',
+        [sessionId, multiple],
+        next ? { status: 'ok' as const, value: next } : { status: 'cancelled' as const }
+      )
+    },
+    importAssetData: (sessionId, files) => {
+      const next = importQueue.shift()
+      return rec(
+        'importAssetData',
+        [sessionId, files.map((f) => f.name)],
+        next ? { status: 'ok' as const, value: next } : { status: 'cancelled' as const }
+      )
+    },
     create: (req) =>
       rec('create', [req], { status: 'ok' as const, value: info(initial ?? makeProject(), true) }),
     newSample: () =>

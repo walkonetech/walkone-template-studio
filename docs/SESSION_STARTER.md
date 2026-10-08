@@ -2,7 +2,7 @@
 
 **Purpose:** a self-contained prompt for starting a brand-new Claude Code session with everything needed to continue. **It must be refreshed at the end of every session/phase** (CLAUDE.md makes this a required step). Copy everything inside the fenced block below into the first message of the new session.
 
-_Last refreshed: 2026-10-07, end of session: real-template validation done, GitHub backup created (HEAD is the latest commit on `main`)._
+_Last refreshed: 2026-10-07, end of Phase 5A (project assets & image import). HEAD is the latest commit on `main` (the Phase 5A commit); not pushed._
 
 ````text
 You are continuing work on WalkOne Template Studio, an internal Electron + React + TypeScript desktop tool for WalkOne Entertainment, LLC that builds custom photo-booth print templates (4x6 and 2x6 strips) for LumaSoft DSLR Booth / LumaBooth. Working directory: /Users/walkone/Projects/Apps/walkone-template-studio (git repository, macOS development; the booth software runs on Windows).
@@ -12,7 +12,7 @@ READ FIRST, IN THIS ORDER, BEFORE DOING ANYTHING
 2. docs/CURRENT_STATE.md (what is done, verified, not verified, known limits)
 3. docs/SESSION_STARTER.md (this file; the prompt you are reading)
 4. research/REAL_TEMPLATE_VALIDATION.md (the latest product findings and the P0–P3 priority list)
-5. Then whatever the task needs: docs/ROADMAP.md, docs/DECISIONS.md (ADR-001…035), docs/ARCHITECTURE_PLAN.md, docs/UX_SPEC.md, docs/USER_WORKFLOWS.md, docs/TESTING_STRATEGY.md, docs/DATA_MODEL.md, research/UI_UX_REVIEW.md, research/DSLRBOOTH_FIXTURE_ANALYSIS.md
+5. Then whatever the task needs: docs/ROADMAP.md (see the "Approved product-driven sequence"), docs/DECISIONS.md (ADR-001…036), docs/ARCHITECTURE_PLAN.md, docs/UX_SPEC.md, docs/USER_WORKFLOWS.md, docs/TESTING_STRATEGY.md, docs/DATA_MODEL.md, research/UI_UX_REVIEW.md, research/DSLRBOOTH_FIXTURE_ANALYSIS.md
 Inspect the code before changing architecture; if docs and code disagree, say so.
 
 GOVERNANCE (strict)
@@ -24,23 +24,15 @@ GOVERNANCE (strict)
 - Do not change the TemplateProject schema (schemaVersion 1) or the .boothproject format without asking me first.
 
 WHAT EXISTS (all committed; git log, newest first)
-1a1a54c chore: fixtures local-only + GitHub backup policy; ca196da docs: this starter prompt
-edb2891 research: validate real template workflow  (no code changes)
-9096a3c style: polish editor interface (Phase 4D)
-5a85fca feat: redesign editor interface and design system (Phase 4C, ADR-035)
-8cb5e86 feat: add autosave and crash recovery (Phase 4B, ADR-034)
-33235b1 feat: add layer management and inspector (Phase 4, ADR-033)
-066e14d feat: establish production canvas foundation (Phase 3B, ADR-030–032)
-8aece5f/693be9e Konva vs Fabric spike → Konva chosen (ADR-029)
-143a72e feat: add native project persistence (Phase 2B, ADR-025–028)
-7c95e95 feat: establish project domain model (Phase 2)
-b63160a research: analyze DSLR Booth template fixtures
-745230a Phase 1 shell; 9690f45 Phase 0 docs.
-Status: 413 unit tests passing; the app builds and runs. Not started: asset import, export of any kind, DSLR Booth importer/exporter, palette UI, badge builder, asset/template library, recipes, providers.
+HEAD feat: add project asset import workflow (Phase 5A, ADR-036)
+a2a1eae docs: human keyboard-shortcut and quit-prompt verification; 17445d0 docs: refresh session starter; 1a1a54c chore: private fixtures local-only + GitHub backup policy; ca196da docs: session starter; edb2891 research: validate real template workflow
+9096a3c style: polish (4D); 5a85fca feat: redesign (4C, ADR-035); 8cb5e86 feat: autosave + recovery (4B, ADR-034); 33235b1 feat: layers + inspector (4, ADR-033); 066e14d feat: canvas foundation (3B); 8aece5f/693be9e Konva vs Fabric → Konva (ADR-029); 143a72e persistence (2B); 7c95e95 domain (2); b63160a fixture analysis; 745230a shell; 9690f45 docs.
+Status: 502 unit tests passing (413 before 5A); the app builds and runs. Phase 5A is done: image import (PNG/JPEG/WebP/SVG, native picker + drop), project assets, Assets drawer, roles, Set as Background, canvas background colour, effective-DPI readout, replace/remove, recovery with assets. Not started: export of any kind, sample photos, 2x6 authoring/2-up composition, palette/font managers, DSLR Booth importer/exporter, badge builder, global asset library, recipes, providers.
 
 ARCHITECTURE IN BRIEF
 - Electron main/preload/renderer, contextIsolation + sandbox, typed IPC, CSP unchanged. Renderer has no Node.
 - src/domain: vendor-neutral TemplateProject (print size in inches + DPI as first-class; flat layers with parentId; photo/image/text/shape/group; palette; assets). Strict TypeScript with exactOptionalPropertyTypes (use conditional spreads for optional props).
+- Assets (5A): src/projects/imageInspect.ts (byte sniffing, header metadata, SVG reject policy), ProjectService.importAssetFiles/importAssetBytes (SHA-256 dedup, atomic copy to <session>/assets/<id>.<ext>, session remembers every asset so undo/redo works, orphans pruned on recovery); IPC project:importAssets (main-owned dialog) and project:importAssetData (bytes; the renderer never sends paths); src/editor/assetMutations.ts + imagePlacement.ts (pure); domain/assets/resolution.ts + usage.ts; renderer AssetsDrawer, CanvasBackgroundSection, thumbnails.ts, dropFiles.ts. Assets belong to the LOGICAL design (a future 2-up compositor copies the whole design).
 - src/projects: .boothproject (ZIP via yauzl/yazl), working sessions under <userData>/sessions/<id>/ (project.json, assets/, session.json), atomic save, recents, recovery scan/recover/discard with quarantine, ProjectService, IPC handlers.
 - src/main: window/menu (appMenu.ts), closeCoordinator.ts + documentLifecycle.ts (native Save/Don't Save/Cancel on every close/quit path), devOverrides.ts.
 - src/editor: Zustand vanilla store with pure mutations, snapshot undo/redo, autosave scheduler, commands.ts (single command model: menus/tooltips/enablement/key matching), layout.ts, tools.ts, welcome.ts.
@@ -52,23 +44,24 @@ HOW TO RUN / CHECK
 - Install: npm install. Run built app: npm run build && npm start. Dev mode: npm run dev.
 - Quality gate (all must pass before a commit): npm run typecheck && npm run lint && npm run format:check && npm run build && npm test.
 - Use a throwaway profile for manual runs: npx electron out/main/index.js --user-data-dir=/tmp/wts-test (add #debug to the URL hash to get window.__wts and the "New sample project" button).
-- Scripted built-app suites (automation over the DevTools protocol, in research/editor-validation/, results-*.json recorded): validate.js (Phase 4 regression, 97 checks; run with WALKONE_DEV_SAVE_PATH, WALKONE_DEV_OPEN_PATH, WALKONE_DEV_UNSAVED_CHOICES=discard, WALKONE_DEV_WINDOW_SIZE=1440x900 exported and the app launched on port 9350), validate-4b.js (40), validate-4c.js (97), validate-4d.js (6; layout sweep). The last three launch the app themselves. Dev-only env overrides (ignored when packaged): WALKONE_DEV_UNSAVED_CHOICES, WALKONE_DEV_SAVE_PATH, WALKONE_DEV_OPEN_PATH (sequences separated by ';', CANCEL supported), WALKONE_DEV_WINDOW_SIZE.
+- Scripted built-app suites (automation over the DevTools protocol, in research/editor-validation/, results-*.json recorded): validate.js (Phase 4 regression, 97 checks; run with WALKONE_DEV_SAVE_PATH, WALKONE_DEV_OPEN_PATH, WALKONE_DEV_UNSAVED_CHOICES=discard, WALKONE_DEV_WINDOW_SIZE=1440x900 exported and the app launched on port 9350), validate-4b.js (40), validate-4c.js (97), validate-4d.js (6; layout sweep), validate-5a.js (53; assets: needs python3+Pillow for fixture JPEG/WebP; launches the app itself; dev override WALKONE_DEV_IMPORT_PATHS, files '|' dialogs ';'). The last three launch the app themselves. Dev-only env overrides (ignored when packaged): WALKONE_DEV_UNSAVED_CHOICES, WALKONE_DEV_SAVE_PATH, WALKONE_DEV_OPEN_PATH (sequences separated by ';', CANCEL supported), WALKONE_DEV_WINDOW_SIZE.
 - Screenshots go to research/editor-validation/shots/ (git-ignored). Always write script outputs with __dirname, never the repo root.
 
 LESSONS / GOTCHAS
+- Inside page.evaluate snippets `const s=getState()` is a stale snapshot; re-read getState() after actions. Prettier/hook may convert escapes (\uFEFF) into literal characters: check lint's no-irregular-whitespace.
 - Prettier reformats code, so naive string replacement scripts fail silently — verify replacements applied (assert) or edit by line.
 - zustand selectors must return stable values; Konva multi-select drag fires dragend per node (deduped); Enter + blur double-commit is prevented with the useDraft().take() pattern.
 - macOS sed needs -i ''; there is no `timeout` command; run Electron suites with the dev env vars exported for BOTH the app and the node script.
 - Native Edit-menu Undo/Redo are registered without accelerators so the editor owns ⌘Z; this was verified only with synthetic key events — a human should confirm on a real keyboard.
 - Fonts used in the recreation are macOS-only; the booth runs on Windows (font strategy ADR-015 still open).
 
-LATEST PRODUCT FINDINGS (research/REAL_TEMPLATE_VALIDATION.md)
-A real template (Chaney Wedding strip) was recreated through the real UI: layout, photo grid/numbering, text hierarchy reproducible (209 gestures), but ALL raster artwork was impossible because the UI cannot import images. Priorities: P0 image import → project assets → image layers, and flattened PNG export then DSLR ZIP export; P1 sample photos for placeholders, strip mirroring / exact group-or-multi-select geometry, canvas background color, palette basics, font strategy, align/distribute; P2 text-box auto-fit, text presets, nudge in design pixels, guides; P3 rulers, context menu, Badge Builder, recipes. The roadmap has NOT yet been rewritten to match; I will approve that.
+LATEST PRODUCT FINDINGS (research/REAL_TEMPLATE_VALIDATION.md §21)
+Phase 5A re-test: the Chaney template's 4 real PNGs were imported and placed through the UI (bg x2, frames x2, badge x2, petals x2); transparency, save/reopen worked and the render is visually near-identical to the fixture preview. Remaining gaps, in order: (5B) two strips are still authored independently and mirroring is manual; (5C) no sample photos; (5D) fonts/palette; (6) no export of any kind. Key workflow decision: design ONE logical 2x6 strip; derive the 4x6 two-up sheet (OutputComposition already models it); the 2-inch centre cut is printer/DSLR Booth configuration, not artwork.
 
 OPEN DECISIONS: ADR-012 SQLite scope; ADR-014 final render/export approach; ADR-015 fonts. Windows is untested everywhere. Human check done 2026-10-07: keyboard shortcuts (⌘Z, ⇧⌘Z etc.) worked on a real keyboard and the native Save / Don't Save / Cancel quit prompt appeared as designed. Still owed: a human visual review of the UI, the physical close button/frame drag, a deliberate force-quit → recovery dialog test, and Windows.
 
 WHERE I LEFT OFF / WHAT I WILL ASK NEXT
-(Replace this block at the end of every session.) The recommended next phase is "Asset import and flattened PNG export": image import with role presets and effective-DPI readout, sample photos for placeholders, flattened PNG export. I have not approved it yet. Start by confirming the current state (git log, npm test), summarize what you understood in a few lines, and wait for my instruction before changing anything.
+(Replace this block at the end of every session.) Phase 5A is complete and committed (not pushed). The recommended next phase is Phase 5B — Photo Strip Authoring & Print Composition: logical 2x6 authoring, derived 2-up 4x6 output (Design / Print Preview), exact group/multi-selection positioning, align/distribute. Do NOT build export, sample photos or fonts there. I have not approved 5B yet. Start by confirming the current state (git log, npm test = 502), summarize what you understood in a few lines, and wait for my instruction before changing anything. Still owed by a human: visual review of the Assets UI, a real Finder drag-and-drop, Windows, and judging whether the 300/150 DPI thresholds feel right.
 ````
 
 ## How to refresh this file (end of every session)

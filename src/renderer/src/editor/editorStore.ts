@@ -4,7 +4,12 @@ import { getPixelSize } from '@domain'
 import { resolveView, type ViewTransform } from '@canvas/viewport/viewport'
 import { ImageCache } from '@canvas/assets/imageCache'
 import type { EditorPorts } from '@editor/ports'
-import { createEditorStore, type EditorActions, type EditorState } from '@editor/store'
+import {
+  createEditorStore,
+  type EditorActions,
+  type EditorState,
+  type ImportPlacement
+} from '@editor/store'
 import { loadProjectImage } from './assetLoader'
 
 const api = window.api.project
@@ -20,11 +25,15 @@ const ports: EditorPorts = {
   updateWorkingCopy: (sessionId, project) => api.updateWorkingCopy({ sessionId, project }),
   close: (sessionId) => api.close({ sessionId }),
   recents: () => api.recents(),
+  importAssets: (sessionId, multiple) => api.importAssets({ sessionId, multiple }),
+  importAssetData: (sessionId, files) => api.importAssetData({ sessionId, files }),
   requestClose: (reason) => window.api.document.requestClose({ reason }),
   recoveryList: () => window.api.recovery.list(),
   recover: (sessionId) => window.api.recovery.recover({ sessionId }),
   discardRecovery: (sessionId) => window.api.recovery.discard({ sessionId })
 }
+
+export type ImportPlacementArg = ImportPlacement
 
 export const editorStore = createEditorStore({ ports })
 export const imageCache = new ImageCache(loadProjectImage)

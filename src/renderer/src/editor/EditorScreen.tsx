@@ -77,6 +77,19 @@ export function EditorScreen(): React.JSX.Element {
     void editorStore.getState().loadRecovery()
   }, [])
 
+  // A file dropped outside a drop target must never navigate the window to it: ignore it quietly.
+  useEffect(() => {
+    const stop = (e: DragEvent): void => {
+      if (e.dataTransfer && Array.from(e.dataTransfer.types).includes('Files')) e.preventDefault()
+    }
+    window.addEventListener('dragover', stop)
+    window.addEventListener('drop', stop)
+    return () => {
+      window.removeEventListener('dragover', stop)
+      window.removeEventListener('drop', stop)
+    }
+  }, [])
+
   useEffect(() => {
     installDebug({
       store: editorStore,

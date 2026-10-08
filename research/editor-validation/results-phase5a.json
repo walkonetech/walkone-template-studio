@@ -1,0 +1,412 @@
+{
+  "passed": 53,
+  "total": 53,
+  "failed": [],
+  "results": [
+    {
+      "name": "1 project created (4x6 @600 = 2400x3600)",
+      "ok": true
+    },
+    {
+      "name": "2 Assets tool is enabled in the rail",
+      "ok": true
+    },
+    {
+      "name": "2b Assets drawer opens with Import files… and an empty state",
+      "ok": true
+    },
+    {
+      "name": "3 imported PNG appears in Project Assets (library only: no layer yet)",
+      "ok": true,
+      "detail": [
+        {
+          "id": "d3899577-0bb6-4370-ae1b-8db9b7d92c20",
+          "filename": "marble.png",
+          "mt": "image/png",
+          "w": 1200,
+          "h": 1800,
+          "alpha": true,
+          "bytes": 37581,
+          "path": "assets/d3899577-0bb6-4370-ae1b-8db9b7d92c20.png"
+        }
+      ]
+    },
+    {
+      "name": "3b metadata: 1200x1800, png, alpha true, size, hash path inside assets/",
+      "ok": true,
+      "detail": {
+        "id": "d3899577-0bb6-4370-ae1b-8db9b7d92c20",
+        "filename": "marble.png",
+        "mt": "image/png",
+        "w": 1200,
+        "h": 1800,
+        "alpha": true,
+        "bytes": 37581,
+        "path": "assets/d3899577-0bb6-4370-ae1b-8db9b7d92c20.png"
+      }
+    },
+    {
+      "name": "3c the copy lives in the working session; the source can disappear",
+      "ok": true
+    },
+    {
+      "name": "3d no absolute paths shown anywhere in the UI",
+      "ok": true
+    },
+    {
+      "name": "3e drawer shows thumbnail, name, dimensions and \"Not used\"",
+      "ok": true
+    },
+    {
+      "name": "5 Add creates ONE ImageLayer referencing the asset, selected, one history entry",
+      "ok": true,
+      "detail": {
+        "marbleLayer": {
+          "id": "e00a095b-04f7-49b2-aacf-0191a6789ddd",
+          "type": "image",
+          "name": "marble",
+          "x": 600,
+          "y": 900,
+          "width": 1200,
+          "height": 1800,
+          "rotation": 0,
+          "z": 0,
+          "locked": false,
+          "assetId": "d3899577-0bb6-4370-ae1b-8db9b7d92c20",
+          "role": "graphic",
+          "fit": "contain"
+        },
+        "past": 2
+      }
+    },
+    {
+      "name": "5b initial size: native 1200x1800 (fits within 80%: 2400x3600 → 1920x2880), centred, no upscale",
+      "ok": true,
+      "detail": {
+        "id": "e00a095b-04f7-49b2-aacf-0191a6789ddd",
+        "type": "image",
+        "name": "marble",
+        "x": 600,
+        "y": 900,
+        "width": 1200,
+        "height": 1800,
+        "rotation": 0,
+        "z": 0,
+        "locked": false,
+        "assetId": "d3899577-0bb6-4370-ae1b-8db9b7d92c20",
+        "role": "graphic",
+        "fit": "contain"
+      }
+    },
+    {
+      "name": "5c project is Modified and the layer renders (image decoded)",
+      "ok": true
+    },
+    {
+      "name": "5d usage count updates in the drawer",
+      "ok": true
+    },
+    {
+      "name": "6 move by drag changes x/y",
+      "ok": true,
+      "detail": {
+        "from": [600, 900],
+        "to": [791.489, 1043.617]
+      }
+    },
+    {
+      "name": "6b resize by handle shrinks the layer",
+      "ok": true,
+      "detail": {
+        "w": 1053.113,
+        "h": 1579.669
+      }
+    },
+    {
+      "name": "6c rotate by handle changes rotation",
+      "ok": true,
+      "detail": 24.81899999999996
+    },
+    {
+      "name": "7 role set to Overlay via the inspector",
+      "ok": true,
+      "detail": "overlay"
+    },
+    {
+      "name": "7b inspector shows asset filename, source, displayed size and a DPI readout, no paths",
+      "ok": true,
+      "detail": "Asset\nmarble.png\nSource\n1200×1800 px\nDisplayed\n1053×1580 px · 1.76×2.63 in\nPrint quality\n684 DPI · Good for print\nType\nimage/png"
+    },
+    {
+      "name": "8 saved into a .boothproject",
+      "ok": true
+    },
+    {
+      "name": "8b package contains project.json and exactly the referenced asset",
+      "ok": true,
+      "detail": ["project.json", "assets/d3899577-0bb6-4370-ae1b-8db9b7d92c20.png"]
+    },
+    {
+      "name": "9 closed (no project)",
+      "ok": true
+    },
+    {
+      "name": "10 reopened: asset + layer + role survive, clean",
+      "ok": true
+    },
+    {
+      "name": "11 image decodes again after reopen",
+      "ok": true
+    },
+    {
+      "name": "11b and renders non-background pixels at its position",
+      "ok": true,
+      "detail": [236, 228, 214, 255]
+    },
+    {
+      "name": "12 PNG/JPEG/WebP/SVG + a 6000x4000 JPEG all import",
+      "ok": true,
+      "detail": [
+        ["marble.png", "image/png", 1200, 1800, true],
+        ["petals.png", "image/png", 400, 400, true],
+        ["photo.jpg", "image/jpeg", 900, 600, false],
+        ["tex.webp", "image/webp", 900, 600, false],
+        ["mark.svg", "image/svg+xml", 300, 300, null],
+        ["large.jpg", "image/jpeg", 6000, 4000, false]
+      ]
+    },
+    {
+      "name": "12b large JPEG metadata read from headers (6000x4000) and import time recorded",
+      "ok": true,
+      "detail": {
+        "importMs": 203,
+        "bytes": 17365500
+      }
+    },
+    {
+      "name": "12c SVG has intrinsic size 300x300 and no raster DPI",
+      "ok": true
+    },
+    {
+      "name": "12d transparent PNG flagged hasAlpha",
+      "ok": true
+    },
+    {
+      "name": "12e every asset has a thumbnail in the drawer (no full-size decode needed)",
+      "ok": true
+    },
+    {
+      "name": "13 transparency: left (alpha 0) shows the green canvas, right shows red, outside shows green",
+      "ok": true,
+      "detail": [
+        [0, 255, 0, 255],
+        [220, 20, 40, 255],
+        [0, 255, 0, 255]
+      ]
+    },
+    {
+      "name": "13b exact-size render is 2400x3600",
+      "ok": true
+    },
+    {
+      "name": "14 Set as background: ONE locked role=background layer 0,0,2400x3600 cover, at the very back",
+      "ok": true,
+      "detail": {
+        "id": "adbc1651-e95d-4f45-85d5-133d4e19a855",
+        "type": "image",
+        "name": "Background",
+        "x": 0,
+        "y": 0,
+        "width": 2400,
+        "height": 3600,
+        "rotation": 0,
+        "z": 0,
+        "locked": true,
+        "assetId": "d3899577-0bb6-4370-ae1b-8db9b7d92c20",
+        "role": "background",
+        "fit": "cover"
+      }
+    },
+    {
+      "name": "15 background fills the canvas (cream, not green) and overlay content stays in front",
+      "ok": true,
+      "detail": [
+        [236, 228, 214, 255],
+        [236, 228, 214, 255],
+        [220, 20, 40, 255],
+        [236, 228, 214, 255]
+      ]
+    },
+    {
+      "name": "15b background Fit inside → fit=contain, still full canvas box, still one background layer",
+      "ok": true,
+      "detail": {
+        "id": "adbc1651-e95d-4f45-85d5-133d4e19a855",
+        "type": "image",
+        "name": "Background",
+        "x": 0,
+        "y": 0,
+        "width": 2400,
+        "height": 3600,
+        "rotation": 0,
+        "z": 0,
+        "locked": true,
+        "assetId": "d3899577-0bb6-4370-ae1b-8db9b7d92c20",
+        "role": "background",
+        "fit": "contain"
+      }
+    },
+    {
+      "name": "15c contain letterboxes: marble (1200x1800 → 2400x3600 exact aspect) still fills; centre is marble",
+      "ok": true,
+      "detail": [
+        [236, 228, 214, 255],
+        [236, 228, 214, 255]
+      ]
+    },
+    {
+      "name": "16 re-importing identical content under another name reuses the asset (no duplicate record/file)",
+      "ok": true,
+      "detail": {
+        "assets": 6,
+        "files": 6,
+        "msg": "1 file was already in the project and reused."
+      }
+    },
+    {
+      "name": "17 unsafe SVG / unsupported PDF / missing file are rejected with user-safe text; nothing added",
+      "ok": true,
+      "detail": "evil.svg: This SVG was not imported because it contains a script or embedded content element. Export it from your design tool as a plain SVG or a PNG. (and 2 more could not be imported)"
+    },
+    {
+      "name": "18 removing a USED asset is refused with an explanation",
+      "ok": true,
+      "detail": "This asset is used by 1 layer. Delete or change that layer first."
+    },
+    {
+      "name": "19 removing an UNUSED asset succeeds (undoable)",
+      "ok": true
+    },
+    {
+      "name": "19b undo restores the removed asset record",
+      "ok": true
+    },
+    {
+      "name": "19c Replace image… changes only this layer’s asset",
+      "ok": true
+    },
+    {
+      "name": "20 files dropped on the canvas become ImageLayers centred on the drop point at fit, 100% and zoomed-out+panned views (design coords, not screen)",
+      "ok": true,
+      "detail": [
+        {
+          "label": "fit",
+          "cx": 1499,
+          "cy": 699,
+          "ok": true
+        },
+        {
+          "label": "100%",
+          "cx": 1500,
+          "cy": 700,
+          "ok": true
+        },
+        {
+          "label": "zoomed-out + panned",
+          "cx": 1500,
+          "cy": 698,
+          "ok": true
+        }
+      ]
+    },
+    {
+      "name": "20b dropped image became a project asset too, with its file name",
+      "ok": true
+    },
+    {
+      "name": "20c dragging an asset card from the drawer onto the canvas adds a layer",
+      "ok": true
+    },
+    {
+      "name": "20d dropping a non-image is ignored with a message",
+      "ok": true,
+      "detail": "notes.txt: not a PNG, JPEG, WebP or SVG image."
+    },
+    {
+      "name": "20e dropping on the Assets drawer adds the asset only (no canvas layer)",
+      "ok": true
+    },
+    {
+      "name": "21 autosaved before the crash (no unsaved-state prompt path used)",
+      "ok": true
+    },
+    {
+      "name": "21b relaunch lists the abandoned session as a recovery candidate with no missing assets",
+      "ok": true,
+      "detail": [
+        {
+          "sessionId": "539c099e-fc30-4c1f-9e30-a264d41371e7",
+          "projectName": "Assets Test",
+          "originalFileName": "Assets Test.boothproject",
+          "neverSaved": false,
+          "lastWorkingSaveAt": "2026-10-08T03:15:19.909Z",
+          "lastPortableSaveAt": "2026-10-08T03:15:06.543Z",
+          "conflict": "none",
+          "missingAssets": 0
+        }
+      ]
+    },
+    {
+      "name": "21c recovered project has all assets and layers, Modified",
+      "ok": true,
+      "detail": {
+        "a": 9,
+        "l": 6
+      }
+    },
+    {
+      "name": "21d recovered images decode and render identically to before the crash",
+      "ok": true,
+      "detail": {
+        "before": [
+          [236, 228, 214, 255],
+          [200, 190, 170, 255]
+        ],
+        "after": [
+          [236, 228, 214, 255],
+          [200, 190, 170, 255]
+        ]
+      }
+    },
+    {
+      "name": "21e recovered session files are only the referenced ones (no orphans)",
+      "ok": true
+    },
+    {
+      "name": "S1 renderer has no Node/fs access",
+      "ok": true
+    },
+    {
+      "name": "S2 preload exposes only task-specific import calls (no path-taking fs API)",
+      "ok": true,
+      "detail": [
+        "create",
+        "newSample",
+        "open",
+        "openRecent",
+        "save",
+        "saveAs",
+        "updateWorkingCopy",
+        "close",
+        "recents",
+        "readAsset",
+        "importAssets",
+        "importAssetData"
+      ]
+    },
+    {
+      "name": "S3 CSP unchanged (no blob:/unsafe-eval)",
+      "ok": true
+    }
+  ]
+}

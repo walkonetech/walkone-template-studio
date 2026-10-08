@@ -2,9 +2,13 @@ import { z } from 'zod'
 import { createProject, IdSchema, PRINT_PRESET_IDS, type TemplateProject } from '../domain'
 import { createSampleTemplate } from './sampleProject'
 import type { IpcResult } from '../shared/persistence'
+import { MAX_IMPORT_FILES } from '../shared/ipc'
 import type {
   RecoveryOverview,
   AssetData,
+  ImportAssetDataRequest,
+  ImportAssetsRequest,
+  ImportAssetsResult,
   NewProjectRequest,
   OpenProjectInfo,
   OpenRecentRequest,
@@ -23,6 +27,8 @@ export interface ProjectDialogs {
   /** Resolves to the chosen path, or null if the user cancelled. */
   showOpen(ctx: unknown): Promise<string | null>
   showSave(ctx: unknown, suggestedName: string): Promise<string | null>
+  /** Resolves to the chosen image file paths, or null if the user cancelled. */
+  showImportImages(ctx: unknown, multiple: boolean): Promise<string[] | null>
 }
 
 export interface HandlerDeps {
@@ -39,6 +45,19 @@ const NewSchema = z.strictObject({
 })
 const SessionSchema = z.strictObject({ sessionId: IdSchema })
 const AssetRequestSchema = z.strictObject({ sessionId: IdSchema, assetId: IdSchema })
+const ImportDialogSchema = z.strictObject({ sessionId: IdSchema, multiple: z.boolean().optional() })
+const ImportDataSchema = z.strictObject({
+  sessionId: IdSchema,
+  files: z
+    .array(
+      z.strictObject({
+        name: z.string().min(1).max(1024),
+        data: z.instanceof(Uint8Array)
+      })
+    )
+    .min(1)
+    .max(MAX_IMPORT_FILES)
+})
 const OpenRecentSchema = z.strictObject({ path: z.string().min(1).max(4096) })
 // The project itself is fully validated by the domain loader inside the service.
 const SessionProjectSchema = z.strictObject({ sessionId: IdSchema, project: z.unknown() })
@@ -139,6 +158,21 @@ export function createProjectHandlers(deps: HandlerDeps) {
       run(async () => {
         const req = parse(AssetRequestSchema, payload)
         return ok(await service.readAsset(req.sessionId, req.assetId))
+      }),
+
+    /** Native picker → import. Cancelling the dialog is a normal outcome, not an error. */
+    importAssets: (ctx: unknown, payload: unknown): Promise<IpcResult<ImportAssetsResult>> =>
+      run(async () => {
+        const req = parse(ImportDialogSchema, payload) as ImportAssetsRequest
+        const chosen = await dialogs.showImportImages(ctx, req.multiple ?? true)
+        if (chosen === null || chosen.length === 0) return { status: 'cancelled' }
+        return ok(await service.importAssetFiles(req.sessionId, chosen.slice(0, MAX_IMPORT_FILES)))
+      }),
+
+    importAssetData: (payload: unknown): Promise<IpcResult<ImportAssetsResult>> =>
+      run(async () => {
+        const req: ImportAssetDataRequest = parse(ImportDataSchema, payload)
+        return ok(await service.importAssetBytes(req.sessionId, req.files))
       }),
 
     open: (ctx: unknown): Promise<IpcResult<OpenProjectInfo>> =>

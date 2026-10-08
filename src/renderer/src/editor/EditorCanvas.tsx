@@ -39,6 +39,9 @@ import { editorStore, useEditor, useViewTransform } from './editorStore'
 import { useProjectImages } from './useProjectImages'
 import { TextEditOverlay } from './TextEditOverlay'
 import { registerCanvasDebug } from './debugHooks'
+import { dropPointToDesign } from '@editor/imagePlacement'
+import { ASSET_DRAG_TYPE, dragHasAsset, dragHasFiles } from './dropFiles'
+import { importDroppedFiles } from './importActions'
 
 /** react-konva components keyed by the spec's node class. One assertion at the dynamic-dispatch boundary. */
 const COMPONENTS = { Group, Rect, Ellipse, Line, Text, Shape } as unknown as Record<
@@ -363,8 +366,36 @@ export function EditorCanvas(): React.JSX.Element | null {
     else s.selectLayer(id)
   }
 
+  // Files (from Finder/Explorer) and assets (from the Assets drawer) dropped on the artboard become image layers
+  // centred on the drop point. Client coordinates are converted to DESIGN coordinates through the current view
+  // (zoom and pan), so no screen-space value is ever stored.
+  const designPointOf = (e: React.DragEvent): { x: number; y: number } | null => {
+    const host = hostRef.current
+    const t = selectViewTransform(store.getState())
+    if (!host || !t) return null
+    return dropPointToDesign(t, { x: e.clientX, y: e.clientY }, host.getBoundingClientRect())
+  }
+  const acceptsDrop = (e: React.DragEvent): boolean =>
+    dragHasFiles(e.dataTransfer) || dragHasAsset(e.dataTransfer)
+
   return (
-    <div ref={hostRef} className="canvas-host">
+    <div
+      ref={hostRef}
+      className="canvas-host"
+      onDragOver={(e) => {
+        if (!acceptsDrop(e)) return
+        e.preventDefault()
+        e.dataTransfer.dropEffect = 'copy'
+      }}
+      onDrop={(e) => {
+        if (!acceptsDrop(e)) return
+        e.preventDefault()
+        const at = designPointOf(e)
+        const assetId = e.dataTransfer.getData(ASSET_DRAG_TYPE)
+        if (assetId) store.getState().addAssetToCanvas(assetId, at)
+        else void importDroppedFiles(e.dataTransfer, { kind: 'canvas', at })
+      }}
+    >
       <Stage
         ref={stageRef}
         width={viewport.width}

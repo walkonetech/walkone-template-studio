@@ -126,3 +126,10 @@ Full rationale, measurements and remaining debt: [../research/UI_UX_REVIEW.md](.
 - **Dialogs:** New project, Recovery ("We found unsaved work from a previous session" — Recover / Discard (confirm) / Decide later), Layer shortcuts; one accessible shell. Native unsaved-changes prompts remain native.
 - **Shortcuts (menus and tooltips show them):** ⌘N, ⌘O, ⌘S, ⇧⌘S, ⌘Z, ⇧⌘Z, ⌘D, ⌘G, ⇧⌘G, ⌘0 fit, ⌘1 100%, ⌘= / ⌘− zoom, ⌫ delete, ⌘] / ⌘[ stacking (Ctrl on Windows).
 - **Window:** minimum 1100×680, default 1360×860.
+
+## 13. Project assets (Phase 5A, implemented)
+- **Assets tool** (rail, enabled) opens a drawer: **Import files…** (native picker, multi-select), a one-line format hint, then **Project assets (n)** as cards: thumbnail (checkerboard behind transparent art), file name, `W×H · TYPE`, and "Used by N layers" / "Not used". Card actions: **Add** (to canvas), **Background**, **Remove** (refuses with an explanation while used). Double-click a card, or drag it onto the canvas, to add it. Absolute paths are never shown.
+- **Drag and drop (exact behaviour):** image files dropped **on the canvas** are imported *and* added as ImageLayers centred on the drop point (design coordinates, correct at any zoom/pan; several files are offset 48 px each); files dropped **on the Assets drawer** are imported into the project only (no layer). Non-image files are ignored with a message. Dropping elsewhere does nothing (the window never navigates).
+- **Design tool → Background:** canvas colour (existing colour field) and the background image (fit: Fill/cover, Fit inside/contain, Original size; Change…, Remove). Background images are locked by default; unlock in the Layers panel to adjust.
+- **Image inspector:** Role (Background, Overlay, Frame art, Badge, Logo, Graphic), fit, asset file name, source px, displayed px and inches, **print quality** (effective DPI with Good for print ≥300 / Check quality 150–299 / Low resolution <150; vectors: "sharp at any size"), and Set as background · Original size · Replace image… (this layer only).
+- **Preview photos** (status bar) is disabled with an explanatory label until sample photos exist (Phase 5C).

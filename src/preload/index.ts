@@ -18,7 +18,9 @@ const api: RendererApi = {
     updateWorkingCopy: (req) => ipcRenderer.invoke(IpcChannel.ProjectUpdateWorkingCopy, req),
     close: (req) => ipcRenderer.invoke(IpcChannel.ProjectClose, req),
     recents: () => ipcRenderer.invoke(IpcChannel.ProjectRecents),
-    readAsset: (req) => ipcRenderer.invoke(IpcChannel.ProjectReadAsset, req)
+    readAsset: (req) => ipcRenderer.invoke(IpcChannel.ProjectReadAsset, req),
+    importAssets: (req) => ipcRenderer.invoke(IpcChannel.ProjectImportAssets, req),
+    importAssetData: (req) => ipcRenderer.invoke(IpcChannel.ProjectImportAssetData, req)
   },
   recovery: {
     list: () => ipcRenderer.invoke(IpcChannel.RecoveryList),

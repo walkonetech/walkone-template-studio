@@ -1,25 +1,29 @@
 # Current State
 
-_Last updated: 2026-10-07 (end of Phase 4D)_
+_Last updated: 2026-10-07 (end of Phase 5A)_
 
 ## Project status
-The editor has a redesigned, original dark-neutral interface: welcome screen, File/Edit/View menus, document title with Modified/Saved state, tool rail + drawer, canvas workspace with a floating artboard, resizable Layers + Properties column, status bar with zoom/snap/preview controls, and one accessible dialog shell. Underneath: vendor-neutral domain model, `.boothproject` persistence with working sessions, autosave and crash recovery, snapshot undo/redo, exact-size render API. No DSLR Booth importer/exporter, asset library, templates, badges or palette manager exists.
+The editor has a redesigned, original dark-neutral interface: welcome screen, File/Edit/View menus, document title with Modified/Saved state, tool rail + drawer, canvas workspace with a floating artboard, resizable Layers + Properties column, status bar with zoom/snap/preview controls, and one accessible dialog shell. Underneath: vendor-neutral domain model, `.boothproject` persistence with working sessions, autosave and crash recovery, snapshot undo/redo, exact-size render API. Images can be imported as project assets (Phase 5A). No DSLR Booth importer/exporter, global asset library, templates, badges, palette manager or export of any kind exists.
 
 ## Current phase
-**Phase 4D — Focused editor polish: COMPLETE** (on top of Phase 4C, whose direction the owner approved). Phase 5 has **not** begun; awaiting owner approval.
+**Phase 5A — Project Assets & Image Import: COMPLETE.** Phase 5B has **not** begun; awaiting owner approval. (Order of upcoming phases: [ROADMAP.md](ROADMAP.md).)
 
 ## Completed
 - Phases 0–3B (see [ROADMAP.md](ROADMAP.md)).
 - Phase 4: front-first Layers tree (groups, direct vs inherited lock/visibility, rename, pointer-drag reorder within a parent, stacking commands, filter, collapse), inspector for photo/image/text/shape/group and multi-selection, add layer (photo/text/rectangle/ellipse/line), duplicate/delete, group/ungroup, multi-selection (Cmd/Ctrl and Shift on canvas and panel, shared Transformer, one commit per interaction), keyboard shortcuts, status bar with canvas info, Modified/Saved indicator, platform-aware modifiers. ADR-033; UX/workflow/architecture/testing docs updated. No new dependencies; the domain model and `.boothproject` format are unchanged.
 
-## Verified (this phase)
+## Phase 5A (done)
+Image import (PNG/JPEG/WebP/SVG; native picker + drag and drop; no renderer path access), project-owned assets copied into the working session, SHA-256 de-duplication, Assets drawer with thumbnails and usage counts, add-to-canvas (button/double-click/drag), image roles, Set as Background (cover/contain/original; one locked back-most layer), canvas background colour (Design → Background), effective-DPI readout (≥300 good / 150–299 caution / <150 low), per-layer Replace, unused-asset removal (used ones refused), safe-SVG policy (reject, draw only as `<img>`), undo/redo as single steps, Save/Save As/reopen/crash recovery with assets, structured error codes, Preview-photos toggle disabled until Phase 5C. ADR-036; no schema or package-format change; no new dependencies. **Verified:** typecheck/lint/format/build; **502 unit tests** (413 + 89); `validate-5a.js` 53/53 on the built macOS app (automation, 4 consecutive clean runs; one earlier run showed an unexplained one-off failed drag in the first gesture check that did not recur); Phase 4B–4D suites rerun (see final report). **Chaney acceptance:** with its 4 real PNGs imported and placed through the UI the recreation is visually near-identical to the fixture's `preview.png` (details in [../research/REAL_TEMPLATE_VALIDATION.md](../research/REAL_TEMPLATE_VALIDATION.md) §21). **Not verified:** a human visual review, Windows, a real Finder drag (only synthetic DataTransfer drops were driven), very large (>100 MB) assets, a photo-print-quality judgement of the DPI thresholds.
+**Known limits:** Design-drawer hex field is narrow; header-only validation cannot detect pixel-level corruption (shown as "Preview unavailable"); files of undone imports stay in the session until close/recovery; bytes cross IPC once per use (import, canvas decode, thumbnail if not yet decoded); animated WebP draws its first frame; no global replace; one background layer by design; SVG with no size attributes is rejected.
+
+## Verified (Phase 4D)
 `typecheck`, `lint`, `format:check`, `build` and `npm test` passed (test count in the final report). The built Electron app was validated on macOS by **scripted real mouse/keyboard events over the DevTools protocol** (automation, not hand-testing): 97/97 checks covering the panel/inspector features above, an accessibility name/label scan, 50+ layers with scrolling, save → close → reopen preserving names/locks/visibility/order/photo numbers, and Phase 3B regression checks (drag, resize, rotate, off-canvas, snapping, zoom, exact 2400×3600 render, Node isolation). Details: `research/editor-validation/`.
 
 ## In progress
 Nothing.
 
 ## Not started
-Asset browser/library, palette manager, templates, badge builder, recipes, DSLR Booth importer/exporter, preflight, context menu, copy/paste, align/distribute, project wizard/dashboard, final styling.
+Global asset library, palette manager, templates, badge builder, recipes, DSLR Booth importer/exporter, preflight, context menu, copy/paste, align/distribute, project wizard/dashboard, final styling.
 
 ## Real-template validation (done, no code changes)
 One production template (Chaney Wedding F1) was recreated through the real UI: layout skeleton, photo grid/numbering, text hierarchy and strips were reproducible (209 gestures, 15 layers); **all raster artwork was not**, because the UI has no image import. Findings, bug/friction/feature classification and P0–P3 ranking: [../research/REAL_TEMPLATE_VALIDATION.md](../research/REAL_TEMPLATE_VALIDATION.md). Biggest blockers: image asset import and any export. No bugs confirmed.
@@ -54,4 +58,4 @@ No context menu, no drag into/out of groups (cross-group drops are refused), no 
 `AGENTS.md` stays git-ignored. No Git remote exists (intentional). DSLR Booth fixtures are private and unchanged. Generated screenshots are git-ignored; the `#debug` hook is development-only.
 
 ## Next recommended action
-Owner reviews [../research/REAL_TEMPLATE_VALIDATION.md](../research/REAL_TEMPLATE_VALIDATION.md) and approves the next phase. Recommendation: **asset import + sample photos + flattened PNG export** before roadmap Phase 5 (photo placeholders already work well).
+Owner reviews Phase 5A and approves **Phase 5B — Photo Strip Authoring & Print Composition** (logical 2×6 design, derived 2-up 4×6 output, Design/Print Preview, exact group/multi-selection positioning, align/distribute). Then 5C (sample photos, crop), 5D (fonts, palette), 6 (export).

@@ -1,5 +1,6 @@
 import {
   IMAGE_ROLES,
+  effectiveResolution,
   getPixelSize,
   isEditable,
   type ImageLayer,
@@ -297,6 +298,16 @@ function PhotoSection({
   )
 }
 
+const ROLE_LABELS: Record<ImageLayer['role'], string> = {
+  background: 'Background',
+  overlay: 'Overlay',
+  frame: 'Frame art',
+  badge: 'Badge',
+  logo: 'Logo',
+  graphic: 'Graphic'
+}
+const DPI_LABEL = { healthy: 'Good for print', caution: 'Check quality', low: 'Low resolution' }
+
 function ImageSection({
   layer,
   project,
@@ -307,12 +318,16 @@ function ImageSection({
   locked: boolean
 }): React.JSX.Element {
   const asset = project.assets.find((a) => a.id === layer.assetId)
+  const dpi = project.canvas.print.dpi
+  const res = asset ? effectiveResolution(asset, layer, dpi, layer.fit) : null
+  const st = (): ReturnType<typeof editorStore.getState> => editorStore.getState()
+  const inches = (px: number): string => (px / dpi).toFixed(2).replace(/\.?0+$/, '')
   return (
     <Section id="image" title="Image">
       <SelectField
         label="Role"
         value={layer.role}
-        options={IMAGE_ROLES.map((r) => ({ value: r, label: r }))}
+        options={IMAGE_ROLES.map((r) => ({ value: r, label: ROLE_LABELS[r] }))}
         disabled={locked}
         onCommit={(role) => edit([layer.id], { role })}
       />
@@ -323,10 +338,10 @@ function ImageSection({
         disabled={locked}
         onCommit={(fit) => edit([layer.id], { fit })}
       />
-      <dl className="derived">
+      <dl className="derived" data-testid="image-info">
         <div>
           <dt>Asset</dt>
-          <dd>{asset ? asset.filename : 'Missing asset'}</dd>
+          <dd title={asset?.filename}>{asset ? asset.filename : 'Missing asset'}</dd>
         </div>
         {asset?.pixelWidth && asset.pixelHeight && (
           <div>
@@ -336,6 +351,27 @@ function ImageSection({
             </dd>
           </div>
         )}
+        <div>
+          <dt>Displayed</dt>
+          <dd>
+            {Math.round(layer.width)}×{Math.round(layer.height)} px · {inches(layer.width)}×
+            {inches(layer.height)} in
+          </dd>
+        </div>
+        <div>
+          <dt>Print quality</dt>
+          <dd data-testid="image-dpi">
+            {res ? (
+              <span className={`dpi-badge ${res.status}`}>
+                {Math.round(res.dpi)} DPI · {DPI_LABEL[res.status]}
+              </span>
+            ) : asset?.mediaType === 'image/svg+xml' ? (
+              'Vector: sharp at any size'
+            ) : (
+              'Unknown'
+            )}
+          </dd>
+        </div>
         {asset && (
           <div>
             <dt>Type</dt>
@@ -343,6 +379,36 @@ function ImageSection({
           </div>
         )}
       </dl>
+      {res && res.status !== 'healthy' && (
+        <p className="field-note">
+          At {dpi} DPI print resolution, 300+ effective DPI is recommended; below 150 looks soft.
+        </p>
+      )}
+      <div className="button-row">
+        <Button
+          size="sm"
+          disabled={locked}
+          onClick={() => st().setLayerAsBackground(layer.id)}
+          title="Fill the canvas, lock it and send it behind everything"
+        >
+          Set as background
+        </Button>
+        <Button
+          size="sm"
+          disabled={locked || !asset?.pixelWidth}
+          onClick={() => st().setImageOriginalSize(layer.id)}
+        >
+          Original size
+        </Button>
+        <Button
+          size="sm"
+          disabled={locked}
+          onClick={() => void st().importAssetsFromDialog({ kind: 'replace', layerId: layer.id })}
+          title="Choose a different image for this layer only"
+        >
+          Replace image…
+        </Button>
+      </div>
     </Section>
   )
 }

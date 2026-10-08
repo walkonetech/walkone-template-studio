@@ -1,10 +1,18 @@
 import { basename } from 'node:path'
 import { promises as fs } from 'node:fs'
 import { join, resolve, sep } from 'node:path'
-import { randomBytes } from 'node:crypto'
-import { loadProject, serializeProject, type AssetReference, type TemplateProject } from '../domain'
+import { createHash, randomBytes } from 'node:crypto'
+import {
+  createId,
+  loadProject,
+  serializeProject,
+  type AssetReference,
+  type TemplateProject
+} from '../domain'
+import type { ImportAssetsResult, ImportedAsset } from '../shared/ipc'
+import { MAX_IMPORT_BYTES, inspectImage } from './imageInspect'
 import { defaultFsOps, type FsOps } from './atomicFile'
-import { PersistenceError, fromFsError } from './errors'
+import { PersistenceError, fromFsError, toSafeError } from './errors'
 import { openPackage } from './packageReader'
 import { verifySessionAssets, writePackage } from './packageWriter'
 import type { RecentProjectsStore } from './recents'
@@ -42,7 +50,12 @@ export interface OpenProjectInfo {
 interface OpenEntry {
   session: WorkingSession
   filePath: string | null
-  /** Assets of the latest known project, by id (what readAsset may serve). */
+  /**
+   * Every asset this session has ever known, by id (what readAsset may serve, and what import de-duplicates
+   * against). It only grows: an asset removed from the project (or whose import was undone) keeps its file in
+   * the session, because redo can bring it back. Files are discarded with the session; package writes carry only
+   * referenced assets.
+   */
   assets: Map<string, AssetReference>
 }
 
@@ -60,6 +73,41 @@ async function stampOf(path: string): Promise<{ mtimeMs: number; size: number } 
 
 const indexAssets = (project: TemplateProject): Map<string, AssetReference> =>
   new Map(project.assets.map((a) => [a.id, a]))
+
+/** Deletes regular files in the session's assets/ that no asset of `project` points at. Best effort. */
+export async function pruneUnreferencedAssetFiles(
+  sessionDir: string,
+  project: TemplateProject
+): Promise<string[]> {
+  const keep = new Set(project.assets.map((a) => a.path.toLowerCase()))
+  const removed: string[] = []
+  const names = await fs.readdir(join(sessionDir, 'assets')).catch(() => [] as string[])
+  for (const name of names) {
+    if (keep.has(`assets/${name}`.toLowerCase())) continue
+    const file = join(sessionDir, 'assets', name)
+    const stat = await fs.lstat(file).catch(() => null)
+    if (stat?.isFile()) {
+      await fs.rm(file, { force: true }).catch(() => undefined)
+      removed.push(name)
+    }
+  }
+  return removed
+}
+
+/** Display name for an imported file: last path segment, control characters removed, at most 255 characters. */
+export function safeAssetFilename(raw: string, fallbackExt: string): string {
+  const last = raw.split(/[\\/]/).pop() ?? ''
+  let name = ''
+  for (const ch of last) if (ch.charCodeAt(0) >= 32 && ch.charCodeAt(0) !== 127) name += ch
+  name = name.trim()
+  if (name === '' || name === '.' || name === '..') name = `image.${fallbackExt}`
+  if (name.length > 255) {
+    const dot = name.lastIndexOf('.')
+    const ext = dot > 0 && name.length - dot <= 16 ? name.slice(dot) : ''
+    name = name.slice(0, 255 - ext.length) + ext
+  }
+  return name
+}
 
 export interface ProjectServiceOptions {
   sessionsRoot: string
@@ -181,8 +229,104 @@ export class ProjectService {
   ): Promise<{ dirty: boolean }> {
     const entry = this.entry(sessionId)
     const result = await saveWorkingSession(entry.session, project)
-    entry.assets = indexAssets(project)
+    for (const a of project.assets) entry.assets.set(a.id, a)
     return result
+  }
+
+  /** Imports files the user picked in the native dialog (paths come from main's own dialog, never the renderer). */
+  async importAssetFiles(sessionId: string, paths: readonly string[]): Promise<ImportAssetsResult> {
+    const entry = this.entry(sessionId)
+    const result: ImportAssetsResult = { imported: [], failures: [] }
+    for (const path of paths) {
+      const filename = basename(path)
+      try {
+        const stat = await fs.stat(path)
+        if (!stat.isFile())
+          throw new PersistenceError('file-not-found', 'That file could not be found.', path)
+        if (stat.size > MAX_IMPORT_BYTES)
+          throw new PersistenceError('image-too-large', 'That file is too large to import.', path)
+        const data = new Uint8Array(await fs.readFile(path))
+        result.imported.push(await this.ingest(entry, filename, data))
+      } catch (e) {
+        result.failures.push({
+          filename,
+          error: toSafeError(fromFsError(e, 'asset-copy-failed', 'The file could not be read.'))
+        })
+      }
+    }
+    return result
+  }
+
+  /** Imports dropped files from bytes held by the renderer. */
+  async importAssetBytes(
+    sessionId: string,
+    files: readonly { name: string; data: Uint8Array }[]
+  ): Promise<ImportAssetsResult> {
+    const entry = this.entry(sessionId)
+    const result: ImportAssetsResult = { imported: [], failures: [] }
+    for (const file of files) {
+      const filename = safeAssetFilename(file.name, 'image')
+      try {
+        if (file.data.length > MAX_IMPORT_BYTES)
+          throw new PersistenceError('image-too-large', 'That file is too large to import.')
+        result.imported.push(await this.ingest(entry, filename, file.data))
+      } catch (e) {
+        result.failures.push({
+          filename,
+          error: toSafeError(fromFsError(e, 'asset-copy-failed', 'The file could not be imported.'))
+        })
+      }
+    }
+    return result
+  }
+
+  /**
+   * Validate → de-duplicate → copy into the session's assets/ → record. Identical CONTENT (SHA-256) already in
+   * this session reuses that asset; file names are never used for identity. The stored name is `<assetId>.<ext>`
+   * (extension from the detected format), so two different files called "logo.png" can never collide.
+   */
+  private async ingest(
+    entry: OpenEntry,
+    rawName: string,
+    data: Uint8Array
+  ): Promise<ImportedAsset> {
+    const info = inspectImage(data) // throws unsupported-format / decode-failed / unsafe-svg / image-too-large
+    const sha256 = createHash('sha256').update(data).digest('hex')
+
+    for (const existing of entry.assets.values()) {
+      if (existing.sha256 !== sha256 || existing.byteSize !== data.length) continue
+      const file = join(entry.session.dir, ...existing.path.split('/'))
+      const stat = await fs.stat(file).catch(() => null)
+      if (stat?.isFile() && stat.size === data.length)
+        return { asset: existing, deduplicated: true }
+    }
+
+    const id = createId()
+    const path = `assets/${id}.${info.extension}`
+    const dest = join(entry.session.dir, ...path.split('/'))
+    const tmp = `${dest}.tmp-${randomBytes(4).toString('hex')}`
+    try {
+      await fs.mkdir(join(entry.session.dir, 'assets'), { recursive: true })
+      await fs.writeFile(tmp, data)
+      await fs.rename(tmp, dest)
+    } catch (e) {
+      await fs.rm(tmp, { force: true }).catch(() => undefined)
+      throw fromFsError(e, 'asset-copy-failed', 'The image could not be copied into the project.')
+    }
+    const asset: AssetReference = {
+      id,
+      filename: safeAssetFilename(rawName, info.extension),
+      mediaType: info.mediaType,
+      path,
+      pixelWidth: info.pixelWidth,
+      pixelHeight: info.pixelHeight,
+      ...(info.hasAlpha === undefined ? {} : { hasAlpha: info.hasAlpha }),
+      byteSize: data.length,
+      sha256,
+      source: { kind: 'upload', label: 'Imported image' }
+    }
+    entry.assets.set(id, asset)
+    return { asset, deduplicated: false }
   }
 
   /**
@@ -319,6 +463,9 @@ export class ProjectService {
     if (this.open.has(sessionId))
       throw new PersistenceError('invalid-request', 'That recovery copy is already open.')
     const { project } = await loadRecoverableProject(this.options.sessionsRoot, sessionId)
+    // Undo history does not survive a crash, so assets whose import was undone (files still in the session but not
+    // in the recovered project) can never be brought back: drop them rather than keep orphans.
+    await pruneUnreferencedAssetFiles(join(this.options.sessionsRoot, sessionId), project)
     const keepAssociation = candidate.conflict === 'none' && candidate.originalPath !== null
     const session: WorkingSession = {
       id: sessionId,

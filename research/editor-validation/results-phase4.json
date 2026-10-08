@@ -270,7 +270,7 @@
   {
     "name": "image inspector shows asset filename and pixel size, never a filesystem path",
     "ok": true,
-    "detail": "Asset | sample.png | Source | 32×32 px | Type | image/png"
+    "detail": "Asset | sample.png | Source | 32×32 px | Displayed | 560×560 px · 0.93×0.93 in | Print quality | 34 DPI · Low resolution | Type | image/png"
   },
   {
     "name": "group inspector shows derived bounds read-only and no rotation/opacity controls",

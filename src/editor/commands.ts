@@ -126,6 +126,8 @@ export function isCommandEnabled(id: CommandId, ctx: CommandContext): boolean {
   if (def.needsSelection && ctx.selectionCount === 0) return false
   if (id === 'edit.undo') return ctx.canUndo
   if (id === 'edit.redo') return ctx.canRedo
+  // Sample photos do not exist yet (Phase 5C), so there is nothing to preview.
+  if (id === 'view.previewPhotos') return false
   return true
 }
 

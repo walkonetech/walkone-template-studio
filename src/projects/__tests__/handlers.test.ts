@@ -8,12 +8,14 @@ useTempDirCleanup()
 
 function dialogs(
   open: string | null,
-  save: string | null
+  save: string | null,
+  images: string[] | null = null
 ): ProjectDialogs & { saveNames: string[] } {
   const saveNames: string[] = []
   return {
     saveNames,
     showOpen: async () => open,
+    showImportImages: async () => images,
     showSave: async (_c, name) => {
       saveNames.push(name)
       return save

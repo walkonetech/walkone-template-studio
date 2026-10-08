@@ -292,9 +292,9 @@ async function session(opts, fn) {
         await a.S(`!!document.querySelector('.tooldrawer')`)
       )
       check(
-        'tool rail: Design active, others disabled with honest tooltips',
+        'tool rail: Design active, Assets enabled (Phase 5A), Templates/Photos disabled with honest tooltips',
         await a.S(
-          `(()=>{const b=[...document.querySelectorAll('.toolrail-btn')]; return b.length===4 && b[0].getAttribute('aria-pressed')==='true' && b.slice(1).every(x=>x.getAttribute('aria-disabled')==='true')})()`
+          `(()=>{const b=[...document.querySelectorAll('.toolrail-btn')]; return b.length===4 && b[0].getAttribute('aria-pressed')==='true' && b[3].getAttribute('aria-disabled')!=='true' && b.slice(1,3).every(x=>x.getAttribute('aria-disabled')==='true')})()`
         )
       )
       await a.shot('4c-05-editor-1440')
@@ -565,8 +565,8 @@ async function session(opts, fn) {
       await a.press('Preview photos')
       await sleep(300)
       check(
-        'status bar Preview photos toggles photo display',
-        (await a.state()).preview === 'preview'
+        'status bar Preview photos is disabled until sample photos exist (Phase 5A: no effect)',
+        (await a.state()).preview !== 'preview'
       )
       await a.press('Preview photos')
 

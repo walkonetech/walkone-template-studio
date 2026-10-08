@@ -58,7 +58,8 @@ export function StatusBar(): React.JSX.Element {
           <IconButton
             size="sm"
             icon={ImageIcon}
-            label="Preview photos"
+            label="Preview photos (sample photos arrive in a later phase)"
+            disabled
             pressed={photoDisplay === 'preview'}
             onClick={() => runCommand('view.previewPhotos')}
             placement="top"

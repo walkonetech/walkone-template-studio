@@ -1,6 +1,6 @@
 /** IPC contract shared by main, preload and renderer. Keep payloads plain, serializable data. */
-import type { PrintPresetId, TemplateProject } from '../domain'
-import type { IpcResult } from './persistence'
+import type { AssetReference, PrintPresetId, TemplateProject } from '../domain'
+import type { IpcResult, SafeError } from './persistence'
 
 export const IpcChannel = {
   AppPing: 'app:ping',
@@ -16,6 +16,10 @@ export const IpcChannel = {
   ProjectRecents: 'project:recents',
   /** Reads a project-owned asset by session + asset id (never by path). */
   ProjectReadAsset: 'project:readAsset',
+  /** Native "choose images" dialog (main shows it), then imports the chosen files into the session. */
+  ProjectImportAssets: 'project:importAssets',
+  /** Imports image bytes the renderer already holds (drag and drop); no path ever crosses IPC. */
+  ProjectImportAssetData: 'project:importAssetData',
   /** Startup recovery: list candidates, restore one into the editor, or discard one. */
   RecoveryList: 'recovery:list',
   RecoveryRecover: 'recovery:recover',
@@ -75,6 +79,32 @@ export interface AssetRequest {
 export interface AssetData {
   mediaType: string
   data: Uint8Array
+}
+/** Max files accepted in one import request. */
+export const MAX_IMPORT_FILES = 50
+export interface ImportAssetsRequest {
+  sessionId: string
+  /** Allow choosing several files in the dialog (default true). */
+  multiple?: boolean
+}
+export interface ImportAssetDataRequest {
+  sessionId: string
+  files: { name: string; data: Uint8Array }[]
+}
+export interface ImportedAsset {
+  /** The project-owned asset (new, or the existing one when identical content was imported before). */
+  asset: AssetReference
+  /** True when identical content was already in the project and that asset was reused. */
+  deduplicated: boolean
+}
+export interface ImportFailure {
+  /** Display name of the file that failed (never a full path). */
+  filename: string
+  error: SafeError
+}
+export interface ImportAssetsResult {
+  imported: ImportedAsset[]
+  failures: ImportFailure[]
 }
 export type CloseReason = 'window-close' | 'quit' | 'close-project' | 'replace'
 
@@ -144,6 +174,10 @@ export interface RendererApi {
     recents(): Promise<IpcResult<RecentProjectItem[]>>
     /** Bytes of a project asset from the working session (the only way the renderer reads project images). */
     readAsset(req: AssetRequest): Promise<IpcResult<AssetData>>
+    /** Shows the native image picker, copies the chosen files into the project, returns the new assets. */
+    importAssets(req: ImportAssetsRequest): Promise<IpcResult<ImportAssetsResult>>
+    /** Imports dropped files from their bytes (the renderer never supplies a filesystem path). */
+    importAssetData(req: ImportAssetDataRequest): Promise<IpcResult<ImportAssetsResult>>
   }
   recovery: {
     list(): Promise<IpcResult<RecoveryOverview>>

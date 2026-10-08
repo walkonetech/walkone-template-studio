@@ -143,7 +143,7 @@
     "ok": true
   },
   {
-    "name": "tool rail: Design active, others disabled with honest tooltips",
+    "name": "tool rail: Design active, Assets enabled (Phase 5A), Templates/Photos disabled with honest tooltips",
     "ok": true
   },
   {
@@ -297,7 +297,7 @@
     "ok": true
   },
   {
-    "name": "status bar Preview photos toggles photo display",
+    "name": "status bar Preview photos is disabled until sample photos exist (Phase 5A: no effect)",
     "ok": true
   },
   {
@@ -532,8 +532,8 @@
     "detail": {
       "sw": 1728,
       "iw": 1728,
-      "sh": 1007,
-      "ih": 1007
+      "sh": 1004,
+      "ih": 1004
     }
   },
   {
@@ -548,8 +548,8 @@
     "name": "1920×1080: Layers and Properties each ≥ 150 px tall",
     "ok": true,
     "detail": {
-      "layers": 374,
-      "props": 560
+      "layers": 372,
+      "props": 559
     }
   },
   {

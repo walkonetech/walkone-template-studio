@@ -51,8 +51,32 @@ Remaining for later phases: autosave timer, recovery UX, close/quit confirmation
 - **Not delivered:** layer thumbnails, context menu, light theme, persisted panel sizes, native-select theming.
 - **Recommended next:** owner review, then Phase 5 (photo placeholders).
 
-## Real-template validation (findings, no phase)
-A real recreation ([../research/REAL_TEMPLATE_VALIDATION.md](../research/REAL_TEMPLATE_VALIDATION.md)) shows the ordering below should change: **P0** image import into projects and flattened PNG export; **P1** sample photos, strip mirroring/group geometry, canvas background and palette basics, font strategy (ADR-015), align/distribute. Phase 5's photo-placeholder scope is largely already delivered; its remaining items (duplicate/missing-number detection, sample-photo preview) fold into the asset-and-export work. Awaiting owner approval before the roadmap is rewritten.
+## Approved product-driven sequence (owner-approved 2026-10-07; supersedes the order of the original Phases 5–15 below)
+A real production template recreated through the UI ([../research/REAL_TEMPLATE_VALIDATION.md](../research/REAL_TEMPLATE_VALIDATION.md)) showed that image import was the first blocker. The sequence now is:
+
+### Phase 5A — Project Assets & Image Import
+**Status: complete (2026-10-07).** Import PNG/JPEG/WebP/SVG into the project (native picker + drag and drop), project-owned assets with content-hash de-duplication, Assets drawer with thumbnails, add-to-canvas, image roles, Set as Background (cover/contain/original), canvas background colour, effective-DPI readout, per-layer Replace, unused-asset removal, undo/redo, save/Save As/reopen/recovery with assets, safe-SVG policy. ADR-036. Not delivered (by design): export, sample photos, 2×6 composition, palette/font managers, global library.
+
+### Phase 5B — Photo Strip Authoring & Print Composition
+- logical **2×6** authoring (one design); 2-up 4×6 output derived from it (`OutputComposition` already models this); Design / Print Preview
+- exact group/multi-selection positioning; alignment/distribution
+
+### Phase 5C — Photo Preview, Crop & Frame Workflow
+- realistic sample photos; Preview Photos (the toggle is disabled until then); crop/reposition; fit/fill refinement; frame workflow
+
+### Phase 5D — Typography & Palette Foundation
+- installed fonts, missing-font handling, font portability (ADR-015); palette UI; canvas/background colour refinement; reusable event colours
+
+### Phase 6 — Production Export
+- flattened PNG; layer package; DSLR Booth exporter; compatibility validation
+
+### Later
+Badge Builder, template library, Design Recipes, asset library (global), external providers, further polish.
+
+**Numbering note:** the historical phase list below keeps its original numbers so completed history stays readable. Where it conflicts with the sequence above, the sequence above wins: old Phase 5 (photo placeholders) is largely delivered already; old Phase 6 (text, shapes, **image import**) is delivered by 5A and 5D; old Phase 7 → 5D; old Phase 12 (render/export) and 14 (DSLR exporter) → new Phase 6; old Phase 13 (importer) is unscheduled until approved.
+
+---
+## Historical phase list (original numbering)
 
 ## Phase 5 — Photo placeholders
 - **Objective:** First-class PhotoLayer.

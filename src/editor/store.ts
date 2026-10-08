@@ -1,5 +1,13 @@
 import { createStore, type StoreApi } from 'zustand/vanilla'
-import { getPixelSize, nowIso, type Layer, type TemplateProject } from '@domain'
+import {
+  assetUsage,
+  getPixelSize,
+  nowIso,
+  type AssetReference,
+  type ColorValue,
+  type Layer,
+  type TemplateProject
+} from '@domain'
 import {
   centeredView,
   panBy as panView,
@@ -34,6 +42,7 @@ import {
 import type { EditorPorts } from './ports'
 import type {
   CloseReason,
+  ImportAssetsResult,
   DocumentRequestKind,
   DocumentResult,
   DocumentState,
@@ -45,6 +54,19 @@ import type { IpcResult } from '@shared/persistence'
 import { isEditable, topmostIds } from '@domain'
 import { createNewLayer, type NewLayerKind } from './newLayers'
 import { rangeIds, toggleId } from './selection'
+import {
+  AssetInUseError,
+  addAssetLayer,
+  addAssets,
+  makeLayerBackground,
+  removeAsset as removeAssetMutation,
+  replaceLayerAsset,
+  setAssetAsBackground,
+  setCanvasBackgroundColor,
+  setImageOriginalSize,
+  type BackgroundMode
+} from './assetMutations'
+import { DUPLICATE_OFFSET } from './mutations'
 
 export type Interaction = 'idle' | 'transforming' | 'editingText'
 export type PhotoDisplay = 'placeholder' | 'preview'
@@ -86,6 +108,19 @@ export interface EditorState {
     dismissed: boolean
   }
 }
+
+/** What an import did, for UI feedback. `layerIds` are the ImageLayers created (if any). */
+export type ImportOutcome =
+  | { status: 'cancelled' }
+  | { status: 'error'; message: string }
+  | { status: 'ok'; assetIds: string[]; layerIds: string[]; reused: number; failed: number }
+
+/** What to do with imported assets besides adding them to the project's asset library. */
+export type ImportPlacement =
+  | { kind: 'library' }
+  | { kind: 'canvas'; at: { x: number; y: number } | null }
+  | { kind: 'background'; mode: BackgroundMode }
+  | { kind: 'replace'; layerId: string }
 
 export interface CommitOptions {
   coalesceKey?: string
@@ -137,6 +172,23 @@ export interface EditorActions {
   moveLayerRelative(id: string, targetId: string, placement: 'above' | 'below'): boolean
   groupSelection(): boolean
   ungroupSelection(): boolean
+  // ---- project assets & images (Phase 5A; every change is one history entry)
+  /** Native picker → import into the project. Placement decides whether layers are created as well. */
+  importAssetsFromDialog(placement: ImportPlacement): Promise<ImportOutcome>
+  /** Dropped files (bytes held by the renderer) → import. */
+  importDroppedFiles(
+    files: { name: string; data: Uint8Array }[],
+    placement: ImportPlacement
+  ): Promise<ImportOutcome>
+  addAssetToCanvas(assetId: string, at?: { x: number; y: number } | null): boolean
+  setAssetAsBackground(assetId: string, mode?: BackgroundMode): boolean
+  setLayerAsBackground(layerId: string, mode?: BackgroundMode): boolean
+  setImageOriginalSize(layerId: string): boolean
+  /** Removes an unused asset from the project; refuses (with a message) while any layer uses it. */
+  removeAsset(assetId: string): boolean
+  setCanvasBackgroundColor(color: ColorValue, options?: CommitOptions): boolean
+  /** Deletes the design's background image layer (even though it is locked by default). */
+  removeBackgroundImage(): boolean
   // ---- selection / interaction (never in history)
   selectLayer(id: string | null): void
   selectLayers(ids: readonly string[]): void
@@ -359,6 +411,108 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
       }
     }
 
+    const messageOf = (e: unknown): string => (e instanceof Error ? e.message : String(e))
+
+    /** Runs a project mutation; a refused mutation (e.g. asset in use) becomes a message, never a throw. */
+    const tryCommit = (
+      mutate: (p: TemplateProject, c: MutationContext) => TemplateProject,
+      o: CommitOptions = {}
+    ): boolean => {
+      try {
+        return get().commit(mutate, o)
+      } catch (e) {
+        set({ lastMessage: messageOf(e) })
+        return false
+      }
+    }
+
+    const describeFailures = (failures: ImportAssetsResult['failures']): string => {
+      const first = failures[0]
+      if (!first) return ''
+      const more =
+        failures.length > 1 ? ` (and ${failures.length - 1} more could not be imported)` : ''
+      return `${first.filename}: ${first.error.message}${more}`
+    }
+
+    /**
+     * Turns an import result into ONE history entry: the new asset records plus whatever the placement asks for
+     * (image layers at the drop point, a background, or a replacement on one layer). Imports that change nothing
+     * (identical content, library placement, already in the project) leave history alone.
+     */
+    const finishImport = (
+      sessionId: string,
+      result: ImportAssetsResult,
+      placement: ImportPlacement
+    ): ImportOutcome => {
+      if (get().session?.sessionId !== sessionId) {
+        return { status: 'error', message: 'The project was closed before the import finished.' }
+      }
+      const assets: AssetReference[] = []
+      for (const i of result.imported)
+        if (!assets.some((a) => a.id === i.asset.id)) assets.push(i.asset)
+      const reused = result.imported.filter((i) => i.deduplicated).length
+      const failed = result.failures.length
+      const layerIds: string[] = []
+      if (assets.length > 0) {
+        const ok = tryCommit((p, c) => {
+          let next = addAssets(p, assets, c)
+          if (placement.kind === 'canvas') {
+            assets.forEach((a, i) => {
+              const at = placement.at
+                ? {
+                    x: placement.at.x + i * DUPLICATE_OFFSET,
+                    y: placement.at.y + i * DUPLICATE_OFFSET
+                  }
+                : null
+              const r = addAssetLayer(next, a.id, at, c)
+              next = r.project
+              layerIds.push(r.layerId)
+            })
+          } else if (placement.kind === 'background') {
+            const first = assets[0] as AssetReference
+            const r = setAssetAsBackground(next, first.id, placement.mode, c)
+            next = r.project
+            layerIds.push(r.layerId)
+          } else if (placement.kind === 'replace') {
+            next = replaceLayerAsset(next, placement.layerId, assets[0] as AssetReference, c)
+          }
+          return next
+        })
+        if (ok && layerIds.length > 0)
+          set({ selectedIds: layerIds, anchorId: layerIds[layerIds.length - 1] ?? null })
+      }
+      const notes = [
+        failed > 0 ? describeFailures(result.failures) : '',
+        reused > 0
+          ? `${reused} file${reused === 1 ? ' was' : 's were'} already in the project and reused.`
+          : ''
+      ].filter(Boolean)
+      if (notes.length > 0) set({ lastMessage: notes.join(' ') })
+      if (assets.length === 0 && failed > 0)
+        return { status: 'error', message: describeFailures(result.failures) }
+      return { status: 'ok', assetIds: assets.map((a) => a.id), layerIds, reused, failed }
+    }
+
+    const runImport = async (
+      start: (sessionId: string) => Promise<IpcResult<ImportAssetsResult>>,
+      placement: ImportPlacement
+    ): Promise<ImportOutcome> => {
+      const { session, project } = get()
+      if (!session || !project) return { status: 'error', message: 'No project is open.' }
+      try {
+        const r = await start(session.sessionId)
+        if (r.status === 'cancelled') return { status: 'cancelled' }
+        if (r.status === 'error') {
+          set({ lastMessage: r.error.message })
+          return { status: 'error', message: r.error.message }
+        }
+        return finishImport(session.sessionId, r.value, placement)
+      } catch (e) {
+        set({ lastMessage: messageOf(e) })
+        return { status: 'error', message: messageOf(e) }
+      }
+    }
+
     return {
       ...initialState(),
 
@@ -452,6 +606,72 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
         if (ok) set({ selectedIds: [layer.id], anchorId: layer.id })
         return ok
       },
+      importAssetsFromDialog: (placement) =>
+        runImport(
+          (id) =>
+            ports.importAssets(id, placement.kind === 'library' || placement.kind === 'canvas'),
+          placement
+        ),
+      importDroppedFiles: (files, placement) =>
+        runImport((id) => ports.importAssetData(id, files), placement),
+      addAssetToCanvas(assetId, at = null) {
+        let layerId = ''
+        const ok = tryCommit((p, c) => {
+          const r = addAssetLayer(p, assetId, at, c)
+          layerId = r.layerId
+          return r.project
+        })
+        if (ok) set({ selectedIds: [layerId], anchorId: layerId })
+        return ok
+      },
+      setAssetAsBackground(assetId, mode = 'cover') {
+        let layerId = ''
+        const ok = tryCommit((p, c) => {
+          const r = setAssetAsBackground(p, assetId, mode, c)
+          layerId = r.layerId
+          return r.project
+        })
+        if (ok) set({ selectedIds: [layerId], anchorId: layerId })
+        return ok
+      },
+      setLayerAsBackground(layerId, mode = 'cover') {
+        const ok = tryCommit((p, c) => makeLayerBackground(p, layerId, mode, c))
+        if (ok) set({ selectedIds: [layerId], anchorId: layerId })
+        return ok
+      },
+      setImageOriginalSize: (layerId) => tryCommit((p, c) => setImageOriginalSize(p, layerId, c)),
+      removeAsset(assetId) {
+        const { project } = get()
+        if (project) {
+          const usage = assetUsage(project, assetId)
+          if (usage.total > 0) {
+            set({ lastMessage: new AssetInUseError(assetId, usage.total).message })
+            return false
+          }
+        }
+        return tryCommit((p, c) => removeAssetMutation(p, assetId, c))
+      },
+      removeBackgroundImage() {
+        const { project } = get()
+        const ids =
+          project?.layers
+            .filter(
+              (l) => l.type === 'image' && l.role === 'background' && l.parentId === undefined
+            )
+            .map((l) => l.id) ?? []
+        if (ids.length === 0) return false
+        const ok = tryCommit((p, c) =>
+          ids.reduce(
+            (acc, id) => (acc.layers.some((l) => l.id === id) ? removeLayer(acc, id, c) : acc),
+            p
+          )
+        )
+        if (ok) set({ selectedIds: get().selectedIds.filter((id) => !ids.includes(id)) })
+        return ok
+      },
+      setCanvasBackgroundColor: (color, o = {}) =>
+        tryCommit((p, c) => setCanvasBackgroundColor(p, color, c), o),
+
       renameLayer(id, name) {
         if (name.trim() === '') {
           set({ lastMessage: 'A layer name cannot be empty.' })

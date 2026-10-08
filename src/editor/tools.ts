@@ -1,5 +1,5 @@
 /**
- * The left tool rail's structure. Only `design` does anything today (it lists the elements that can be added); the
+ * The left tool rail's structure. `design` (elements to add, canvas background) and `assets` (project images) are real today; the
  * other categories are declared so the layout is established, and are shown disabled with an honest "later phase"
  * tooltip. Adding a category later means adding an entry here and a drawer body for it, not reworking the rail.
  */
@@ -27,12 +27,7 @@ export const TOOLS: readonly ToolDef[] = [
     status: 'planned',
     note: 'Sample photos arrive in a later phase'
   },
-  {
-    id: 'assets',
-    label: 'Assets',
-    status: 'planned',
-    note: 'Asset library arrives in a later phase'
-  }
+  { id: 'assets', label: 'Assets', status: 'available' }
 ]
 
 /** Selecting a planned tool does nothing; selecting the active tool toggles the drawer. */

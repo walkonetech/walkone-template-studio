@@ -1,5 +1,7 @@
 import { Camera, Circle, Image, LayoutTemplate, Minus, PenTool, Square, Type } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import { AssetsDrawer } from './AssetsDrawer'
+import { CanvasBackgroundSection } from './CanvasBackgroundSection'
 import { NEW_LAYER_KINDS, type NewLayerKind } from '@editor/newLayers'
 import { TOOLS, type ToolId } from '@editor/tools'
 import { editorStore } from './editorStore'
@@ -27,7 +29,7 @@ const GROUPS: readonly { title: string; kinds: readonly NewLayerKind[] }[] = [
   { title: 'Shapes', kinds: ['rectangle', 'ellipse', 'line'] }
 ]
 
-/** Narrow icon rail for tool categories. Only "Design" is real today; the rest are visibly disabled. */
+/** Narrow icon rail for tool categories. "Design" and "Assets" are real; the rest are visibly disabled. */
 export function ToolRail(): React.JSX.Element {
   const tool = useLayout((s) => s.tool)
   const open = useLayout((s) => s.drawerOpen)
@@ -60,7 +62,9 @@ export function ToolRail(): React.JSX.Element {
 export function ToolDrawer(): React.JSX.Element | null {
   const open = useLayout((s) => s.drawerOpen)
   const tool = useLayout((s) => s.tool)
-  if (!open || tool !== 'design') return null
+  if (!open) return null
+  if (tool === 'assets') return <AssetsDrawer />
+  if (tool !== 'design') return null
   return (
     <aside className="tooldrawer" aria-label="Design elements" data-editor-panel>
       <h2 className="panel-heading">Add to design</h2>
@@ -87,6 +91,7 @@ export function ToolDrawer(): React.JSX.Element | null {
           </ul>
         </section>
       ))}
+      <CanvasBackgroundSection />
     </aside>
   )
 }

@@ -111,3 +111,15 @@ Not the roadmap's Phase 5 as written (photo placeholders are already strong). Re
 
 ## Reproducibility notes
 The driver and probe scripts lived in the session scratchpad and are not committed (they embed this client's strings). Results above come from: `shots/rec-log.txt`, `shots/rec-01…09*.png` and `shots/chaney-recreation.boothproject` (all git-ignored; the project contains the client's names, so it is not committed). The reference geometry was read from the fixture XML by hand and typed through the UI.
+
+## 21. Post-asset re-test (Phase 5A, 2026-10-07)
+**Question:** can Template Studio now use the artwork that made the template impossible? **Answer: yes.** A scratch copy of the fixture (ZIP read-only, SHA-256 `b50bb3e3…ec84a` unchanged) was extracted outside the repo; the previous recreation was opened, its approximations (page rectangle, badge rectangles/text, photo frames) removed, and the 4 PNGs were imported through the real **Import files…** flow and placed via the real Add button plus inspector-equivalent edits (automation, not a human):
+| Asset | Imported as | Placement |
+|---|---|---|
+| `…Strip-2-BG.png` (600×1802, alpha) | role background ×2 | 1200×3600 at X 0 / 1200, sent to back |
+| `…Frames.png` (600×1800) | role frame ×2 | 1200×3600 at X −4 / 1182 (off-canvas works), above photos |
+| `…BADGE_B.png` (1980×1663) | role badge ×2 | 1191×1000 at (0,2420) / (1200,2423) |
+| `…Strip-2-top.png` (599×1802) | role overlay ×2 | 1197/1200×3600 at X 0 / 1200, topmost |
+One asset record per file (4 assets, 8 image layers). **Transparency worked** in the editor and the exact-size 2400×3600 render (petals and rose overlap photos and the badge exactly as in the original). **Save → close → reopen** kept 14 layers and 4 assets. **Closeness:** side by side with the fixture's `preview.png` the layout, marble texture, gold frames, petals, badge text/rose and stacking are visually near-identical; the remaining visible differences are the placeholder styling (flat colours with "PHOTO n" labels vs the preview's tinted boxes) and the app rendering photos as numbered placeholders by design. Source art is 600 px wide placed 1200 px wide (2× upscale): effective ≈300 DPI at the 600-DPI canvas, i.e. the DPI readout reports it as Good for print (borderline).
+**Remaining blockers:** the design still has two independent strips (Phase 5B authors one 2×6 and derives the 2-up sheet); no export (Phase 6); no sample photos (5C); the original's per-element positions were typed numerically from the XML (no importer, by design). Screenshots (`shots/5a-chaney-*.png`) contain client artwork and stay git-ignored.
+

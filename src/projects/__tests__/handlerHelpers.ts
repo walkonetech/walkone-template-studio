@@ -6,6 +6,10 @@ export function createHandlersFor(env: Env): ReturnType<typeof createProjectHand
   return createProjectHandlers({
     service: env.service,
     recents: env.recents,
-    dialogs: { showOpen: async () => null, showSave: async () => null }
+    dialogs: {
+      showOpen: async () => null,
+      showSave: async () => null,
+      showImportImages: async () => null
+    }
   })
 }

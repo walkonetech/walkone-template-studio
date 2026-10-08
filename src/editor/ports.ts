@@ -1,6 +1,7 @@
 import type { TemplateProject } from '@domain'
 import type {
   CloseReason,
+  ImportAssetsResult,
   NewProjectRequest,
   OpenProjectInfo,
   RecentProjectItem,
@@ -26,6 +27,13 @@ export interface EditorPorts {
   ): Promise<IpcResult<{ dirty: boolean }>>
   close(sessionId: string): Promise<IpcResult<null>>
   recents(): Promise<IpcResult<RecentProjectItem[]>>
+  /** Native image picker + import into the session (main shows the dialog). */
+  importAssets(sessionId: string, multiple: boolean): Promise<IpcResult<ImportAssetsResult>>
+  /** Imports dropped files from their bytes. */
+  importAssetData(
+    sessionId: string,
+    files: { name: string; data: Uint8Array }[]
+  ): Promise<IpcResult<ImportAssetsResult>>
   /** Asks the main process whether the document may be closed/replaced (it shows the unsaved-changes prompt). */
   requestClose(reason: CloseReason): Promise<IpcResult<{ proceed: boolean }>>
   recoveryList(): Promise<IpcResult<RecoveryOverview>>

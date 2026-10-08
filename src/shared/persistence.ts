@@ -15,6 +15,14 @@ export const PERSISTENCE_ERROR_CODES = [
   'recovery-asset-missing',
   'recovery-conflict',
   'recovery-discard-failed',
+  // Asset import / project assets (Phase 5A)
+  'unsupported-format',
+  'decode-failed',
+  'unsafe-svg',
+  'image-too-large',
+  'asset-copy-failed',
+  'asset-in-use',
+  'asset-corrupt',
   'not-allowed',
   'invalid-request',
   'unexpected'

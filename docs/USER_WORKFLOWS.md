@@ -84,3 +84,10 @@ All workflows are **Proposed** future behavior. UI details: [UX_SPEC.md](UX_SPEC
 **Adding things.** Click the **Design** tool at the left, then a photo placeholder, text or shape to add it to the centre of the artboard (or use + in the Layers header).
 **Layers and properties.** Layers sits above Properties; drag the thin bars to resize the column or the split (or focus a bar and use the arrow keys, Shift for bigger steps). Visibility and lock icons appear on hover/selection and stay visible while a layer is hidden or locked.
 **Zoom.** Status bar `− 21% + Fit 100%`, or ⌘− ⌘= ⌘0 (fit) ⌘1 (100%).
+
+## R. Bring artwork into a project (Phase 5A, implemented)
+1. Open a project → **Assets** → **Import files…** (or drop files on the canvas/drawer). Supported: PNG, JPEG, WebP, SVG. Images are copied into the project; the originals can be moved or deleted.
+2. **Add** an asset to the canvas (button, double-click, or drag). The same asset can be added many times; each layer has its own position, size, rotation, opacity and role.
+3. Choose a **role** (overlay for transparent petals, frame art, badge, logo, graphic) in Properties; check **Print quality**.
+4. **Background:** *Background* on a card, or Design → Background → Background image…; the result is a locked, full-canvas layer at the back.
+5. Remove an asset only when unused; Replace image… swaps one layer's image. Save/Save As/reopen and crash recovery keep every image. Identical files imported twice are stored once.

@@ -30,6 +30,23 @@ function createDialogs(): ProjectDialogs {
         : await dialog.showOpenDialog(options)
       return r.canceled || r.filePaths.length === 0 ? null : (r.filePaths[0] ?? null)
     },
+    async showImportImages(ctx, multiple) {
+      const override = devValue('WALKONE_DEV_IMPORT_PATHS')
+      // Dev-only: '|' separates files within one answer, ';' separates successive dialogs; CANCEL cancels.
+      if (override) return override === 'CANCEL' ? null : override.split('|').filter(Boolean)
+      const options = {
+        title: 'Import Images',
+        properties: multiple
+          ? ['openFile' as const, 'multiSelections' as const]
+          : ['openFile' as const],
+        filters: [{ name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'webp', 'svg'] }]
+      }
+      const win = windowOf(ctx)
+      const r = win
+        ? await dialog.showOpenDialog(win, options)
+        : await dialog.showOpenDialog(options)
+      return r.canceled || r.filePaths.length === 0 ? null : r.filePaths
+    },
     async showSave(ctx, suggestedName) {
       const override = devValue('WALKONE_DEV_SAVE_PATH')
       if (override) return override === 'CANCEL' ? null : override
@@ -108,6 +125,14 @@ export function registerProjectIpc(
   ipcMain.handle(
     IpcChannel.ProjectReadAsset,
     guard((_e, p: unknown) => handlers.readAsset(p))
+  )
+  ipcMain.handle(
+    IpcChannel.ProjectImportAssets,
+    guard((e, p: unknown) => handlers.importAssets(win(e), p))
+  )
+  ipcMain.handle(
+    IpcChannel.ProjectImportAssetData,
+    guard((_e, p: unknown) => handlers.importAssetData(p))
   )
   ipcMain.handle(
     IpcChannel.RecoveryList,
