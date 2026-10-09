@@ -4,6 +4,7 @@ import { Tooltip } from './Tooltip'
 /** Icon-only button. `label` is REQUIRED: it is the accessible name and the tooltip text. */
 export function IconButton({
   label,
+  hint,
   icon: Icon,
   shortcut,
   onClick,
@@ -18,6 +19,7 @@ export function IconButton({
   onMouseDown
 }: {
   label: string
+  hint?: string
   icon: LucideIcon
   shortcut?: string
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
@@ -35,6 +37,7 @@ export function IconButton({
   return (
     <Tooltip
       label={label}
+      {...(hint ? { hint } : {})}
       {...(shortcut ? { shortcut } : {})}
       {...(placement ? { placement } : {})}
     >

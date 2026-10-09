@@ -28,18 +28,29 @@ export interface DebugApi {
   /** Renders the current project offscreen at an exact size and reports what came out. */
   renderToDataUrl: (
     width?: number,
-    height?: number
+    height?: number,
+    preview?: boolean
   ) => Promise<{ width: number; height: number; dataUrl: string; ms: number }>
   /** Renders the PRINT SHEET (output composition: every copy, clipped to its cell) at an exact size. */
   renderSheetToDataUrl: (
     width?: number,
-    height?: number
+    height?: number,
+    preview?: boolean
   ) => Promise<{ width: number; height: number; dataUrl: string; ms: number }>
   /** Client coordinates of a transformer handle ('top-left', 'rotater', …) or null. */
   handlePoint: (name: string) => { x: number; y: number } | null
   /** Client coordinates of a layer node's center. */
   layerCenter: (id: string) => { x: number; y: number } | null
   canvasCount: () => number
+  /** The editor stage as the user sees it (workspace pixels) plus its view transform, for pixel checks. */
+  stageSnapshot: () => {
+    dataUrl: string
+    width: number
+    height: number
+    scale: number
+    x: number
+    y: number
+  } | null
 }
 
 declare global {
@@ -49,7 +60,7 @@ declare global {
 }
 
 export function installDebug(
-  api: Omit<DebugApi, 'handlePoint' | 'layerCenter' | 'canvasCount'>
+  api: Omit<DebugApi, 'handlePoint' | 'layerCenter' | 'canvasCount' | 'stageSnapshot'>
 ): void {
   if (!window.location.hash.includes('debug')) return
   window.__wts = {
@@ -71,6 +82,18 @@ export function installDebug(
       const r = stage.container().getBoundingClientRect()
       return { x: r.left + c.x + c.width / 2, y: r.top + c.y + c.height / 2 }
     },
-    canvasCount: () => document.querySelectorAll('canvas').length
+    canvasCount: () => document.querySelectorAll('canvas').length,
+    stageSnapshot: () => {
+      const { stage } = canvasTargets()
+      if (!stage) return null
+      return {
+        dataUrl: stage.toDataURL({ pixelRatio: 1 }),
+        width: stage.width(),
+        height: stage.height(),
+        scale: stage.scaleX(),
+        x: stage.x(),
+        y: stage.y()
+      }
+    }
   }
 }

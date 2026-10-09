@@ -77,7 +77,7 @@
     "name": "autosave updated the working session after the debounce",
     "ok": true,
     "detail": {
-      "ms": 2510
+      "ms": 3010
     }
   },
   {
@@ -106,7 +106,7 @@
   {
     "name": "status bar exposes the recovery-copy state",
     "ok": true,
-    "detail": "Recovery copy 11:46 AM"
+    "detail": "Recovery copy 11:31 PM"
   },
   {
     "name": "Quit → Cancel: app stays open",

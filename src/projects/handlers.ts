@@ -1,3 +1,5 @@
+import { promises as fs } from 'node:fs'
+import { basename } from 'node:path'
 import { z } from 'zod'
 import { createProject, IdSchema, PRINT_PRESET_IDS, type TemplateProject } from '../domain'
 import { createSampleTemplate } from './sampleProject'
@@ -9,6 +11,7 @@ import type {
   ImportAssetDataRequest,
   ImportAssetsRequest,
   ImportAssetsResult,
+  PreviewPhotoData,
   NewProjectRequest,
   OpenProjectInfo,
   OpenRecentRequest,
@@ -18,6 +21,7 @@ import type {
   WorkingCopyResult
 } from '../shared/ipc'
 import { PROJECT_EXTENSION } from './constants'
+import { MAX_IMPORT_BYTES, inspectImage } from './imageInspect'
 import { PersistenceError, toSafeError } from './errors'
 import type { RecentProjectsStore } from './recents'
 import type { ProjectService } from './service'
@@ -167,6 +171,35 @@ export function createProjectHandlers(deps: HandlerDeps) {
         const chosen = await dialogs.showImportImages(ctx, req.multiple ?? true)
         if (chosen === null || chosen.length === 0) return { status: 'cancelled' }
         return ok(await service.importAssetFiles(req.sessionId, chosen.slice(0, MAX_IMPORT_FILES)))
+      }),
+
+    /**
+     * Preview (sample) photo: the user picks one file in main's own dialog; it is validated like any import (format by
+     * content, SVG policy, size limits) and its bytes are returned for the renderer to display. It is NOT copied into
+     * the project or its session, and no path is returned.
+     */
+    pickPreviewPhoto: (ctx: unknown): Promise<IpcResult<PreviewPhotoData>> =>
+      run(async () => {
+        const chosen = await dialogs.showImportImages(ctx, false)
+        const path = chosen?.[0]
+        if (!path) return { status: 'cancelled' }
+        const stat = await fs.stat(path).catch(() => null)
+        if (!stat?.isFile())
+          throw new PersistenceError('file-not-found', 'That file could not be found.')
+        if (stat.size > MAX_IMPORT_BYTES)
+          throw new PersistenceError(
+            'image-too-large',
+            'That file is too large to use as a preview.'
+          )
+        const data = new Uint8Array(await fs.readFile(path))
+        const info = inspectImage(data)
+        return ok({
+          name: basename(path),
+          mediaType: info.mediaType,
+          data,
+          pixelWidth: info.pixelWidth,
+          pixelHeight: info.pixelHeight
+        })
       }),
 
     importAssetData: (payload: unknown): Promise<IpcResult<ImportAssetsResult>> =>

@@ -41,6 +41,7 @@ function addDesignNodes(
     palette: project.palette,
     images,
     photoMode: options.photos === 'preview' ? 'preview' : 'placeholder',
+    ...(options.photoPreview ? { photoPreview: options.photoPreview } : {}),
     interactive: false,
     photoLabels: options.photoLabels ?? true,
     allLayers: layers

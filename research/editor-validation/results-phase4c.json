@@ -203,7 +203,7 @@
     "ok": true
   },
   {
-    "name": "collapse state persists across selection; photo sections shown",
+    "name": "collapse state persists across selection; photo sections (Photo, Sample photo, Frame) shown",
     "ok": true
   },
   {
@@ -297,7 +297,7 @@
     "ok": true
   },
   {
-    "name": "status bar Preview photos is disabled until sample photos exist (Phase 5A: no effect)",
+    "name": "status bar Preview photos toggles photo display (live since Phase 5C)",
     "ok": true
   },
   {
@@ -358,7 +358,7 @@
   {
     "name": "Tab traversal reaches many distinct controls (≥ 25)",
     "ok": true,
-    "detail": 44
+    "detail": 45
   },
   {
     "name": "every keyboard-focused control shows a visible focus ring",
@@ -532,8 +532,8 @@
     "detail": {
       "sw": 1728,
       "iw": 1728,
-      "sh": 1007,
-      "ih": 1007
+      "sh": 1006,
+      "ih": 1006
     }
   },
   {
@@ -548,7 +548,7 @@
     "name": "1920×1080: Layers and Properties each ≥ 150 px tall",
     "ok": true,
     "detail": {
-      "layers": 374,
+      "layers": 373,
       "props": 560
     }
   },

@@ -1,11 +1,12 @@
-import { ImageIcon, Magnet, Minus, Plus } from 'lucide-react'
+import { Crop, ImageIcon, Magnet, Maximize2, Minus, Plus, Shuffle } from 'lucide-react'
 import { describeWorkspace } from '@editor/describe'
 import { selectViewMode, selectViewTransform } from '@editor/store'
 import { runCommand } from './commandRunner'
 import { editorStore, useEditor } from './editorStore'
-import { shortcutFor } from './TopBar'
 import { Button } from '../ui/Button'
 import { IconButton } from '../ui/IconButton'
+import { Tooltip } from '../ui/Tooltip'
+import { commandTipProps, tipProps } from './tips'
 
 const st = editorStore.getState
 
@@ -16,6 +17,7 @@ export function StatusBar(): React.JSX.Element {
   const selectionCount = useEditor((s) => s.selectedIds.length)
   const snapping = useEditor((s) => s.snapping.enabled)
   const photoDisplay = useEditor((s) => s.photoDisplay)
+  const showOverflow = useEditor((s) => s.showOverflow)
   const message = useEditor((s) => s.lastMessage)
   const autosave = useEditor((s) => s.autosave)
   const dirty = useEditor((s) => s.project !== null && s.project !== s.savedProject)
@@ -52,17 +54,36 @@ export function StatusBar(): React.JSX.Element {
             size="sm"
             icon={Magnet}
             label="Snap to guides"
+            {...commandTipProps('view.snap')}
             pressed={snapping}
             onClick={() => runCommand('view.snap')}
             placement="top"
           />
           <IconButton
             size="sm"
+            icon={showOverflow ? Maximize2 : Crop}
+            label={showOverflow ? 'Show overflow' : 'Clipped view'}
+            {...commandTipProps('view.showOverflow')}
+            pressed={showOverflow}
+            onClick={() => runCommand('view.showOverflow')}
+            placement="top"
+          />
+          <IconButton
+            size="sm"
             icon={ImageIcon}
-            label="Preview photos (sample photos arrive in a later phase)"
-            disabled
+            label="Preview photos"
+            {...commandTipProps('view.previewPhotos')}
             pressed={photoDisplay === 'preview'}
             onClick={() => runCommand('view.previewPhotos')}
+            placement="top"
+          />
+          <IconButton
+            size="sm"
+            icon={Shuffle}
+            label="Shuffle photos"
+            {...commandTipProps('view.shufflePhotos')}
+            disabled={photoDisplay !== 'preview'}
+            onClick={() => runCommand('view.shufflePhotos')}
             placement="top"
           />
           <span className="ui-divider" aria-hidden="true" />
@@ -70,26 +91,33 @@ export function StatusBar(): React.JSX.Element {
             size="sm"
             icon={Minus}
             label="Zoom out"
-            shortcut={shortcutFor('view.zoomOut')}
+            {...commandTipProps('view.zoomOut')}
             onClick={() => st().zoomOut()}
             placement="top"
           />
-          <span className="zoom-label" id="zoom-label" aria-live="polite">
-            {scale ? `${Math.round(scale * 100)}%` : '—'}
-          </span>
+          <Tooltip label="Zoom level" {...tipProps('zoomLevel')} placement="top">
+            <span className="zoom-label" id="zoom-label" aria-live="polite">
+              {scale ? `${Math.round(scale * 100)}%` : '—'}
+            </span>
+          </Tooltip>
           <IconButton
             size="sm"
             icon={Plus}
             label="Zoom in"
+            {...commandTipProps('view.zoomIn')}
             onClick={() => st().zoomIn()}
             placement="top"
           />
-          <Button variant="ghost" size="sm" onClick={() => st().fitToWindow()}>
-            Fit
-          </Button>
-          <Button variant="ghost" size="sm" onClick={() => st().zoomToActualSize()}>
-            100%
-          </Button>
+          <Tooltip label="Fit to artboard" {...commandTipProps('view.fit')} placement="top">
+            <Button variant="ghost" size="sm" onClick={() => st().fitToWindow()}>
+              Fit
+            </Button>
+          </Tooltip>
+          <Tooltip label="Actual size" {...commandTipProps('view.actual')} placement="top">
+            <Button variant="ghost" size="sm" onClick={() => st().zoomToActualSize()}>
+              100%
+            </Button>
+          </Tooltip>
         </div>
       )}
     </footer>

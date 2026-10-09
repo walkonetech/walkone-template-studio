@@ -486,3 +486,15 @@ button.link {
   color: var(--c-text-2);
   font-weight: 600;
 }
+
+/* Tooltip: title line (label + shortcut) and an optional one-sentence hint */
+.ui-tip-title {
+  display: block;
+  font-weight: 600;
+}
+.ui-tip-hint {
+  display: block;
+  margin-top: 2px;
+  color: var(--c-text-2);
+  font-weight: 400;
+}

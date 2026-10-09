@@ -13,6 +13,7 @@ import {
   type ImportPlacement
 } from '@editor/store'
 import { loadProjectImage } from './assetLoader'
+import { clearUserPhotos, previewCache } from './samplePhotos'
 
 const api = window.api.project
 
@@ -38,6 +39,14 @@ const ports: EditorPorts = {
 export type ImportPlacementArg = ImportPlacement
 
 export const editorStore = createEditorStore({ ports })
+
+// A different (or no) project: forget the pictures the user picked as preview samples (they are session-only).
+editorStore.subscribe((s, prev) => {
+  if (prev.session?.sessionId !== s.session?.sessionId) {
+    clearUserPhotos()
+    previewCache.clear('user-')
+  }
+})
 export const imageCache = new ImageCache(loadProjectImage)
 
 export function useEditor<T>(selector: (state: EditorState & EditorActions) => T): T {

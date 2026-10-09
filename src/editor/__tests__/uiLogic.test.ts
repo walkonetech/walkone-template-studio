@@ -39,6 +39,7 @@ const ctx = (over: Partial<CommandContext> = {}): CommandContext => ({
   snapping: true,
   previewPhotos: false,
   hasPrintPreview: false,
+  showOverflow: true,
   viewMode: 'design' as const,
   ...over
 })

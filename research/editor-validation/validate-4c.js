@@ -399,9 +399,9 @@ async function session(opts, fn) {
       )
       await a.selectByName('Photo 1')
       check(
-        'collapse state persists across selection; photo sections shown',
+        'collapse state persists across selection; photo sections (Photo, Sample photo, Frame) shown',
         await a.S(
-          `(()=>{const t=[...document.querySelectorAll('.psection-toggle')]; return t.find(x=>x.textContent.trim()==='Appearance').getAttribute('aria-expanded')==='false' && t.some(x=>x.textContent.trim()==='Photo placeholder')})()`
+          `(()=>{const t=[...document.querySelectorAll('.psection-toggle')]; return t.find(x=>x.textContent.trim()==='Appearance').getAttribute('aria-expanded')==='false' && t.some(x=>x.textContent.trim()==='Sample photo') && t.some(x=>x.textContent.trim()==='Frame')})()`
         )
       )
       check('collapsing a section does not touch history', (await a.state()).past === pastBefore)
@@ -565,8 +565,8 @@ async function session(opts, fn) {
       await a.press('Preview photos')
       await sleep(300)
       check(
-        'status bar Preview photos is disabled until sample photos exist (Phase 5A: no effect)',
-        (await a.state()).preview !== 'preview'
+        'status bar Preview photos toggles photo display (live since Phase 5C)',
+        (await a.state()).preview === 'preview'
       )
       await a.press('Preview photos')
 

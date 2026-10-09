@@ -99,6 +99,12 @@ export function runCommand(id: CommandId): void {
     case 'arrange.distributeV':
       s.distributeSelection('vertical')
       return
+    case 'view.showOverflow':
+      s.setShowOverflow(!s.showOverflow)
+      return
+    case 'view.shufflePhotos':
+      s.shufflePhotos()
+      return
     case 'view.previewPhotos':
       s.setPhotoDisplay(s.photoDisplay === 'preview' ? 'placeholder' : 'preview')
       return

@@ -1,5 +1,6 @@
 import type Konva from 'konva'
-import { isEditable, type Layer, type Palette } from '@domain'
+import { isEditable, type Layer, type Palette, type PhotoLayer } from '@domain'
+import type { PhotoCrop } from './photoFit'
 import { drawFittedImage, drawPhotoPlaceholder, type ImageSource } from './draw'
 import { resolveColor } from './color'
 
@@ -24,16 +25,31 @@ export type ImageLookup = (assetId: string) => ImageSource | undefined
 
 export type PhotoMode = 'placeholder' | 'preview'
 
+/** A sample picture for one photo layer plus its editor-only crop. */
+export interface PhotoPreview {
+  image: ImageSource
+  crop?: PhotoCrop | undefined
+}
+/** Resolves the preview for a photo layer by PhotoNumber/layer (editor state, never project data). */
+export type PhotoPreviewLookup = (layer: PhotoLayer) => PhotoPreview | undefined
+
 export interface RenderEnv {
   palette: Palette
   images: ImageLookup
   /** `preview` shows a layer's sample image (if it has one and it is loaded) instead of the placeholder. */
   photoMode: PhotoMode
+  /**
+   * Editor/preview-only sample photos. Production output never supplies this: sample pictures are design aids, not
+   * capture content (ADR-038).
+   */
+  photoPreview?: PhotoPreviewLookup
   /** Editor nodes are draggable/hit-testable; offscreen render nodes are inert. */
   interactive: boolean
   /** Show the "PHOTO n" label (editor aid). */
   photoLabels: boolean
   editingTextId?: string | null
+  /** A layer whose picture is being repositioned: it keeps listening but must not be dragged as a whole. */
+  frozenId?: string | null
   /** Directly selected layer ids: a child of a group is draggable on its own only while directly selected. */
   selectedIds?: readonly string[]
   allLayers: readonly Layer[]
@@ -55,7 +71,10 @@ function base(layer: Layer, env: RenderEnv, insideGroup: boolean): Konva.NodeCon
     opacity: layer.opacity,
     // Locked layers render but do not listen: clicks pass through to whatever is beneath.
     listening: editable,
-    draggable: editable && (!insideGroup || (env.selectedIds?.includes(layer.id) ?? false))
+    draggable:
+      editable &&
+      layer.id !== env.frozenId &&
+      (!insideGroup || (env.selectedIds?.includes(layer.id) ?? false))
   }
 }
 
@@ -76,10 +95,17 @@ export function specFor(layer: Layer, env: RenderEnv, insideGroup = false): Node
 
   switch (layer.type) {
     case 'photo': {
-      const preview =
-        env.photoMode === 'preview' && layer.sampleAssetId
-          ? env.images(layer.sampleAssetId)
+      const resolved: PhotoPreview | undefined =
+        env.photoMode === 'preview'
+          ? (env.photoPreview?.(layer) ??
+            (layer.sampleAssetId
+              ? (() => {
+                  const image = env.images(layer.sampleAssetId)
+                  return image ? { image } : undefined
+                })()
+              : undefined))
           : undefined
+      const preview = resolved?.image
       const thickness = layer.frame.style === 'solid' ? layer.frame.thickness : 0
       const frameColor = layer.frame.style === 'solid' ? color(layer.frame.color) : '#ffffff'
       const { width, height } = layer
@@ -99,7 +125,9 @@ export function specFor(layer: Layer, env: RenderEnv, insideGroup = false): Node
               cornerRadius: layer.cornerRadius,
               fit: layer.fit,
               preview,
-              label: env.photoLabels
+              label: env.photoLabels,
+              crop: resolved?.crop,
+              badge: env.interactive
             }),
           hitFunc: boxHit(width, height)
         }

@@ -116,3 +116,10 @@ Design Recipes with AI assistance; provider integrations; commercialization to o
 - Unknown/unsupported input produces warnings, never silent loss.
 - Each roadmap phase has explicit acceptance criteria ([ROADMAP.md](ROADMAP.md)); the owner approves phase completion.
 - Test results are reported honestly ([TESTING_STRATEGY.md](TESTING_STRATEGY.md)).
+
+## 26. Canvas product contracts (Phase 5C)
+1. **Artboard overflow.** Artwork may extend beyond the logical print artboard during authoring. Off-artboard content remains editable in the workspace, while printable rendering/export clips to the artboard boundary.
+2. **Precision zoom and pan.** The canvas supports precision zoom and pan for detailed alignment without changing project geometry.
+3. **Constrained dragging.** Holding Shift while dragging constrains layer movement horizontally or vertically based on the intended drag direction.
+4. **Tooltips.** Canvas and editor tools provide contextual hover tooltips describing their purpose and relevant shortcuts/modifiers.
+5. **Sample photos are a design aid.** A photo placeholder is a future booth capture slot. A sample picture shown in it never changes its photo number, the project, the output composition or any future DSLR Booth export, and is never baked into production output.

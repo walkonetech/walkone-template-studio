@@ -86,6 +86,19 @@ export function useEditorKeyboard(): void {
         if (s.deleteSelection()) e.preventDefault()
         return
       }
+      if (s.cropSession) {
+        // Reposition mode owns Enter (finish) and Escape (cancel, restoring the crop it began with).
+        if (key === 'Escape') {
+          s.cancelCrop()
+          e.preventDefault()
+          return
+        }
+        if (key === 'Enter') {
+          s.commitCrop()
+          e.preventDefault()
+          return
+        }
+      }
       if (key === 'Escape') {
         s.clearSelection()
         return

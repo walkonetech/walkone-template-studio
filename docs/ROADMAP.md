@@ -62,7 +62,8 @@ A real production template recreated through the UI ([../research/REAL_TEMPLATE_
 - logical **2×6** authoring (one design); 2-up 4×6 output derived from it (`OutputComposition` already models this); Design / Print Preview
 - exact group/multi-selection positioning; alignment/distribution
 
-### Phase 5C — Photo Preview, Crop & Frame Workflow
+### Phase 5C — Photo Preview, Crop, Frame & Precision Canvas Workflow
+**Status: complete (2026-10-09).** Sample photos + Preview Photos, crop/reposition (editor state), frame styling, Show overflow/Clipped view, precision zoom/pan, Shift-constrained drag, tooltips; ADR-038 (shadow deferred, no schema change). Original scope:
 - realistic sample photos; Preview Photos (the toggle is disabled until then); crop/reposition; fit/fill refinement; frame workflow
 
 ### Phase 5D — Typography & Palette Foundation

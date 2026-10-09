@@ -7,6 +7,8 @@ import { TOOLS, type ToolId } from '@editor/tools'
 import { editorStore } from './editorStore'
 import { layoutStore, useLayout } from './layoutStore'
 import { Tooltip } from '../ui/Tooltip'
+import { tipProps } from './tips'
+import type { TipId } from '@editor/tooltips'
 
 const TOOL_ICONS: Record<ToolId, LucideIcon> = {
   design: PenTool,
@@ -14,6 +16,13 @@ const TOOL_ICONS: Record<ToolId, LucideIcon> = {
   photos: Camera,
   assets: Image
 }
+
+const TOOL_TIPS = {
+  design: 'toolDesign',
+  templates: 'toolTemplates',
+  photos: 'toolPhotos',
+  assets: 'toolAssets'
+} as const satisfies Record<ToolId, TipId>
 
 const KIND_ICONS: Record<NewLayerKind, LucideIcon> = {
   photo: Camera,
@@ -39,7 +48,7 @@ export function ToolRail(): React.JSX.Element {
         const Icon = TOOL_ICONS[t.id]
         const available = t.status === 'available'
         return (
-          <Tooltip key={t.id} label={available ? t.label : (t.note ?? t.label)} placement="right">
+          <Tooltip key={t.id} label={t.label} {...tipProps(TOOL_TIPS[t.id])} placement="right">
             <button
               type="button"
               className={`toolrail-btn ${available && tool === t.id && open ? 'active' : ''}`}

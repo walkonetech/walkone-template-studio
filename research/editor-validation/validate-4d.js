@@ -41,7 +41,8 @@ const check = (name, ok, detail) => {
         deviceScaleFactor: 1,
         mobile: false
       })
-      await sleep(180)
+      // The drawer auto-collapses on the window's resize event; the first (biggest) jump needs longer to settle.
+      await sleep(w === 1100 ? 600 : 180)
       const m = await measure()
       n++
       const issues = []

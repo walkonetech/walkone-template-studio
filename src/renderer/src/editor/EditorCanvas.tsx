@@ -39,6 +39,15 @@ import { editorStore, useEditor, useViewTransform } from './editorStore'
 import { useProjectImages } from './useProjectImages'
 import { TextEditOverlay } from './TextEditOverlay'
 import { registerCanvasDebug } from './debugHooks'
+import {
+  AXIS_LOCK_THRESHOLD_PX,
+  constrainDrag,
+  initialAxisLock,
+  restrictSnap
+} from '@canvas/transforms/axisLock'
+import { usePreviewPhotos } from './usePreviewPhotos'
+import { useSpacePan } from './useSpacePan'
+import { CropOverlay } from './CropOverlay'
 import { dropPointToDesign } from '@editor/imagePlacement'
 import { ASSET_DRAG_TYPE, dragHasAsset, dragHasFiles } from './dropFiles'
 import { importDroppedFiles } from './importActions'
@@ -87,23 +96,70 @@ function restoreNode(node: Konva.Node, layer: Layer): void {
 const nodeFor = (stage: Konva.Stage | null, id: string): Konva.Node | undefined =>
   stage?.findOne((n: Konva.Node) => n.id() === id) ?? undefined
 
-function onNodeDragStart(): void {
+/** Shift-constrained drag: where the drag began (design coordinates of the dragged node) and which axis is locked. */
+let dragOrigin: { id: string; x: number; y: number } | null = null
+/** The other selected nodes of a multi-drag, with where each started (they are re-placed from the primary's delta). */
+let dragFollowers: { node: Konva.Node; x: number; y: number }[] = []
+let axisLock = initialAxisLock()
+
+function onNodeDragStart(e: Konva.KonvaEventObject<DragEvent>): void {
+  // With several layers selected Konva also "starts a drag" on every other selected node; only the node the pointer
+  // actually grabbed (the first dragstart of the gesture) drives the constraint and snapping.
+  if (!dragOrigin) {
+    const node = e.currentTarget
+    dragOrigin = { id: node.id(), x: node.x(), y: node.y() }
+    axisLock = initialAxisLock()
+    const s = store.getState()
+    const stage = node.getStage()
+    dragFollowers = s.project
+      ? transformTargets(s.project.layers, s.selectedIds)
+          .filter((l) => l.id !== node.id())
+          .map((l) => nodeFor(stage, l.id))
+          .filter((n): n is Konva.Node => !!n)
+          .map((n) => ({ node: n, x: n.x(), y: n.y() }))
+      : []
+  }
   store.getState().setInteraction('transforming')
 }
 
 function onNodeDragMove(e: Konva.KonvaEventObject<DragEvent>): void {
   const s = store.getState()
   const node = e.currentTarget
+  if (dragOrigin && node.id() !== dragOrigin.id) return // followers are moved by the Transformer
+  const view = selectViewTransform(s)
+  // 1. Shift locks the move to its dominant axis (Photoshop style) ...
+  if (dragOrigin && view && (e.evt.shiftKey || axisLock.axis)) {
+    const r = constrainDrag(
+      axisLock,
+      { x: node.x() - dragOrigin.x, y: node.y() - dragOrigin.y },
+      e.evt.shiftKey,
+      AXIS_LOCK_THRESHOLD_PX / view.scale
+    )
+    axisLock = r.state
+    node.position({ x: dragOrigin.x + r.delta.x, y: dragOrigin.y + r.delta.y })
+  }
+  // 2. ... then snapping may adjust only the axis that is still free.
   if (s.snapping.enabled) {
     const design = selectDesignSize(s)
-    const view = selectViewTransform(s)
     if (design && view) {
-      const r = snapDraggedNode(node, design, view, s.snapping.tolerancePx)
-      if (r) {
+      const raw = snapDraggedNode(node, design, view, s.snapping.tolerancePx)
+      if (raw) {
+        const r = restrictSnap(raw, axisLock.axis)
         if (r.dx !== 0 || r.dy !== 0) node.position({ x: node.x() + r.dx, y: node.y() + r.dy })
-        s.setGuides(r.guides)
+        s.setGuides(
+          axisLock.axis
+            ? r.guides.filter((g) => g.axis !== (axisLock.axis === 'x' ? 'y' : 'x'))
+            : r.guides
+        )
       }
     }
+  }
+  // 3. Re-place the other selected layers from the grabbed one's final (constrained, snapped) displacement, so the
+  //    whole selection keeps its relative geometry whatever the Transformer's own incremental sync did.
+  if (dragOrigin && dragFollowers.length > 0) {
+    const dx = node.x() - dragOrigin.x
+    const dy = node.y() - dragOrigin.y
+    for (const f of dragFollowers) f.node.position({ x: f.x + dx, y: f.y + dy })
   }
 }
 
@@ -125,6 +181,9 @@ function finishInteraction(nodes: Konva.Node[]): void {
   const committed = s.commitGeometry(changes)
   s.setGuides([])
   s.setInteraction('idle')
+  dragOrigin = null
+  dragFollowers = []
+  axisLock = initialAxisLock()
   if (!committed) {
     for (const n of nodes) {
       const layer = layers.find((l) => l.id === n.id())
@@ -186,6 +245,18 @@ function handlersFor(
   if (layer.type === 'text') {
     base.onDblClick = () => store.getState().beginTextEdit(layer.id)
     base.onDblTap = () => store.getState().beginTextEdit(layer.id)
+  }
+  // Double-click a photo to reposition the sample picture inside its frame.
+  if (layer.type === 'photo') {
+    base.onDblClick = () => store.getState().beginCrop(layer.id)
+    base.onDblTap = () => store.getState().beginCrop(layer.id)
+  }
+  base.onMouseEnter = (e: Konva.KonvaEventObject<MouseEvent>) => {
+    if (!store.getState().cropSession)
+      e.target.getStage()?.container().style.setProperty('cursor', 'move')
+  }
+  base.onMouseLeave = (e: Konva.KonvaEventObject<MouseEvent>) => {
+    e.target.getStage()?.container().style.removeProperty('cursor')
   }
   return base
 }
@@ -252,12 +323,16 @@ export function EditorCanvas(): React.JSX.Element | null {
   const guides = useEditor((s) => s.guides)
   const guidesVisible = useEditor((s) => s.guidesVisible)
   const images: ImageLookup = useProjectImages(sessionId, project?.layers)
+  const photoPreview = usePreviewPhotos(project?.layers)
+  const showOverflow = useEditor((s) => s.showOverflow)
+  const cropSession = useEditor((s) => s.cropSession)
 
   const hostRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<Konva.Stage>(null)
   const trRef = useRef<Konva.Transformer>(null)
 
   const view = useViewTransform()
+  const pan = useSpacePan(hostRef)
 
   // Measure the host; the viewport size is editor state, the canvas never decides its own size.
   useLayoutEffect(() => {
@@ -298,7 +373,8 @@ export function EditorCanvas(): React.JSX.Element | null {
     const tr = trRef.current
     const stage = stageRef.current
     if (!tr || !stage) return
-    const targets = project && !editingTextId ? transformTargets(project.layers, selectedIds) : []
+    const targets =
+      project && !editingTextId && !cropSession ? transformTargets(project.layers, selectedIds) : []
     const nodes = targets
       .map((l) => stage.findOne((n: Konva.Node) => n.id() === l.id))
       .filter((n): n is Konva.Node => !!n)
@@ -324,7 +400,7 @@ export function EditorCanvas(): React.JSX.Element | null {
     }
     tr.nodes(nodes)
     tr.getLayer()?.batchDraw()
-  }, [selectedIds, project, editingTextId, viewState, viewport])
+  }, [selectedIds, project, editingTextId, cropSession, viewState, viewport])
 
   useEffect(
     () => registerCanvasDebug(() => ({ stage: stageRef.current, transformer: trRef.current })),
@@ -337,6 +413,8 @@ export function EditorCanvas(): React.JSX.Element | null {
     palette: project.palette,
     images,
     photoMode: photoDisplay,
+    ...(photoPreview ? { photoPreview } : {}),
+    frozenId: cropSession?.layerId ?? null,
     interactive: true,
     photoLabels: true,
     editingTextId,
@@ -362,6 +440,18 @@ export function EditorCanvas(): React.JSX.Element | null {
     if (!additive && s.selectedIds.includes(deepId)) return
     const id = e.evt.altKey ? deepId : layerIdFor(t, layers, false)
     if (!id) return
+    // Shift on an already-selected layer may be the start of a constrained drag, so it only DESELECTS when the press
+    // turns out to be a plain click (no movement), decided on release.
+    if (e.evt.shiftKey && !isPrimaryModifier(e.evt) && s.selectedIds.includes(id)) {
+      const start = { x: (e.evt as MouseEvent).clientX, y: (e.evt as MouseEvent).clientY }
+      const onUp = (up: MouseEvent): void => {
+        window.removeEventListener('mouseup', onUp, true)
+        if (Math.hypot(up.clientX - start.x, up.clientY - start.y) < 4)
+          store.getState().toggleSelection(id)
+      }
+      window.addEventListener('mouseup', onUp, true)
+      return
+    }
     if (additive) s.toggleSelection(id)
     else s.selectLayer(id)
   }
@@ -381,7 +471,7 @@ export function EditorCanvas(): React.JSX.Element | null {
   return (
     <div
       ref={hostRef}
-      className="canvas-host"
+      className={`canvas-host${pan.ready ? ' pan-ready' : ''}${pan.panning ? ' panning' : ''}${cropSession ? ' cropping' : ''}`}
       onDragOver={(e) => {
         if (!acceptsDrop(e)) return
         e.preventDefault()
@@ -424,7 +514,12 @@ export function EditorCanvas(): React.JSX.Element | null {
             shadowForStrokeEnabled={false}
           />
         </KLayer>
-        <KLayer name="printable">
+        <KLayer
+          name="printable"
+          {...(showOverflow
+            ? {}
+            : { clipX: 0, clipY: 0, clipWidth: design.width, clipHeight: design.height })}
+        >
           <Rect
             id={DESIGN_NODE_ID}
             x={0}
@@ -436,7 +531,7 @@ export function EditorCanvas(): React.JSX.Element | null {
           <Layers project={project} env={env} />
         </KLayer>
         <KLayer name="editor-overlay">
-          <PrintAreaMask width={design.width} height={design.height} />
+          {showOverflow && <PrintAreaMask width={design.width} height={design.height} />}
           {guidesVisible &&
             guides.map((g) => (
               <Line
@@ -466,6 +561,7 @@ export function EditorCanvas(): React.JSX.Element | null {
         </KLayer>
       </Stage>
       <TextEditOverlay />
+      {cropSession && <CropOverlay />}
     </div>
   )
 }

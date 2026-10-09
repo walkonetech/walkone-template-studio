@@ -7,11 +7,14 @@ import { createPortal } from 'react-dom'
  */
 export function Tooltip({
   label,
+  hint,
   shortcut,
   placement = 'bottom',
   children
 }: {
   label: string
+  /** One short sentence about what the control does (the label alone only names it). */
+  hint?: string
   shortcut?: string
   placement?: 'bottom' | 'right' | 'top'
   children: React.ReactNode
@@ -60,8 +63,11 @@ export function Tooltip({
       {pos &&
         createPortal(
           <div role="tooltip" className="ui-tip" style={{ left: pos.x, top: pos.y, transform }}>
-            {label}
-            {shortcut && <kbd>{shortcut}</kbd>}
+            <span className="ui-tip-title">
+              {label}
+              {shortcut && <kbd>{shortcut}</kbd>}
+            </span>
+            {hint && <span className="ui-tip-hint">{hint}</span>}
           </div>,
           document.body
         )}

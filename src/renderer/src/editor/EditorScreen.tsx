@@ -6,8 +6,12 @@ import { selectViewMode } from '@editor/store'
 import { EditorCanvas } from './EditorCanvas'
 import { PrintPreviewCanvas } from './PrintPreviewCanvas'
 import { WorkspaceModeSwitch } from './WorkspaceModeSwitch'
+import { CropBar } from './CropBar'
 import { editorStore, imageCache, useEditor } from './editorStore'
 import { installDebug } from './debugHooks'
+import type { PhotoPreviewLookup } from '@canvas/rendering/nodeSpec'
+import { sampleIdFor } from '@editor/previewPhotos'
+import { previewCache } from './samplePhotos'
 import { layoutStore, useLayout } from './layoutStore'
 import { LayersPanel } from './LayersPanel'
 import { NewProjectDialog } from './NewProjectDialog'
@@ -76,7 +80,8 @@ type DebugRenderer = typeof renderProjectToCanvas
 async function renderDebug(
   render: DebugRenderer,
   width?: number,
-  height?: number
+  height?: number,
+  preview = false
 ): Promise<{ width: number; height: number; dataUrl: string; ms: number }> {
   const s = editorStore.getState()
   if (!s.project || !s.session) throw new Error('no project')
@@ -86,10 +91,24 @@ async function renderDebug(
     if (l.type === 'image') ids.add(l.assetId)
   }
   await imageCache.ensure([...ids].map((id) => imageKey(sessionId, id)))
+  let photoPreview: PhotoPreviewLookup | undefined
+  if (preview) {
+    // Design-preview render (sample photos baked in). A production render never does this (ADR-038).
+    const numbers = new Set<number>()
+    for (const l of s.project.layers) if (l.type === 'photo') numbers.add(l.photoNumber)
+    const ids = [...new Set([...numbers].map((n) => sampleIdFor(n, s.previewPhotos)))]
+    await previewCache.ensure(ids)
+    photoPreview = (layer) => {
+      const image = previewCache.peek(sampleIdFor(layer.photoNumber, s.previewPhotos))
+      const crop = s.photoCrops[layer.id]
+      return image ? (crop ? { image, crop } : { image }) : undefined
+    }
+  }
   const t0 = performance.now()
   const canvas = render(s.project, (id) => imageCache.peek(imageKey(sessionId, id)), {
     ...(width ? { width } : {}),
-    ...(height ? { height } : {})
+    ...(height ? { height } : {}),
+    ...(photoPreview ? { photos: 'preview' as const, photoPreview } : {})
   })
   return {
     width: canvas.width,
@@ -127,8 +146,10 @@ export function EditorScreen(): React.JSX.Element {
     installDebug({
       store: editorStore,
       imageCache,
-      renderToDataUrl: (width, height) => renderDebug(renderProjectToCanvas, width, height),
-      renderSheetToDataUrl: (width, height) => renderDebug(renderOutputToCanvas, width, height)
+      renderToDataUrl: (width, height, preview) =>
+        renderDebug(renderProjectToCanvas, width, height, preview),
+      renderSheetToDataUrl: (width, height, preview) =>
+        renderDebug(renderOutputToCanvas, width, height, preview)
     })
   }, [])
 
@@ -151,6 +172,7 @@ export function EditorScreen(): React.JSX.Element {
             <Welcome />
           )}
           {project && <WorkspaceModeSwitch />}
+          {project && <CropBar />}
         </main>
         {project && <Sidebar />}
       </div>

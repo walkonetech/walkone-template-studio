@@ -11,6 +11,7 @@ import {
 import { hasDerivedCopies } from '@canvas/rendering/composition'
 import { selectCanRedo, selectCanUndo, selectIsDirty, selectViewMode } from '@editor/store'
 import { runCommand } from './commandRunner'
+import { commandTipProps, tipProps } from './tips'
 import { editorStore, useEditor } from './editorStore'
 import { isMac } from './platform'
 import { Button } from '../ui/Button'
@@ -28,6 +29,7 @@ export function useCommandContext(): CommandContext {
   const previewPhotos = useEditor((s) => s.photoDisplay === 'preview')
   const hasPrintPreview = useEditor((s) => s.project !== null && hasDerivedCopies(s.project))
   const viewMode = useEditor(selectViewMode)
+  const showOverflow = useEditor((s) => s.showOverflow)
   return {
     hasProject,
     canUndo,
@@ -36,6 +38,7 @@ export function useCommandContext(): CommandContext {
     snapping,
     previewPhotos,
     hasPrintPreview,
+    showOverflow,
     viewMode
   }
 }
@@ -118,19 +121,19 @@ export function TopBar(): React.JSX.Element {
         <IconButton
           label="Undo"
           icon={Undo2}
-          shortcut={shortcutFor('edit.undo')}
+          {...commandTipProps('edit.undo')}
           disabled={!ctx.canUndo}
           onClick={() => st().undo()}
         />
         <IconButton
           label="Redo"
           icon={Redo2}
-          shortcut={shortcutFor('edit.redo')}
+          {...commandTipProps('edit.redo')}
           disabled={!ctx.canRedo}
           onClick={() => st().redo()}
         />
         <span className="ui-divider" aria-hidden="true" />
-        <Tooltip label="Save" shortcut={shortcutFor('file.save')}>
+        <Tooltip label="Save" {...commandTipProps('file.save')}>
           <Button
             variant="primary"
             icon={Save}
@@ -141,7 +144,7 @@ export function TopBar(): React.JSX.Element {
             Save
           </Button>
         </Tooltip>
-        <Tooltip label="Export arrives in a later phase">
+        <Tooltip label="Export" {...tipProps('export')}>
           <Button variant="ghost" icon={Download} disabled aria-label="Export">
             Export
           </Button>

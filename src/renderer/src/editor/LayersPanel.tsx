@@ -15,7 +15,6 @@ import {
   Ungroup,
   Layers2
 } from 'lucide-react'
-import { COMMANDS, shortcutLabel } from '@editor/commands'
 import { NEW_LAYER_KINDS } from '@editor/newLayers'
 import { buildPanelRows, layerTypeLabel, type PanelRow } from '@editor/layerTree'
 import { editorStore, useEditor } from './editorStore'
@@ -23,6 +22,7 @@ import { LayerTypeIcon } from './Icons'
 import { isMac, isPrimaryModifier } from './platform'
 import { Dialog } from '../ui/Dialog'
 import { Tooltip } from '../ui/Tooltip'
+import { commandTipProps, tipProps } from './tips'
 import { Button } from '../ui/Button'
 import { EmptyState } from '../ui/EmptyState'
 import { IconButton } from '../ui/IconButton'
@@ -390,7 +390,6 @@ export function LayersPanel(): React.JSX.Element {
   const [helpOpen, setHelpOpen] = useState(false)
   const selectionCount = selectedIds.length
   const mac = isMac()
-  const sc = (id: keyof typeof COMMANDS): string => shortcutLabel(COMMANDS[id].shortcut, mac)
   const addEntries: MenuEntry[] = NEW_LAYER_KINDS.map((k) => ({
     id: k.kind,
     label: k.label,
@@ -430,7 +429,7 @@ export function LayersPanel(): React.JSX.Element {
           Layers {layers && <span className="ui-badge">{layers.length}</span>}
         </h2>
         <div className="panel-actions" role="toolbar" aria-label="Layer actions">
-          <Tooltip label="Add layer">
+          <Tooltip label="Add layer" {...tipProps('addLayer')}>
             <MenuButton
               label="Add layer"
               entries={addEntries}
@@ -445,7 +444,7 @@ export function LayersPanel(): React.JSX.Element {
             size="sm"
             icon={Copy}
             label="Duplicate"
-            shortcut={sc('edit.duplicate')}
+            {...commandTipProps('edit.duplicate')}
             disabled={selectionCount === 0}
             onClick={() => st().duplicateSelection()}
           />
@@ -453,7 +452,7 @@ export function LayersPanel(): React.JSX.Element {
             size="sm"
             icon={Group}
             label="Group"
-            shortcut={sc('edit.group')}
+            {...commandTipProps('edit.group')}
             disabled={selectionCount === 0}
             onClick={() => st().groupSelection()}
           />
@@ -461,12 +460,12 @@ export function LayersPanel(): React.JSX.Element {
             size="sm"
             icon={Ungroup}
             label="Ungroup"
-            shortcut={sc('edit.ungroup')}
+            {...commandTipProps('edit.ungroup')}
             disabled={selectionCount === 0}
             onClick={() => st().ungroupSelection()}
           />
           <span className="ui-divider" aria-hidden="true" />
-          <Tooltip label="Arrange: stacking order">
+          <Tooltip label="Arrange" {...tipProps('arrangeStacking')}>
             <MenuButton
               label="Arrange"
               entries={arrangeEntries}
@@ -480,7 +479,7 @@ export function LayersPanel(): React.JSX.Element {
             size="sm"
             icon={Trash2}
             label="Delete"
-            shortcut={sc('edit.delete')}
+            {...commandTipProps('edit.delete')}
             className="danger-btn"
             disabled={selectionCount === 0}
             onClick={() => st().deleteSelection()}
@@ -490,6 +489,7 @@ export function LayersPanel(): React.JSX.Element {
             size="sm"
             icon={Keyboard}
             label="Layer shortcuts"
+            {...tipProps('layerShortcuts')}
             className="quiet-btn"
             onClick={() => setHelpOpen(true)}
           />

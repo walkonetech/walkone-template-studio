@@ -1,4 +1,5 @@
 import type { FitMode } from '@domain'
+import { clampCornerRadius, clampFrameThickness, placePhoto, type PhotoCrop } from './photoFit'
 
 /** Pure 2D-canvas drawing used identically by the interactive editor and the offscreen renderer. */
 
@@ -129,6 +130,10 @@ export interface PhotoDrawSpec {
   preview?: ImageSource | undefined
   /** Show the "PHOTO n" label (editor/preview aid, not part of final artwork). */
   label: boolean
+  /** Editor-only crop (reposition + zoom) of the preview picture inside the frame. */
+  crop?: PhotoCrop | undefined
+  /** Editor-only: draw a small "#n" tag on a preview picture so the capture slot stays identifiable. */
+  badge?: boolean
 }
 
 const TINTS = ['#e8544a', '#8bc34a', '#4db6ac', '#ba68c8', '#ffb74d', '#64b5f6']
@@ -139,12 +144,14 @@ const TINTS = ['#e8544a', '#8bc34a', '#4db6ac', '#ba68c8', '#ffb74d', '#64b5f6']
  */
 export function drawPhotoPlaceholder(ctx: CanvasRenderingContext2D, s: PhotoDrawSpec): void {
   const { width: w, height: h } = s
+  const radius = clampCornerRadius(s.cornerRadius, w, h)
+  const thickness = clampFrameThickness(s.frameThickness, w, h)
   ctx.save()
-  roundRectPath(ctx, 0, 0, w, h, s.cornerRadius)
+  roundRectPath(ctx, 0, 0, w, h, radius)
   ctx.clip()
   if (s.preview) {
-    const r = fitRect(s.preview, { width: w, height: h }, s.fit)
-    ctx.drawImage(s.preview.source, r.sx, r.sy, r.sw, r.sh, r.dx, r.dy, r.dw, r.dh)
+    const p = placePhoto(s.preview, { width: w, height: h }, s.fit, s.crop)
+    ctx.drawImage(s.preview.source, p.sx, p.sy, p.sw, p.sh, p.dx, p.dy, p.dw, p.dh)
   } else {
     ctx.fillStyle = TINTS[(s.photoNumber - 1) % TINTS.length] ?? '#999999'
     ctx.fillRect(0, 0, w, h)
@@ -157,12 +164,12 @@ export function drawPhotoPlaceholder(ctx: CanvasRenderingContext2D, s: PhotoDraw
   }
   ctx.restore()
 
-  if (s.frameThickness > 0) {
-    const t = s.frameThickness
+  if (thickness > 0) {
+    const t = thickness
     ctx.save()
     ctx.strokeStyle = s.frameColor
     ctx.lineWidth = t
-    roundRectPath(ctx, t / 2, t / 2, w - t, h - t, Math.max(0, s.cornerRadius - t / 2))
+    roundRectPath(ctx, t / 2, t / 2, w - t, h - t, Math.max(0, radius - t / 2))
     ctx.stroke()
     ctx.restore()
   }
@@ -178,6 +185,20 @@ export function drawPhotoPlaceholder(ctx: CanvasRenderingContext2D, s: PhotoDraw
       ctx.font = `600 ${Math.round(Math.min(w, h) * 0.07)}px Helvetica, Arial, sans-serif`
       ctx.fillText(`PHOTO ${s.photoNumber}`, w / 2, h * 0.86)
     }
+    ctx.restore()
+  } else if (s.badge) {
+    // Editor-only slot tag (never drawn by the offscreen/exact render, which sets badge false).
+    const size = Math.max(14, Math.round(Math.min(w, h) * 0.07))
+    ctx.save()
+    ctx.font = `700 ${size}px Helvetica, Arial, sans-serif`
+    ctx.textBaseline = 'middle'
+    const text = `#${s.photoNumber}`
+    const pad = size * 0.45
+    const bw = ctx.measureText(text).width + pad * 2
+    ctx.fillStyle = 'rgba(0,0,0,0.55)'
+    ctx.fillRect(thickness + size * 0.3, thickness + size * 0.3, bw, size * 1.5)
+    ctx.fillStyle = '#ffffff'
+    ctx.fillText(text, thickness + size * 0.3 + pad, thickness + size * 0.3 + size * 0.75)
     ctx.restore()
   }
 }

@@ -21,7 +21,13 @@ exports.launch = async ({ port, userData, env = {}, size }) => {
   const args = [
     path.join(root, 'out/main/index.js'),
     `--remote-debugging-port=${port}`,
-    `--user-data-dir=${userData}`
+    `--user-data-dir=${userData}`,
+    // Scripted input needs a window that is never throttled: macOS marks a window "occluded" when it is behind
+    // another app or the display sleeps, which stalls mouse/wheel acknowledgements (the cause of earlier flaky runs).
+    '--disable-backgrounding-occluded-windows',
+    '--disable-renderer-backgrounding',
+    '--disable-background-timer-throttling',
+    '--disable-features=CalculateNativeWinOcclusion'
   ]
   const sizeEnv = size ? { WALKONE_DEV_WINDOW_SIZE: `${size.width}x${size.height}` } : {}
   const proc = spawn(electron, args, {

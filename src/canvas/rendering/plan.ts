@@ -1,4 +1,4 @@
-import type { ImageLookup } from './nodeSpec'
+import type { ImageLookup, PhotoPreviewLookup } from './nodeSpec'
 import {
   getPixelSize,
   isEffectivelyVisible,
@@ -16,6 +16,11 @@ export interface RenderOptions {
   height?: number
   /** 'omit' leaves photo placeholders out entirely (e.g., a future export of artwork only). */
   photos?: 'placeholder' | 'preview' | 'omit'
+  /**
+   * Sample pictures (with `photos: 'preview'`). A DESIGN-PREVIEW render may bake sample photos in; PRODUCTION output
+   * (a future export) must use `photos: 'omit'`, which leaves the capture slots empty, and never supplies this.
+   */
+  photoPreview?: PhotoPreviewLookup
 }
 
 export interface RenderPlan {

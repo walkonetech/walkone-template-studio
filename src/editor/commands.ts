@@ -22,6 +22,8 @@ export type CommandId =
   | 'view.zoomOut'
   | 'view.snap'
   | 'view.previewPhotos'
+  | 'view.showOverflow'
+  | 'view.shufflePhotos'
   | 'view.design'
   | 'view.printPreview'
   | 'arrange.alignLeft'
@@ -52,11 +54,15 @@ export interface CommandContext {
   previewPhotos: boolean
   /** The project prints several copies per sheet, so a Print Preview exists. */
   hasPrintPreview: boolean
+  /** Artwork beyond the artboard is shown (not the clipped view). */
+  showOverflow: boolean
   viewMode: 'design' | 'preview'
 }
 
 interface CommandDef {
   label: string
+  /** One sentence for the tooltip: what it does (shortcuts are derived from `shortcut`, never repeated here). */
+  hint: string
   shortcut?: Shortcut
   /** True when the command needs an open project. Everything except New and Open does. */
   needsProject?: boolean
@@ -66,102 +72,173 @@ interface CommandDef {
 }
 
 export const COMMANDS: Readonly<Record<CommandId, CommandDef>> = {
-  'file.new': { label: 'New project…', shortcut: { key: 'N', mod: true } },
-  'file.open': { label: 'Open…', shortcut: { key: 'O', mod: true } },
-  'file.save': { label: 'Save', shortcut: { key: 'S', mod: true }, needsProject: true },
+  'file.new': {
+    label: 'New project…',
+    hint: 'Create a new project',
+    shortcut: { key: 'N', mod: true }
+  },
+  'file.open': {
+    label: 'Open…',
+    hint: 'Open a saved .boothproject file',
+    shortcut: { key: 'O', mod: true }
+  },
+  'file.save': {
+    label: 'Save',
+    hint: 'Save the project to its .boothproject file',
+    shortcut: { key: 'S', mod: true },
+    needsProject: true
+  },
   'file.saveAs': {
     label: 'Save As…',
+    hint: 'Save the project to a new file',
     shortcut: { key: 'S', mod: true, shift: true },
     needsProject: true
   },
-  'file.close': { label: 'Close project', needsProject: true },
-  'edit.undo': { label: 'Undo', shortcut: { key: 'Z', mod: true }, needsProject: true },
+  'file.close': { label: 'Close project', hint: 'Close the project', needsProject: true },
+  'edit.undo': {
+    label: 'Undo',
+    hint: 'Undo the last change',
+    shortcut: { key: 'Z', mod: true },
+    needsProject: true
+  },
   'edit.redo': {
     label: 'Redo',
+    hint: 'Redo the change you undid',
     shortcut: { key: 'Z', mod: true, shift: true },
     needsProject: true
   },
   'edit.duplicate': {
     label: 'Duplicate',
+    hint: 'Duplicate the selected layers',
     shortcut: { key: 'D', mod: true },
     needsProject: true,
     needsSelection: true
   },
   'edit.delete': {
     label: 'Delete',
+    hint: 'Delete the selected layers',
     shortcut: { key: '⌫' },
     needsProject: true,
     needsSelection: true
   },
   'edit.group': {
     label: 'Group',
+    hint: 'Group the selected layers so they move together',
     shortcut: { key: 'G', mod: true },
     needsProject: true,
     needsSelection: true
   },
   'edit.ungroup': {
     label: 'Ungroup',
+    hint: 'Release the layers of the selected group',
     shortcut: { key: 'G', mod: true, shift: true },
     needsProject: true,
     needsSelection: true
   },
   'view.fit': {
     label: 'Fit to window',
+    hint: 'Fit the whole artboard in the workspace',
     shortcut: { key: '0', mod: true },
     needsProject: true
   },
   'view.actual': {
     label: 'Actual size (100%)',
+    hint: 'View at 100% (one design pixel per screen pixel)',
     shortcut: { key: '1', mod: true },
     needsProject: true
   },
   'view.zoomIn': {
     label: 'Zoom in',
+    hint: 'Zoom in on the workspace',
     shortcut: { key: '+', mod: true, match: ['=', '+'] },
     needsProject: true
   },
   'view.zoomOut': {
     label: 'Zoom out',
+    hint: 'Zoom out of the workspace',
     shortcut: { key: '−', mod: true, match: ['-', '_'] },
     needsProject: true
   },
-  'view.snap': { label: 'Snap to guides', needsProject: true, checked: (c) => c.snapping },
+  'view.snap': {
+    label: 'Snap to guides',
+    hint: 'Snap objects to canvas and layer alignment guides',
+    needsProject: true,
+    checked: (c) => c.snapping
+  },
   'view.design': {
     label: 'Design view',
+    hint: 'Edit the single design',
     needsProject: true,
     checked: (c) => c.viewMode === 'design'
   },
   'view.printPreview': {
     label: 'Print Preview',
+    hint: 'See the print sheet with every copy (read-only)',
     needsProject: true,
     checked: (c) => c.viewMode === 'preview'
   },
-  'arrange.alignLeft': { label: 'Align left', needsProject: true, needsSelection: true },
+  'arrange.alignLeft': {
+    label: 'Align left',
+    hint: 'Align the selected objects to the left edge',
+    needsProject: true,
+    needsSelection: true
+  },
   'arrange.alignCenter': {
     label: 'Align horizontal centers',
+    hint: 'Align the selected objects on their horizontal centers',
     needsProject: true,
     needsSelection: true
   },
-  'arrange.alignRight': { label: 'Align right', needsProject: true, needsSelection: true },
-  'arrange.alignTop': { label: 'Align top', needsProject: true, needsSelection: true },
+  'arrange.alignRight': {
+    label: 'Align right',
+    hint: 'Align the selected objects to the right edge',
+    needsProject: true,
+    needsSelection: true
+  },
+  'arrange.alignTop': {
+    label: 'Align top',
+    hint: 'Align the selected objects to the top edge',
+    needsProject: true,
+    needsSelection: true
+  },
   'arrange.alignMiddle': {
     label: 'Align vertical centers',
+    hint: 'Align the selected objects on their vertical centers',
     needsProject: true,
     needsSelection: true
   },
-  'arrange.alignBottom': { label: 'Align bottom', needsProject: true, needsSelection: true },
+  'arrange.alignBottom': {
+    label: 'Align bottom',
+    hint: 'Align the selected objects to the bottom edge',
+    needsProject: true,
+    needsSelection: true
+  },
   'arrange.distributeH': {
     label: 'Distribute horizontally',
+    hint: 'Distribute three or more selected objects with equal horizontal spacing',
     needsProject: true,
     needsSelection: true
   },
   'arrange.distributeV': {
     label: 'Distribute vertically',
+    hint: 'Distribute three or more selected objects with equal vertical spacing',
     needsProject: true,
     needsSelection: true
   },
+  'view.showOverflow': {
+    label: 'Show overflow',
+    hint: 'Show artwork that extends beyond the printable artboard (off = clipped view, as printed)',
+    needsProject: true,
+    checked: (c) => c.showOverflow
+  },
+  'view.shufflePhotos': {
+    label: 'Shuffle photos',
+    hint: 'Pick a different set of sample photos',
+    needsProject: true
+  },
   'view.previewPhotos': {
     label: 'Preview photos',
+    hint: 'Show sample photos inside photo placeholders',
     needsProject: true,
     checked: (c) => c.previewPhotos
   }
@@ -181,8 +258,7 @@ export function isCommandEnabled(id: CommandId, ctx: CommandContext): boolean {
       ? ctx.selectionCount >= 3
       : ctx.selectionCount >= 1
   }
-  // Sample photos do not exist yet (Phase 5C), so there is nothing to preview.
-  if (id === 'view.previewPhotos') return false
+  if (id === 'view.shufflePhotos') return ctx.previewPhotos
   return true
 }
 
@@ -248,7 +324,10 @@ export const MENUS: readonly { id: string; label: string; items: readonly (Comma
         'view.zoomOut',
         '-',
         'view.snap',
-        'view.previewPhotos'
+        'view.showOverflow',
+        '-',
+        'view.previewPhotos',
+        'view.shufflePhotos'
       ]
     }
   ]
@@ -269,4 +348,13 @@ export function commandForKey(
     return id
   }
   return null
+}
+
+/** What a tooltip for a command shows. The shortcut is derived from the command's own definition, never repeated. */
+export function commandTip(
+  id: CommandId,
+  mac: boolean
+): { label: string; hint: string; shortcut: string } {
+  const def = COMMANDS[id]
+  return { label: def.label, hint: def.hint, shortcut: shortcutLabel(def.shortcut, mac) }
 }

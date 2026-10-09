@@ -97,3 +97,9 @@ All workflows are **Proposed** future behavior. UI details: [UX_SPEC.md](UX_SPEC
 2. Add photo placeholders 1-2-3, artwork, text; use **Selection position**, **Align/Distribute** and the arrow keys for exact placement.
 3. Switch to **Print Preview** to see the 4×6 sheet: both copies, the cut line and labels. Nothing in Print Preview is editable; edit in Design and the preview follows.
 4. Save as usual. The project holds one set of layers. Cutting the sheet in two is configured in DSLR Booth / the printer, not here.
+
+## T. Precision layout and photo preview (Phase 5C, implemented)
+1. **Artwork past the edge:** place or drag a petal overlay beyond the artboard; keep **Show overflow** on to keep editing it; switch to **Clipped view** to see what prints. Print Preview shows the clipped result per copy.
+2. **Fine alignment:** zoom to 200–400% (buttons, ⌘/Ctrl +/−, Ctrl/Cmd + wheel at the detail), Space + drag to pan, drag with **Shift** for a straight horizontal/vertical move, let snapping settle the free axis, release; Undo undoes the whole gesture.
+3. **Discover tools:** hover any control for a tooltip with its purpose and shortcut/modifier.
+4. **Preview real photography:** turn on **Preview Photos**, pick or **Shuffle** samples, or **Choose photo…** for a picture of your own (preview only). Switch **Cover/Contain**; **Reposition…** to move/zoom the picture inside the frame; **Reset position**; style the **Frame** (colour, thickness, corner radius). Turn Preview Photos off to return to numbered placeholders. Samples never become project artwork or capture content.

@@ -10,16 +10,33 @@ import {
   AlignVerticalSpaceBetween
 } from 'lucide-react'
 import type { AlignMode, AlignTarget } from '@editor/arrange'
+import type { CommandId } from '@editor/commands'
+import { commandTipProps } from './tips'
 import { editorStore } from './editorStore'
 import { IconButton } from '../ui/IconButton'
 
-const ALIGN: readonly { mode: AlignMode; label: string; icon: typeof AlignStartVertical }[] = [
-  { mode: 'left', label: 'Align left', icon: AlignStartVertical },
-  { mode: 'hcenter', label: 'Align horizontal centers', icon: AlignCenterVertical },
-  { mode: 'right', label: 'Align right', icon: AlignEndVertical },
-  { mode: 'top', label: 'Align top', icon: AlignStartHorizontal },
-  { mode: 'vcenter', label: 'Align vertical centers', icon: AlignCenterHorizontal },
-  { mode: 'bottom', label: 'Align bottom', icon: AlignEndHorizontal }
+const ALIGN: readonly {
+  mode: AlignMode
+  label: string
+  icon: typeof AlignStartVertical
+  cmd: CommandId
+}[] = [
+  { mode: 'left', label: 'Align left', icon: AlignStartVertical, cmd: 'arrange.alignLeft' },
+  {
+    mode: 'hcenter',
+    label: 'Align horizontal centers',
+    icon: AlignCenterVertical,
+    cmd: 'arrange.alignCenter'
+  },
+  { mode: 'right', label: 'Align right', icon: AlignEndVertical, cmd: 'arrange.alignRight' },
+  { mode: 'top', label: 'Align top', icon: AlignStartHorizontal, cmd: 'arrange.alignTop' },
+  {
+    mode: 'vcenter',
+    label: 'Align vertical centers',
+    icon: AlignCenterHorizontal,
+    cmd: 'arrange.alignMiddle'
+  },
+  { mode: 'bottom', label: 'Align bottom', icon: AlignEndHorizontal, cmd: 'arrange.alignBottom' }
 ]
 
 /**
@@ -54,6 +71,7 @@ export function ArrangeControls({ count }: { count: number }): React.JSX.Element
             key={a.mode}
             size="sm"
             icon={a.icon}
+            {...commandTipProps(a.cmd)}
             label={`${a.label}${effective === 'canvas' ? ' to canvas' : ''}`}
             onClick={() => st().alignSelection(a.mode, effective)}
           />
@@ -63,6 +81,7 @@ export function ArrangeControls({ count }: { count: number }): React.JSX.Element
           size="sm"
           icon={AlignHorizontalSpaceBetween}
           label="Distribute horizontally"
+          {...commandTipProps('arrange.distributeH')}
           disabled={count < 3}
           onClick={() => st().distributeSelection('horizontal')}
         />
@@ -70,6 +89,7 @@ export function ArrangeControls({ count }: { count: number }): React.JSX.Element
           size="sm"
           icon={AlignVerticalSpaceBetween}
           label="Distribute vertically"
+          {...commandTipProps('arrange.distributeV')}
           disabled={count < 3}
           onClick={() => st().distributeSelection('vertical')}
         />
