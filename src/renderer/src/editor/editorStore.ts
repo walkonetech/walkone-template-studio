@@ -12,6 +12,7 @@ import {
   type EditorState,
   type ImportPlacement
 } from '@editor/store'
+import { measureTextHeight } from '@canvas/rendering/measureText'
 import { loadProjectImage } from './assetLoader'
 import { clearUserPhotos, previewCache } from './samplePhotos'
 
@@ -38,7 +39,7 @@ const ports: EditorPorts = {
 
 export type ImportPlacementArg = ImportPlacement
 
-export const editorStore = createEditorStore({ ports })
+export const editorStore = createEditorStore({ ports, measureTextHeight })
 
 // A different (or no) project: forget the pictures the user picked as preview samples (they are session-only).
 editorStore.subscribe((s, prev) => {

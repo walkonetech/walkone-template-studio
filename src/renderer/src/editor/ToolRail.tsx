@@ -2,6 +2,8 @@ import { Camera, Circle, Image, LayoutTemplate, Minus, PenTool, Square, Type } f
 import type { LucideIcon } from 'lucide-react'
 import { AssetsDrawer } from './AssetsDrawer'
 import { CanvasBackgroundSection } from './CanvasBackgroundSection'
+import { PalettePanel } from './PalettePanel'
+import { FontInventoryPanel } from './FontInventoryPanel'
 import { NEW_LAYER_KINDS, type NewLayerKind } from '@editor/newLayers'
 import { TOOLS, type ToolId } from '@editor/tools'
 import { editorStore } from './editorStore'
@@ -101,6 +103,8 @@ export function ToolDrawer(): React.JSX.Element | null {
         </section>
       ))}
       <CanvasBackgroundSection />
+      <PalettePanel />
+      <FontInventoryPanel />
     </aside>
   )
 }

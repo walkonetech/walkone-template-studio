@@ -142,9 +142,13 @@ describe('transformer options per layer type', () => {
     expect(o.enabledAnchors).not.toContain('top-center')
     expect(o.enabledAnchors).toContain('middle-right')
   })
-  it('images keep ratio; photos and shapes resize freely; flips are never enabled', () => {
+  it('photos keep their shape: corner handles only, uniform scale', () => {
+    const o = transformerOptionsFor(photo('p', 1))
+    expect(o.keepRatio).toBe(true)
+    expect(o.enabledAnchors).toEqual(['top-left', 'top-right', 'bottom-left', 'bottom-right'])
+  })
+  it('images keep ratio; shapes resize freely; flips are never enabled', () => {
     expect(transformerOptionsFor({ ...shape('i', 0), type: 'image' } as never).keepRatio).toBe(true)
-    expect(transformerOptionsFor(photo('p', 1)).keepRatio).toBe(false)
     expect(transformerOptionsFor(shape('s', 0)).keepRatio).toBe(false)
     expect(transformerOptionsFor(group('g', 0)).flipEnabled).toBe(false)
   })

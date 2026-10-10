@@ -7,6 +7,7 @@ import { EditorCanvas } from './EditorCanvas'
 import { PrintPreviewCanvas } from './PrintPreviewCanvas'
 import { WorkspaceModeSwitch } from './WorkspaceModeSwitch'
 import { CropBar } from './CropBar'
+import { loadFontCatalog } from './fontCatalog'
 import { editorStore, imageCache, useEditor } from './editorStore'
 import { installDebug } from './debugHooks'
 import type { PhotoPreviewLookup } from '@canvas/rendering/nodeSpec'
@@ -127,6 +128,7 @@ export function EditorScreen(): React.JSX.Element {
   useEffect(() => {
     window.api.document.setHandler((kind) => editorStore.getState().respondToDocumentRequest(kind))
     void editorStore.getState().loadRecovery()
+    void loadFontCatalog() // installed-font names (the app works without them)
   }, [])
 
   // A file dropped outside a drop target must never navigate the window to it: ignore it quietly.

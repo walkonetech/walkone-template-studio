@@ -1,10 +1,11 @@
 import { Link2, Pipette } from 'lucide-react'
 import { useId, useRef, useState } from 'react'
-import type { ColorValue, Palette } from '@domain'
+import type { ColorValue, HexColor, Palette } from '@domain'
 import { resolveColor } from '@canvas/rendering/color'
 import { formatNumber, normalizeHex, parseNumberInput, type NumberRule } from '@editor/numberInput'
 import { Button } from '../ui/Button'
 import { IconButton } from '../ui/IconButton'
+import { Tooltip } from '../ui/Tooltip'
 
 /**
  * Draft text for a field while the user types. `take()` returns the draft AND clears it synchronously, so the
@@ -438,13 +439,16 @@ export function ColorField({
   value,
   palette,
   onCommit,
-  disabled
+  disabled,
+  allowLink = true
 }: {
   label: string
   value: ColorValue
   palette: Palette
   onCommit: (v: ColorValue, continuous?: boolean) => void
   disabled?: boolean
+  /** Offer "link to an Event Palette color" (off for the palette's own entries). */
+  allowLink?: boolean
 }): React.JSX.Element {
   const id = useId()
   const resolved = resolveColor(palette, value)
@@ -457,18 +461,42 @@ export function ColorField({
     return (
       <FieldRow label={label}>
         <span className="swatch" style={{ background: resolved }} aria-hidden="true" />
-        <span className="palette-note">
-          <Link2 size={12} aria-hidden="true" /> Palette:{' '}
-          {entry ? `${entry.name} (${entry.value})` : 'missing color'}
+        <span className="palette-linked">
+          <span className="palette-note">
+            <Link2 size={12} aria-hidden="true" /> Linked to{' '}
+            <strong>{entry ? entry.name : 'a missing palette color'}</strong>
+            {entry ? ` (${entry.value})` : ''}
+          </span>
+          <select
+            className="ui-select compact"
+            aria-label={`${label} palette color`}
+            value={entry ? entry.id : ''}
+            disabled={disabled}
+            onChange={(e) =>
+              e.target.value && onCommit({ kind: 'palette', paletteColorId: e.target.value })
+            }
+          >
+            {!entry && <option value="">Missing color</option>}
+            {palette.colors.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name} ({c.value})
+              </option>
+            ))}
+          </select>
         </span>
-        <Button
-          size="sm"
-          variant="ghost"
-          disabled={disabled}
-          onClick={() => onCommit({ kind: 'literal', value: resolved })}
+        <Tooltip
+          label="Use fixed color"
+          hint="Detach from the Event Palette and keep the current appearance"
         >
-          Use fixed color
-        </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            disabled={disabled}
+            onClick={() => onCommit({ kind: 'literal', value: resolved as HexColor })}
+          >
+            Use fixed color
+          </Button>
+        </Tooltip>
       </FieldRow>
     )
   }
@@ -537,6 +565,26 @@ export function ColorField({
           }
         />
       </span>
+      {allowLink && palette.colors.length > 0 && (
+        <Tooltip label="Use palette color" hint="Link this property to an Event Palette color">
+          <select
+            className="ui-select compact"
+            aria-label={`Link ${label} to an Event Palette color`}
+            value=""
+            disabled={disabled}
+            onChange={(e) =>
+              e.target.value && onCommit({ kind: 'palette', paletteColorId: e.target.value })
+            }
+          >
+            <option value="">Fixed color</option>
+            {palette.colors.map((c) => (
+              <option key={c.id} value={c.id}>
+                Palette: {c.name} ({c.value})
+              </option>
+            ))}
+          </select>
+        </Tooltip>
+      )}
       {error && (
         <span role="alert" className="field-error">
           {error}

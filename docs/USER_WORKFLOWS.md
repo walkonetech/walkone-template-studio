@@ -103,3 +103,11 @@ All workflows are **Proposed** future behavior. UI details: [UX_SPEC.md](UX_SPEC
 2. **Fine alignment:** zoom to 200–400% (buttons, ⌘/Ctrl +/−, Ctrl/Cmd + wheel at the detail), Space + drag to pan, drag with **Shift** for a straight horizontal/vertical move, let snapping settle the free axis, release; Undo undoes the whole gesture.
 3. **Discover tools:** hover any control for a tooltip with its purpose and shortcut/modifier.
 4. **Preview real photography:** turn on **Preview Photos**, pick or **Shuffle** samples, or **Choose photo…** for a picture of your own (preview only). Switch **Cover/Contain**; **Reposition…** to move/zoom the picture inside the frame; **Reset position**; style the **Frame** (colour, thickness, corner radius). Turn Preview Photos off to return to numbered placeholders. Samples never become project artwork or capture content.
+
+## U. Typography and event colours (Phase 5D, implemented)
+1. **Choose an installed font:** select text → Typeface → Font → type part of a name → Enter.
+2. **Handle a missing font:** the warning names the font; choose a replacement in the card (this layer, or all uses) or leave it: the project keeps asking for the original.
+3. **Fit text box to content:** Text box → **Fit height to content** (run again after changing text, font, size or width).
+4. **Create an event palette:** Design drawer → Event palette → Add basic colors, then set Accent, Background, Text, Primary; add custom colours (e.g. Rose Gold).
+5. **Link object colours:** in any colour field choose a palette entry; **change Accent once** to recolour everything linked, in Design and in both Print Preview copies.
+6. **Detach:** Use fixed color keeps the look but stops following the palette. **Remove an unused colour** with its trash button (refused while something uses it).

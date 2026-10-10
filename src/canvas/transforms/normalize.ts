@@ -152,6 +152,13 @@ export function transformerOptionsFor(layer: Layer): TransformerOptions {
     case 'image':
       return { keepRatio: true, enabledAnchors: ALL, rotateEnabled: true, flipEnabled: false }
     case 'photo':
+      // The booth's photo shape is fixed: corners scale it uniformly, side handles are off.
+      return {
+        keepRatio: true,
+        enabledAnchors: ['top-left', 'top-right', 'bottom-left', 'bottom-right'],
+        rotateEnabled: true,
+        flipEnabled: false
+      }
     case 'shape':
     case 'group':
       return { keepRatio: false, enabledAnchors: ALL, rotateEnabled: true, flipEnabled: false }

@@ -42,6 +42,8 @@ export interface DebugApi {
   /** Client coordinates of a layer node's center. */
   layerCenter: (id: string) => { x: number; y: number } | null
   canvasCount: () => number
+  /** The font-family string the canvas node of a text layer actually draws with (requested family + fallback stack). */
+  textFont: (layerId: string) => string | null
   /** The editor stage as the user sees it (workspace pixels) plus its view transform, for pixel checks. */
   stageSnapshot: () => {
     dataUrl: string
@@ -60,7 +62,7 @@ declare global {
 }
 
 export function installDebug(
-  api: Omit<DebugApi, 'handlePoint' | 'layerCenter' | 'canvasCount' | 'stageSnapshot'>
+  api: Omit<DebugApi, 'handlePoint' | 'layerCenter' | 'canvasCount' | 'stageSnapshot' | 'textFont'>
 ): void {
   if (!window.location.hash.includes('debug')) return
   window.__wts = {
@@ -83,6 +85,10 @@ export function installDebug(
       return { x: r.left + c.x + c.width / 2, y: r.top + c.y + c.height / 2 }
     },
     canvasCount: () => document.querySelectorAll('canvas').length,
+    textFont: (id) => {
+      const node = canvasTargets().stage?.findOne((n: Konva.Node) => n.id() === id)
+      return node && 'fontFamily' in node ? String((node as Konva.Text).fontFamily()) : null
+    },
     stageSnapshot: () => {
       const { stage } = canvasTargets()
       if (!stage) return null

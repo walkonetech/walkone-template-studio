@@ -78,6 +78,17 @@ import {
   type DistributeAxis
 } from './arrange'
 import { hasDerivedCopies } from '@canvas/rendering/composition'
+import { fitTextHeight, replaceFontFamily } from './typographyMutations'
+import {
+  PaletteInUseError,
+  addBasicPalette,
+  addPaletteColor,
+  removePaletteColor,
+  renamePaletteColor,
+  setPaletteColorValue
+} from './paletteMutations'
+import { TEXT_PRESETS, presetPatch } from './textPresets'
+import type { PaletteRole, TextLayer } from '@domain'
 import { clampCrop, type PhotoCrop } from '@canvas/rendering/photoFit'
 import {
   initialPreviewPhotos,
@@ -229,6 +240,22 @@ export interface EditorActions {
   moveSelectionTo(to: { x?: number; y?: number }): boolean
   alignSelection(mode: AlignMode, target?: AlignTarget): boolean
   distributeSelection(axis: DistributeAxis): boolean
+  // ---- typography and the Event Palette (project content: one history entry each)
+  /** Resizes a text layer's height to its content (width, font size and the rest are kept). */
+  fitTextHeight(layerId: string): boolean
+  /** Replaces a requested font on every text layer that uses it; returns how many layers changed. */
+  replaceFont(from: string, to: string): number
+  applyTextPreset(
+    layerId: string,
+    presetId: string,
+    isAvailable: (family: string) => boolean
+  ): boolean
+  addPaletteColor(input: { role: PaletteRole; name?: string; value: string }): string | null
+  addBasicPalette(): boolean
+  setPaletteColor(id: string, value: string, options?: CommitOptions): boolean
+  renamePaletteColor(id: string, name: string): boolean
+  /** Removes an unused entry; refuses (with a message) while anything references it. */
+  removePaletteColor(id: string): boolean
   // ---- workspace mode (never in history, never dirty)
   setViewMode(mode: ViewMode): void
   setShowOverflow(show: boolean): void
@@ -290,6 +317,8 @@ export interface EditorStoreOptions {
   /** Clock for history coalescing (injectable for tests). */
   clock?: () => number
   createId?: () => string
+  /** Rendered height of a text layer's content (injected: needs a real canvas). Without it, Fit height is unavailable. */
+  measureTextHeight?: (layer: TextLayer) => number
   /** Recovery-copy autosave timing (defaults: 2 s of quiet, at most 10 s between writes). */
   autosave?: { debounceMs?: number; maxWaitMs?: number; timers?: AutosaveTimers }
 }
@@ -828,6 +857,64 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
         if (cropSession.original) rest[cropSession.layerId] = cropSession.original
         else delete rest[cropSession.layerId]
         set({ photoCrops: rest, cropSession: null, interaction: 'idle' })
+      },
+      fitTextHeight(layerId) {
+        const { project } = get()
+        const layer = project?.layers.find((l) => l.id === layerId)
+        if (!project || !layer || layer.type !== 'text' || !isEditable(project.layers, layer))
+          return false
+        if (!options.measureTextHeight) {
+          set({ lastMessage: 'Fit height needs the canvas, which is not available here.' })
+          return false
+        }
+        const measured = options.measureTextHeight(layer)
+        return tryCommit((p, c) => fitTextHeight(p, layerId, measured, c))
+      },
+      replaceFont(from, to) {
+        let replaced = 0
+        const ok = tryCommit((p, c) => {
+          const r = replaceFontFamily(p, from, to, c)
+          replaced = r.replaced
+          return r.project
+        })
+        if (ok)
+          set({
+            lastMessage: `Replaced “${from}” with “${to}” on ${replaced} text layer${replaced === 1 ? '' : 's'}.`
+          })
+        return ok ? replaced : 0
+      },
+      applyTextPreset(layerId, presetId, isAvailable) {
+        const { project } = get()
+        const layer = project?.layers.find((l) => l.id === layerId)
+        const preset = TEXT_PRESETS.find((x) => x.id === presetId)
+        if (!project || !layer || layer.type !== 'text' || !preset) return false
+        const patch = presetPatch(preset, {
+          designHeight: getPixelSize(project.canvas.print).height,
+          isAvailable,
+          palette: project.palette
+        })
+        return get().editLayers([layerId], patch)
+      },
+      addPaletteColor(input) {
+        let id: string | null = null
+        const ok = tryCommit((p, c) => {
+          const r = addPaletteColor(p, input, c)
+          id = r.id
+          return r.project
+        })
+        return ok ? id : null
+      },
+      addBasicPalette: () => tryCommit((p, c) => addBasicPalette(p, c)),
+      setPaletteColor: (id, value, o = {}) =>
+        tryCommit((p, c) => setPaletteColorValue(p, id, value, c), o),
+      renamePaletteColor: (id, name) => tryCommit((p, c) => renamePaletteColor(p, id, name, c)),
+      removePaletteColor(id) {
+        try {
+          return get().commit((p, c) => removePaletteColor(p, id, c))
+        } catch (e) {
+          set({ lastMessage: e instanceof PaletteInUseError ? e.message : messageOf(e) })
+          return false
+        }
       },
       setViewMode(mode) {
         const s = get()

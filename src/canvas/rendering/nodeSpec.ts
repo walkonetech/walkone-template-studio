@@ -3,6 +3,7 @@ import { isEditable, type Layer, type Palette, type PhotoLayer } from '@domain'
 import type { PhotoCrop } from './photoFit'
 import { drawFittedImage, drawPhotoPlaceholder, type ImageSource } from './draw'
 import { resolveColor } from './color'
+import { renderFontFamily } from './fontStack'
 
 /**
  * Library-facing description of how one domain layer is drawn. The interactive editor (react-konva
@@ -53,6 +54,25 @@ export interface RenderEnv {
   /** Directly selected layer ids: a child of a group is draggable on its own only while directly selected. */
   selectedIds?: readonly string[]
   allLayers: readonly Layer[]
+}
+
+/**
+ * Everything that decides how a text layer LAYS OUT (and so how tall it is). Shared by drawing and by the height
+ * measurement behind "Fit height to content", so both use identical assumptions.
+ */
+export function textLayout(layer: Extract<Layer, { type: 'text' }>): Konva.NodeConfig {
+  return {
+    text: layer.content,
+    width: layer.width,
+    // The requested family stays in the project; the canvas gets it plus a predictable fallback stack.
+    fontFamily: renderFontFamily(layer.fontFamily),
+    fontSize: layer.fontSize,
+    fontStyle: fontStyleOf(layer),
+    align: layer.align,
+    lineHeight: layer.lineHeight,
+    letterSpacing: layer.letterSpacing,
+    wrap: 'word'
+  }
 }
 
 export function fontStyleOf(l: { fontStyle: 'normal' | 'italic'; fontWeight: number }): string {
@@ -153,16 +173,8 @@ export function specFor(layer: Layer, env: RenderEnv, insideGroup = false): Node
         className: 'Text',
         config: {
           ...common,
-          text: layer.content,
-          width: layer.width,
-          fontFamily: layer.fontFamily,
-          fontSize: layer.fontSize,
-          fontStyle: fontStyleOf(layer),
-          align: layer.align,
-          lineHeight: layer.lineHeight,
-          letterSpacing: layer.letterSpacing,
+          ...textLayout(layer),
           fill: color(layer.fill),
-          wrap: 'word',
           // While the HTML editor overlay is open the canvas text is hidden (no double drawing).
           visible: env.editingTextId !== layer.id
         }

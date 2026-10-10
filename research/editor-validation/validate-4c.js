@@ -25,6 +25,12 @@ let port = 9370
 async function session(opts, fn) {
   const { proc, c } = await h.launch({ port: port++, userData: ud, ...opts })
   const S = (e) => c.ev(`JSON.stringify(${e})`).then(JSON.parse)
+  // Measure after the panel has finished scrolling the element into view (first call scrolls, second is stable).
+  const Sstable = async (e) => {
+    await S(e)
+    await c.sleep(150)
+    return S(e)
+  }
   const api = {
     c,
     proc,
@@ -40,8 +46,8 @@ async function session(opts, fn) {
     layer: (name) =>
       S(`__wts.store.getState().project.layers.find(l=>l.name===${JSON.stringify(name)})`),
     center: (js) =>
-      S(
-        `(()=>{const el=${js}; if(!el) return null; el.scrollIntoView({block:'nearest'}); const r=el.getBoundingClientRect(); return {x:r.left+r.width/2,y:r.top+r.height/2,w:r.width,h:r.height}})()`
+      Sstable(
+        `(()=>{const el=${js}; if(!el) return null; el.scrollIntoView({block:'center',behavior:'instant'}); const r=el.getBoundingClientRect(); return {x:r.left+r.width/2,y:r.top+r.height/2,w:r.width,h:r.height}})()`
       ),
     btn: (label) =>
       `[...document.querySelectorAll('button,[role=menuitem],[role=menuitemcheckbox],[role=radio]')].find(x=>(x.getAttribute('aria-label')||x.textContent.trim())===${JSON.stringify(label)})`,

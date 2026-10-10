@@ -41,15 +41,21 @@ cdp.onEvent = (m) => {
       same: () => c.ev('window.__ref === __wts.store.getState().project')
     }
   })()
+  // Measure after the panel has finished scrolling the element into view (the first call scrolls, the second is stable).
+  const Sstable = async (e) => {
+    await S(e)
+    await c.sleep(150)
+    return S(e)
+  }
   const center = (sel, pick = '') =>
-    S(
-      `(()=>{const el=document.querySelector(${JSON.stringify(sel)}); if(!el) return null; el.scrollIntoView({block:'nearest'}); const r=el.getBoundingClientRect(); return {x:r.left+r.width/2,y:r.top+r.height/2,w:r.width,h:r.height,left:r.left,top:r.top}})()`
+    Sstable(
+      `(()=>{const el=document.querySelector(${JSON.stringify(sel)}); if(!el) return null; el.scrollIntoView({block:el.closest('.inspector-body')?'center':'nearest',behavior:'instant'}); const r=el.getBoundingClientRect(); return {x:r.left+r.width/2,y:r.top+r.height/2,w:r.width,h:r.height,left:r.left,top:r.top}})()`
     )
   const row = (id) => `[data-layer-id="${id}"]`
   const rowName = (id) => `[data-layer-id="${id}"] .layer-name`
   const field = (label) =>
-    S(
-      `(()=>{const l=[...document.querySelectorAll('.inspector-panel label')].find(x=>(x.querySelector('.sr-only')?.textContent||x.textContent).trim().startsWith(${JSON.stringify(label)})); if(!l||!l.htmlFor) return null; const el=document.getElementById(l.htmlFor); el.scrollIntoView({block:'nearest'}); const r=el.getBoundingClientRect(); return {x:r.left+r.width/2,y:r.top+r.height/2,value:el.value,disabled:el.disabled}})()`
+    Sstable(
+      `(()=>{const l=[...document.querySelectorAll('.inspector-panel label')].find(x=>(x.querySelector('.sr-only')?.textContent||x.textContent).trim().startsWith(${JSON.stringify(label)})); if(!l||!l.htmlFor) return null; const el=document.getElementById(l.htmlFor); el.scrollIntoView({block:el.closest('.inspector-body')?'center':'nearest',behavior:'instant'}); const r=el.getBoundingClientRect(); return {x:r.left+r.width/2,y:r.top+r.height/2,value:el.value,disabled:el.disabled}})()`
     )
   const typeInto = async (label, text, enter = true) => {
     const f = await field(label)
@@ -58,8 +64,8 @@ cdp.onEvent = (m) => {
     if (enter) await c.key('Enter', { code: 'Enter', vk: 13 })
   }
   const checkbox = (label) =>
-    S(
-      `(()=>{const l=[...document.querySelectorAll('.inspector-panel label')].find(x=>x.textContent.trim()===${JSON.stringify(label)}); if(!l) return null; const el=document.getElementById(l.htmlFor); el.scrollIntoView({block:'nearest'}); const r=el.getBoundingClientRect(); return {x:r.left+r.width/2,y:r.top+r.height/2,checked:el.checked}})()`
+    Sstable(
+      `(()=>{const l=[...document.querySelectorAll('.inspector-panel label')].find(x=>x.textContent.trim()===${JSON.stringify(label)}); if(!l) return null; const el=document.getElementById(l.htmlFor); el.scrollIntoView({block:el.closest('.inspector-body')?'center':'nearest',behavior:'instant'}); const r=el.getBoundingClientRect(); return {x:r.left+r.width/2,y:r.top+r.height/2,checked:el.checked}})()`
     )
   const rowIds = () => S('[...document.querySelectorAll(".layer-row")].map(r=>r.dataset.layerId)')
   const selectedRows = () =>
@@ -495,7 +501,7 @@ cdp.onEvent = (m) => {
   await typeInto('Font size', '200')
   check('text font size via inspector', (await layer(title)).fontSize === 200)
   await c.ev(
-    `(()=>{const sel=[...document.querySelectorAll('.inspector-panel label')].find(x=>x.textContent.trim()==='Align'); const el=document.getElementById(sel.htmlFor); const set=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set; set.call(el,'left'); el.dispatchEvent(new Event('change',{bubbles:true}))})()`
+    `(()=>{const r=[...document.querySelectorAll('.inspector-panel [role=radio]')].find(x=>x.textContent.trim()==='Left'); r.click()})()`
   )
   await typeInto('Letter spacing', '6')
   await typeInto('Line height', '1.5')
@@ -761,9 +767,7 @@ cdp.onEvent = (m) => {
     'Event title',
     'Corner ornament'
   ].map(q)
-  const scale = await c.ev(
-    '(()=>{const s=__wts.store.getState(); const vp=s.viewport; return Math.min((vp.width-48)/2400,(vp.height-48)/3600)})()'
-  )
+  const scale = await c.ev('__wts.stageSnapshot().scale')
   await c.ev('__wts.store.getState().setSnapping({enabled:false})')
   await c.click(await S(`__wts.layerCenter(${JSON.stringify(r2)})`))
   const d0 = await layer(r2)
@@ -773,7 +777,7 @@ cdp.onEvent = (m) => {
   check(
     '[3B] canvas drag moves by screen delta / scale; one history entry',
     Math.abs(d1.x - d0.x - 60 / scale) < 3 && (await st()).past === 1,
-    { dx: R(d1.x - d0.x) }
+    { dx: R(d1.x - d0.x), expect: R(60 / scale), past: (await st()).past }
   )
   const br = await S('__wts.handlePoint("bottom-right")')
   await c.drag(br, { x: br.x + 30, y: br.y + 20 })

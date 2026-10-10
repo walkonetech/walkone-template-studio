@@ -1,3 +1,5 @@
+import { cssFontFamily } from '@canvas/rendering/fontStack'
+import { resolveColor } from '@canvas/rendering/color'
 import { useEffect, useRef } from 'react'
 import { editorStore, useEditor, useViewTransform } from './editorStore'
 
@@ -11,11 +13,12 @@ export function TextEditOverlay(): React.JSX.Element | null {
   const project = useEditor((s) => s.project)
   const view = useViewTransform()
   const layer = editingId ? project?.layers.find((l) => l.id === editingId) : undefined
-  if (!editingId || !layer || layer.type !== 'text' || !view) return null
+  if (!project || !editingId || !layer || layer.type !== 'text' || !view) return null
   return (
     <OverlayField
       key={editingId}
       layer={layer}
+      color={resolveColor(project.palette, layer.fill)}
       scale={view.scale}
       left={view.offsetX + layer.x * view.scale}
       top={view.offsetY + layer.y * view.scale}
@@ -25,11 +28,14 @@ export function TextEditOverlay(): React.JSX.Element | null {
 
 function OverlayField({
   layer,
+  color,
   scale,
   left,
   top
 }: {
   layer: Extract<import('@domain').Layer, { type: 'text' }>
+  /** The resolved fill (palette links already applied), so the editor shows the same colour as the canvas. */
+  color: string
   scale: number
   left: number
   top: number
@@ -53,7 +59,6 @@ function OverlayField({
     s.endTextEdit()
   }
 
-  const colour = layer.fill.kind === 'literal' ? layer.fill.value : '#000000'
   return (
     <textarea
       ref={ref}
@@ -80,14 +85,14 @@ function OverlayField({
         left,
         top,
         width: layer.width * scale,
-        fontFamily: layer.fontFamily,
+        fontFamily: cssFontFamily(layer.fontFamily),
         fontSize: layer.fontSize * scale,
         fontWeight: layer.fontWeight,
         fontStyle: layer.fontStyle,
         lineHeight: layer.lineHeight,
         letterSpacing: layer.letterSpacing * scale,
         textAlign: layer.align,
-        color: colour,
+        color,
         transform: `rotate(${layer.rotation}deg)`,
         transformOrigin: '50% 50%'
       }}

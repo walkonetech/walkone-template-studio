@@ -67,6 +67,7 @@ A real production template recreated through the UI ([../research/REAL_TEMPLATE_
 - realistic sample photos; Preview Photos (the toggle is disabled until then); crop/reposition; fit/fill refinement; frame workflow
 
 ### Phase 5D — Typography & Palette Foundation
+**Status: complete (2026-10-10).** Font picker/availability/portability, fit-height, text presets, Event Palette with global updates; ADR-015 (in part), ADR-039/040. Original scope:
 - installed fonts, missing-font handling, font portability (ADR-015); palette UI; canvas/background colour refinement; reusable event colours
 
 ### Phase 6 — Production Export

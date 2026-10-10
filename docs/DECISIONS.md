@@ -45,8 +45,8 @@ Direction only; confirm per phase when introduced.
 ## ADR-014 — Preview/export rendering approach — OPEN
 Single shared renderer (e.g., Sharp-based) vs canvas-library renderer with parity tests. Decide in Phase 12.
 
-## ADR-015 — Font strategy (system vs bundled, licensing) — OPEN
-Decide in Phase 6.
+## ADR-015 — Font strategy (system vs bundled, licensing) — Accepted in part (Phase 5D); embedding OPEN
+Resolved by [ADR-039](#adr-039--font-discovery-requested-family-preservation-and-fallback--accepted-phase-5d): system fonts only, the requested family is preserved, availability is detected and reported, rendering uses a fixed fallback stack. **Still open:** embedding or bundling font files (licensing review required) and rasterizing text at export (Phase 6).
 
 ## ADR-016 — Build tooling: electron-vite, Vite 7, ESLint + Prettier — Accepted (Phase 1)
 
@@ -149,3 +149,23 @@ No schema or package change (schemaVersion stays 1).
 6. **Space pan** uses a capture-phase listener so the canvas never also drags; keyboard ownership rules in `canPanWithSpace`.
 7. **EXIF:** Chromium's `createImageBitmap` applies the default `from-image` orientation, so common EXIF-rotated JPEGs are upright; not separately verified with real EXIF samples here (Needs Validation). **Colour management:** previews use Chromium/Konva sRGB rendering; printer ICC is future/export territory.
 **Consequences:** reopening a project forgets samples and crops; Reposition is Design-mode only; no photo shadows yet.
+
+## ADR-039 — Font discovery, requested-family preservation and fallback — Accepted (Phase 5D)
+No schema or package change. `TextLayer.fontFamily` already stores a free-form family string.
+1. **The requested family is the project's truth.** It is never rewritten by opening, saving, browsing the picker or rendering. Only an explicit action changes it: choosing a font in the picker, "Replace on this layer", or "Replace all uses" (one undo step; matches the primary family case-insensitively; other properties and other fonts untouched).
+2. **Discovery:** the Chromium Local Font Access API (`queryLocalFonts`), which Electron 44 exposes for family/style NAMES only (no file paths; 608 faces / 206 families on the development Mac). It works on macOS and Windows with no native code, so no shell commands and no dependency. The main process now installs a permission policy: only `local-fonts`, only for the app's own pages, everything else denied (before, Electron granted all requests). There is no permission prompt to harass the user with; if the API is absent or refused the catalog status becomes `unavailable`/`denied`, nothing retries until the picker is opened again, and the UI says so.
+3. **Availability** (`fontStatus`, pure, injected environment): generic families are always available; with a ready catalog the primary family decides (case-insensitive); without one a **measurement probe** (text width in the requested family vs the generic fallbacks) decides; `unknown` only while loading or if the probe cannot run. CSS fallback is never taken as evidence that a font exists.
+4. **Fallback rendering:** the canvas, exact render, Print Preview and the HTML text editor all use `renderFontFamily` = requested family, then `Helvetica, Arial, sans-serif` (present on macOS and Windows; ends in a generic). One function, so a missing font falls back identically everywhere. The UI keeps showing the requested name with a "Not installed here" warning.
+5. **Portability:** a `.boothproject` opened on a computer lacking a font keeps the request, shows the warning, renders the fallback and saves the request unchanged. **Distinct from export:** a future production export that rasterizes text to PNG needs the font only on the machine that exports, not on the booth PC; that is Phase 6.
+6. **Embedding is deferred.** Font files carry licenses that often forbid redistribution/embedding; nothing is embedded or bundled and no font binary is in the repository. A future embed feature must check each font's embedding rights, handle file discovery (which the name-only API does not provide), package size and Windows/macOS differences, and only embed where permitted.
+7. **Picker:** searchable combobox (case-insensitive substring), keyboard operable, each row drawn in its own typeface, 60 rows per page ("Show more"), installed list cached in a tiny external store (enumerated once at startup), current uninstalled font kept visible, any typed name can be requested. Weights/styles stay CSS-like (100–900, italic); per-font variant discovery is not attempted (the API lists faces but variant selection would not match every platform's resolution).
+**Consequences:** the probe is heuristic (it can misjudge a font metrically identical to the fallback); an `unknown`/`unavailable` catalog limits the list to common fonts plus the project's own and says so.
+
+## ADR-040 — Event Palette and fit-height — Accepted (Phase 5D)
+No schema change: `project.palette` entries (id, role, name, hex incl. alpha) and `ColorValue` references (`literal` | `palette`) already existed on text fill, shape fill/stroke, photo frame colour and the canvas background; integrity already flags dangling references.
+1. **References by id, resolved at render time.** Editing an entry's value (one history entry; picker drags coalesce; HEX commits on Enter/blur, Escape restores) recolours every linked property in Design, Print Preview and exact renders; no literal copies are made.
+2. **Linking UI:** every colour field offers "Fixed color" or a palette entry; a linked field names the entry; "Use fixed color" stores the resolved literal (appearance unchanged, one undo step). Nothing converts silently.
+3. **Entries:** semantic roles once each (Primary, Secondary, Accent, Background, Text), any number of custom colours; custom colours can be renamed (id and references untouched); semantic names are fixed. **Removal is refused while used** (the usage count and reason are shown); unused entries delete freely. "Add basic colors" adds the missing semantic roles with neutral values (Background copies the canvas colour). New projects are NOT pre-populated.
+4. **Image palette extraction** was evaluated and deferred (feasible with canvas sampling of the existing decoded images; not needed for the manual workflow).
+5. **Fit height to content** resizes only the box height to the height Konva draws the text at (shared `textLayout` config: family stack, size, width, line height, letter spacing, wrap), on explicit command, one undo step. **Persistent Auto Height is deferred** (it needs a persisted flag, i.e. a schema change).
+6. **Text presets** (Title, Names/Script, Subtitle, Date, Location, Caption) are application-level, pick the first installed font from a preference list ending in a generic family, size by design height, link the colour to a palette role when the palette has it, and apply as one undo step. They are not project styles.

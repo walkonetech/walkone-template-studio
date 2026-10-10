@@ -385,17 +385,22 @@ export function EditorCanvas(): React.JSX.Element | null {
         : { keepRatio: false, enabledAnchors: [], rotateEnabled: true, flipEnabled: false }
     )
     if (targets.length > 1) {
+      // A selection that includes a photo scales uniformly from the corners so no photo is distorted.
+      const hasPhoto = targets.some((l) => l.type === 'photo')
       tr.setAttrs({
-        enabledAnchors: [
-          'top-left',
-          'top-center',
-          'top-right',
-          'middle-left',
-          'middle-right',
-          'bottom-left',
-          'bottom-center',
-          'bottom-right'
-        ]
+        keepRatio: hasPhoto,
+        enabledAnchors: hasPhoto
+          ? ['top-left', 'top-right', 'bottom-left', 'bottom-right']
+          : [
+              'top-left',
+              'top-center',
+              'top-right',
+              'middle-left',
+              'middle-right',
+              'bottom-left',
+              'bottom-center',
+              'bottom-right'
+            ]
       })
     }
     tr.nodes(nodes)

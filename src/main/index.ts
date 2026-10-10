@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, shell, type IpcMainInvokeEvent } from 'electron'
+import { app, BrowserWindow, ipcMain, session, shell, type IpcMainInvokeEvent } from 'electron'
 import { join } from 'node:path'
 import { IpcChannel, type PingResult } from '../shared/ipc'
 import { registerProjectIpc } from './projectIpc'
@@ -13,6 +13,22 @@ function isTrustedSender(event: IpcMainInvokeEvent): boolean {
   const url = event.senderFrame?.url ?? ''
   if (isDev) return url.startsWith(process.env['ELECTRON_RENDERER_URL'] ?? '')
   return url.startsWith('file://')
+}
+
+/**
+ * Permission policy (ADR-039). Electron grants every permission request by default; the app needs exactly one: reading
+ * the NAMES of installed fonts (`local-fonts`, the Local Font Access API) for the font picker, and only for the app's
+ * own pages. Everything else is denied. The API exposes family/style names, never file paths.
+ */
+function installPermissionPolicy(): void {
+  const trusted = (url: string): boolean =>
+    isDev ? url.startsWith(process.env['ELECTRON_RENDERER_URL'] ?? '\0') : url.startsWith('file://')
+  session.defaultSession.setPermissionRequestHandler((_wc, permission, callback, details) => {
+    callback(permission === 'local-fonts' && trusted(details.requestingUrl))
+  })
+  session.defaultSession.setPermissionCheckHandler((_wc, permission, requestingOrigin) => {
+    return permission === 'local-fonts' && trusted(requestingOrigin)
+  })
 }
 
 function registerIpc(): ProjectService {
@@ -74,6 +90,7 @@ if (!app.requestSingleInstanceLock()) {
 } else {
   void app.whenReady().then(async () => {
     installAppMenu()
+    installPermissionPolicy()
     const service: ProjectService = registerIpc()
     await service.scanRecovery().catch((e) => console.error('[recovery] startup scan failed', e))
     const lifecycle = setupDocumentLifecycle({ service, isTrustedSender })

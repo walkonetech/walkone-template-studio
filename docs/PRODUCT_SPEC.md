@@ -123,3 +123,12 @@ Design Recipes with AI assistance; provider integrations; commercialization to o
 3. **Constrained dragging.** Holding Shift while dragging constrains layer movement horizontally or vertically based on the intended drag direction.
 4. **Tooltips.** Canvas and editor tools provide contextual hover tooltips describing their purpose and relevant shortcuts/modifiers.
 5. **Sample photos are a design aid.** A photo placeholder is a future booth capture slot. A sample picture shown in it never changes its photo number, the project, the output composition or any future DSLR Booth export, and is never baked into production output.
+
+## 27. Typography and palette contracts (Phase 5D)
+1. **Requested font preservation.** A text layer stores the font family the designer asked for. It is never silently rewritten; if the font is not installed the app renders a fallback and says so.
+2. **Missing-font warning.** A missing or unverifiable font is flagged on the layer and in a project font inventory ("N fonts used, M missing"), so it is visible before moving the project or exporting.
+3. **Editable-project portability.** A `.boothproject` opened on another computer keeps its font requests; the warning appears there and the designer may replace fonts deliberately (one layer or all uses, one undo step). Printed output of a future export does not depend on fonts installed on the booth PC.
+4. **Font embedding is deferred and subject to each font's license.** Nothing is embedded or bundled by default.
+5. **Event Palette.** A project defines semantic colours (Primary, Secondary, Accent, Background, Text) and custom ones; elements may link to them.
+6. **Global palette updates.** Changing a palette colour recolours every linked element everywhere (including both copies of a two-up sheet); fixed colours are untouched; a linked colour can be detached to a fixed one without changing its appearance; a used colour cannot be removed.
+7. **Fit height.** "Fit height to content" resizes a text box's height to its rendered content, keeping width and font size; it is an explicit action, not an automatic mode.

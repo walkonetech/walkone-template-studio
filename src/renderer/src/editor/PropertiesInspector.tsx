@@ -7,8 +7,7 @@ import {
   type Layer,
   type PhotoLayer,
   type ShapeLayer,
-  type TemplateProject,
-  type TextLayer
+  type TemplateProject
 } from '@domain'
 import { wrapDegrees } from '@canvas/geometry/geometry'
 import { copiesPerSheet, describePrint, printSizeName } from '@editor/describe'
@@ -24,6 +23,7 @@ import { layerTypeLabel } from '@editor/layerTree'
 import { Copy, Group, MousePointerClick, Move, RotateCcw, Shuffle, Trash2 } from 'lucide-react'
 import { editorStore, useEditor } from './editorStore'
 import { layoutStore, useLayout } from './layoutStore'
+import { TypographySection } from './TypographySection'
 import { PanelSection } from '../ui/PanelSection'
 import { Button } from '../ui/Button'
 import { EmptyState } from '../ui/EmptyState'
@@ -34,7 +34,6 @@ import {
   NumberField,
   OpacityField,
   SelectField,
-  TextAreaField,
   TextField
 } from './fields'
 
@@ -56,21 +55,6 @@ const FIT_OPTIONS = [
   { value: 'contain', label: 'Contain (fit inside)' },
   { value: 'stretch', label: 'Stretch' }
 ] as const
-const FONT_FAMILIES = [
-  'Georgia',
-  'Helvetica',
-  'Arial',
-  'Times New Roman',
-  'Courier New',
-  'Verdana',
-  'Trebuchet MS',
-  'Palatino',
-  'Impact'
-]
-const WEIGHTS = [100, 200, 300, 400, 500, 600, 700, 800, 900].map((w) => ({
-  value: w,
-  label: String(w)
-}))
 
 function Section({
   id,
@@ -199,7 +183,14 @@ function TransformSection({ layer, locked }: { layer: Layer; locked: boolean }):
           value={layer.width}
           rule={{ positive: true }}
           disabled={locked}
-          onCommit={(width) => edit([layer.id], { width })}
+          onCommit={(width) =>
+            edit(
+              [layer.id],
+              layer.type === 'photo'
+                ? { width, height: Math.max(1, Math.round((width * layer.height) / layer.width)) }
+                : { width }
+            )
+          }
         />
         <CompactNumber
           label="Height"
@@ -208,7 +199,14 @@ function TransformSection({ layer, locked }: { layer: Layer; locked: boolean }):
           value={layer.height}
           rule={heightRule}
           disabled={locked}
-          onCommit={(height) => edit([layer.id], { height })}
+          onCommit={(height) =>
+            edit(
+              [layer.id],
+              layer.type === 'photo'
+                ? { height, width: Math.max(1, Math.round((height * layer.width) / layer.height)) }
+                : { height }
+            )
+          }
         />
         <CompactNumber
           label="Rotation"
@@ -525,98 +523,6 @@ function ImageSection({
   )
 }
 
-function TextSection({
-  layer,
-  project,
-  locked
-}: {
-  layer: TextLayer
-  project: TemplateProject
-  locked: boolean
-}): React.JSX.Element {
-  return (
-    <Section id="text" title="Text">
-      <TextAreaField
-        label="Content"
-        value={layer.content}
-        disabled={locked}
-        onCommit={(content) => store.getState().commitText(layer.id, content)}
-      />
-      <datalist id="font-families">
-        {FONT_FAMILIES.map((f) => (
-          <option key={f} value={f} />
-        ))}
-      </datalist>
-      <TextField
-        label="Font family"
-        value={layer.fontFamily}
-        list="font-families"
-        allowEmpty={false}
-        disabled={locked}
-        onCommit={(fontFamily) => edit([layer.id], { fontFamily })}
-      />
-      <NumberField
-        label="Font size"
-        unit="px"
-        value={layer.fontSize}
-        rule={{ positive: true }}
-        disabled={locked}
-        onCommit={(fontSize) => edit([layer.id], { fontSize })}
-      />
-      <SelectField
-        label="Weight"
-        value={layer.fontWeight}
-        options={WEIGHTS}
-        disabled={locked}
-        onCommit={(fontWeight) => edit([layer.id], { fontWeight })}
-      />
-      <SelectField
-        label="Style"
-        value={layer.fontStyle}
-        options={[
-          { value: 'normal', label: 'Normal' },
-          { value: 'italic', label: 'Italic' }
-        ]}
-        disabled={locked}
-        onCommit={(fontStyle) => edit([layer.id], { fontStyle })}
-      />
-      <SelectField
-        label="Align"
-        value={layer.align}
-        options={[
-          { value: 'left', label: 'Left' },
-          { value: 'center', label: 'Center' },
-          { value: 'right', label: 'Right' }
-        ]}
-        disabled={locked}
-        onCommit={(align) => edit([layer.id], { align })}
-      />
-      <NumberField
-        label="Line height"
-        unit="×"
-        value={layer.lineHeight}
-        rule={{ positive: true }}
-        disabled={locked}
-        onCommit={(lineHeight) => edit([layer.id], { lineHeight })}
-      />
-      <NumberField
-        label="Letter spacing"
-        unit="px"
-        value={layer.letterSpacing}
-        disabled={locked}
-        onCommit={(letterSpacing) => edit([layer.id], { letterSpacing })}
-      />
-      <ColorField
-        label="Color"
-        value={layer.fill}
-        palette={project.palette}
-        disabled={locked}
-        onCommit={(fill, c) => edit([layer.id], { fill }, c)}
-      />
-    </Section>
-  )
-}
-
 function ShapeAppearance({
   layer,
   project,
@@ -739,7 +645,9 @@ function SingleInspector({
       )}
       {layer.type === 'photo' && <PhotoSection layer={layer} project={project} locked={locked} />}
       {layer.type === 'image' && <ImageSection layer={layer} project={project} locked={locked} />}
-      {layer.type === 'text' && <TextSection layer={layer} project={project} locked={locked} />}
+      {layer.type === 'text' && (
+        <TypographySection layer={layer} project={project} locked={locked} />
+      )}
       {layer.type === 'shape' && <ShapeSection layer={layer} locked={locked} />}
     </>
   )

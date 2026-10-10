@@ -166,7 +166,8 @@ describe('specFor (shared by editor and offscreen render)', () => {
     expect(s?.className).toBe('Text')
     expect(s?.config).toMatchObject({
       text: 'Hello',
-      fontFamily: 'Georgia',
+      // requested family first, then the predictable fallback stack (the project keeps just 'Georgia')
+      fontFamily: 'Georgia, Helvetica, Arial, sans-serif',
       fontSize: 150,
       align: 'center',
       lineHeight: 1.1,

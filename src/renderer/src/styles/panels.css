@@ -596,3 +596,186 @@
 .sheet-info p {
   margin: var(--sp-2) 0 0;
 }
+
+/* Typography and Event Palette (Phase 5D) */
+.font-picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  min-width: 0;
+  width: 100%;
+}
+.font-picker-box {
+  position: relative;
+  display: block;
+}
+.font-picker-box .ui-input {
+  width: 100%;
+  padding-right: 24px;
+}
+.font-picker-chevron {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--c-text-3);
+  pointer-events: none;
+}
+.font-warning {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  font-size: var(--fs-meta);
+  color: var(--c-warning);
+}
+.font-list {
+  position: fixed;
+  z-index: 95;
+  max-height: 320px;
+  margin: 0;
+  padding: var(--sp-1);
+  overflow-y: auto;
+  list-style: none;
+  border: 1px solid var(--c-border-strong);
+  border-radius: var(--r-md);
+  background: var(--c-elevated);
+  box-shadow: var(--shadow-popover);
+}
+.font-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: 5px var(--sp-3);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+}
+.font-option.active {
+  background: var(--c-selected);
+}
+.font-option[aria-selected='true'] .font-option-name::before {
+  content: '✓ ';
+}
+.font-option-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+}
+.font-tag {
+  flex: none;
+  font-size: var(--fs-meta);
+  color: var(--c-text-3);
+}
+.font-tag.warn {
+  color: var(--c-warning);
+}
+.font-list-note {
+  padding: var(--sp-2) var(--sp-3);
+  font-size: var(--fs-meta);
+  color: var(--c-text-label);
+}
+.font-more {
+  width: 100%;
+  padding: var(--sp-2);
+  border: 0;
+  background: transparent;
+  color: var(--c-accent);
+  cursor: pointer;
+}
+.font-alert {
+  margin: var(--sp-3) 0;
+  padding: var(--sp-3);
+  border: 1px solid var(--c-warning);
+  border-radius: var(--r-md);
+  background: var(--c-warning-bg);
+}
+.font-alert p {
+  margin: var(--sp-2) 0;
+  font-size: var(--fs-meta);
+}
+.font-inventory,
+.palette-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.font-inv-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 3px 0;
+}
+.font-inv-row.missing .font-inv-state {
+  color: var(--c-warning);
+}
+.font-inv-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.font-inv-uses {
+  font-size: var(--fs-meta);
+  color: var(--c-text-label);
+}
+.font-inv-replace {
+  flex-basis: 100%;
+}
+.palette-row {
+  padding: var(--sp-3) 0;
+  border-bottom: 1px solid var(--c-divider);
+}
+.palette-row-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
+}
+.palette-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+.palette-use {
+  font-size: var(--fs-meta);
+  color: var(--c-text-label);
+  white-space: nowrap;
+}
+.palette-add {
+  margin-top: var(--sp-3);
+}
+.palette-linked {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  min-width: 0;
+}
+.ui-select.compact {
+  height: 24px;
+  max-width: 100%;
+  font-size: var(--fs-meta);
+}
+.seg button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+}
+
+/* The tool drawer is narrow: stack label above control so colour fields (swatch, hex, links) keep their room. */
+.tooldrawer .field-row {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-1);
+}
+.tooldrawer .palette-note {
+  white-space: normal;
+}
+.tooldrawer .palette-linked,
+.tooldrawer .font-picker {
+  width: 100%;
+}
