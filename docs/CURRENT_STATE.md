@@ -70,3 +70,9 @@ No context menu, no drag into/out of groups (cross-group drops are refused), no 
 Owner reviews Phase 5D and approves **Phase 6 — Production Export**: flattened PNG (design and print sheet, with the printable-boundary clipping already in place), layer package, DSLR Booth exporter with compatibility validation, and a preflight screen built on the font/palette/asset foundations. Text rasterization and font embedding rules are decided there.
 
 - Photo placeholders are ratio-locked on the canvas (corner handles only) and in the inspector W/H fields (owner request, Phase 5D follow-up; 673 unit tests).
+
+## Session note (2026-10-14): pause for manual testing
+- Phase 5D is committed (`e2232bd`) and the repository was pushed to the private GitHub backup. 673 unit tests pass; all scripted built-app suites pass (4:97, 4B:40, 4C:97, 5A:53, 5B:39, 5C:59, 5D:40).
+- Added `docs/MANUAL_TEST_GUIDE.md`: start-up cheat sheet and the full human checklist (the owner is testing the app by hand).
+- Older validation suites were stabilised for the taller inspector (scroll-to-centre in inspector, real stage scale, `c.sleep`); `validate.js` requires `WALKONE_DEV_UNSAVED_CHOICES=discard` or a native save prompt blocks Close.
+- Next: triage the owner's manual-test findings, then Phase 6 (production export) only on approval.

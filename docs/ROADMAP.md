@@ -178,3 +178,5 @@ Badge Builder, template library, Design Recipes, asset library (global), externa
 - **Dependencies:** Phase 17.
 - **Acceptance:** clean-machine install and launch verified on both OSes.
 - **Non-goals:** store distribution, billing, accounts.
+
+> 2026-10-14: paused after Phase 5D for human testing (docs/MANUAL_TEST_GUIDE.md). Phase 6 awaits owner approval.

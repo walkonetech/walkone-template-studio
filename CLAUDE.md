@@ -23,6 +23,7 @@ WalkOne Template Studio is an internal desktop tool (Electron + React + TypeScri
 | Phases | docs/ROADMAP.md |
 | Decisions (incl. OPEN) | docs/DECISIONS.md |
 | Testing | docs/TESTING_STRATEGY.md |
+| Manual test guide / run cheat sheet | docs/MANUAL_TEST_GUIDE.md |
 | Terms | docs/GLOSSARY.md |
 | Fresh-session prompt (refresh every session) | docs/SESSION_STARTER.md |
 | Research notes (not decisions) | research/ |
