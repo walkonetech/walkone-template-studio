@@ -171,7 +171,12 @@ export function drawPhotoPlaceholder(ctx: CanvasRenderingContext2D, s: PhotoDraw
     return
   }
   ctx.save()
-  roundRectPath(ctx, 0, 0, w, h, radius)
+  // With a frame, the picture/tint stops just inside the frame's OUTER edge. At a fractional position both edges are
+  // anti-aliased in the same pixel, and stacking two partial coverages lets the picture bleed through as a grey
+  // hairline (c·(1−c) of it). The inset (≤ 1 px, and never past the stroke's middle) keeps that pixel frame-only;
+  // the picture's placement (crop/fit) still uses the full box.
+  const inset = thickness > 0 ? Math.min(thickness / 2, 1) : 0
+  roundRectPath(ctx, inset, inset, w - inset * 2, h - inset * 2, Math.max(0, radius - inset))
   ctx.clip()
   if (s.preview) {
     const p = placePhoto(s.preview, { width: w, height: h }, s.fit, s.crop)

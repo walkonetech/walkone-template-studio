@@ -13,7 +13,7 @@ All commands run from `/Users/walkone/Projects/Apps/walkone-template-studio`.
 | Dev mode (hot reload) | `npm run dev` |
 | Throwaway profile (clean recents/recovery; real data untouched) | `npm run build && npx electron out/main/index.js --user-data-dir=$HOME/wts-test` |
 | Reset the throwaway profile | `rm -rf $HOME/wts-test` |
-| Quality gate | `npm run typecheck && npm run lint && npm run format:check && npm run build && npm test` (expect **752** tests) |
+| Quality gate | `npm run typecheck && npm run lint && npm run format:check && npm run build && npm test` (expect **760** tests) |
 
 Tips
 - Use the throwaway profile for destructive tests (crash recovery, quit prompts) so your real autosave sessions stay safe.
@@ -41,6 +41,8 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] **Photo placeholders keep their shape**: only corner handles; drag scales uniformly; inspector W/H keep ratio.
 - [ ] Shapes and images resize as expected (images keep ratio; shapes free).
 - [ ] Shift-drag locks to an axis; snapping guides appear and can be toggled.
+- [ ] Resize snapping: drag a corner of one photo slot towards another slot's size — it snaps to the same width/height and pink size bars appear on both; edges also snap to other objects and the canvas; Alt/Option-resize and Snap off do not snap.
+- [ ] A framed photo slot (e.g. white frame) at an odd position shows no grey hairline at its outer edge with Preview photos on, nor in the proof PNG.
 - [ ] Zoom (wheel, pointer-centred), Space+drag pan, fit-to-window.
 - [ ] Layers panel: select, multi-select (⇧/⌘), rename, lock, hide, reorder, group/ungroup, filter, 50+ layers scroll.
 - [ ] Align/Distribute and exact X/Y fields; arrow-key nudging.

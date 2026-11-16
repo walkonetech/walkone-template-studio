@@ -21,7 +21,13 @@ import {
   type TemplateProject
 } from '@domain'
 import { commitGroupNode, commitTopLevelNode } from '@canvas/adapters/konvaCommit'
-import { DESIGN_NODE_ID, snapDraggedNode } from '@canvas/adapters/konvaSnap'
+import {
+  DESIGN_NODE_ID,
+  snapDraggedNode,
+  snapTransformerBox,
+  type TransformerBox
+} from '@canvas/adapters/konvaSnap'
+import type { SizeMark } from '@canvas/snapping/resizeSnap'
 import { resolveColor } from '@canvas/rendering/color'
 import {
   specFor,
@@ -228,6 +234,83 @@ function onTransformerEnd(e: Konva.KonvaEventObject<Event>): void {
   if (nodes.length > 1) finishInteraction([...nodes])
 }
 
+/** Edge movement (absolute px) below which an edge counts as fixed when telling centred (Alt) scaling apart. */
+const FIXED_EDGE_EPS = 0.01
+
+/**
+ * Transformer `boundBoxFunc`: keeps the minimum size, then snaps the resize (edges to other objects / the canvas,
+ * or to another object's width/height) and shows guides and same-size marks.
+ */
+function boundTransformerBox(
+  tr: Konva.Transformer | null,
+  oldBox: TransformerBox,
+  newBox: TransformerBox
+): TransformerBox {
+  if (boxTooSmall(newBox)) return oldBox
+  const s = store.getState()
+  const design = selectDesignSize(s)
+  const view = selectViewTransform(s)
+  if (!tr || !s.snapping.enabled || !design || !view) return newBox
+  // Centred scaling (Alt/Option) moves both opposite edges; snapping one of them would fight the gesture.
+  const moved = (a: number, b: number): boolean => Math.abs(a - b) > FIXED_EDGE_EPS
+  const centered =
+    (moved(oldBox.x, newBox.x) && moved(oldBox.x + oldBox.width, newBox.x + newBox.width)) ||
+    (moved(oldBox.y, newBox.y) && moved(oldBox.y + oldBox.height, newBox.y + newBox.height))
+  const r = snapTransformerBox(tr, newBox, design, view, s.snapping.tolerancePx, centered)
+  if (!r) {
+    s.setGuides([])
+    return newBox
+  }
+  s.setGuides(r.guides, r.sizeMarks)
+  return boxTooSmall(r.box) ? newBox : r.box
+}
+
+/** A same-size mark: a dimension line with end ticks just outside the box (above for width, left for height). */
+function SizeMarkView({ mark, scale }: { mark: SizeMark; scale: number }): React.JSX.Element {
+  const off = 10 / scale
+  const tick = 5 / scale
+  const { left, top, right, bottom } = mark.rect
+  const points =
+    mark.axis === 'x'
+      ? [
+          left,
+          top - off - tick,
+          left,
+          top - off + tick,
+          left,
+          top - off,
+          right,
+          top - off,
+          right,
+          top - off - tick,
+          right,
+          top - off + tick
+        ]
+      : [
+          left - off - tick,
+          top,
+          left - off + tick,
+          top,
+          left - off,
+          top,
+          left - off,
+          bottom,
+          left - off - tick,
+          bottom,
+          left - off + tick,
+          bottom
+        ]
+  return (
+    <Line
+      listening={false}
+      points={points}
+      stroke={CANVAS_THEME.guide}
+      strokeWidth={1.5}
+      strokeScaleEnabled={false}
+    />
+  )
+}
+
 function handlersFor(
   layer: Layer,
   insideGroup: boolean,
@@ -322,6 +405,7 @@ export function EditorCanvas(): React.JSX.Element | null {
   const photoDisplay = useEditor((s) => s.photoDisplay)
   const guides = useEditor((s) => s.guides)
   const guidesVisible = useEditor((s) => s.guidesVisible)
+  const sizeMarks = useEditor((s) => s.sizeMarks)
   const images: ImageLookup = useProjectImages(sessionId, project?.layers)
   const photoPreview = usePreviewPhotos(project?.layers)
   const showOverflow = useEditor((s) => s.showOverflow)
@@ -548,6 +632,11 @@ export function EditorCanvas(): React.JSX.Element | null {
                 strokeScaleEnabled={false}
               />
             ))}
+          {guidesVisible &&
+            view &&
+            sizeMarks.map((m, i) => (
+              <SizeMarkView key={`${m.axis}-${i}`} mark={m} scale={view.scale} />
+            ))}
           <Transformer
             ref={trRef}
             rotationSnaps={[...ROTATION_SNAPS]}
@@ -561,7 +650,7 @@ export function EditorCanvas(): React.JSX.Element | null {
             rotateAnchorOffset={28}
             ignoreStroke
             onTransformEnd={onTransformerEnd}
-            boundBoxFunc={(oldBox, newBox) => (boxTooSmall(newBox) ? oldBox : newBox)}
+            boundBoxFunc={(oldBox, newBox) => boundTransformerBox(trRef.current, oldBox, newBox)}
           />
         </KLayer>
       </Stage>

@@ -330,8 +330,8 @@
     "name": "dragging one selected layer moves all selected layers by the same delta, as ONE undo step",
     "ok": true,
     "detail": {
-      "d1": 194.07,
-      "d3": 194.07
+      "d1": 203.75,
+      "d3": 203.75
     }
   },
   {
@@ -356,7 +356,7 @@
     "detail": {
       "rows": 56,
       "scrollable": true,
-      "host": [831, 800]
+      "host": [751, 760]
     }
   },
   {
@@ -381,8 +381,8 @@
     "name": "[3B] canvas drag moves by screen delta / scale; one history entry",
     "ok": true,
     "detail": {
-      "dx": 287.23,
-      "expect": 287.23,
+      "dx": 303.37,
+      "expect": 303.37,
       "past": 1
     }
   },

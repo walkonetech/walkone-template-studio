@@ -1,0 +1,84 @@
+{
+  "when": "2026-11-16T19:12:18.014Z",
+  "pass": 9,
+  "total": 9,
+  "results": [
+    {
+      "name": "1 corner drag near another slot's size snaps to 540 × 360",
+      "ok": true,
+      "detail": {
+        "x": 30,
+        "y": 500,
+        "w": 540,
+        "h": 360
+      }
+    },
+    {
+      "name": "1b top-left corner stayed put",
+      "ok": true,
+      "detail": {
+        "x": 30,
+        "y": 500,
+        "w": 540,
+        "h": 360
+      }
+    },
+    {
+      "name": "1c same-size marks shown for width and height on both slots during the drag",
+      "ok": true,
+      "detail": {
+        "marks": ["x", "x", "y", "y"],
+        "guides": []
+      }
+    },
+    {
+      "name": "1d guides and marks cleared after release",
+      "ok": true,
+      "detail": {
+        "g": 0,
+        "m": 0,
+        "past": 5
+      }
+    },
+    {
+      "name": "2 a far resize is not snapped (≈440 wide, ratio kept)",
+      "ok": true,
+      "detail": {
+        "x": 30,
+        "y": 500,
+        "w": 439.468,
+        "h": 292.979
+      }
+    },
+    {
+      "name": "3 with snapping off the size is not pulled to 540",
+      "ok": true,
+      "detail": {
+        "x": 30,
+        "y": 500,
+        "w": 535.581,
+        "h": 357.055
+      }
+    },
+    {
+      "name": "4 proof exported",
+      "ok": true
+    },
+    {
+      "name": "4b no hairline: every outer-edge pixel of the white-framed slot is white (min channel ≥ 250)",
+      "ok": true,
+      "detail": {
+        "minEdge": 255,
+        "inner": [231, 184, 148]
+      }
+    },
+    {
+      "name": "4c the sample photo is still drawn inside the frame",
+      "ok": true,
+      "detail": {
+        "minEdge": 255,
+        "inner": [231, 184, 148]
+      }
+    }
+  ]
+}

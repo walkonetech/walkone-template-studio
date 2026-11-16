@@ -20,6 +20,7 @@ import {
   type ViewTransform
 } from '@canvas/viewport/viewport'
 import type { Guide } from '@canvas/snapping/snap'
+import type { SizeMark } from '@canvas/snapping/resizeSnap'
 import { emptyHistory, pushHistory, redoHistory, undoHistory, type History } from './history'
 import {
   addLayer as addLayerMutation,
@@ -126,6 +127,8 @@ export interface EditorState {
   guidesVisible: boolean
   /** Active snap guide lines (editor-only; never rendered into output or history). */
   guides: Guide[]
+  /** Active "same size" marks while resizing (editor-only, like guides). */
+  sizeMarks: SizeMark[]
   photoDisplay: PhotoDisplay
   /**
    * Show artwork that extends beyond the printable artboard (default). Off = "clipped view": the editor shows only the
@@ -292,7 +295,8 @@ export interface EditorActions {
   zoomAtPoint(factor: number, anchor: { x: number; y: number }): void
   panBy(dx: number, dy: number): void
   setSnapping(patch: Partial<EditorState['snapping']>): void
-  setGuides(guides: Guide[]): void
+  /** Snap guides (and, while resizing, same-size marks); an empty call clears both. */
+  setGuides(guides: Guide[], sizeMarks?: SizeMark[]): void
   setGuidesVisible(visible: boolean): void
   setPhotoDisplay(mode: PhotoDisplay): void
   setMessage(message: string | null): void
@@ -352,6 +356,7 @@ const initialState = (): EditorState => ({
   snapping: { enabled: true, tolerancePx: 10 },
   guidesVisible: true,
   guides: [],
+  sizeMarks: [],
   photoDisplay: 'placeholder',
   showOverflow: true,
   previewPhotos: initialPreviewPhotos(),
@@ -406,6 +411,19 @@ const READ_ONLY_MESSAGE = 'Print Preview is read-only. Switch to Design to edit.
 
 const sameGuides = (a: Guide[], b: Guide[]): boolean =>
   a.length === b.length && a.every((g, i) => g.axis === b[i]?.axis && g.at === b[i]?.at)
+const sameMarks = (a: SizeMark[], b: SizeMark[]): boolean =>
+  a.length === b.length &&
+  a.every((m, i) => {
+    const n = b[i]
+    return (
+      !!n &&
+      m.axis === n.axis &&
+      m.rect.left === n.rect.left &&
+      m.rect.top === n.rect.top &&
+      m.rect.right === n.rect.right &&
+      m.rect.bottom === n.rect.bottom
+    )
+  })
 
 /**
  * The editor store. Project data lives here exactly once (no second copy of layer geometry);
@@ -926,6 +944,7 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
           viewMode: mode,
           view: { mode: 'fit' },
           guides: [],
+          sizeMarks: [],
           editingTextId: null,
           interaction: 'idle'
         })
@@ -1127,8 +1146,10 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
         if (t) set({ view: toManual(panView(t, dx, dy)) })
       },
       setSnapping: (patch) => set((s) => ({ snapping: { ...s.snapping, ...patch } })),
-      setGuides(guides) {
-        if (!sameGuides(get().guides, guides)) set({ guides })
+      setGuides(guides, sizeMarks = []) {
+        const s = get()
+        if (!sameGuides(s.guides, guides)) set({ guides })
+        if (!sameMarks(s.sizeMarks, sizeMarks)) set({ sizeMarks })
       },
       setGuidesVisible: (guidesVisible) => set({ guidesVisible }),
       setPhotoDisplay: (photoDisplay) => set({ photoDisplay }),
