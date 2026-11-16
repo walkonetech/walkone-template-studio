@@ -87,6 +87,12 @@ Not started; timing to be decided by the owner (not before 6B unless approved). 
 - **Colour differences** in icons and controls to tell kinds of elements apart (e.g. photo slots vs text vs artwork vs canvas/view controls).
 - **Better use of space** so the different parts of the app read as distinct areas.
 - **Canva is the UX reference** for the canvas editor, its icons, editing buttons and controls (owner, 2026-11-16): patterns, not its look. Observed patterns and a first mapping: [../research/CANVA_UX_REFERENCE.md](../research/CANVA_UX_REFERENCE.md).
+- **Round 1 outcome (owner, 2026-11-16): a hybrid of two ways in, one project.**
+  - **Design Guide** for first-time designers, heavily guided, one question at a time with a live preview: event type → styles suited to that event → colour combinations → "Does the event have a logo?" (upload / monogram from the names / none) → names, date, extra line → print format and number of photos → ready (export, fine-tune in the editor, client preview).
+  - **Editor** for power users (Canva-style, round 1 direction A) with a "Design ideas" panel and a "Guide me" button, so the Guide's suggestions stay one click away.
+  - Start screen offers both; users can switch at any time.
+  - Round 1 direction B (dark) becomes a **Light / Dark appearance setting** later, once Template Studio is part of the booth software build.
+  - Round 2 mockups (Start, Design Guide, Editor) are in a private artifact the owner holds; decisions are recorded here, not there.
 
 ### Later
 Badge Builder, template library, Design Recipes, asset library (global), external providers, further polish.
