@@ -79,9 +79,9 @@ Not started; awaits owner approval. Uses the externally established interoperabi
 ### Phase 6C — Real DSLR Booth compatibility validation
 Not started. Import Template Studio-generated exports into the authorized Windows dslrBooth environment and test rendering, printing and sharing. The DNP physical-printer checks (2-inch cut, `/print` endpoint) may run in parallel before or during 6C.
 
-### GUI mockup rounds (owner request, not scheduled)
-Not started; timing to be decided by the owner (not before 6B unless approved). Several rounds of GUI mockups for owner review **before** any UI rebuild. Owner feedback from the first manual test (2026-11-16) that the mockups must answer:
-- **Self-explanatory for non-technical users** (event clients, not designers); the goal is that nobody needs Canva or Photoshop. Canva is the reference for the canvas-editing feel.
+### GUI mockup rounds → Design Guide + Editor redesign (after 6B)
+Rounds 1–2 done as mockups (2026-11-16). **Sequencing (owner):** Phase 6B first; then a few more rounds of redesign, scoping and Guide work, then the build as its own phase(s). Several rounds of GUI mockups for owner review **before** any UI rebuild. Owner feedback from the first manual test (2026-11-16) that the mockups must answer:
+- **Self-explanatory for non-technical users** (the operator's first-time staff; clients never see the app); the goal is that nobody needs Canva or Photoshop. Canva is the reference for the canvas-editing feel.
 - **Hidden modes are confusing.** The owner did not know what the sample photos were (Reposition turned Preview photos on) nor how to turn them off (a small status-bar icon). Modes that change what the canvas shows need a visible, labelled on/off state.
 - **Much bigger, self-explanatory icons**, ideally with text labels, and hover helpers (tooltips) everywhere.
 - **Colour differences** in icons and controls to tell kinds of elements apart (e.g. photo slots vs text vs artwork vs canvas/view controls).
