@@ -86,6 +86,7 @@ Not started; timing to be decided by the owner (not before 6B unless approved). 
 - **Much bigger, self-explanatory icons**, ideally with text labels, and hover helpers (tooltips) everywhere.
 - **Colour differences** in icons and controls to tell kinds of elements apart (e.g. photo slots vs text vs artwork vs canvas/view controls).
 - **Better use of space** so the different parts of the app read as distinct areas.
+- **Canva is the UX reference** for the canvas editor, its icons, editing buttons and controls (owner, 2026-11-16): patterns, not its look. Observed patterns and a first mapping: [../research/CANVA_UX_REFERENCE.md](../research/CANVA_UX_REFERENCE.md).
 
 ### Later
 Badge Builder, template library, Design Recipes, asset library (global), external providers, further polish.
