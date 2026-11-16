@@ -5,6 +5,7 @@ import {
   classifyLayerPackage,
   describeSize,
   exportOutputs,
+  layerPackageOutput,
   packageFiles,
   packageReadme,
   printableLeaves
@@ -21,8 +22,8 @@ describe('exportOutputs', () => {
       metadata: { ...makeProject().metadata, name: 'Chaney Wedding' }
     }
     const outs = exportOutputs(p)
-    expect(outs.map((o) => o.kind)).toEqual(['print', 'design', 'proof', 'package'])
-    const [print, design, proof, pkg] = outs
+    expect(outs.map((o) => o.kind)).toEqual(['print', 'design', 'proof'])
+    const [print, design, proof] = outs
     expect(print).toMatchObject({
       fileName: 'Chaney Wedding-print.png',
       width: 1200,
@@ -42,15 +43,21 @@ describe('exportOutputs', () => {
       production: false,
       defaultSelected: false
     })
-    expect(pkg).toMatchObject({ fileName: 'Chaney Wedding-layers.zip', width: 600, height: 1800 })
+    expect(layerPackageOutput(p)).toMatchObject({
+      kind: 'package',
+      fileName: 'Chaney Wedding-layers.zip',
+      width: 600,
+      height: 1800,
+      dpi: 300
+    })
     expect(describeSize(print!)).toBe('1200 × 1800 px · 4 × 6 in · 300 DPI')
   })
   it('a single-up 4×6 offers one print PNG (its design is its print)', () => {
     const outs = exportOutputs(makeProject([], 'photo-4x6-portrait-600'))
-    expect(outs.map((o) => o.kind)).toEqual(['print', 'proof', 'package'])
+    expect(outs.map((o) => o.kind)).toEqual(['print', 'proof'])
     expect(outs[0]).toMatchObject({ label: 'Print PNG', width: 2400, height: 3600, dpi: 600 })
   })
-  it('production outputs are ticked by default, the proof and package are not', () => {
+  it('the layer package is not offered; production outputs are ticked by default, the proof is not', () => {
     const outs = exportOutputs(makeProject([], 'strip-2x6-300'))
     expect(outs.filter((o) => o.defaultSelected).map((o) => o.kind)).toEqual(['print', 'design'])
   })

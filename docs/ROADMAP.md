@@ -71,7 +71,7 @@ A real production template recreated through the UI ([../research/REAL_TEMPLATE_
 - installed fonts, missing-font handling, font portability (ADR-015); palette UI; canvas/background colour refinement; reusable event colours
 
 ### Phase 6A — Production Render & General Export Foundation
-**Status: complete (2026-11-16).** Vendor-neutral: Print / Design / Proof PNGs from the Konva exact-size renderer (ADR-014 accepted), semantic layer package (background, frames, overlay, text, design, proof, manifest, readme), export preflight, Export dialog (⌘E) with main-owned folder picker, verification, conflicts (Replace / Keep both), atomic writes, PNG density and reveal. ADR-041. No schema change. No DSLR Booth XML/ZIP.
+**Status: complete (2026-11-16).** Vendor-neutral: Print / Design / Proof PNGs from the Konva exact-size renderer (ADR-014 accepted), semantic layer package (background, frames, overlay, text, design, proof, manifest, readme; withdrawn from the dialog after owner testing, ADR-041 §8, code kept for 6B), export preflight, Export dialog (⌘E) with main-owned folder picker, verification, conflicts (Replace / Keep both), atomic writes, PNG density and reveal. ADR-041. No schema change. No DSLR Booth XML/ZIP.
 
 ### Phase 6B — DSLR Booth 7.48 Export Adapter
 Not started; awaits owner approval. Uses the externally established interoperability rules in [../research/DSLRBOOTH_748_RUNTIME_FINDINGS.md](../research/DSLRBOOTH_748_RUNTIME_FINDINGS.md): native 2×6 by default (dslrBooth composes the two-up `_2x` print; sharing uses `_1x`), pre-composed 4×6 compatibility export later, outward photo borders, KeepAspect mapping, text native vs rasterized, PhotoNumber 1–12. Builds on the 6A renderer and file lifecycle.

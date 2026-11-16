@@ -88,11 +88,10 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 
 ### G2. Export (Phase 6A)
 - [ ] Export is disabled on the welcome screen; enabled with a project (button, File → Export…, ⌘E).
-- [ ] 2×6 strip: Print sheet PNG + Design PNG ticked; Proof and Layer package offered; sizes shown (e.g. 1200 × 1800 px · 4 × 6 in · 300 DPI).
+- [ ] 2×6 strip: Print sheet PNG + Design PNG ticked; Proof offered (unticked); no Layer package; sizes shown (e.g. 1200 × 1800 px · 4 × 6 in · 300 DPI).
 - [ ] Open the print PNG: both strips identical, photo areas empty, frames drawn, artwork clipped at the strip edge, no "PHOTO n" labels.
 - [ ] Preview / Get Info shows the DPI (300 or 600).
 - [ ] Proof shows the same sample photos you see with Preview Photos on (incl. a Reposition crop); it is clearly named `-proof`.
-- [ ] Layer package: unzip; stack background → (photos) → frames → overlay → text in Photoshop or similar at 0,0; it matches design.png. Read readme.txt.
 - [ ] Export twice into the same folder: Replace / Keep both / Cancel all behave.
 - [ ] Rename a font to something not installed: warning, export still allowed; result uses a fallback font.
 - [ ] "Show in Finder" opens the folder with the file selected.

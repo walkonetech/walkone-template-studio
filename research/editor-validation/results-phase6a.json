@@ -1,6 +1,6 @@
 {
-  "passed": 48,
-  "total": 48,
+  "passed": 37,
+  "total": 37,
   "failed": [],
   "results": [
     {
@@ -21,19 +21,14 @@
       "ok": true
     },
     {
-      "name": "2c strip offers Print sheet / Design / Proof / Layer package; print + design ticked",
+      "name": "2c strip offers Print sheet / Design / Proof (no layer package); print + design ticked",
       "ok": true,
-      "detail": ["print:true", "design:true", "proof:false", "package:false"]
+      "detail": ["print:true", "design:true", "proof:false"]
     },
     {
       "name": "2d file names derive from the project name",
       "ok": true,
-      "detail": [
-        "Chaney Test-print.png",
-        "Chaney Test-design.png",
-        "Chaney Test-proof.png",
-        "Chaney Test-layers.zip"
-      ]
+      "detail": ["Chaney Test-print.png", "Chaney Test-design.png", "Chaney Test-proof.png"]
     },
     {
       "name": "2e sizes shown: sheet 1200 × 1800 px · 4 × 6 in · 300 DPI; design 600 × 1800 px · 2 × 6 in",
@@ -51,17 +46,12 @@
     {
       "name": "3 export finishes and reports the result",
       "ok": true,
-      "detail": " Exported 4 files to “out”."
+      "detail": " Exported 3 files to “out”."
     },
     {
-      "name": "3b exactly the four files were written (no temp files left)",
+      "name": "3b exactly the three files were written (no temp files left)",
       "ok": true,
-      "detail": [
-        "Chaney Test-design.png",
-        "Chaney Test-layers.zip",
-        "Chaney Test-print.png",
-        "Chaney Test-proof.png"
-      ]
+      "detail": ["Chaney Test-design.png", "Chaney Test-print.png", "Chaney Test-proof.png"]
     },
     {
       "name": "3c exporting did not modify the project (Modified state, history and updatedAt unchanged)",
@@ -70,13 +60,13 @@
         "before": {
           "dirty": true,
           "past": 13,
-          "ref": "2026-11-16T19:14:05.310Z",
+          "ref": "2026-11-16T19:29:33.632Z",
           "layers": 6
         },
         "after": {
           "dirty": true,
           "past": 13,
-          "ref": "2026-11-16T19:14:05.310Z",
+          "ref": "2026-11-16T19:29:33.632Z",
           "layers": 6
         }
       }
@@ -84,7 +74,7 @@
     {
       "name": "3d status message names the folder",
       "ok": true,
-      "detail": "Exported 4 files to “out”."
+      "detail": "Exported 3 files to “out”."
     },
     {
       "name": "4a print sheet 1200×1800 at 300 DPI",
@@ -226,151 +216,6 @@
       }
     },
     {
-      "name": "5a package: background, frames, overlay, text, design, proof, manifest, readme (in that order)",
-      "ok": true,
-      "detail": [
-        "background.png",
-        "frames.png",
-        "overlay.png",
-        "text.png",
-        "design.png",
-        "proof.png",
-        "manifest.json",
-        "readme.txt"
-      ]
-    },
-    {
-      "name": "5b package PNGs are 600×1800 at 300 DPI",
-      "ok": true,
-      "detail": {
-        "background.png": {
-          "w": 600,
-          "h": 1800,
-          "mode": "RGBA",
-          "dpi": [300, 300]
-        },
-        "frames.png": {
-          "w": 600,
-          "h": 1800,
-          "mode": "RGBA",
-          "dpi": [300, 300]
-        },
-        "overlay.png": {
-          "w": 600,
-          "h": 1800,
-          "mode": "RGBA",
-          "dpi": [300, 300]
-        },
-        "text.png": {
-          "w": 600,
-          "h": 1800,
-          "mode": "RGBA",
-          "dpi": [300, 300]
-        },
-        "design.png": {
-          "w": 600,
-          "h": 1800,
-          "mode": "RGBA",
-          "dpi": [300, 300]
-        },
-        "proof.png": {
-          "w": 600,
-          "h": 1800,
-          "mode": "RGBA",
-          "dpi": [300, 300]
-        }
-      }
-    },
-    {
-      "name": "5c background opaque; frames/overlay/text have transparency",
-      "ok": true,
-      "detail": {
-        "background.png": [255, 255],
-        "frames.png": [0, 255],
-        "overlay.png": [0, 255],
-        "text.png": [0, 255],
-        "design.png": [255, 255],
-        "proof.png": [255, 255]
-      }
-    },
-    {
-      "name": "5d frames.png: frame opaque at the edge, transparent in the photo area",
-      "ok": true,
-      "detail": {
-        "framesEdge": [255, 0, 0, 255],
-        "framesCentre": [0, 0, 0, 0],
-        "overlayClear": [0, 0, 0, 0],
-        "overlayRed": [220, 20, 40, 255],
-        "backgroundSlot": [32, 48, 74, 255],
-        "textCorner": [0, 0, 0, 0]
-      }
-    },
-    {
-      "name": "5e overlay.png keeps the graphic's transparency",
-      "ok": true,
-      "detail": {
-        "framesEdge": [255, 0, 0, 255],
-        "framesCentre": [0, 0, 0, 0],
-        "overlayClear": [0, 0, 0, 0],
-        "overlayRed": [220, 20, 40, 255],
-        "backgroundSlot": [32, 48, 74, 255],
-        "textCorner": [0, 0, 0, 0]
-      }
-    },
-    {
-      "name": "5f background.png shows the canvas colour where the photo goes",
-      "ok": true,
-      "detail": {
-        "framesEdge": [255, 0, 0, 255],
-        "framesCentre": [0, 0, 0, 0],
-        "overlayClear": [0, 0, 0, 0],
-        "overlayRed": [220, 20, 40, 255],
-        "backgroundSlot": [32, 48, 74, 255],
-        "textCorner": [0, 0, 0, 0]
-      }
-    },
-    {
-      "name": "5g text.png is transparent away from the text",
-      "ok": true,
-      "detail": {
-        "framesEdge": [255, 0, 0, 255],
-        "framesCentre": [0, 0, 0, 0],
-        "overlayClear": [0, 0, 0, 0],
-        "overlayRed": [220, 20, 40, 255],
-        "backgroundSlot": [32, 48, 74, 255],
-        "textCorner": [0, 0, 0, 0]
-      }
-    },
-    {
-      "name": "5h re-stacking background + frames + overlay + text reproduces design.png",
-      "ok": true,
-      "detail": {
-        "max": 0,
-        "over2": 0
-      }
-    },
-    {
-      "name": "5i package design.png equals the exported Design PNG",
-      "ok": true,
-      "detail": {
-        "max": 0,
-        "over2": 0
-      }
-    },
-    {
-      "name": "5j manifest: format/version, design + sheet copies, 3 slots with numbers 1,2,1 in px and inches, stack order",
-      "ok": true,
-      "detail": {
-        "stack": ["background.png", "photos", "frames.png", "overlay.png", "text.png"],
-        "slots": [1, 2, 1],
-        "notes": []
-      }
-    },
-    {
-      "name": "5k readme says the proof is not production artwork",
-      "ok": true
-    },
-    {
       "name": "6 exporting again into the same folder asks: Replace / Keep both / Cancel (nothing written yet)",
       "ok": true,
       "detail": "Files with these names already exist in “out”:Chaney Test-print.pngChaney Test-design.pngReplace overwrites them. Keep both saves the new files with a number added."
@@ -381,7 +226,6 @@
       "detail": [
         "Chaney Test-design (2).png",
         "Chaney Test-design.png",
-        "Chaney Test-layers.zip",
         "Chaney Test-print (2).png",
         "Chaney Test-print.png",
         "Chaney Test-proof.png"
@@ -421,13 +265,9 @@
       }
     },
     {
-      "name": "9 a single-up 4×6 offers one Print PNG (no separate design), proof and package",
+      "name": "9 a single-up 4×6 offers one Print PNG (no separate design) and the proof",
       "ok": true,
-      "detail": [
-        "print:Print PNG",
-        "proof:Proof PNGNot for printing",
-        "package:Layer package (ZIP)"
-      ]
+      "detail": ["print:Print PNG", "proof:Proof PNGNot for printing"]
     },
     {
       "name": "9b it writes Single Test-print.png into the chosen folder",

@@ -1,8 +1,8 @@
 // Phase 6A scripted validation (automation over the DevTools protocol, NOT human testing): production render and
-// general export. Builds a 2×6 strip in the BUILT app, exports Print sheet / Design / Proof PNGs and the layer package
+// general export. Builds a 2×6 strip in the BUILT app, exports Print sheet / Design / Proof PNGs
 // through the real Export dialog, then measures the files with Pillow (inspect-export.py): pixel sizes, recorded DPI,
-// the two copies, sheet copy = design, proof vs production, frames, transparent bands, and re-stacking the package
-// bands against design.png. Also: conflicts (Keep both / Replace), cancel, preflight warning/blocking, project untouched.
+// the two copies, sheet copy = design, proof vs production, and frames. (The layer package was removed from the dialog
+// after 6A by owner decision; its band checks — re-stacking = design.png — are in git history, 48/48 at eca330e.) Also: conflicts (Keep both / Replace), cancel, preflight warning/blocking, project untouched.
 // Needs python3 + Pillow. Run: npm run build && node research/editor-validation/validate-6a.js
 const fs = require('fs')
 const path = require('path')
@@ -194,15 +194,14 @@ const RED = [255, 0, 0, 255]
       `[...document.querySelectorAll('.export-output')].map(e=>({kind:e.dataset.kind, checked:e.querySelector('input').checked, file:e.querySelector('.file').textContent, text:e.textContent}))`
     )
     check(
-      '2c strip offers Print sheet / Design / Proof / Layer package; print + design ticked',
-      outs.map((o) => `${o.kind}:${o.checked}`).join() ===
-        'print:true,design:true,proof:false,package:false',
+      '2c strip offers Print sheet / Design / Proof (no layer package); print + design ticked',
+      outs.map((o) => `${o.kind}:${o.checked}`).join() === 'print:true,design:true,proof:false',
       outs.map((o) => `${o.kind}:${o.checked}`)
     )
     check(
       '2d file names derive from the project name',
       outs.map((o) => o.file).join('|') ===
-        'Chaney Test-print.png|Chaney Test-design.png|Chaney Test-proof.png|Chaney Test-layers.zip',
+        'Chaney Test-print.png|Chaney Test-design.png|Chaney Test-proof.png',
       outs.map((o) => o.file)
     )
     check(
@@ -220,7 +219,7 @@ const RED = [255, 0, 0, 255]
     )
     await c.shot(path.join(shotsDir, '6a-01-export-dialog.png'))
 
-    // ---- 3: export all four
+    // ---- 3: export all three
     await c.ev(
       `[...document.querySelectorAll('.export-output')].filter(e=>!e.querySelector('input').checked).forEach(e=>e.querySelector('input').click()); 1`
     )
@@ -235,9 +234,8 @@ const RED = [255, 0, 0, 255]
     await c.shot(path.join(shotsDir, '6a-02-export-done.png'))
     const files1 = fs.readdirSync(out1).sort()
     check(
-      '3b exactly the four files were written (no temp files left)',
-      files1.join('|') ===
-        'Chaney Test-design.png|Chaney Test-layers.zip|Chaney Test-print.png|Chaney Test-proof.png',
+      '3b exactly the three files were written (no temp files left)',
+      files1.join('|') === 'Chaney Test-design.png|Chaney Test-print.png|Chaney Test-proof.png',
       files1
     )
     const after = await projectState(c)
@@ -248,7 +246,7 @@ const RED = [255, 0, 0, 255]
     )
     check(
       '3d status message names the folder',
-      (await c.ev(`${S}.lastMessage`)) === `Exported 4 files to “out”.`,
+      (await c.ev(`${S}.lastMessage`)) === `Exported 3 files to “out”.`,
       await c.ev(`${S}.lastMessage`)
     )
 
@@ -279,16 +277,7 @@ const RED = [255, 0, 0, 255]
         [0, 1200, 600, 1800],
         [600, 1200, 1200, 1800],
         [0, 0, 1200, 25]
-      ],
-      zip: f('layers.zip'),
-      zipPoints: {
-        framesEdge: ['frames.png', [34, 210]],
-        framesCentre: ['frames.png', [300, 210]],
-        overlayClear: ['overlay.png', [250, 1350]],
-        overlayRed: ['overlay.png', [350, 1350]],
-        backgroundSlot: ['background.png', [300, 210]],
-        textCorner: ['text.png', [5, 5]]
-      }
+      ]
     }
     let m = null
     try {
@@ -358,73 +347,6 @@ const RED = [255, 0, 0, 255]
         m.proofOutsideSlots
       )
       check('4l proof keeps the frame over the sample', near(F.proof.px.frameL, RED), F.proof.px)
-      // Package
-      check(
-        '5a package: background, frames, overlay, text, design, proof, manifest, readme (in that order)',
-        m.zipOk &&
-          m.zipNames.join() ===
-            'background.png,frames.png,overlay.png,text.png,design.png,proof.png,manifest.json,readme.txt',
-        m.zipNames
-      )
-      check(
-        '5b package PNGs are 600×1800 at 300 DPI',
-        Object.values(m.zipPngs).every(
-          (p) => p.w === 600 && p.h === 1800 && near(p.dpi, [300, 300], 0)
-        ),
-        m.zipPngs
-      )
-      check(
-        '5c background opaque; frames/overlay/text have transparency',
-        m.alphaRange['background.png'][0] === 255 &&
-          ['frames.png', 'overlay.png', 'text.png'].every(
-            (n) => m.alphaRange[n][0] === 0 && m.alphaRange[n][1] === 255
-          ),
-        m.alphaRange
-      )
-      check(
-        '5d frames.png: frame opaque at the edge, transparent in the photo area',
-        near(m.zipPx.framesEdge, RED) && m.zipPx.framesCentre[3] === 0,
-        m.zipPx
-      )
-      check(
-        "5e overlay.png keeps the graphic's transparency",
-        m.zipPx.overlayClear[3] === 0 && near(m.zipPx.overlayRed, [220, 20, 40, 255]),
-        m.zipPx
-      )
-      check(
-        '5f background.png shows the canvas colour where the photo goes',
-        near(m.zipPx.backgroundSlot, BG),
-        m.zipPx
-      )
-      check('5g text.png is transparent away from the text', m.zipPx.textCorner[3] === 0, m.zipPx)
-      check(
-        '5h re-stacking background + frames + overlay + text reproduces design.png',
-        m.restackVsDesign.over2 === 0,
-        m.restackVsDesign
-      )
-      check(
-        '5i package design.png equals the exported Design PNG',
-        m.zipDesignVsDesign.over2 === 0,
-        m.zipDesignVsDesign
-      )
-      const mf = m.manifest
-      check(
-        '5j manifest: format/version, design + sheet copies, 3 slots with numbers 1,2,1 in px and inches, stack order',
-        mf.format === 'walkone.layer-package' &&
-          mf.formatVersion === 1 &&
-          mf.design.widthPx === 600 &&
-          mf.print.copies.length === 2 &&
-          mf.photoSlots.map((s) => s.photoNumber).join() === '1,2,1' &&
-          mf.photoSlots[0].xIn === 0.1 &&
-          mf.photoSlots[0].frame.color === '#ff0000' &&
-          mf.stackOrder.join() === 'background.png,photos,frames.png,overlay.png,text.png' &&
-          mf.notes.length === 0,
-        { stack: mf.stackOrder, slots: mf.photoSlots.map((s) => s.photoNumber), notes: mf.notes }
-      )
-      check(
-        '5k readme says the proof is not production artwork',
-        m.readme.includes('NOT production artwork')
-      )
     }
 
     // ---- 6: conflicts
@@ -442,7 +364,7 @@ const RED = [255, 0, 0, 255]
       conflict && (await c.ev(`document.querySelector('.export-conflict').textContent`))
     check(
       '6 exporting again into the same folder asks: Replace / Keep both / Cancel (nothing written yet)',
-      conflict && /already exist/.test(conflictText) && fs.readdirSync(out1).length === 4,
+      conflict && /already exist/.test(conflictText) && fs.readdirSync(out1).length === 3,
       conflictText
     )
     await c.shot(path.join(shotsDir, '6a-03-conflict.png'))
@@ -451,7 +373,7 @@ const RED = [255, 0, 0, 255]
     const files2 = fs.readdirSync(out1).sort()
     check(
       '6b Keep both writes "Name (2)" copies and keeps the originals',
-      files2.length === 6 &&
+      files2.length === 5 &&
         files2.includes('Chaney Test-print (2).png') &&
         files2.includes('Chaney Test-design (2).png'),
       files2
@@ -469,7 +391,7 @@ const RED = [255, 0, 0, 255]
       '7 cancelling the folder picker returns to the dialog quietly (no error, nothing written)',
       (await dialogOpen(c)) &&
         !(await c.ev(`!!document.querySelector('.export-error')`)) &&
-        fs.readdirSync(out1).length === 6
+        fs.readdirSync(out1).length === 5
     )
 
     // ---- 8: preflight warning and blocking
@@ -526,9 +448,8 @@ const RED = [255, 0, 0, 255]
       `[...document.querySelectorAll('.export-output')].map(e=>e.dataset.kind+':'+e.querySelector('.title').textContent)`
     )
     check(
-      '9 a single-up 4×6 offers one Print PNG (no separate design), proof and package',
-      single.join('|') ===
-        'print:Print PNG|proof:Proof PNGNot for printing|package:Layer package (ZIP)',
+      '9 a single-up 4×6 offers one Print PNG (no separate design) and the proof',
+      single.join('|') === 'print:Print PNG|proof:Proof PNGNot for printing',
       single
     )
     await c.ev(`document.getElementById('export-start').click(); 1`)

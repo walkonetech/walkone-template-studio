@@ -91,29 +91,39 @@ export function exportOutputs(project: TemplateProject): ExportOutput[] {
       defaultSelected: true
     })
   }
-  outputs.push(
-    {
-      kind: 'proof',
-      label: 'Proof PNG',
-      description:
-        'For client approval only, not for printing: the print with the current sample photos in the photo slots.',
-      fileName: exportFileName(name, 'proof'),
-      ...sheetSize,
-      production: false,
-      defaultSelected: false
-    },
-    {
-      kind: 'package',
-      label: 'Layer package (ZIP)',
-      description:
-        'Background, overlay, frames and text as separate PNGs plus photo-slot positions, for rebuilding the template in another editor.',
-      fileName: exportFileName(name, 'package'),
-      ...designSize,
-      production: true,
-      defaultSelected: false
-    }
-  )
+  outputs.push({
+    kind: 'proof',
+    label: 'Proof PNG',
+    description:
+      'For client approval only, not for printing: the print with the current sample photos in the photo slots.',
+    fileName: exportFileName(name, 'proof'),
+    ...sheetSize,
+    production: false,
+    defaultSelected: false
+  })
   return outputs
+}
+
+/**
+ * The layer package (ZIP) output. NOT offered in the Export dialog (owner decision after 6A: the booth composites
+ * the photos itself, so nobody rebuilds a template by hand in another editor). Kept because its behind/above-photo
+ * classification is what the DSLR Booth adapter (6B) needs for background vs overlay artwork.
+ */
+export function layerPackageOutput(project: TemplateProject): ExportOutput {
+  const design = project.canvas.print
+  return {
+    kind: 'package',
+    label: 'Layer package (ZIP)',
+    description:
+      'Background, overlay, frames and text as separate PNGs plus photo-slot positions, for rebuilding the template in another editor.',
+    fileName: exportFileName(project.metadata.name, 'package'),
+    ...getPixelSize(design),
+    dpi: design.dpi,
+    widthIn: design.width,
+    heightIn: design.height,
+    production: true,
+    defaultSelected: false
+  }
 }
 
 // ------------------------------------------------------------------------------------------------ layer package

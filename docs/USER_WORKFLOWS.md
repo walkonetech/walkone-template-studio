@@ -114,8 +114,8 @@ All workflows are **Proposed** future behavior. UI details: [UX_SPEC.md](UX_SPEC
 
 ## V. Export print files (Phase 6A, implemented)
 1. **Open Export:** top-bar **Export**, File → Export…, or ⌘E.
-2. **Choose files:** Print sheet PNG and Design PNG are ticked for a 2×6 strip (a 4×6 offers one Print PNG). Tick **Proof PNG** for client approval (sample photos; labelled Not for printing) or **Layer package** to rebuild the template in another editor.
+2. **Choose files:** Print sheet PNG and Design PNG are ticked for a 2×6 strip (a 4×6 offers one Print PNG). Tick **Proof PNG** for client approval (sample photos; labelled Not for printing). (The layer package is not offered: the booth composites the photos itself; see ADR-041 §8.)
 3. **Review checks:** errors (e.g. a deleted palette colour, a missing image) block export; warnings (missing font, low-resolution image, artwork outside) and notes do not.
 4. **Export…** → choose a folder → files are written as `<Project>-print.png` etc. If names exist: **Replace**, **Keep both** (adds a number) or **Cancel**.
 5. **Show in Finder/Explorer** next to each written file. The project itself is never changed by exporting.
-DSLR Booth packages (workflow K) are Phase 6B; workflow L is delivered as the semantic layer package (background / frames / overlay / text + manifest), not per-layer PNGs.
+DSLR Booth packages (workflow K) are Phase 6B; workflow L (layer package) was built in 6A and then withdrawn from the dialog by owner decision (ADR-041 §8); its classification is reused by 6B.
