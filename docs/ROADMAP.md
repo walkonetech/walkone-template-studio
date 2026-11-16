@@ -100,6 +100,12 @@ Rounds 1–2 done as mockups (2026-11-16). **Sequencing (owner):** Phase 6B firs
   - Round 1 direction B (dark) becomes a **Light / Dark appearance setting** later, once Template Studio is part of the booth software build.
   - Round 2 mockups (Start, Design Guide, Editor) are in a private artifact the owner holds; decisions are recorded here, not there.
 
+### Owner direction after 6A (2026-11-16) — see DECISIONS ADR-042…046
+- **Next:** Phase 6B (DSLR Booth 7.48 export; "no photo slots" is an error there, ADR-045). The owner will bring the DNP printer to the booth PC for the open printer checks.
+- **Proposed after 6B:** the **DSLR Booth importer** (owner: needed), then 6C validating import + export on the Windows booth PC — the first Windows test of the app (ADR-043).
+- **Then:** more GUI rounds (Design Guide + Editor), including the **font library** (ADR-044), **company profile/settings** and **asset library**; then the redesign build.
+- **Long term:** the editor becomes a module of a standalone booth application replacing dslrBooth (ADR-042); iPad exploration (ADR-043); video option; installer.
+
 ### Later
 Badge Builder, template library, Design Recipes, asset library (global), external providers, further polish.
 
