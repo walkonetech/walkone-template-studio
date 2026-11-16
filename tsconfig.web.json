@@ -9,9 +9,10 @@
     "src/renderer/**/*",
     "src/preload/index.d.ts",
     "src/shared/**/*",
+    "src/export/**/*",
     "src/domain/**/*",
     "src/canvas/**/*",
     "src/editor/**/*"
   ],
-  "exclude": ["src/domain/**/__tests__/**", "src/domain/**/*.test.ts"]
+  "exclude": ["src/domain/**/__tests__/**", "src/domain/**/*.test.ts", "src/export/**/__tests__/**"]
 }

@@ -70,13 +70,19 @@ A real production template recreated through the UI ([../research/REAL_TEMPLATE_
 **Status: complete (2026-10-10).** Font picker/availability/portability, fit-height, text presets, Event Palette with global updates; ADR-015 (in part), ADR-039/040. Original scope:
 - installed fonts, missing-font handling, font portability (ADR-015); palette UI; canvas/background colour refinement; reusable event colours
 
-### Phase 6 — Production Export
-- flattened PNG; layer package; DSLR Booth exporter; compatibility validation
+### Phase 6A — Production Render & General Export Foundation
+**Status: complete (2026-11-16).** Vendor-neutral: Print / Design / Proof PNGs from the Konva exact-size renderer (ADR-014 accepted), semantic layer package (background, frames, overlay, text, design, proof, manifest, readme), export preflight, Export dialog (⌘E) with main-owned folder picker, verification, conflicts (Replace / Keep both), atomic writes, PNG density and reveal. ADR-041. No schema change. No DSLR Booth XML/ZIP.
+
+### Phase 6B — DSLR Booth 7.48 Export Adapter
+Not started; awaits owner approval. Uses the externally established interoperability rules in [../research/DSLRBOOTH_748_RUNTIME_FINDINGS.md](../research/DSLRBOOTH_748_RUNTIME_FINDINGS.md): native 2×6 by default (dslrBooth composes the two-up `_2x` print; sharing uses `_1x`), pre-composed 4×6 compatibility export later, outward photo borders, KeepAspect mapping, text native vs rasterized, PhotoNumber 1–12. Builds on the 6A renderer and file lifecycle.
+
+### Phase 6C — Real DSLR Booth compatibility validation
+Not started. Import Template Studio-generated exports into the authorized Windows dslrBooth environment and test rendering, printing and sharing. The DNP physical-printer checks (2-inch cut, `/print` endpoint) may run in parallel before or during 6C.
 
 ### Later
 Badge Builder, template library, Design Recipes, asset library (global), external providers, further polish.
 
-**Numbering note:** the historical phase list below keeps its original numbers so completed history stays readable. Where it conflicts with the sequence above, the sequence above wins: old Phase 5 (photo placeholders) is largely delivered already; old Phase 6 (text, shapes, **image import**) is delivered by 5A and 5D; old Phase 7 → 5D; old Phase 12 (render/export) and 14 (DSLR exporter) → new Phase 6; old Phase 13 (importer) is unscheduled until approved.
+**Numbering note:** the historical phase list below keeps its original numbers so completed history stays readable. Where it conflicts with the sequence above, the sequence above wins: old Phase 5 (photo placeholders) is largely delivered already; old Phase 6 (text, shapes, **image import**) is delivered by 5A and 5D; old Phase 7 → 5D; old Phase 12 (render/export) → 6A and 14 (DSLR exporter) → 6B/6C; old Phase 13 (importer) is unscheduled until approved.
 
 ---
 ## Historical phase list (original numbering)
@@ -179,4 +185,5 @@ Badge Builder, template library, Design Recipes, asset library (global), externa
 - **Acceptance:** clean-machine install and launch verified on both OSes.
 - **Non-goals:** store distribution, billing, accounts.
 
-> 2026-10-14: paused after Phase 5D for human testing (docs/MANUAL_TEST_GUIDE.md). Phase 6 awaits owner approval.
+> 2026-10-14: paused after Phase 5D for human testing (docs/MANUAL_TEST_GUIDE.md).
+> 2026-11-16: owner approved Phase 6A (manual testing no longer a blocker); 6A complete. Phase 6B awaits approval.

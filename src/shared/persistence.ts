@@ -24,6 +24,9 @@ export const PERSISTENCE_ERROR_CODES = [
   'asset-in-use',
   'asset-corrupt',
   'not-allowed',
+  // Export (Phase 6A)
+  'export-destination-missing',
+  'export-invalid-output',
   'invalid-request',
   'unexpected'
 ] as const

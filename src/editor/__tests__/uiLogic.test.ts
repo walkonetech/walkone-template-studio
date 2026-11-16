@@ -186,6 +186,7 @@ describe('shortcut matching', () => {
     expect(commandForKey(k('o'), true)).toBe('file.open')
     expect(commandForKey(k('s'), true)).toBe('file.save')
     expect(commandForKey(k('S', true), true)).toBe('file.saveAs')
+    expect(commandForKey(k('e'), true)).toBe('file.export')
     expect(commandForKey(k('z'), true)).toBe('edit.undo')
     expect(commandForKey(k('Z', true), true)).toBe('edit.redo')
     expect(commandForKey(k('0'), true)).toBe('view.fit')

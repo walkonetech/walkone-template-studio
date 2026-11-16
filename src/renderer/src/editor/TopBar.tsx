@@ -11,7 +11,7 @@ import {
 import { hasDerivedCopies } from '@canvas/rendering/composition'
 import { selectCanRedo, selectCanUndo, selectIsDirty, selectViewMode } from '@editor/store'
 import { runCommand } from './commandRunner'
-import { commandTipProps, tipProps } from './tips'
+import { commandTipProps } from './tips'
 import { editorStore, useEditor } from './editorStore'
 import { isMac } from './platform'
 import { Button } from '../ui/Button'
@@ -144,8 +144,15 @@ export function TopBar(): React.JSX.Element {
             Save
           </Button>
         </Tooltip>
-        <Tooltip label="Export" {...tipProps('export')}>
-          <Button variant="ghost" icon={Download} disabled aria-label="Export">
+        <Tooltip label="Export" {...commandTipProps('file.export')}>
+          <Button
+            variant="ghost"
+            icon={Download}
+            disabled={!ctx.hasProject}
+            aria-label="Export"
+            id="export-button"
+            onClick={() => runCommand('file.export')}
+          >
             Export
           </Button>
         </Tooltip>

@@ -25,6 +25,9 @@ const isTypingTarget = (t: EventTarget | null): boolean => {
 export function useEditorKeyboard(): void {
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent): void => {
+      // A modal dialog owns the keyboard, even when focus has fallen out of it onto <body>: nothing may act on the
+      // canvas behind it.
+      if (document.querySelector('[role=dialog][aria-modal=true]')) return
       const s = editorStore.getState()
       const mod = isPrimaryModifier(e)
       // New / Open work from anywhere, including the welcome screen and inside text fields.
@@ -65,6 +68,11 @@ export function useEditorKeyboard(): void {
       if (mod && key.toLowerCase() === 's') {
         e.preventDefault()
         void (e.shiftKey ? s.saveAs() : s.save())
+        return
+      }
+      if (mod && !e.shiftKey && key.toLowerCase() === 'e') {
+        e.preventDefault()
+        if (!e.repeat) runCommand('file.export')
         return
       }
       if (mod && key.toLowerCase() === 'g') {

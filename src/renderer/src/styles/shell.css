@@ -539,3 +539,135 @@
   pointer-events: none;
   box-shadow: 0 0 0 1px rgb(0 0 0 / 0.6);
 }
+
+/* Export dialog (Phase 6A) */
+.export-outputs {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.export-outputs legend,
+.export-checks h3 {
+  font-size: var(--fs-section-heading);
+  font-weight: 600;
+  color: var(--c-text-2);
+  margin-bottom: var(--sp-2);
+}
+.export-output {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-3) 0;
+  border-top: 1px solid var(--c-divider);
+}
+.export-output:first-of-type {
+  border-top: 0;
+}
+.export-output input {
+  margin-top: 3px;
+  accent-color: var(--c-accent);
+}
+.export-output label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.export-output .title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-weight: 600;
+}
+.export-output .file {
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  color: var(--c-text-2);
+  overflow-wrap: anywhere;
+}
+.export-output .muted,
+.export-checks .muted,
+.export-done .muted,
+.export-conflict .muted {
+  color: var(--c-text-3);
+  font-size: var(--fs-meta);
+}
+.export-checks {
+  margin-top: var(--sp-5);
+}
+.export-checks .blocked {
+  color: var(--c-error);
+}
+.preflight-list {
+  list-style: none;
+  margin: var(--sp-2) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.preflight-item {
+  display: flex;
+  gap: var(--sp-2);
+  align-items: flex-start;
+  font-size: var(--fs-meta);
+  color: var(--c-text-2);
+}
+.preflight-item svg {
+  flex: none;
+  margin-top: 2px;
+}
+.preflight-item.error svg {
+  color: var(--c-error);
+}
+.preflight-item.warning svg {
+  color: var(--c-warning);
+}
+.preflight-item.info svg {
+  color: var(--c-text-3);
+}
+.export-progress {
+  margin-top: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  font-size: var(--fs-meta);
+  color: var(--c-text-2);
+}
+.export-progress progress {
+  width: 100%;
+  accent-color: var(--c-accent);
+}
+.export-error {
+  margin-top: var(--sp-4);
+  display: flex;
+  gap: var(--sp-2);
+  align-items: center;
+  color: var(--c-error);
+}
+.export-files {
+  list-style: none;
+  margin: var(--sp-3) 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.export-files li {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+}
+.export-files .name {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.export-done .ok {
+  color: var(--c-success);
+  vertical-align: -2px;
+}

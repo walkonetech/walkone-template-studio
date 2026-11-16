@@ -24,7 +24,8 @@ export interface NodeSpec {
 
 export type ImageLookup = (assetId: string) => ImageSource | undefined
 
-export type PhotoMode = 'placeholder' | 'preview'
+/** 'frame' draws only the native frame of a photo slot (no fill, no number): layer package `frames.png`. */
+export type PhotoMode = 'placeholder' | 'preview' | 'frame'
 
 /** A sample picture for one photo layer plus its editor-only crop. */
 export interface PhotoPreview {
@@ -127,6 +128,7 @@ export function specFor(layer: Layer, env: RenderEnv, insideGroup = false): Node
           : undefined
       const preview = resolved?.image
       const thickness = layer.frame.style === 'solid' ? layer.frame.thickness : 0
+      if (env.photoMode === 'frame' && thickness <= 0) return null
       const frameColor = layer.frame.style === 'solid' ? color(layer.frame.color) : '#ffffff'
       const { width, height } = layer
       return {
@@ -147,7 +149,8 @@ export function specFor(layer: Layer, env: RenderEnv, insideGroup = false): Node
               preview,
               label: env.photoLabels,
               crop: resolved?.crop,
-              badge: env.interactive
+              badge: env.interactive,
+              frameOnly: env.photoMode === 'frame'
             }),
           hitFunc: boxHit(width, height)
         }

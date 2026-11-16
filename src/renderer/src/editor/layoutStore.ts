@@ -22,11 +22,13 @@ interface LayoutState {
   drawerOpen: boolean
   collapsedSections: string[]
   newProjectOpen: boolean
+  exportOpen: boolean
   setSidebarWidth(px: number): void
   setLayersSplit(fraction: number): void
   clickTool(id: ToolId): void
   toggleSection(id: string): void
   setNewProjectOpen(open: boolean): void
+  setExportOpen(open: boolean): void
 }
 
 export const layoutStore = createStore<LayoutState>((set, get) => ({
@@ -36,6 +38,7 @@ export const layoutStore = createStore<LayoutState>((set, get) => ({
   drawerOpen: drawerStartsOpen(window.innerWidth),
   collapsedSections: [],
   newProjectOpen: false,
+  exportOpen: false,
   setSidebarWidth: (px) => set({ sidebarWidth: clampSidebarWidth(px, window.innerWidth) }),
   setLayersSplit: (f) => set({ layersSplit: clampLayersSplit(f) }),
   clickTool(id) {
@@ -48,7 +51,8 @@ export const layoutStore = createStore<LayoutState>((set, get) => ({
         ? s.collapsedSections.filter((x) => x !== id)
         : [...s.collapsedSections, id]
     })),
-  setNewProjectOpen: (newProjectOpen) => set({ newProjectOpen })
+  setNewProjectOpen: (newProjectOpen) => set({ newProjectOpen }),
+  setExportOpen: (exportOpen) => set({ exportOpen })
 }))
 
 export const useLayout = <T>(selector: (s: LayoutState) => T): T => useStore(layoutStore, selector)

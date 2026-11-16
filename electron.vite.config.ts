@@ -15,7 +15,8 @@ export default defineConfig({
         '@shared': resolve('src/shared'),
         '@domain': resolve('src/domain'),
         '@canvas': resolve('src/canvas'),
-        '@editor': resolve('src/editor')
+        '@editor': resolve('src/editor'),
+        '@export': resolve('src/export')
       }
     },
     plugins: [react()]

@@ -1,12 +1,15 @@
 # Current State
 
-_Last updated: 2026-10-10 (end of Phase 5D)_
+_Last updated: 2026-11-16 (end of Phase 6A)_
 
 ## Project status
-The editor has a redesigned, original dark-neutral interface: welcome screen, File/Edit/View menus, document title with Modified/Saved state, tool rail + drawer, canvas workspace with a floating artboard, resizable Layers + Properties column, status bar with zoom/snap/preview controls, and one accessible dialog shell. Underneath: vendor-neutral domain model, `.boothproject` persistence with working sessions, autosave and crash recovery, snapshot undo/redo, exact-size render API. Images can be imported as project assets (Phase 5A). No DSLR Booth importer/exporter, global asset library, templates, badges, palette manager or export of any kind exists.
+The editor has a redesigned, original dark-neutral interface: welcome screen, File/Edit/View menus, document title with Modified/Saved state, tool rail + drawer, canvas workspace with a floating artboard, resizable Layers + Properties column, status bar with zoom/snap/preview controls, and one accessible dialog shell. Underneath: vendor-neutral domain model, `.boothproject` persistence with working sessions, autosave and crash recovery, snapshot undo/redo, exact-size render API. Images can be imported as project assets (Phase 5A). **Vendor-neutral export exists (Phase 6A):** Print / Design / Proof PNGs, a semantic layer package and an export preflight, through one Export dialog. No DSLR Booth importer/exporter, global asset library, templates or badges exist.
 
 ## Current phase
-**Phase 5D — Typography, Font Portability & Event Palette: COMPLETE.** This closes the creative foundation (5A–5D). Phase 6 (production export) has **not** begun; awaiting owner approval. ([ROADMAP.md](ROADMAP.md))
+**Phase 6A — Production Render & General Export Foundation: COMPLETE.** Phase 6B (DSLR Booth 7.48 export adapter) has **not** begun; awaiting owner approval. The creative foundation (5A–5D) was completed earlier. ([ROADMAP.md](ROADMAP.md))
+
+## Phase 6A (done)
+Export dialog (top-bar Export, File → Export…, ⌘E): **Print PNG** (the print sheet; a 2×6 strip gives the derived 4×6 with both copies), **Design PNG** (one copy; offered when the sheet holds several), **Proof PNG** (print with the current sample photos and crops; "Not for printing", `-proof` name, not watermarked, unticked by default), **Layer package** ZIP (semantic bands by stack position around the photo slots: background / frames / overlay / text, plus design.png, proof.png, manifest.json, readme.txt; re-stacking reproduces design.png unless the manifest notes otherwise). Production pixels = every printable layer + native photo frames, photo areas empty, no samples/labels, clipped to the design/cells. **Preflight** (vendor-neutral): errors block (invalid composition, missing/unreadable image, broken palette colour, invalid photo number), warnings allow (no slots, slot past edge, layer outside, missing font, < 150 DPI image), notes (photo-number gaps, clipped artwork, unknown font, 150–300 DPI, hidden layers); **repeated photo numbers are never reported**; DSLR limits are left to 6B. **Files:** main-owned folder picker → opaque destination id; verification (safe names, PNG signature + exact pixel size, safe flat entries); conflict step (Replace / Keep both → "Name (2)" / Cancel); atomic per-file writes; PNG density in `pHYs`; deterministic ZIP; Show in Finder/Explorer for written files only. Export never modifies the project. ADR-014 accepted (Konva is the production renderer), ADR-041; ADR-015 updated (6A text is rasterized). Research note [../research/DSLRBOOTH_748_RUNTIME_FINDINGS.md](../research/DSLRBOOTH_748_RUNTIME_FINDINGS.md) records the owner-reported dslrBooth 7.48 interoperability rules for 6B. **No schema change, no `.boothproject` change, no new dependency.** Also fixed: Escape now closes a dialog even when focus fell out of it, and editor shortcuts are ignored while a modal is open (previously Delete/⌘Z could act behind a dialog when focus was on the page body). **Verified:** typecheck/lint/format/build; **752 unit tests** (673 + 79); `validate-6a.js` **48/48** on the built macOS app (real exported files measured with Pillow; automation); regression suites 4:97, 4B:40, 4C:97 (first run 93/97 — four recovery-dialog checks in the SIGKILL/autosave-timing scenario; 97/97 on rerun), 4D:6, 5A:53, 5B:39, 5C:59, 5D:40. **Not verified:** a human visual review of the dialog; opening the files in Photoshop/Preview by a person; Windows (Konva/Chromium anti-aliasing and font rasterization may differ from macOS; Windows file-name and Explorer reveal behaviour); a real "Show in Finder" (suppressed by a dev override in automation); very large canvases; DSLR Booth itself. **Known limits:** no cancel while rendering (seconds at most for 4×6 @ 600 DPI); proof and package always use the current preview samples (built-in or session-picked) — there is no separate proof-photo picker; the layer package is design-level (one strip), not sheet-level; layer package bands are not editable text (text is rasterized); literal per-layer PNGs are deferred; the last export folder is remembered only for the current app run; preflight items do not yet select the affected layer.
 
 ## Completed
 - Phases 0–3B (see [ROADMAP.md](ROADMAP.md)).
@@ -52,7 +55,7 @@ Native Save / Don't Save / Cancel on every close path via a main-process coordin
 **Remaining limits:** multiple windows unsupported; Windows/Linux quit and recovery paths unexercised; edits made in the last ~2 s before a crash are not recoverable; the native prompt wording and recovery dialog are temporary; a session whose `project.json` was cut mid-write is quarantined, not repaired; the scripted run answers the native prompt through dev overrides, so the real dialog rendering and a physical Cmd+Q keypress were not verified by automation.
 
 ## Open decisions
-ADR-012 SQLite scope; ADR-014 final render/export approach; ADR-015 fonts.
+ADR-012 SQLite scope; ADR-015 remainder (font embedding/bundling; native-vs-rasterized text for the DSLR Booth adapter, 6B). ADR-014 was accepted in Phase 6A.
 
 ## Known risks
 - DSLR Booth semantics still unknown for several fields ([analysis §25](../research/DSLRBOOTH_FIXTURE_ANALYSIS.md)); Windows-only booth software vs macOS development; Windows untested for persistence and the editor.
@@ -64,10 +67,10 @@ ADR-012 SQLite scope; ADR-014 final render/export approach; ADR-015 fonts.
 No context menu, no drag into/out of groups (cross-group drops are refused), no copy/paste, no align/distribute, no layer thumbnails or panel resizing; multi-selection has no inspector geometry editing (move/resize on the canvas instead); the palette-reference color UI path (show, "Use fixed color") is implemented but was not exercised by the scripted run (the sample has no palette); group opacity/rotation controls are intentionally not exposed; inspector edits on a layer whose ancestor is locked are disabled except name/locked/visible; the rename and field components are covered only by the scripted run; keyboard focus styling was not machine-verified.
 
 ## Housekeeping
-`AGENTS.md` stays git-ignored. No Git remote exists (intentional). DSLR Booth fixtures are private and unchanged. Generated screenshots are git-ignored; the `#debug` hook is development-only.
+`AGENTS.md` stays git-ignored. The repository is backed up to a PRIVATE GitHub remote (`origin`); push only when the owner asks. DSLR Booth fixtures are private and unchanged. Generated screenshots are git-ignored; the `#debug` hook is development-only.
 
 ## Next recommended action
-Owner reviews Phase 5D and approves **Phase 6 — Production Export**: flattened PNG (design and print sheet, with the printable-boundary clipping already in place), layer package, DSLR Booth exporter with compatibility validation, and a preflight screen built on the font/palette/asset foundations. Text rasterization and font embedding rules are decided there.
+Owner reviews Phase 6A (ideally a hand pass of docs/MANUAL_TEST_GUIDE.md §G2 and opening the exported files) and approves **Phase 6B — DSLR Booth 7.48 Export Adapter**: native 2×6 by default per research/DSLRBOOTH_748_RUNTIME_FINDINGS.md, built on the 6A renderer, preflight and file lifecycle; then **6C** real-booth validation on Windows (DNP printer checks in parallel).
 
 - Photo placeholders are ratio-locked on the canvas (corner handles only) and in the inspector W/H fields (owner request, Phase 5D follow-up; 673 unit tests).
 
@@ -76,3 +79,7 @@ Owner reviews Phase 5D and approves **Phase 6 — Production Export**: flattened
 - Added `docs/MANUAL_TEST_GUIDE.md`: start-up cheat sheet and the full human checklist (the owner is testing the app by hand).
 - Older validation suites were stabilised for the taller inspector (scroll-to-centre in inspector, real stage scale, `c.sleep`); `validate.js` requires `WALKONE_DEV_UNSAVED_CHOICES=discard` or a native save prompt blocks Close.
 - Next: triage the owner's manual-test findings, then Phase 6 (production export) only on approval.
+
+## Session note (2026-11-16): Phase 6A
+- The owner amended the handoff: Phase 6A approved; manual testing remains valuable but is no longer a blocker. Sequence: 6A (done) → 6B DSLR Booth 7.48 adapter → 6C real-booth validation. External dslrBooth 7.48 research is recorded (sanitized) in research/DSLRBOOTH_748_RUNTIME_FINDINGS.md; its two printer-dependent questions stay Needs Validation until the DNP printer is available.
+- No printer model, centre-cut, driver media or PrintTicket fields were added to TemplateProject (and must not be).

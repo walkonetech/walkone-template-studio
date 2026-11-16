@@ -21,5 +21,7 @@
 - **DSLR Booth Adapter** — The importer/exporter pair that converts between the internal model and DSLR Booth's format.
 - **Flattened Export** — A single merged image (e.g., PNG) of the whole design.
 - **Two-Up Strip** — A print layout containing two 2x6 strips side by side on one larger print canvas (exact dimensions printer/template dependent; Needs Validation).
-- **Layer Package** — An export of separate PNGs per layer group (background, frames, overlay, badge, preview).
+- **Layer Package** — (Phase 6A) A ZIP of semantic PNG bands split by stack position around the photo slots (background, frames, overlay, text) plus design/proof references, `manifest.json` and `readme.txt`. Not one PNG per layer (ADR-041).
+- **Proof PNG** — The print with the current sample photos in the slots, for client approval only; never production artwork.
+- **Print PNG / Design PNG** — Production raster exports: the whole print sheet / one copy of the design. Photo areas empty, native frames drawn.
 - **Provider Adapter** — An isolated module integrating an external asset/AI service.

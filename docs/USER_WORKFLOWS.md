@@ -111,3 +111,11 @@ All workflows are **Proposed** future behavior. UI details: [UX_SPEC.md](UX_SPEC
 4. **Create an event palette:** Design drawer → Event palette → Add basic colors, then set Accent, Background, Text, Primary; add custom colours (e.g. Rose Gold).
 5. **Link object colours:** in any colour field choose a palette entry; **change Accent once** to recolour everything linked, in Design and in both Print Preview copies.
 6. **Detach:** Use fixed color keeps the look but stops following the palette. **Remove an unused colour** with its trash button (refused while something uses it).
+
+## V. Export print files (Phase 6A, implemented)
+1. **Open Export:** top-bar **Export**, File → Export…, or ⌘E.
+2. **Choose files:** Print sheet PNG and Design PNG are ticked for a 2×6 strip (a 4×6 offers one Print PNG). Tick **Proof PNG** for client approval (sample photos; labelled Not for printing) or **Layer package** to rebuild the template in another editor.
+3. **Review checks:** errors (e.g. a deleted palette colour, a missing image) block export; warnings (missing font, low-resolution image, artwork outside) and notes do not.
+4. **Export…** → choose a folder → files are written as `<Project>-print.png` etc. If names exist: **Replace**, **Keep both** (adds a number) or **Cancel**.
+5. **Show in Finder/Explorer** next to each written file. The project itself is never changed by exporting.
+DSLR Booth packages (workflow K) are Phase 6B; workflow L is delivered as the semantic layer package (background / frames / overlay / text + manifest), not per-layer PNGs.

@@ -14,8 +14,18 @@ export interface RenderOptions {
   /** Output size in pixels; defaults to the design canvas pixel size. Viewport zoom is irrelevant. */
   width?: number
   height?: number
-  /** 'omit' leaves photo placeholders out entirely (e.g., a future export of artwork only). */
-  photos?: 'placeholder' | 'preview' | 'omit'
+  /**
+   * 'omit' leaves photo slots out entirely (layer package bands); 'frame' draws ONLY each slot's native frame, with
+   * the photo area empty (production export PNGs and the package `frames.png`). Neither ever draws samples.
+   */
+  photos?: 'placeholder' | 'preview' | 'omit' | 'frame'
+  /**
+   * Draw only the leaf layers (non-group) this accepts; groups are always kept as containers. Used by the layer package
+   * to render one semantic band of the stack at a time. Omitted = every printable layer.
+   */
+  include?: (layer: Layer) => boolean
+  /** 'transparent' leaves the canvas background colour out (overlay bands of the layer package). Default 'canvas'. */
+  background?: 'canvas' | 'transparent'
   /**
    * Sample pictures (with `photos: 'preview'`). A DESIGN-PREVIEW render may bake sample photos in; PRODUCTION output
    * (a future export) must use `photos: 'omit'`, which leaves the capture slots empty, and never supplies this.
@@ -49,6 +59,7 @@ export function planRender(project: TemplateProject, options: RenderOptions = {}
     for (const l of list) {
       if (!isEffectivelyVisible(project.layers, l)) continue
       if (l.type === 'photo' && photos === 'omit') continue
+      if (l.type !== 'group' && options.include && !options.include(l)) continue
       layers.push(l)
       if (l.type === 'group') walk(childrenOf(project.layers, l.id))
     }

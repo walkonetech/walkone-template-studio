@@ -116,15 +116,15 @@ export async function replaceFile(
   }
 }
 
-/** Writes a small text file atomically (temp file in the same directory, then replace). */
+/** Writes a file atomically (temp file in the same directory, then replace). Text is written as UTF-8. */
 export async function writeFileAtomic(
   dest: string,
-  text: string,
+  data: string | Uint8Array,
   ops: FsOps = defaultFsOps
 ): Promise<void> {
   const tmp = join(dirname(dest), `.${basename(tempSiblingPath(dest))}`)
   try {
-    await fs.writeFile(tmp, text, 'utf8')
+    await (typeof data === 'string' ? fs.writeFile(tmp, data, 'utf8') : fs.writeFile(tmp, data))
   } catch (e) {
     await fs.rm(tmp, { force: true })
     throw fromFsError(e, 'write-failed', 'A file could not be written.')

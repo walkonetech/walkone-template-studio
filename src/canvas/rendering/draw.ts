@@ -134,6 +134,26 @@ export interface PhotoDrawSpec {
   crop?: PhotoCrop | undefined
   /** Editor-only: draw a small "#n" tag on a preview picture so the capture slot stays identifiable. */
   badge?: boolean
+  /** Draw ONLY the frame (layer package `frames.png`): no fill, no picture, no number. */
+  frameOnly?: boolean
+}
+
+/** The native photo frame: drawn INSIDE the slot box (the box is the outer edge of the frame). */
+function strokeFrame(
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+  t: number,
+  radius: number,
+  color: string
+): void {
+  if (t <= 0) return
+  ctx.save()
+  ctx.strokeStyle = color
+  ctx.lineWidth = t
+  roundRectPath(ctx, t / 2, t / 2, w - t, h - t, Math.max(0, radius - t / 2))
+  ctx.stroke()
+  ctx.restore()
 }
 
 const TINTS = ['#e8544a', '#8bc34a', '#4db6ac', '#ba68c8', '#ffb74d', '#64b5f6']
@@ -146,6 +166,10 @@ export function drawPhotoPlaceholder(ctx: CanvasRenderingContext2D, s: PhotoDraw
   const { width: w, height: h } = s
   const radius = clampCornerRadius(s.cornerRadius, w, h)
   const thickness = clampFrameThickness(s.frameThickness, w, h)
+  if (s.frameOnly) {
+    strokeFrame(ctx, w, h, thickness, radius, s.frameColor)
+    return
+  }
   ctx.save()
   roundRectPath(ctx, 0, 0, w, h, radius)
   ctx.clip()
@@ -164,15 +188,7 @@ export function drawPhotoPlaceholder(ctx: CanvasRenderingContext2D, s: PhotoDraw
   }
   ctx.restore()
 
-  if (thickness > 0) {
-    const t = thickness
-    ctx.save()
-    ctx.strokeStyle = s.frameColor
-    ctx.lineWidth = t
-    roundRectPath(ctx, t / 2, t / 2, w - t, h - t, Math.max(0, radius - t / 2))
-    ctx.stroke()
-    ctx.restore()
-  }
+  strokeFrame(ctx, w, h, thickness, radius, s.frameColor)
 
   if (!s.preview) {
     ctx.save()

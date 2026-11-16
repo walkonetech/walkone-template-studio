@@ -37,6 +37,24 @@ export function Dialog({
     return () => previous?.focus?.()
   }, [])
 
+  // Escape must still close the dialog when focus has fallen out of it (e.g. a focused button became disabled while
+  // work ran and the browser moved focus to <body>). Keys inside the dialog are handled by `onKeyDown` below.
+  const escapeRef = useRef(onEscape)
+  useEffect(() => {
+    escapeRef.current = onEscape
+  })
+  useEffect(() => {
+    const onDocKey = (e: KeyboardEvent): void => {
+      if (e.key !== 'Escape' || e.defaultPrevented || !escapeRef.current) return
+      if (box.current?.contains(document.activeElement)) return
+      if (document.activeElement?.closest('[role=dialog]')) return
+      e.preventDefault()
+      escapeRef.current()
+    }
+    document.addEventListener('keydown', onDocKey)
+    return () => document.removeEventListener('keydown', onDocKey)
+  }, [])
+
   const onKeyDown = (e: React.KeyboardEvent): void => {
     if (e.key === 'Escape' && onEscape) {
       e.preventDefault()

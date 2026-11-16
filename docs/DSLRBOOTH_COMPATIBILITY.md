@@ -10,6 +10,9 @@ Reported by the project owner (treated as **Confirmed by owner**, not independen
 - Existing exports were supplied by the owner and have now been analyzed (see §1a).
 - Templates are normally rebuilt in DSLR Booth from exported PNG layers, with photo placeholders configured in its editor.
 
+## 1b. dslrBooth 7.48 runtime findings (external, owner-reported)
+**Confirmed via external clean-room runtime research reported by the owner; not independently reproducible from repository fixtures.** Summary only; details and labels in [../research/DSLRBOOTH_748_RUNTIME_FINDINGS.md](../research/DSLRBOOTH_748_RUNTIME_FINDINGS.md): native 2×6 with `print_2_per_page=True` yields `_1x` (one strip; used for gallery, email, SMS, QR, LumaShare) and `_2x` (two-up 4×6; used for printing); photos are centred Cover, rotated clockwise after the crop, borders grow outward, PhotoNumber 1–12; images map `KeepAspect` True → fit, False → stretch; transparent PNG overlays work; text has newlines but no wrapping, clips, `FontSize=0` auto-fits, missing fonts silently fall back. Printer finishing (2-inch cut) belongs to the printer/driver, not the template (**Needs Validation** on the DNP printer, as is the `/print` endpoint). Used by Phase 6B; validated by Phase 6C.
+
 ## 1a. Observed in the five current fixtures (OBSERVED)
 - Flat ZIP, deflate; always `template.xml` + `preview.png` + referenced PNGs; no folders; no unreferenced files.
 - `template.xml`: UTF-8 with BOM, CRLF; root `<Template Name Width Height Dimensions Resolution BackgroundColor print_2_per_page PrintToSecondaryPrinter LastSavedDate Id IsLegacy OriginalDevice>` with one `<Elements>` child holding only `<Image>` and `<Photo>` elements (self-closing, no nesting).

@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, session, shell, type IpcMainInvokeEvent } 
 import { join } from 'node:path'
 import { IpcChannel, type PingResult } from '../shared/ipc'
 import { registerProjectIpc } from './projectIpc'
+import { registerExportIpc } from './exportIpc'
 import type { ProjectService } from '../projects/service'
 import { devValue } from './devOverrides'
 import { installAppMenu } from './appMenu'
@@ -41,6 +42,7 @@ function registerIpc(): ProjectService {
       electronVersion: process.versions.electron
     }
   })
+  registerExportIpc(isTrustedSender)
   return registerProjectIpc(isTrustedSender)
 }
 

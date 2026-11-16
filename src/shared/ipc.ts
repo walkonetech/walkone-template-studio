@@ -22,6 +22,12 @@ export const IpcChannel = {
   ProjectImportAssetData: 'project:importAssetData',
   /** Native picker for ONE preview photo; returns its bytes only (never stored in the project, no path crosses IPC). */
   ProjectPickPreviewPhoto: 'project:pickPreviewPhoto',
+  /** Export (Phase 6A): main shows the folder picker and returns an opaque destination id (no path crosses IPC). */
+  ExportChooseDestination: 'export:chooseDestination',
+  /** Writes rendered outputs (PNG bytes / package entries) into a chosen destination. */
+  ExportWrite: 'export:write',
+  /** Reveals a file this app exported, in Finder / Explorer. */
+  ExportReveal: 'export:reveal',
   /** Startup recovery: list candidates, restore one into the editor, or discard one. */
   RecoveryList: 'recovery:list',
   RecoveryRecover: 'recovery:recover',
@@ -117,6 +123,68 @@ export interface PreviewPhotoData {
   pixelWidth: number
   pixelHeight: number
 }
+// ------------------------------------------------------------------------------------------------ export (6A)
+
+/** A chosen export folder, known to the renderer only by an opaque id and a display name. */
+export interface ExportDestination {
+  destinationId: string
+  /** Last path component of the folder, for display only. */
+  folderName: string
+}
+/** Expected raster facts the main process verifies against the PNG header before writing. */
+export interface ExportPngFacts {
+  width: number
+  height: number
+  /** Recorded in the PNG pHYs chunk. */
+  dpi: number
+}
+export interface ExportPngFile extends ExportPngFacts {
+  kind: 'png'
+  /** A single safe file name (see `isSafeExportFileName`); never a path. */
+  name: string
+  data: Uint8Array
+}
+export interface ExportPackageEntry {
+  /** Flat entry name inside the package (see `isSafePackageEntryPath`). */
+  path: string
+  data: Uint8Array
+  /** Present for PNG entries: verified, and the density is recorded. */
+  png?: ExportPngFacts
+}
+export interface ExportZipFile {
+  kind: 'zip'
+  name: string
+  entries: ExportPackageEntry[]
+}
+export type ExportFile = ExportPngFile | ExportZipFile
+/** What to do when a file of the same name already exists in the destination. */
+export type ExportConflictPolicy = 'ask' | 'replace' | 'keep-both'
+export interface ExportWriteRequest {
+  destinationId: string
+  files: ExportFile[]
+  onConflict: ExportConflictPolicy
+}
+export interface ExportWrittenFile {
+  /** The name the renderer asked for. */
+  requested: string
+  /** The name actually written ("Name (2).png" when keeping both). */
+  name: string
+  bytes: number
+}
+export type ExportWriteResult =
+  /** Nothing was written: these names already exist and the policy was 'ask'. */
+  | { outcome: 'conflict'; existing: string[] }
+  | {
+      outcome: 'written'
+      folderName: string
+      written: ExportWrittenFile[]
+      failed: { name: string; error: SafeError }[]
+    }
+export interface ExportRevealRequest {
+  destinationId: string
+  name: string
+}
+
 export type CloseReason = 'window-close' | 'quit' | 'close-project' | 'replace'
 
 /** Facts the main process needs to guard close/quit. */
@@ -191,6 +259,14 @@ export interface RendererApi {
     importAssetData(req: ImportAssetDataRequest): Promise<IpcResult<ImportAssetsResult>>
     /** Shows the native picker and returns the chosen picture's bytes for use as a PREVIEW sample (not saved anywhere). */
     pickPreviewPhoto(): Promise<IpcResult<PreviewPhotoData>>
+  }
+  export: {
+    /** Shows the native folder picker (main-owned); `cancelled` when dismissed. */
+    chooseDestination(): Promise<IpcResult<ExportDestination>>
+    /** Verifies and writes the outputs atomically; reports conflicts first when asked to. */
+    write(req: ExportWriteRequest): Promise<IpcResult<ExportWriteResult>>
+    /** Shows an exported file in Finder / Explorer (only files this destination wrote). */
+    reveal(req: ExportRevealRequest): Promise<IpcResult<null>>
   }
   recovery: {
     list(): Promise<IpcResult<RecoveryOverview>>

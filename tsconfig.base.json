@@ -19,7 +19,8 @@
       "@domain/*": ["./src/domain/*"],
       "@domain": ["./src/domain/index.ts"],
       "@canvas/*": ["./src/canvas/*"],
-      "@editor/*": ["./src/editor/*"]
+      "@editor/*": ["./src/editor/*"],
+      "@export/*": ["./src/export/*"]
     }
   }
 }

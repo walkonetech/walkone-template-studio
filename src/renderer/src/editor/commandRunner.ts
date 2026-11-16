@@ -33,6 +33,11 @@ export function runCommand(id: CommandId): void {
     case 'file.saveAs':
       void s.saveAs()
       return
+    case 'file.export':
+      // Finish a Reposition first so the proof shows the crop the user sees.
+      s.commitCrop()
+      layoutStore.getState().setExportOpen(true)
+      return
     case 'file.close':
       void guarded('close-project', () => s.closeProject())()
       return

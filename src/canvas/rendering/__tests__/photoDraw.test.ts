@@ -198,3 +198,31 @@ describe('artboard clipping contract (design cell = the artboard)', () => {
     expect(clipToCell({ x: -900, y: 0, width: 800, height: 100 }, artboard)).toBeNull()
   })
 })
+
+describe('frame-only photo drawing (layer package frames.png)', () => {
+  it('strokes only the frame: no fill, no picture, no number', () => {
+    const { ctx, calls } = recorder()
+    drawPhotoPlaceholder(ctx, { ...base, frameOnly: true, preview: picture })
+    expect(named(calls, 'stroke')).toHaveLength(1)
+    expect(named(calls, 'fillRect')).toHaveLength(0)
+    expect(named(calls, 'fillText')).toHaveLength(0)
+    expect(named(calls, 'drawImage')).toHaveLength(0)
+  })
+  it('draws nothing for a slot without a frame', () => {
+    const { ctx, calls } = recorder()
+    drawPhotoPlaceholder(ctx, { ...base, frameThickness: 0, frameOnly: true })
+    expect(calls.filter((c) => !c.fn.startsWith('set:'))).toHaveLength(0)
+  })
+  it('the frame mode spec skips frameless slots entirely', () => {
+    const env: RenderEnv = {
+      palette: { colors: [] },
+      images: () => undefined,
+      photoMode: 'frame',
+      interactive: false,
+      photoLabels: false,
+      allLayers: []
+    }
+    expect(specFor(photo('p', 1, { frame: { style: 'none' } }) as PhotoLayer, env)).toBeNull()
+    expect(specFor(photo('q', 1) as PhotoLayer, env)?.className).toBe('Shape')
+  })
+})

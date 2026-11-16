@@ -353,3 +353,14 @@ describe('ImageCache', () => {
     expect(cache.status('k')).toBe('unknown')
   })
 })
+
+describe('planRender layer filtering (layer package bands)', () => {
+  it('include keeps only the accepted leaves; groups are not filtered', () => {
+    const p = planRender(scene(), { include: (l) => l.id === 'g-a' || l.id === 'title' })
+    expect(p.layers.map((l) => l.id)).toEqual(['title', 'g', 'g-a'])
+  })
+  it('images outside the band are not required', () => {
+    const p = planRender(scene(), { include: () => false })
+    expect(missingAssetIds(p.layers, () => undefined)).toEqual([])
+  })
+})

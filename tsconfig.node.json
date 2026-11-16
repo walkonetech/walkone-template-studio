@@ -10,6 +10,7 @@
     "src/projects/**/*",
     "src/preload/**/*",
     "src/shared/**/*",
+    "src/export/**/*",
     "src/domain/**/*",
     "vitest.config.ts"
   ]

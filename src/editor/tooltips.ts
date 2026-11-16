@@ -61,9 +61,7 @@ export const TIPS = {
   },
   toolTemplates: { label: 'Templates', hint: 'Template gallery arrives in a later phase' },
   toolPhotos: { label: 'Photos', hint: 'Sample photo library arrives in a later phase' },
-  toolAssets: { label: 'Assets', hint: 'Import and manage the images used in this project' },
-  // top bar
-  export: { label: 'Export', hint: 'Export arrives in a later phase' }
+  toolAssets: { label: 'Assets', hint: 'Import and manage the images used in this project' }
 } as const satisfies Record<string, Tip>
 
 export type TipId = keyof typeof TIPS

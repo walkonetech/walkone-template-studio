@@ -23,6 +23,11 @@ const api: RendererApi = {
     importAssetData: (req) => ipcRenderer.invoke(IpcChannel.ProjectImportAssetData, req),
     pickPreviewPhoto: () => ipcRenderer.invoke(IpcChannel.ProjectPickPreviewPhoto)
   },
+  export: {
+    chooseDestination: () => ipcRenderer.invoke(IpcChannel.ExportChooseDestination),
+    write: (req) => ipcRenderer.invoke(IpcChannel.ExportWrite, req),
+    reveal: (req) => ipcRenderer.invoke(IpcChannel.ExportReveal, req)
+  },
   recovery: {
     list: () => ipcRenderer.invoke(IpcChannel.RecoveryList),
     recover: (req) => ipcRenderer.invoke(IpcChannel.RecoveryRecover, req),

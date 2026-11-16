@@ -40,7 +40,12 @@ function addDesignNodes(
   const env: RenderEnv = {
     palette: project.palette,
     images,
-    photoMode: options.photos === 'preview' ? 'preview' : 'placeholder',
+    photoMode:
+      options.photos === 'preview'
+        ? 'preview'
+        : options.photos === 'frame'
+          ? 'frame'
+          : 'placeholder',
     ...(options.photoPreview ? { photoPreview: options.photoPreview } : {}),
     interactive: false,
     photoLabels: options.photoLabels ?? true,
@@ -50,6 +55,7 @@ function addDesignNodes(
     const spec = specFor(domain, env, insideGroup)
     if (!spec) return
     if (domain.type === 'photo' && options.photos === 'omit') return
+    if (domain.type !== 'group' && options.include && !options.include(domain)) return
     const node = new CLASSES[spec.className](spec.config)
     into.add(node as Konva.Group | Konva.Shape)
     finalizeTextNode(node, domain)
@@ -83,15 +89,17 @@ export function renderProjectToCanvas(
   try {
     const layer = new Konva.Layer({ listening: false })
     stage.add(layer)
-    layer.add(
-      new Konva.Rect({
-        x: 0,
-        y: 0,
-        width: plan.design.width,
-        height: plan.design.height,
-        fill: resolveColor(project.palette, project.canvas.backgroundColor)
-      })
-    )
+    if (options.background !== 'transparent') {
+      layer.add(
+        new Konva.Rect({
+          x: 0,
+          y: 0,
+          width: plan.design.width,
+          height: plan.design.height,
+          fill: resolveColor(project.palette, project.canvas.backgroundColor)
+        })
+      )
+    }
     addDesignNodes(layer, project, project.layers, images, options)
     layer.draw()
 

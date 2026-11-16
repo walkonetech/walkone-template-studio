@@ -25,7 +25,7 @@
   {
     "name": "File menu lists New, Open, Save, Save As, Close",
     "ok": true,
-    "detail": ["New project…", "Open…", "Save", "Save As…", "Close project"]
+    "detail": ["New project…", "Open…", "Save", "Save As…", "Export…", "Close project"]
   },
   {
     "name": "File menu: only New and Open enabled with no project",
@@ -532,8 +532,8 @@
     "detail": {
       "sw": 1728,
       "iw": 1728,
-      "sh": 1006,
-      "ih": 1006
+      "sh": 1005,
+      "ih": 1005
     }
   },
   {
@@ -549,7 +549,7 @@
     "ok": true,
     "detail": {
       "layers": 373,
-      "props": 560
+      "props": 559
     }
   },
   {

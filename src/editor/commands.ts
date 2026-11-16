@@ -9,6 +9,7 @@ export type CommandId =
   | 'file.open'
   | 'file.save'
   | 'file.saveAs'
+  | 'file.export'
   | 'file.close'
   | 'edit.undo'
   | 'edit.redo'
@@ -92,6 +93,12 @@ export const COMMANDS: Readonly<Record<CommandId, CommandDef>> = {
     label: 'Save As…',
     hint: 'Save the project to a new file',
     shortcut: { key: 'S', mod: true, shift: true },
+    needsProject: true
+  },
+  'file.export': {
+    label: 'Export…',
+    hint: 'Export print PNGs, a proof or a layer package after checking the design',
+    shortcut: { key: 'E', mod: true },
     needsProject: true
   },
   'file.close': { label: 'Close project', hint: 'Close the project', needsProject: true },
@@ -279,7 +286,17 @@ export const MENUS: readonly { id: string; label: string; items: readonly (Comma
     {
       id: 'file',
       label: 'File',
-      items: ['file.new', 'file.open', '-', 'file.save', 'file.saveAs', '-', 'file.close']
+      items: [
+        'file.new',
+        'file.open',
+        '-',
+        'file.save',
+        'file.saveAs',
+        '-',
+        'file.export',
+        '-',
+        'file.close'
+      ]
     },
     {
       id: 'edit',

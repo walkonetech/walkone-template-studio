@@ -16,6 +16,7 @@ import { previewCache } from './samplePhotos'
 import { layoutStore, useLayout } from './layoutStore'
 import { LayersPanel } from './LayersPanel'
 import { NewProjectDialog } from './NewProjectDialog'
+import { ExportDialog } from './ExportDialog'
 import { PropertiesInspector } from './PropertiesInspector'
 import { RecoveryDialog } from './RecoveryDialog'
 import { StatusBar } from './StatusBar'
@@ -159,6 +160,7 @@ export function EditorScreen(): React.JSX.Element {
     <div className="editor">
       <RecoveryDialog />
       <NewProjectDialog />
+      <ExportDialog />
       <TopBar />
       <div className="editor-body">
         {project && <ToolRail />}

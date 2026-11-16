@@ -73,7 +73,7 @@ Edit view; **Sample photos** (on/off, shuffle, replace one); **Without placehold
 Panel listing Errors (block export) and Warnings (allow with confirmation), each with description, affected layer, and "Select"/"Fix" action. Run on demand and before export.
 
 ## 12. Export workflow
-Choose target: DSLR Booth ZIP, layer package, flattened PNG, native project. Preflight runs; show summary; choose destination; progress; success with "Reveal in Finder/Explorer." Failures show which step failed and what remains.
+**Implemented (Phase 6A, vendor-neutral):** one Export dialog (⌘E): file list with names and sizes (Print sheet / Design / Proof / Layer package; proof badged "Not for printing"), Checks (preflight summary + items; errors disable Export…), main-owned folder picker, progress, conflict step (Replace / Keep both / Cancel), done step with per-file "Show in Finder/Explorer". DSLR Booth ZIP arrives as another target in 6B. Original plan: Choose target: DSLR Booth ZIP, layer package, flattened PNG, native project. Preflight runs; show summary; choose destination; progress; success with "Reveal in Finder/Explorer." Failures show which step failed and what remains.
 
 ## 13. Errors, warnings, empty states
 - Errors: what failed, why, what to do; no raw stack traces by default (details expandable).
