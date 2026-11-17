@@ -33,7 +33,7 @@ Prove on a real Windows machine that:
 - The source is in the owner's **private GitHub repo** (branch `main`, pushed 2026-11-17, including Phase 6D and this handoff). Access needs the owner's GitHub account.
 - On Windows: install Node.js 24 LTS and Git, clone the repo, then run `npm install`, `npm run build` and `npm start`. There is no installer yet; packaging is planned for later.
 - `npm test` should pass on Windows too. Record any failure exactly.
-- The five real dslrBooth templates used as test data are **private client files**. They are not in the repo and must not be uploaded anywhere. On the laptop, use templates the owner exports from his own dslrBooth.
+- The five real dslrBooth templates used as test data are **private client files**. They are not in the repo and must not be uploaded anywhere. On the laptop, use templates the owner exports from their own dslrBooth.
 
 ## Phase 6C test plan (each step: pass / fail plus notes and photos of prints)
 
