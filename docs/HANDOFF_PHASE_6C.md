@@ -73,6 +73,16 @@ Prove on a real Windows machine that:
 - Required: an automatic **safe-area / 2-inch-cut check**. Planned: event theme presets, bundled font library, company profile, asset library with folders, client approval by email, Light/Dark mode, installer. Long term: the editor becomes a module of a standalone booth app replacing dslrBooth; Windows workstation first-class, iPad later.
 - 6C findings about the 2-inch cut, fonts and Windows rendering feed directly into the safe-area check and the redesign.
 
+## Notes for Craft Anything (the tool that runs 6C on the laptop)
+Craft Anything (github.com/storytold/craft-anything) studies how software works with inspection tools and can have a coding agent build a version of it; it has a **Clean room** mode (only what a user can see: windows, outputs, files it writes) and a **Deep** mode (reads the program's code). It produced the earlier dslrBooth 7.48 runtime findings (research/DSLRBOOTH_748_RUNTIME_FINDINGS.md, dslrBooth 7.48.0903.1). For 6C:
+- **Study and check only — no Build.** 6C needs observations and evidence, not a rebuild. Don't start a "Recreate dslrBooth" or "Recreate Template Studio" project.
+- **Use Clean room for dslrBooth.** Every 6C question is about observable behaviour: what dslrBooth accepts on import, what it shows, which output files it writes (`_1x`/`_2x`), what prints. Template Studio must never copy dslrBooth's code, assets or branding (project rule), and dslrBooth's licence terms on reverse engineering have not been reviewed.
+- **Template Studio's repo is the owner's own** and may be inspected freely. But no agent may edit it, commit to it or push from it during 6C: keep Craft Anything's project folder separate, and report problems instead of fixing them. Code changes are made on the Mac by Claude Code from the pass/fail list.
+- **Installing Template Studio:** prefer `npm ci` (exact versions from the lockfile). Approve npm for this project only; don't choose "always allow" broadly.
+- **Privacy:** questions and screenshots may go to an AI provider. Use test templates made for 6C, or the owner's own templates with their OK; keep client artwork and photos out of AI requests where possible.
+- **People do the physical parts:** photo sessions, printing, cutting and judging prints. Craft Anything records the evidence (versions, file names and sizes, screenshots, the settings used).
+- **Return format:** the numbered pass/fail list for steps 1–16, each with evidence and a confidence level (Confirmed / Likely / Unknown), the exact dslrBooth version, and anything unexpected.
+
 ## Rules for whoever runs 6C
 - Report results honestly. Record failures with exact messages and screenshots or photos.
 - Don't change the project file format or add printer settings to templates.
