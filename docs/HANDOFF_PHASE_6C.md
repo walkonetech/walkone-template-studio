@@ -19,9 +19,7 @@ Phases 0–6B and 6D are complete. All of it was developed and tested on macOS o
 Quality on macOS: 876 unit tests pass, and the scripted suites that drive the built app pass. Importing the five real templates and exporting them again puts every photo slot exactly where it was. Each import, rendered as-is, matches dslrBooth's own `preview.png` as closely as an independent rebuild from the XML does.
 
 ## Hardware now available
-The owner has installed the **DNP dye-sub photo booth printer** on a **test laptop**. Phase 6C runs there. Before starting, confirm:
-- the laptop's OS (Windows expected);
-- that dslrBooth 7.48 is installed and licensed on it.
+The owner has installed the **DNP dye-sub photo booth printer** on a **Windows test laptop with dslrBooth installed** (confirmed by the owner, 2026-11-17). Phase 6C runs there. First step: note the exact dslrBooth version (Help/About). The format work targets **7.48**; if the laptop runs a different version, record it and test anyway, because differences are findings.
 
 ## Goal of Phase 6C
 Prove on a real Windows machine that:
