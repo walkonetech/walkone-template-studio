@@ -119,7 +119,7 @@ DSLR Booth ZIP export (Phase 6B), font embedding, image palette extraction, badg
 
 ## 3. Automated suites (optional cross-check)
 
-Built-app suites live in `research/editor-validation/` (see its README). Self-launching: `node research/editor-validation/validate-5d.js` (also `-5c`, `-5b`, `-5a`, `-4b`, `-4c`, `-4d`). `validate.js` needs the app running with the `WALKONE_DEV_*` variables and anti-occlusion flags (see README). Last recorded: 4:97, 4B:40, 4C:97, 5A:53, 5B:39, 5C:58/59 (check 26 open, see CURRENT_STATE), 5D:40, 6A:37, 6B:26 (`validate-6a.js`, `validate-6b.js`, need python3 + Pillow).
+Built-app suites live in `research/editor-validation/` (see its README). Self-launching: `node research/editor-validation/validate-5d.js` (also `-5c`, `-5b`, `-5a`, `-4b`, `-4c`, `-4d`). `validate.js` needs the app running with the `WALKONE_DEV_*` variables and anti-occlusion flags (see README). Last recorded: 4:97, 4B:40, 4C:97, 5A:53, 5B:39, 5C:59 (58/59 while a stray test app held port 9510, see CURRENT_STATE), 5D:40, 6A:37, 6B:26 (`validate-6a.js`, `validate-6b.js`, need python3 + Pillow).
 
 ## 4. Reporting issues
 For each failure note: steps, expected vs actual, screenshot, OS/version, and whether it reproduces on a fresh `--user-data-dir`. Bring the list to the next session; it becomes the input for fixes before Phase 6.
