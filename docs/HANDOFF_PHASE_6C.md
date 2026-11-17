@@ -1,9 +1,11 @@
 # Phase 6C handoff — WalkOne Template Studio (2026-11-17)
 
-> Paste-ready status for planning Phase 6C (ChatGPT) and running it on the test laptop (Craft Anything). Kept in the repo at `docs/HANDOFF_PHASE_6C.md`; the full picture is in `docs/CURRENT_STATE.md`, `docs/ROADMAP.md` and `docs/PRODUCT_SPEC.md` §0.
+> Paste-ready status for planning Phase 6C (ChatGPT) and running it on the test laptop (Craft Anything). Kept in the repo at `docs/HANDOFF_PHASE_6C.md`; the full picture is in `docs/CURRENT_STATE.md`, `docs/ROADMAP.md`, `docs/PRODUCT_SPEC.md` §0 and, for the long-term product direction, `docs/PRODUCT_ECOSYSTEM.md` (ADR-049).
 
 ## What the project is
 WalkOne Template Studio is an internal desktop app (Electron + React + TypeScript) for a photo booth company. Its job is to build print templates (2×6 photo strips and 4×6 prints) for LumaSoft **dslrBooth 7.48** on Windows. Photo slots are a real layer type; artwork and text are layers. The project's own file format is `.boothproject`, which is vendor-neutral. dslrBooth support lives only in an import/export adapter.
+
+**Long-term direction (owner-approved, planning only):** Template Studio stays a standalone app and will also become the full-capability template editor inside **WalkOne Booth**, a future Windows-first booth platform that replaces dslrBooth. One shared editor, never two. dslrBooth compatibility is the migration path, later a legacy adapter. WalkOne Booth work has **not** started and is not approved; Phase 6C is about Template Studio + dslrBooth + the DNP printer only.
 
 ## Where things stand
 Phases 0–6B and 6D are complete. All of it was developed and tested on macOS only. **Windows has never been tested.**
@@ -70,7 +72,7 @@ Prove on a real Windows machine that:
 ## Product direction to keep in mind (owner-approved, after 6C)
 - Users are the operator's team; **event clients never use the app**; the main client approves a proof.
 - Two ways in: a heavily guided **Design Guide** for first-timers (print size first → event type → style → colours → photos → logo → words → company branding → layout → done; conditional steps) and a **Canva-style Editor** for power users.
-- Required: an automatic **safe-area / 2-inch-cut check**. Planned: event theme presets, bundled font library, company profile, asset library with folders, client approval by email, Light/Dark mode, installer. Long term (ADR-049, docs/PRODUCT_ECOSYSTEM.md): Template Studio stays a standalone app and also becomes the full-capability editor inside **WalkOne Booth**, a future Windows-first platform replacing dslrBooth; one shared editor, never two. WalkOne Booth work is not approved yet; 6C's printer and safe-area measurements will feed its future Output Profiles.
+- Required: an automatic **safe-area / 2-inch-cut check**. Planned: event theme presets, bundled font library, company profile, asset library with folders, client approval (a simple yes/no by email first; proof links with comments and approved event revisions later, mechanism undecided), Light/Dark mode, installer. Long term (ADR-049, docs/PRODUCT_ECOSYSTEM.md): Template Studio stays a standalone app and also becomes the full-capability editor inside **WalkOne Booth**, a future Windows-first platform replacing dslrBooth; one shared editor, never two. WalkOne Booth work is not approved yet; 6C's printer and safe-area measurements will feed its future Output Profiles.
 - 6C findings about the 2-inch cut, fonts and Windows rendering feed directly into the safe-area check and the redesign.
 
 ## Notes for Craft Anything (the tool that runs 6C on the laptop)

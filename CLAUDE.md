@@ -5,6 +5,8 @@ This file is the persistent rulebook for every Claude Code session on this proje
 ## Project in one paragraph
 WalkOne Template Studio is an internal desktop tool (Electron + React + TypeScript; see docs/CURRENT_STATE.md for what exists) for WalkOne Entertainment, LLC that speeds up creating custom photo booth print templates for LumaSoft DSLR Booth / LumaBooth. It is a focused print-template tool, not a general design app. See [docs/PRODUCT_SPEC.md](docs/PRODUCT_SPEC.md).
 
+**Long-term direction (ADR-049, [docs/PRODUCT_ECOSYSTEM.md](docs/PRODUCT_ECOSYSTEM.md); planning only):** Template Studio stays a first-class standalone app (macOS and Windows) and will also be the full-capability template editor inside **WalkOne Booth**, a future Windows-first, local-first booth platform that replaces dslrBooth. One shared Template Studio core serves both; dslrBooth support is a migration adapter that later becomes legacy interoperability. WalkOne Booth development is **not** approved to start.
+
 ## Before beginning any work
 1. Read this file.
 2. Read [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md) — it says which phase is active.
@@ -15,6 +17,7 @@ WalkOne Template Studio is an internal desktop tool (Electron + React + TypeScri
 | Topic | Document |
 |---|---|
 | What & why | docs/PRODUCT_SPEC.md |
+| Product ecosystem (standalone + WalkOne Booth, long-term) | docs/PRODUCT_ECOSYSTEM.md |
 | UX | docs/UX_SPEC.md, docs/USER_WORKFLOWS.md |
 | Domain model | docs/DATA_MODEL.md |
 | DSLR Booth | docs/DSLRBOOTH_COMPATIBILITY.md |
@@ -39,6 +42,8 @@ WalkOne Template Studio is an internal desktop tool (Electron + React + TypeScri
 - Prefer deterministic rendering/export.
 - No cloud, accounts, billing, sync, or marketplace in v1.
 - No speculative abstractions without a foreseeable use.
+- **One template editor only (ADR-049).** Never build a second editor for WalkOne Booth; the standalone app must never become a thin screen that needs the booth runtime. Keep the seams that make later extraction a move, not a rewrite: domain free of Electron/React, editor state behind its ports, typed IPC, adapters outside the domain. Do not restructure the repo into `apps/`/`packages/` without approval.
+- Company Profile, Output Profiles (printer/media/cut/safe margins) and sharing/SMS settings stay **outside** `TemplateProject`; SMS and provider credentials never belong in Template Studio.
 - Strict TypeScript. Prefer small, testable modules. Keep UI, editor state, rendering, storage, and export adapters separated.
 
 ## Honesty rules

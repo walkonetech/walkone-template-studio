@@ -73,5 +73,14 @@ Optional `sourceCompatibility: { [adapterId]: { adapterVersion?, importedAt, pro
 ## 10. JSON safety
 The model is plain data produced by schemas: no functions, DOM/canvas/Electron objects or Buffers. Opaque compatibility data is restricted to JSON values and key-sorted on serialize.
 
-## 11. Known limitations
+## 11. What stays out of `TemplateProject` (ADR-049, ADR-043)
+The template source document describes the design only. These belong to other, future stores and must **not** be added as `TemplateProject` fields:
+- **Company Profile** (company name, logos, brand colours, preferred fonts, contacts, default sharing branding, default export settings and output profiles). A template may later *reference* a company element (e.g. "company logo"), resolved from the profile.
+- **Output Profiles / printer finishing**: printer model, driver or PrintTicket settings, media, cut positions (e.g. the 2-inch cut), safe margins, overscan, borderless behaviour. The safe-area check reads the active profile; the template stays vendor-neutral.
+- **Sharing / SMS / email settings and provider credentials** (WalkOne Booth only; credentials in OS-backed secure storage, never in project files, event packages, plain JSON or logs).
+- **Event-runtime state** (sessions, captures, print and share queues) and **approved event revisions** as records (the approval workflow is future; a revision snapshots a template, it is not a template field).
+
+Where these live and how both apps read them is open (docs/PRODUCT_ECOSYSTEM.md §17). Any change to this list needs an ADR and, if it touches the file, a `schemaVersion` decision.
+
+## 12. Known limitations
 Only inches; no gradients/blend modes/shadows; photo frame styles limited to none/solid; no crop rectangles; groups have no rotation/opacity semantics; layer order is by `zIndex` per parent; no badges, templates, recipes. These are additive and will bump `schemaVersion` when they change existing shapes.

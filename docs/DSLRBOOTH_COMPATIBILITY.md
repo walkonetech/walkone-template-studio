@@ -115,3 +115,6 @@ Format may change between DSLR Booth releases; fixtures should record the origin
 
 ## 15. Future discoveries
 Record in research notes first, then update sections 1–3 and 7, ADRs if architecture changes.
+
+## 16. Long-term role of this adapter (ADR-049, planning only)
+dslrBooth compatibility is the **migration path**, not the destination. Now: Template Studio exports to (6B) and imports from (6D) dslrBooth 7.48. Later: Template Studio also exports a native WalkOne Booth template/runtime package (format not designed). Once WalkOne Booth is the primary runtime, this adapter stays as **legacy interoperability** (importing old templates, supporting booths still on dslrBooth). It is never the internal format, and `TemplateProject` is never reshaped around dslrBooth. Research into dslrBooth behaviour stays **clean-room** (observable behaviour, outputs and files only; no copied code, assets or branding). See docs/PRODUCT_ECOSYSTEM.md §7.

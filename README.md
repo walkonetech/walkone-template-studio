@@ -25,7 +25,7 @@ Canvas editor with first-class photo slots, text, shapes, images, groups, layers
 - [Research notes](research/README.md)
 
 ## Planned (see the roadmap)
-Design Guide (event type → style → colours → photos → logo → words → company branding → layout → done) with an automatic safe-area / 2-inch-cut check; event theme presets; a bundled Canva-like font library; company profile/settings; asset library with project folders; simple client approval by email; Light/Dark appearance; Windows packaging/installer; later iPad and a video option.
+Design Guide (event type → style → colours → photos → logo → words → company branding → layout → done) with an automatic safe-area / 2-inch-cut check; event theme presets; a bundled Canva-like font library; company profile/settings; asset library with project folders; simple client approval by email (proof links and approval history later); Light/Dark appearance; Windows packaging/installer; later iPad and a video option.
 
 ## Development
 Requires Node 20+ (tested on Node 24). Commands: `npm install`, `npm run dev`, `npm run build`, `npm run start` (preview of the build), `npm test` (876 unit tests), `npm run typecheck`, `npm run lint`, `npm run format:check`. Manual testing: [docs/MANUAL_TEST_GUIDE.md](docs/MANUAL_TEST_GUIDE.md). Private dslrBooth client templates used as fixtures are local-only and never committed.
