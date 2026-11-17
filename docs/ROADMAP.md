@@ -107,7 +107,12 @@ Rounds 1–2 done as mockups (2026-11-16). **Sequencing (owner):** Phase 6B firs
 - **Done:** Phase 6B (ADR-047). **Next:** The owner will bring the DNP printer to the booth PC for the open printer checks.
 - **Done after 6B:** the **DSLR Booth importer** (Phase 6D, ADR-048). **Next proposed:** 6C validating import + export + printing on the Windows booth PC / test laptop with the DNP printer — the first Windows test of the app (ADR-043).
 - **Then:** more GUI rounds (Design Guide + Editor), including the **font library** (ADR-044), **company profile/settings** and **asset library**; then the redesign build.
-- **Long term:** the editor becomes a module of a standalone booth application replacing dslrBooth (ADR-042); iPad exploration (ADR-043); video option; installer.
+- **Long term:** standalone Template Studio + the same editor inside **WalkOne Booth**, the dslrBooth replacement (ADR-049, which resolves the architecture part of ADR-042); Windows-first booth runtime, iPad/tablet later for guest/companion roles (ADR-043); video option; installer.
+
+### After 6C: two coordinated tracks (ADR-049, [PRODUCT_ECOSYSTEM.md](PRODUCT_ECOSYSTEM.md))
+Future work is no longer only "continue Template Studio": Template Studio stays a standalone product and becomes the full-capability editor module of **WalkOne Booth**, with one shared core.
+- **Template Studio track** (continues; each phase still needs approval): complete 6C validation and fixes → safe-area check + **output profiles** (2-inch cut, media, margins; from 6C measurements) → **Design Guide** (+ GUI rounds and the Canva-style editor redesign) → asset library and **company profile** improvements → proof / client approval → installer / packaging → standalone polish.
+- **WalkOne Booth track** (**not approved; starts only on explicit owner approval**): architecture and shared contracts (incl. package extraction strategy) → Windows shell → Event Manager → native Template Studio integration (event context in, native template out, Event Readiness) → template runtime format → test capture simulator → Print Service / output profiles → sharing queue → SMS / email / QR → real camera adapters → guest runtime → operator dashboard and Booth Health → migration away from dslrBooth (dslrBooth support becomes a legacy adapter).
 
 ### Later
 Badge Builder, template library, Design Recipes, asset library (global), external providers, further polish.

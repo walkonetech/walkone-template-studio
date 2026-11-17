@@ -10,6 +10,7 @@ Sections 1–18 are the original **Proposed** conceptual UX (pre-build); section
 - **Safe-area overlay:** visible 2-inch cut and safe lines on strips; live warnings with fixes.
 - **Appearance:** Light/Dark setting later (round 1 direction B).
 - Round 1–2 mockups were reviewed by the owner (private artifact); more rounds precede the build, which is scheduled after Phase 6C.
+- **Two hosts, one UI (ADR-049):** the same Template Studio UI runs standalone and inside WalkOne Booth (future). Inside the booth it opens from an event with the event's context prefilled (name, date, client, venue, format, output profile, company branding, palette) and returns to Event Setup when saved; the Design Guide skips questions the event already answers. Booth-only screens (Event Readiness, Booth Health, sharing/SMS setup) belong to WalkOne Booth, not Template Studio. See [PRODUCT_ECOSYSTEM.md](PRODUCT_ECOSYSTEM.md).
 
 ## 1. UX principles
 Fast for a single expert operator; readable (no tiny type, no needlessly dense controls); keyboard-friendly; never lose work; show consequences (live preview); explain problems with a path to fix; stay focused on booth templates.

@@ -130,3 +130,11 @@ DSLR Booth packages (workflow K) are Phase 6B; workflow L (layer package) was bu
 
 ## X. Design Guide (planned; owner direction, mockups first)
 Print size → event type → style → colours/background → photos (count, orientation, size) → logo/monogram → words → company branding → layout → done (export, client proof, open in the editor). Conditional steps per event type; automatic safe-area / 2-inch-cut check; "Save as event theme" for the next similar event. Clients never use it; the main client approves the proof.
+
+## Y. Edit an event's template inside WalkOne Booth (future, ADR-049; not approved to build)
+**Happy:** WalkOne Booth → Event → Template → Open Template Studio (the same editor as the standalone app) → event name, date, client, venue, format, output profile, company branding and palette arrive prefilled → design or adjust → Save → back to Event Setup → Event Readiness checks the template (valid, safe-area passed) together with camera, printer, sharing and storage → Launch Event.
+**Edge:** a template designed in standalone Template Studio opens without conversion; an approved event revision is immutable, so later edits create a new revision that needs approval again.
+
+## Z. Proof and client approval (future)
+**Happy:** template source → proof → client approval (link, comments, approval snapshot; clients never edit) → approved immutable event revision → live event.
+**Edge:** the mechanism for sending links (hosted service vs email hand-off) is undecided (ADR-006, PRODUCT_ECOSYSTEM.md §17).

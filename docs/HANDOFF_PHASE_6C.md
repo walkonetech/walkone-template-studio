@@ -70,7 +70,7 @@ Prove on a real Windows machine that:
 ## Product direction to keep in mind (owner-approved, after 6C)
 - Users are the operator's team; **event clients never use the app**; the main client approves a proof.
 - Two ways in: a heavily guided **Design Guide** for first-timers (print size first → event type → style → colours → photos → logo → words → company branding → layout → done; conditional steps) and a **Canva-style Editor** for power users.
-- Required: an automatic **safe-area / 2-inch-cut check**. Planned: event theme presets, bundled font library, company profile, asset library with folders, client approval by email, Light/Dark mode, installer. Long term: the editor becomes a module of a standalone booth app replacing dslrBooth; Windows workstation first-class, iPad later.
+- Required: an automatic **safe-area / 2-inch-cut check**. Planned: event theme presets, bundled font library, company profile, asset library with folders, client approval by email, Light/Dark mode, installer. Long term (ADR-049, docs/PRODUCT_ECOSYSTEM.md): Template Studio stays a standalone app and also becomes the full-capability editor inside **WalkOne Booth**, a future Windows-first platform replacing dslrBooth; one shared editor, never two. WalkOne Booth work is not approved yet; 6C's printer and safe-area measurements will feed its future Output Profiles.
 - 6C findings about the 2-inch cut, fonts and Windows rendering feed directly into the safe-area check and the redesign.
 
 ## Notes for Craft Anything (the tool that runs 6C on the laptop)

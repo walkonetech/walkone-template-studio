@@ -18,6 +18,7 @@ Statuses: **Accepted**, **Proposed**, **OPEN** (undecided — do not decide with
 **Decision:** `schemaVersion` + forward migrations with fixtures. **Consequences:** backward compatibility obligation.
 
 ## ADR-006 — No cloud/accounts/billing for initial release — Accepted
+_Note (2026-11-17): still in force for Template Studio v1. Future client proof/approval links and WalkOne Booth sharing (SMS/email/gallery) imply online services; they need their own decision when scheduled (PRODUCT_ECOSYSTEM.md §17)._
 **Decision:** v1 is an internal tool; no auth, sync, billing, marketplace. **Consequences:** keep architecture from needlessly blocking commercialization.
 
 ## ADR-007 — External providers behind adapters — Accepted
@@ -184,10 +185,12 @@ Vendor-neutral export, built on ADR-014. No schema change, no `.boothproject` ch
 **Consequences:** export rendering runs in the renderer (Konva) and bytes cross IPC once per file (tens of MB at most for 4×6 @ 600 DPI); there is no cancel during rendering (each file takes well under a second at 300 DPI); Windows rendering parity is unverified.
 
 
-## ADR-042 — Long-term product direction: editor module of a DSLR Booth replacement — OPEN (owner direction, 2026-11-16)
+## ADR-042 — Long-term product direction: editor module of a DSLR Booth replacement — OPEN (owner direction, 2026-11-16) → architecture resolved by ADR-049 (2026-11-17)
+_Update: the hybrid architecture (standalone Template Studio + the same editor inside WalkOne Booth) is Accepted in ADR-049. What stays open here: scheduling and approval of WalkOne Booth development itself._
 **Context:** the owner stated that Template Studio will ultimately be the **editor module of a larger, standalone photo booth application that replaces dslrBooth**. Until then it exports to dslrBooth (Phase 6B). The workflow it removes (Confirmed, owner): design every element in Canva or Photoshop on the Mac, export each one, then rebuild the template element by element in the dslrBooth editor on the Windows booth PC. **Direction (not yet a decision):** keep the vendor-neutral `TemplateProject` (ADR-002) as the long-term template format; keep the editor (React/Konva, editor state, rendering) separable from the Electron shell and from any vendor adapter, so that it can later be embedded in the booth application. The current "no cloud / single user / v1 scope" rules still apply until the owner changes them. **Consequences:** PRODUCT_SPEC §3 (target user) and the "focused print-template tool" framing will need revisiting when the replacement is scoped; nothing is built for it now.
 
 ## ADR-043 — Target platforms: Windows workstation first-class, macOS, iPad later — OPEN (owner direction, 2026-11-16)
+_Update (ADR-049): Template Studio stays cross-platform where practical; the WalkOne Booth runtime is Windows-first; iPad/tablet later for guest experience, remote control, companion display or management, not as a constraint on the initial runtime._
 **Context:** dslrBooth runs on a Windows PC; the owner designs on a Mac (daily driver) but wants Template Studio on a **Windows workstation**, and **eventually on iPad** to explore iOS. Development and all validation so far are macOS-only. **Proposed:** Windows becomes a tested target no later than Phase 6C (Electron build, file dialogs, Explorer reveal, fonts, anti-aliasing compared with macOS). iPad cannot run Electron: it would need the renderer-side editor in a different shell (e.g. a web/Capacitor-style wrapper) with the main-process services (files, export, fonts, assets) behind replaceable ports — the current typed IPC + Electron-free services (ADR-007, ADR-041) keep that path open. **Open:** when Windows packaging happens; whether/when an iPad spike is scheduled.
 
 ## ADR-044 — Bundled font library (Canva-like) — OPEN (owner direction, 2026-11-16)
@@ -224,3 +227,27 @@ The template defines how many photos a session takes: the booth stops at the num
 4. **Never silently discarded:** unknown elements/attributes, enabled shadows, photo KeepAspect False, unreadable/missing pictures, invalid elements and dropped copies go to `sourceCompatibility.dslrbooth` (`project.rootAttributes` without `OriginalDevice`, `layers[id].attributes`, `unmapped`) and the import report. `OriginalDevice` (a machine name) is dropped and the report says so. Edits prune per-layer entries whose layer was deleted (`editor/compatibility.ts`), so imported projects stay valid.
 5. **Not used by the exporter yet:** re-export generates its own `Id` (ADR-047) and flattens as usual; whether to reuse the original `Id` is a 6C question.
 **Consequences:** imported text/artwork stays raster (dslrBooth stored it flattened). Matching is measured against each template's own preview (validate-import.js).
+
+## ADR-049 — Template Studio remains standalone and becomes a shared full-spec module of WalkOne Booth — Accepted (owner, 2026-11-17)
+**Context:** the owner wants to replace their dependency on dslrBooth with **WalkOne Booth**, a complete local, Windows-first photo booth platform (events, capture, camera, printing, sharing incl. SMS, media, operator dashboard, event readiness, booth health). Template Studio already exists as a standalone desktop editor, and it is still valuable on its own: designing away from the booth PC, on macOS or Windows, client proofs, revisions, dslrBooth export during the migration, and staff who only design. ADR-042 left the long-term shape open. Full direction: [PRODUCT_ECOSYSTEM.md](PRODUCT_ECOSYSTEM.md).
+
+**Alternatives considered:**
+1. *Template Studio only as a module of WalkOne Booth* (retire the standalone app). Rejected: designing away from the booth PC and on macOS would need the whole booth runtime; staff who only design would carry camera/printer/sharing machinery; dslrBooth users during the migration lose their editor.
+2. *Two editors*: keep standalone Template Studio and write a separate editor inside WalkOne Booth. Rejected: two implementations of the domain, rendering, typography, safe-area and export logic would drift; templates would need conversion; every fix would be made twice; output could differ between the app that designed a template and the app that prints it.
+3. *Standalone only, with WalkOne Booth importing exported packages.* Rejected: operators would bounce between apps and re-enter event data; editing an event's template from the booth would not be possible.
+4. **Hybrid (chosen):** one shared Template Studio core, shipped both as the standalone app and as a full-capability module inside WalkOne Booth.
+
+**Decision:**
+1. **Template Studio stays a first-class standalone product.** It is never reduced to a thin screen that needs the booth runtime installed.
+2. **WalkOne Booth embeds the same Template Studio at full capability.** Functional parity wherever practical: a standalone template opens in WalkOne Booth without conversion, and a template edited in WalkOne Booth stays a normal Template Studio project.
+3. **One editor, never two.** A single shared core owns the `TemplateProject` model, rendering (canvas, proof, production), editor behaviour, typography, palettes, assets, photo slots, composition, preflight, safe-area logic, the native WalkOne template format and the dslrBooth adapter. A second template editor is prohibited, because it would drift (alternative 2).
+4. **Integration behaviour (future):** opened from an event, Template Studio receives the event context (name, date, client, venue, format, output profile, company profile, branding, palette, approved version) and returns the saved native template to Event Setup, where Event Readiness validates it.
+5. **Separation of concerns:** company profile, output/printer profiles, sharing credentials and event data are **not** part of `TemplateProject`; templates may reference them. `TemplateProject` stays vendor-neutral and is never restructured around dslrBooth (ADR-002).
+6. **WalkOne Booth architecture style:** a modular monolith with explicit internal module boundaries, Windows-first; SMS/email/QR sharing lives in its Sharing Service (never in Template Studio), with OS-backed credential storage and offline queues.
+7. **Package boundary:** a likely future split into `apps/template-studio`, `apps/walkone-booth` and `packages/{template-domain, template-editor, template-renderer, template-export, output-profiles, shared-ui, shared-contracts}` is **conceptual only**; the repository is not reorganised now.
+
+**Consequences:** new Template Studio work must keep today's seams intact (pure domain with no Electron/React; editor state behind injected ports; typed IPC contracts; adapters outside the domain), so that a later extraction is a move rather than a rewrite. Features that both surfaces need (output profiles, company profile, safe-area check, proof/approval) are designed once for both. The product spec's "not a photo booth runtime / not a replacement for DSLR Booth" non-goals continue to apply to **Template Studio**; the runtime belongs to WalkOne Booth.
+
+**Migration implications:** today Template Studio ↔ dslrBooth 7.48 (export 6B, import 6D); later Template Studio → native WalkOne Booth template/runtime package (format not designed; the runtime representation may differ from `.boothproject`); once WalkOne Booth is primary, dslrBooth support remains a legacy interoperability adapter.
+
+**Not approved by this ADR:** starting WalkOne Booth development, extracting packages, creating a monorepo or a new repository, the native runtime format, any sharing/SMS code, any change to `TemplateProject`, `.boothproject` or export behaviour. Phase 6C (Windows + DNP validation) remains the immediate work.

@@ -12,8 +12,9 @@ This spec was written before the build; the sections below remain the requiremen
 - **Event themes:** save a finished design's choices as an event theme preset and start the next similar event from it.
 - **Photo count comes from the template** (ADR-045): the booth takes as many photos as the template has slots; at least one.
 - **Platforms (ADR-043, OPEN):** Windows workstation first-class (dslrBooth runs on Windows), macOS (owner's daily driver), iPad later.
-- **Long term (ADR-042, OPEN):** the editor becomes a module of a standalone booth application replacing dslrBooth. Until the owner decides, the v1 non-goals in §22 still apply.
-- **Planned additions (ADR-044/046, OPEN):** bundled Canva-like font library (licence-safe fonts, so the booth PC needs none); company profile/settings (light/dark logo, website, booking number) feeding "company" elements; simple yes/no client approval by email; asset library with project folders; Light/Dark appearance; installer later; GIF/boomerang not needed; video maybe later.
+- **Product ecosystem (ADR-049, Accepted, 2026-11-17):** Template Studio stays a **first-class standalone** app **and** becomes the full-capability Template Studio module of **WalkOne Booth**, the future Windows-first, local-first booth platform (events, capture, camera, printing, sharing incl. SMS, media, event readiness, booth health) that replaces dslrBooth. One shared editor core, never a second editor. Company profile, output/printer profiles, sharing credentials and event data stay **outside** `TemplateProject`. WalkOne Booth development is not yet approved. Authoritative: [PRODUCT_ECOSYSTEM.md](PRODUCT_ECOSYSTEM.md). The §22 non-goals keep applying to Template Studio itself; the runtime belongs to WalkOne Booth.
+- **Clients:** event clients never operate Template Studio or WalkOne Booth; later they may get proof links, approval requests, comments and approval snapshots, never editing. Approved event templates become immutable event revisions (future).
+- **Planned additions (ADR-044/046, OPEN):** bundled Canva-like font library (licence-safe fonts, so the booth PC needs none); a **shared Company Profile** for both apps (name, logos, brand colours, preferred fonts, contacts, default sharing branding, export settings and output profiles) feeding "company" elements, kept outside templates; **Output Profiles** (media, safe margins, cut positions, borderless behaviour) that the safe-area check reads, never stored in templates; simple yes/no client approval by email; asset library with project folders; Light/Dark appearance; installer later; GIF/boomerang not needed; video maybe later.
 - **Owner's real workflow today:** designs on a Mac (Adobe CC; previously Canva/Photoshop), then rebuilds element by element in dslrBooth's editor on the Windows booth PC. The importer (6D) and exporter (6B) remove the rebuild.
 
 ## 1. Problem statement
@@ -116,7 +117,7 @@ Own format, working extension `.boothproject` (not final), schema-versioned, por
 Magnific/Freepik, Envato, future providers: search, generation, background generation/editing/removal, upscaling, download where licensing/API terms permit. **Not assumed available.** Isolated behind provider adapters; core works without them. Not built in early phases.
 
 ## 22. Non-goals (initial)
-_Note: ADR-042 (OPEN) records the owner's long-term direction toward a standalone booth application; these non-goals stay in force for v1 until the owner decides otherwise._
+_Note: these non-goals describe **Template Studio**. The booth runtime, sharing and event management belong to the future WalkOne Booth platform (ADR-049, [PRODUCT_ECOSYSTEM.md](PRODUCT_ECOSYSTEM.md)), not to Template Studio._
 
 Not a Photoshop or Canva replacement; not a full vector illustration tool; not a complete image editor; not a video editor; not cloud SaaS; not a social media design suite; not a website builder; not a CRM; not an event booking system; not a photo booth runtime; not a replacement for DSLR Booth. Also out of scope: billing, subscriptions, accounts, cloud sync, marketplace.
 

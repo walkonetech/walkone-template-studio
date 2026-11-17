@@ -5,7 +5,10 @@
 WalkOne Template Studio is an internal desktop application for **WalkOne Entertainment, LLC** that builds custom photo booth print templates (4x6 and 2x6 strips) for **LumaSoft dslrBooth / LumaBooth**. It replaces the manual Photoshop/Canva → rebuild-in-dslrBooth workflow with one focused editor whose output imports straight into dslrBooth.
 
 ## Who it is for
-The photo booth operator's team: experienced designers and first-time staff. **Event clients never use the app**; the main client approves a proof before the event. Long term (owner direction, OPEN, ADR-042) the editor becomes a module of a standalone booth application; Windows workstation first-class, iPad later (ADR-043).
+The owner/operator, internal staff and booth attendants: experienced designers and first-time staff. **Event clients never use the app**; they may later see proof links and approval requests, never editing.
+
+## Product ecosystem (ADR-049)
+Template Studio is a **first-class standalone** design app (macOS and Windows) **and** will become the **full-capability Template Studio module inside WalkOne Booth**, the future Windows-first, all-in-one local photo booth platform that replaces dslrBooth. There will be **one shared editor core**, never a second editor. WalkOne Booth development is **not yet approved**; Phase 6C (Windows + DNP printer validation) is the immediate work. See [docs/PRODUCT_ECOSYSTEM.md](docs/PRODUCT_ECOSYSTEM.md).
 
 ## Current phase
 **Phase 6D — DSLR Booth importer: complete** (after 6B dslrBooth export and 6A print export). Next, awaiting approval: **Phase 6C** real-booth validation on Windows with the DNP printer; then GUI rounds for the **Design Guide** (guided, for first-timers) + **Canva-style Editor** (power users). See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md) and [docs/ROADMAP.md](docs/ROADMAP.md).
@@ -15,7 +18,7 @@ Canvas editor with first-class photo slots, text, shapes, images, groups, layers
 
 ## Documentation
 - [CLAUDE.md](CLAUDE.md) — operating rules for AI coding sessions
-- [Product spec](docs/PRODUCT_SPEC.md) · [UX spec](docs/UX_SPEC.md) · [User workflows](docs/USER_WORKFLOWS.md)
+- [Product ecosystem: Template Studio + WalkOne Booth](docs/PRODUCT_ECOSYSTEM.md) · [Product spec](docs/PRODUCT_SPEC.md) · [UX spec](docs/UX_SPEC.md) · [User workflows](docs/USER_WORKFLOWS.md)
 - [Data model](docs/DATA_MODEL.md) · [Architecture plan](docs/ARCHITECTURE_PLAN.md)
 - [DSLR Booth compatibility](docs/DSLRBOOTH_COMPATIBILITY.md) · [Assets & integrations](docs/ASSET_AND_INTEGRATION_STRATEGY.md)
 - [Roadmap](docs/ROADMAP.md) · [Decisions](docs/DECISIONS.md) · [Testing strategy](docs/TESTING_STRATEGY.md) · [Glossary](docs/GLOSSARY.md) · [Session starter prompt](docs/SESSION_STARTER.md)

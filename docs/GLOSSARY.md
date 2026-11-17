@@ -32,5 +32,11 @@
 - **Native strip** — a dslrBooth template whose canvas is one 2×6 strip with `print_2_per_page="True"`; dslrBooth prints it two per 4×6 sheet (`_2x`) and shares the single strip (`_1x`).
 - **Two-strip sheet** — a 4×6 dslrBooth template holding two hand-copied 2×6 strips (how existing templates were built); the importer can turn it into one native strip.
 - **Import notes** — data from an imported dslrBooth template that Template Studio does not use but keeps verbatim (`sourceCompatibility.dslrbooth`), listed in the import dialog.
-- **Company profile** — (planned) the operator's company details (logos, website, booking number) that "company" elements in templates pull from.
+- **Company profile** — (planned, shared by Template Studio and WalkOne Booth, never stored in templates) the operator's company details (logos, website, booking number) that "company" elements in templates pull from.
 - **Main client** — the event client who approves the template proof before the event; clients never use the app.
+- **WalkOne Booth** — (future, ADR-049) the all-in-one local photo booth platform (events, capture, printing, sharing, media) that will replace dslrBooth and contain Template Studio as a module.
+- **Template Studio core** — (future packaging) the one shared implementation of the domain, editor, rendering and export used by both the standalone app and WalkOne Booth.
+- **Output Profile** — (future) printer/media settings outside the template: media, safe margins, cut positions, borderless behaviour, setup guidance; read by the safe-area check.
+- **Event Readiness** — (future, WalkOne Booth) the pre-launch check of camera, printer, template, sharing and storage.
+- **Booth Health** — (future, WalkOne Booth) the event-day status dashboard (camera, printer, queues, storage, errors).
+- **Approved event revision** — (future) the immutable version of a template the client approved for an event.
