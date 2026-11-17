@@ -1,6 +1,6 @@
 # Architecture Plan (Proposed)
 
-Nothing is implemented. The stack listed is a **preferred direction**, not a locked decision, except where [DECISIONS.md](DECISIONS.md) says Accepted. Canvas library: **Konva with react-konva** (ADR-029, chosen in Phase 3A).
+**Status (2026-11-17): implemented through Phase 6D.** Sections 1–4 and 7–14 began as the pre-build plan; the "implemented" sections (5–6, 5a–5i) describe the code as it is. Where they differ, the implemented sections and [DECISIONS.md](DECISIONS.md) win. Canvas library: **Konva with react-konva** (ADR-029). Not used despite the early plan: Sharp, JSZip, fast-xml-parser, SQLite (archives use yauzl/yazl, ADR-025; XML is read by a small in-house strict reader, ADR-048).
 
 ## 1. Principles
 Desktop-first, local-first; strict separation of UI, editor state, rendering, storage, and export adapters; vendor-neutral domain; testable pure modules; deterministic rendering; offline-capable; no speculative abstraction.
@@ -72,7 +72,7 @@ Canvas, Layers panel and Properties inspector are three views/controllers over O
 Sharp for raster ops/compositing (native module → packaging per-platform concern, **Risk**); JSZip for ZIP; fast-xml-parser for XML parse/build. All wrapped in thin modules so they are replaceable and testable.
 
 ## 8. Importers/exporters (adapters)
-`importers/dslrbooth` and `exporters/dslrbooth` depend on `domain`, never the reverse. Native format and PNG/layer exporters follow the same interface shape. Adapters return result objects with warnings.
+**As built:** `src/export/dslrbooth/` (exporter, 6B) and `src/import/dslrbooth/` (importer, 6D; ZIP reading in `src/projects/dslrImport.ts`) depend on `domain`, never the reverse. Original plan: `importers/dslrbooth` and `exporters/dslrbooth` depend on `domain`, never the reverse. Native format and PNG/layer exporters follow the same interface shape. Adapters return result objects with warnings.
 
 ## 9. Assets and integrations
 Asset service manages library/project assets. `integrations/<provider>` behind capability interfaces; core runs without them ([ASSET_AND_INTEGRATION_STRATEGY.md](ASSET_AND_INTEGRATION_STRATEGY.md)).
@@ -110,7 +110,7 @@ tests/
 Consider a monorepo-lite or path aliases to enforce one-way dependency (domain ← everything) with lint rules — **Future Research**.
 
 ## 13. Cross-platform
-macOS and Windows targets; avoid platform-specific paths; test font and Sharp behavior on both; DSLR Booth itself is Windows ([DSLRBOOTH_COMPATIBILITY.md](DSLRBOOTH_COMPATIBILITY.md)).
+macOS and Windows targets (Windows workstation first-class, ADR-043; **untested on Windows until Phase 6C**); iPad later would need the renderer-side editor in another shell with the main-process services behind the existing typed IPC ports; avoid platform-specific paths; test fonts and rendering on both; DSLR Booth itself is Windows ([DSLRBOOTH_COMPATIBILITY.md](DSLRBOOTH_COMPATIBILITY.md)).
 
 ## 14. Packaging/updates
 Deferred to Phase 18 (signing/notarization, installers, auto-update are unresolved).
@@ -129,3 +129,7 @@ Pure: `canvas/rendering/fontStack.ts` (requested family → render stack, shared
 
 ## 5h. Production render and general export (implemented in Phase 6A, ADR-014/041)
 Renderer is authoritative for pixels; main only verifies and writes. Shared pure module `src/export/` (alias `@export`, in both tsconfigs): `naming.ts` (portable file stems, kinds/suffixes, `isSafeExportFileName`, `uniqueFileName`), `png.ts` (CRC-32, header read, `withPngDensity` → `pHYs`), `package.ts` (package format id/version, flat entry-name rule). Pure editor modules: `editor/exportPlan.ts` (`exportOutputs`, `printableLeaves`, `classifyLayerPackage` bands + notes, `packageFiles`, `buildPackageManifest`, `packageReadme`) and `editor/exportPreflight.ts` (`runExportPreflight`: error/warning/info items; vendor-neutral). Rendering (`canvas/rendering`): `RenderOptions.photos` gained `'frame'` (native frame only; production and `frames.png`), plus `include` (leaf filter for one band; groups kept as containers) and `background: 'transparent'`; `drawPhotoPlaceholder` gained `frameOnly`. Renderer: `exportActions.ts` (load images, proof sample lookup from the current preview state, render each output, `toBlob` → bytes, assemble package entries), `ExportDialog.tsx` (outputs, preflight, progress, conflict, done/reveal), command `file.export` (⌘E, File menu, top-bar button), `layoutStore.exportOpen`. Main: `exportService.ts` (pure of Electron: destination ids, zod-validated requests, PNG verification + density, in-memory deterministic ZIP via yazl, conflict policy, atomic writes via `writeFileAtomic` (now accepts bytes), reveal only of written files) and `exportIpc.ts` (dialogs, `shell.showItemInFolder`, dev overrides `WALKONE_DEV_EXPORT_DIR`, `WALKONE_DEV_NO_REVEAL`). IPC: `export:chooseDestination`, `export:write`, `export:reveal`. The shared `Dialog` now honours Escape even when focus has fallen out of it, and the editor keyboard handler ignores keys while any modal is open.
+
+## 5i. DSLR Booth export and import (implemented in Phases 6B and 6D, ADR-047/048)
+Exporter `src/export/dslrbooth/` (pure, shared by renderer and main): `profile.ts` (7.48 constants, ARGB, US dates, stable 25-char Id), `templateXml.ts` (fixture-exact writer + flat reader), `plan.ts` (project → native `<Photo>` elements + full-canvas PNG `<Image>`s flattened by stacking order; strip/sheet/single variants), `preflight.ts`, `container.ts` (verifier used by main before writing), `outputs.ts`. The renderer renders the PNGs (`exportActions.ts`); main verifies and writes the ZIP (`exportService.ts`).
+Importer `src/import/dslrbooth/` (pure, main-only): `xml.ts` (strict-but-tolerant reader, no DTDs, limits), `template.ts` (typed elements, unknown data kept), `twoUp.ts` (two copied strips on a sheet), `map.ts` (→ `TemplateProject`, assets, report, `sourceCompatibility.dslrbooth`). `src/projects/dslrImport.ts` reads the ZIP in memory with limits and inspects pictures; handlers `dslrImportChoose` (main picker, analysis, opaque token) / `dslrImportCommit` (token + layout → `ProjectService.createNew`). Renderer: `DslrImportDialog.tsx`. `src/editor/compatibility.ts` prunes per-layer adapter data after every edit.

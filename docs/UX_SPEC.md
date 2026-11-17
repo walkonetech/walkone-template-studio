@@ -1,12 +1,21 @@
 # UX Specification
 
-All content is **Proposed** conceptual UX; no visual code exists. Wireframes are ASCII and illustrative only. Workflows: [USER_WORKFLOWS.md](USER_WORKFLOWS.md). Requirements: [PRODUCT_SPEC.md](PRODUCT_SPEC.md).
+Sections 1–18 are the original **Proposed** conceptual UX (pre-build); sections 19+ describe what is **implemented**. The **next UI direction** (owner-approved, mockups first) is in §0. Workflows: [USER_WORKFLOWS.md](USER_WORKFLOWS.md). Requirements: [PRODUCT_SPEC.md](PRODUCT_SPEC.md).
+
+## 0. Next UI direction (owner, 2026-11-16) — Design Guide + Canva-style Editor
+- **Start screen** offers both ways in: **Design Guide** (guided) and **Editor** (blank or from a theme), plus Open, Import from dslrBooth and recent projects.
+- **Design Guide:** one question per screen with a live preview, conditional steps (see PRODUCT_SPEC §0 for the v2 order); ends with a finished template (export, client proof, fine-tune in the editor).
+- **Editor (Canva as UX reference, [../research/CANVA_UX_REFERENCE.md](../research/CANVA_UX_REFERENCE.md)):** left rail with **text-labelled** icons (Photos, Text, Elements, Uploads, Background, Colours, Layers), a panel per category with one big primary action and previews of results; a **contextual toolbar in words** above the canvas (e.g. Frame, Reposition photo, Photo number, Sample photos On/Off); prominent **Export** top right; a "Design ideas" panel and a "Guide me" button.
+- **No hidden modes:** anything that changes what the canvas shows (sample photos, crop) has a visible labelled On/Off state. **Much bigger icons, hover help everywhere, colour coding by element kind** (photo slots / text / artwork / canvas) shared by rail, Layers and canvas; clear separation of areas.
+- **Safe-area overlay:** visible 2-inch cut and safe lines on strips; live warnings with fixes.
+- **Appearance:** Light/Dark setting later (round 1 direction B).
+- Round 1–2 mockups were reviewed by the owner (private artifact); more rounds precede the build, which is scheduled after Phase 6C.
 
 ## 1. UX principles
 Fast for a single expert operator; readable (no tiny type, no needlessly dense controls); keyboard-friendly; never lose work; show consequences (live preview); explain problems with a path to fix; stay focused on booth templates.
 
 ## 2. Home / dashboard
-- Primary actions: **New Project**, **Open…**, **Import DSLR Booth ZIP**.
+- Primary actions: **New Project**, **Open…**, **Import DSLR Booth ZIP** (implemented: New project, Open project…, Import from dslrBooth…).
 - Recent projects grid/list: thumbnail, name, event, format, last modified; missing-file indicator.
 - Quick start: recent templates, favorite recipes.
 - Empty state: friendly prompt to create first project or import a ZIP.
@@ -162,3 +171,7 @@ Full rationale, measurements and remaining debt: [../research/UI_UX_REVIEW.md](.
 
 ### Photo placeholders keep their shape (Phase 5D follow-up, Confirmed owner request)
 A photo placeholder's aspect ratio is locked on the canvas: only the four corner handles are shown and they scale uniformly (side handles are hidden). A selection that includes a photo also scales uniformly from the corners. The Width and Height fields in the inspector keep the ratio as well (editing one updates the other). Changing a photo's shape is therefore not possible in the editor; add or duplicate a photo to get a different shape. No schema change.
+
+## 17. Export and import dialogs (Phases 6A, 6B, 6D, implemented)
+- **Export (⌘E):** files grouped **For dslrBooth** (template · 2×6 strip ticked; template · 4×6 sheet for strips) and **Images** (Print, Design, Proof "Not for printing"); a Checks list (errors block, warnings allow, notes inform; dslrBooth-only checks tagged); folder picker, Replace / Keep both on conflicts, Show in Finder/Explorer.
+- **Import dslrBooth template:** dslrBooth's own preview beside the facts (template name, size and DPI, photos per session, pictures); for two-strip sheets a choice **One 2×6 strip, printed two per sheet** (Recommended when the copies match) / **The 4×6 sheet exactly as it is**; "What to know" notes for the chosen layout; Cancel / Choose another… / Import. A ZIP that is not a template shows "This template could not be imported" with the reason and Choose another….

@@ -18,3 +18,12 @@ One file per topic: `YYYY-MM-DD-topic.md` (or `topic.md`), containing:
 - Don't invent findings; record what was observed.
 - Reference fixtures by path; don't paste client-sensitive content.
 - Record provider API/licensing claims with source links and dates.
+
+## Notes in this folder
+- [DSLRBOOTH_FIXTURE_ANALYSIS.md](DSLRBOOTH_FIXTURE_ANALYSIS.md) — the five real dslrBooth exports (format evidence).
+- [DSLRBOOTH_748_RUNTIME_FINDINGS.md](DSLRBOOTH_748_RUNTIME_FINDINGS.md) — owner-reported dslrBooth 7.48 runtime behaviour.
+- [CANVAS_LIBRARY_EVALUATION.md](CANVAS_LIBRARY_EVALUATION.md) — Konva vs Fabric (→ ADR-029).
+- [REAL_TEMPLATE_VALIDATION.md](REAL_TEMPLATE_VALIDATION.md) — recreating a real template through the UI.
+- [UI_UX_REVIEW.md](UI_UX_REVIEW.md) — UI review before the 4C redesign.
+- [CANVA_UX_REFERENCE.md](CANVA_UX_REFERENCE.md) — Canva as the editor UX reference (patterns, not looks).
+- [editor-validation/](editor-validation/README.md) — scripted built-app validation suites and their recorded results.

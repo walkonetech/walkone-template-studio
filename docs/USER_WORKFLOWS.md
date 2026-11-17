@@ -1,6 +1,6 @@
 # User Workflows
 
-All workflows are **Proposed** future behavior. UI details: [UX_SPEC.md](UX_SPEC.md). Each lists happy path and key failure/edge states.
+Workflows A–O were written before the build as **Proposed** behaviour; sections marked "implemented" describe what exists. D (import), K (dslrBooth export) and V/W are implemented; L (layer package) was withdrawn (ADR-041 §8); the Design Guide (X) is planned. UI details: [UX_SPEC.md](UX_SPEC.md). Each lists happy path and key failure/edge states.
 
 ## A. Create new template from scratch
 **Happy path:** New Project → enter event info → choose format/orientation/DPI (pixel size shown) → choose design direction/palette → "Blank" layout with photo count → editor opens with print canvas and photo placeholders numbered 1..N → add background, text, badge → save.
@@ -119,3 +119,14 @@ All workflows are **Proposed** future behavior. UI details: [UX_SPEC.md](UX_SPEC
 4. **Export…** → choose a folder → files are written as `<Project>-print.png` etc. If names exist: **Replace**, **Keep both** (adds a number) or **Cancel**.
 5. **Show in Finder/Explorer** next to each written file. The project itself is never changed by exporting.
 DSLR Booth packages (workflow K) are Phase 6B; workflow L (layer package) was built in 6A and then withdrawn from the dialog by owner decision (ADR-041 §8); its classification is reused by 6B.
+
+## W. Import a dslrBooth template (Phase 6D, implemented)
+**Happy:** Start screen **Import from dslrBooth…** (or File › Import dslrBooth template…) → pick the ZIP dslrBooth exported → the dialog shows dslrBooth's preview, size/DPI, photos per session and notes → for a 4×6 sheet with two copied strips choose **one 2×6 strip printed two per sheet** (recommended) or **the sheet as is** → Import (asks about unsaved changes) → a new, Modified project opens; locked layers stay locked → Save.
+**Edge:** not a template (no template.xml) → clear error + Choose another…; missing/unreadable pictures, unknown settings, shadows, differences between the two strips → listed in the dialog, kept in the project's import notes, never silently dropped; text and decorations arrive as pictures (dslrBooth stored them flattened).
+
+## K2. Export for dslrBooth (Phase 6B, implemented)
+**Happy:** Export → **dslrBooth template · 2×6 strip** is ticked (one native strip, dslrBooth prints two per 4×6) → optional **4×6 sheet** version → Export → import the ZIP into dslrBooth on the booth PC.
+**Edge:** no photo slots or a photo number above 12 → blocked with the reason; Fit/Stretch slots, faded photos, unusual DPI → warnings. Real-booth behaviour is validated in Phase 6C.
+
+## X. Design Guide (planned; owner direction, mockups first)
+Print size → event type → style → colours/background → photos (count, orientation, size) → logo/monogram → words → company branding → layout → done (export, client proof, open in the editor). Conditional steps per event type; automatic safe-area / 2-inch-cut check; "Save as event theme" for the next similar event. Clients never use it; the main client approves the proof.

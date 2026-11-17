@@ -2,6 +2,20 @@
 
 Status labels used: **Confirmed** (stated by owner / validated), **Proposed**, **Assumption**, **Unknown**, **Needs Validation**, **Future Research**. See [DECISIONS.md](DECISIONS.md) for decision status and [ROADMAP.md](ROADMAP.md) for sequencing.
 
+## 0. Current direction (owner, 2026-11-16/17) — read this first
+This spec was written before the build; the sections below remain the requirement baseline. These owner decisions refine it (details: [ROADMAP.md](ROADMAP.md) "GUI mockup rounds" and "Owner direction after 6A", [DECISIONS.md](DECISIONS.md) ADR-042…048):
+- **Who uses it:** the photo booth operator's team — experienced designers and first-time staff. **Event clients never see the app.** The main client approves the template in advance (proof), then it is loaded into dslrBooth before the event. (**Confirmed**, owner.)
+- **Goal restated:** nobody should need Canva or Photoshop to make a booth template; the app must be **self-explanatory** (big labelled icons, hover help, colour-coded element kinds, no hidden modes). Canva is the UX reference for the editor's feel, never its look. (**Confirmed**.)
+- **Two ways in, one project:** a heavily guided **Design Guide** for first-timers and a **Canva-style Editor** for power users; switch at any time. (**Confirmed**, round 1.)
+- **Design Guide v2 order** (**Confirmed**, round 2): print size first (2×6 strip / 4×6 portrait / 6×4 landscape) → event type (wedding, birthday, prom/homecoming, church event, corporate & brand, graduation, baby shower, holiday party, sweet 16/quince, party, something else) → style for that event → colours (+ plain or picture background) → photos (how many, landscape/portrait/square, size relative to the print) → event logo/crest/image (upload / monogram / none) → words (names/title, date, optional line) → the operator's company branding (top or bottom; set once) → layout (a predetermined spot per element or a ready layout) → done. Steps and options are **conditional on earlier answers** (e.g. a monogram for weddings, not parties). The Guide must produce a finished, export-ready template without opening the editor.
+- **Automatic safe-area check (required):** warn while designing when anything would be lost at the **2-inch cut** of a strip or the print edge, with a fix; visible cut/safe lines; re-checked before export. dslrBooth does not wrap text.
+- **Event themes:** save a finished design's choices as an event theme preset and start the next similar event from it.
+- **Photo count comes from the template** (ADR-045): the booth takes as many photos as the template has slots; at least one.
+- **Platforms (ADR-043, OPEN):** Windows workstation first-class (dslrBooth runs on Windows), macOS (owner's daily driver), iPad later.
+- **Long term (ADR-042, OPEN):** the editor becomes a module of a standalone booth application replacing dslrBooth. Until the owner decides, the v1 non-goals in §22 still apply.
+- **Planned additions (ADR-044/046, OPEN):** bundled Canva-like font library (licence-safe fonts, so the booth PC needs none); company profile/settings (light/dark logo, website, booking number) feeding "company" elements; simple yes/no client approval by email; asset library with project folders; Light/Dark appearance; installer later; GIF/boomerang not needed; video maybe later.
+- **Owner's real workflow today:** designs on a Mac (Adobe CC; previously Canva/Photoshop), then rebuilds element by element in dslrBooth's editor on the Windows booth PC. The importer (6D) and exporter (6B) remove the rebuild.
+
 ## 1. Problem statement
 Creating a custom photo booth print template for each client event is slow and manual (**Confirmed**, owner workflow):
 
@@ -18,7 +32,7 @@ The same design work is effectively done twice (design tool, then DSLR Booth edi
 WalkOne Entertainment, LLC is a mobile entertainment business: DJ, MC/hosting, photo booths, event lighting, photo/video-related services. Photo booth templates are a recurring, per-event deliverable. Target (**Proposed**): automate or accelerate roughly 70–80% of repetitive assembly while keeping manual creative control. This figure is an aspiration, not a measured baseline (**Needs Validation**).
 
 ## 3. Target user
-- **Initial:** the owner/operator. Optimized as an internal production tool.
+- **Initial:** the owner/operator and the operator's team (designers and first-time staff); event clients never use the app (§0). Optimized as an internal production tool.
 - **Later (not v1):** other booth operators, DJs, event companies, photographers, rental businesses.
 - No multi-user/cloud features in v1; architecture should not needlessly block commercialization (see [DECISIONS.md](DECISIONS.md) ADR-006).
 
@@ -45,7 +59,7 @@ Physical dimensions + DPI are first-class; pixels are derived (see [DATA_MODEL.m
 DPI options: 300, 600, custom. The pixel numbers above are arithmetic examples; whether they match DSLR Booth's expectations is **Needs Validation** ([DSLRBOOTH_COMPATIBILITY.md](DSLRBOOTH_COMPATIBILITY.md)).
 
 ## 7. Event metadata
-Internal project name; event name, type, client, company/organization, date, location, city/state, subtitle/tagline, sponsor, hashtag, notes. Event types: Wedding, Birthday, Sweet 16, Corporate, School, Graduation, Prom, Holiday, Baby Shower, Bridal Shower, Anniversary, Church, Fundraiser, Festival, Sports, Community Event, Custom. Categories must be extensible (data-driven list, not a hardcoded enum only).
+Internal project name; event name, type, client, company/organization, date, location, city/state, subtitle/tagline, sponsor, hashtag, notes. Event types: Wedding, Birthday, Sweet 16 / Quinceañera, Corporate & Brand, School Dance / Prom / Homecoming, Graduation, Holiday Party, Baby Shower, Bridal Shower, Anniversary, Church Event, Fundraiser, Festival, Sports, Community Event, Party, Custom (the Design Guide v2 list in §0 is the first-screen subset). Categories must be extensible (data-driven list, not a hardcoded enum only).
 
 Design direction: Elegant, Luxury, Glamorous, Modern, Minimal, Fun, Youthful, Romantic, Floral, Rustic, Vintage, Urban, Neon, Corporate, Holiday, Retro, Sports, Custom; plus a freeform design brief. This metadata may later drive palettes, fonts, layouts, asset searches, prompts, and recipes. **No AI generation in early phases.**
 
@@ -84,10 +98,10 @@ Import PNG, JPG/JPEG, WebP, SVG, PDF where practical. Categories: Background, Te
 Built-in sample photos: toggle, shuffle, replace individual sample, preview without placeholders, final print preview.
 
 ## 16. Imports
-Import a DSLR Booth template ZIP: safe extraction, read `template.xml`, discover referenced images, parse supported configuration, convert to the internal model, reconstruct an editable canvas where possible, warn about unsupported/unknown properties. Also import assets (above) and native projects.
+**Status: built (Phase 6D, ADR-048).** Import a DSLR Booth template ZIP: safe extraction, read `template.xml`, discover referenced images, parse supported configuration, convert to the internal model, reconstruct an editable canvas where possible, warn about unsupported/unknown properties. Also import assets (above) and native projects.
 
 ## 17. Exports
-A. DSLR Booth Template ZIP. B. Layer package (e.g., background.png, photo-frames.png, overlay.png, badge.png, preview.png). C. Flattened PNG. D. Native editable project.
+A. DSLR Booth Template ZIP — **built (6B, ADR-047)**: native 2×6 strip by default (`print_2_per_page`), 4×6 sheet fallback, artwork/text flattened, photo slots native; real-booth validation pending (6C). B. Layer package — **withdrawn from the Export dialog** (owner, ADR-041 §8: clients should not need Canva/Photoshop). C. Flattened PNG — **built (6A)**: Print, Design and Proof PNGs. D. Native editable project — **built** (`.boothproject`).
 
 ## 18. DSLR Booth compatibility
 Critical requirement. DSLR Booth's format must never become the internal model; use `DSLRBoothImporter`/`DSLRBoothExporter` adapters. Existing owner-supplied exports act as fixtures. All behavior is **Needs Validation** until fixtures are analyzed. See [DSLRBOOTH_COMPATIBILITY.md](DSLRBOOTH_COMPATIBILITY.md).
@@ -102,6 +116,8 @@ Own format, working extension `.boothproject` (not final), schema-versioned, por
 Magnific/Freepik, Envato, future providers: search, generation, background generation/editing/removal, upscaling, download where licensing/API terms permit. **Not assumed available.** Isolated behind provider adapters; core works without them. Not built in early phases.
 
 ## 22. Non-goals (initial)
+_Note: ADR-042 (OPEN) records the owner's long-term direction toward a standalone booth application; these non-goals stay in force for v1 until the owner decides otherwise._
+
 Not a Photoshop or Canva replacement; not a full vector illustration tool; not a complete image editor; not a video editor; not cloud SaaS; not a social media design suite; not a website builder; not a CRM; not an event booking system; not a photo booth runtime; not a replacement for DSLR Booth. Also out of scope: billing, subscriptions, accounts, cloud sync, marketplace.
 
 ## 23. MVP boundaries (Proposed)

@@ -1,14 +1,17 @@
 # WalkOne Template Studio
 
-> **Status: early development.** A working editor exists (canvas, layers, inspector, save/open, autosave and crash recovery, redesigned UI). Image import and any export are not built yet. To resume work in a fresh session use [docs/SESSION_STARTER.md](docs/SESSION_STARTER.md).
+> **Status: working internal tool, in active development (2026-11-17).** The editor, project files, autosave/recovery, image import, print/proof PNG export, **dslrBooth 7.48 template export** and **dslrBooth template import** are built and tested on macOS. Next: real-booth validation on Windows with the DNP printer (Phase 6C), then the Design Guide + Editor redesign. To resume work in a fresh session use [docs/SESSION_STARTER.md](docs/SESSION_STARTER.md).
 
-WalkOne Template Studio is a planned internal desktop application for **WalkOne Entertainment, LLC** that streamlines building custom photo booth print templates (4x6 and 2x6 strips) for **LumaSoft DSLR Booth / LumaBooth**. It aims to replace a manual Photoshop/Canva → DSLR Booth reconstruction workflow with one focused editor.
+WalkOne Template Studio is an internal desktop application for **WalkOne Entertainment, LLC** that builds custom photo booth print templates (4x6 and 2x6 strips) for **LumaSoft dslrBooth / LumaBooth**. It replaces the manual Photoshop/Canva → rebuild-in-dslrBooth workflow with one focused editor whose output imports straight into dslrBooth.
 
 ## Who it is for
-The owner/operator of WalkOne Entertainment (v1 is an internal production tool). Later commercialization is not ruled out but is out of scope for now.
+The photo booth operator's team: experienced designers and first-time staff. **Event clients never use the app**; the main client approves a proof before the event. Long term (owner direction, OPEN, ADR-042) the editor becomes a module of a standalone booth application; Windows workstation first-class, iPad later (ADR-043).
 
 ## Current phase
-**Phase 4D — focused polish: complete** (after 4C redesign, 4B persistence safety, Phase 4 layers/inspector), followed by a real-template validation ([research/REAL_TEMPLATE_VALIDATION.md](research/REAL_TEMPLATE_VALIDATION.md)). Next phases await approval. See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md).
+**Phase 6D — DSLR Booth importer: complete** (after 6B dslrBooth export and 6A print export). Next, awaiting approval: **Phase 6C** real-booth validation on Windows with the DNP printer; then GUI rounds for the **Design Guide** (guided, for first-timers) + **Canva-style Editor** (power users). See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md) and [docs/ROADMAP.md](docs/ROADMAP.md).
+
+## What works today
+Canvas editor with first-class photo slots, text, shapes, images, groups, layers panel and inspector; snapping (move and Canva-style resize/size matching); 2×6 strips designed once and printed two-up; sample photos with crop; fonts with missing-font warnings; Event Palette; `.boothproject` save/open, autosave and crash recovery; image import; Export: dslrBooth template ZIP (native 2×6 strip or 4×6 sheet), Print / Design / Proof PNGs, with checks before export; Import of dslrBooth template ZIPs into editable projects.
 
 ## Documentation
 - [CLAUDE.md](CLAUDE.md) — operating rules for AI coding sessions
@@ -18,8 +21,8 @@ The owner/operator of WalkOne Entertainment (v1 is an internal production tool).
 - [Roadmap](docs/ROADMAP.md) · [Decisions](docs/DECISIONS.md) · [Testing strategy](docs/TESTING_STRATEGY.md) · [Glossary](docs/GLOSSARY.md) · [Session starter prompt](docs/SESSION_STARTER.md)
 - [Research notes](research/README.md)
 
-## Planned capabilities (not yet built)
-Event-driven project setup, reusable templates and Design Recipes, a purpose-built canvas editor with first-class photo placeholders, palette roles, a badge builder, a local asset library, sample-photo preview, preflight validation, and DSLR Booth template ZIP import/export plus PNG/layer exports.
+## Planned (see the roadmap)
+Design Guide (event type → style → colours → photos → logo → words → company branding → layout → done) with an automatic safe-area / 2-inch-cut check; event theme presets; a bundled Canva-like font library; company profile/settings; asset library with project folders; simple client approval by email; Light/Dark appearance; Windows packaging/installer; later iPad and a video option.
 
 ## Development
-Requires Node 20+ (tested on Node 24). Commands: `npm install`, `npm run dev`, `npm run build`, `npm run start` (preview of the build), `npm run typecheck`, `npm run lint`, `npm run format:check`.
+Requires Node 20+ (tested on Node 24). Commands: `npm install`, `npm run dev`, `npm run build`, `npm run start` (preview of the build), `npm test` (876 unit tests), `npm run typecheck`, `npm run lint`, `npm run format:check`. Manual testing: [docs/MANUAL_TEST_GUIDE.md](docs/MANUAL_TEST_GUIDE.md). Private dslrBooth client templates used as fixtures are local-only and never committed.

@@ -118,11 +118,11 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 
 ### I. Safety and data
 - [ ] Open a corrupted/renamed non-project file: clear error, no crash.
-- [ ] Real DSLR Booth ZIPs are NOT importable yet (importer is a later phase): confirm nothing claims to import them.
+- [ ] Importing a dslrBooth ZIP never changes the ZIP itself; a broken or non-template ZIP gives a clear error, no crash (§G4).
 - [ ] No client data appears in `git status`.
 
 ### J. Not built yet (expect absent)
-DSLR Booth ZIP export (Phase 6B), font embedding, image palette extraction, badge builder, templates.
+Design Guide and the Canva-style redesign, safe-area / 2-inch-cut check, event themes, bundled font library, company profile, asset library, client approval, Light/Dark appearance, installer, Windows build (untested), font embedding, image palette extraction, badge builder, templates/recipes.
 
 ## 3. Automated suites (optional cross-check)
 

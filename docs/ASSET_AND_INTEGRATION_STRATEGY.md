@@ -2,6 +2,12 @@
 
 All **Proposed** unless stated. No integration or asset library exists yet. Related: [DATA_MODEL.md](DATA_MODEL.md), [ARCHITECTURE_PLAN.md](ARCHITECTURE_PLAN.md), [DECISIONS.md](DECISIONS.md) ADR-007.
 
+## 0. Owner direction (2026-11-16, ADR-044/046, OPEN)
+- **Asset library, Canva-like,** with **project folders**: reusable logos, graphics and themes across templates. Today only project-owned assets exist (Phase 5A); imported dslrBooth pictures become project assets (6D).
+- **Bundled font library** (Canva-like browsing: search, categories, recently used, uploaded fonts) limited to fonts licensed for redistribution and use in printed artwork; exports rasterize text so the booth PC needs no fonts.
+- **Company profile assets:** light and dark company logo, website and booking number, used by "company" elements and the Design Guide's branding step.
+- **Event themes** (saved design choices) live alongside the library.
+
 ## 1. Local asset library
 A user-level library on disk (files) with a metadata index (SQLite candidate — scope OPEN, ADR-012). Works fully offline. Users can save frequently used assets; library assets can be browsed, searched, favorited. Library location configurable; backup/export is a future concern.
 

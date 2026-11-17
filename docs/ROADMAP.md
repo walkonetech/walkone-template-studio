@@ -80,7 +80,7 @@ A real production template recreated through the UI ([../research/REAL_TEMPLATE_
 **Status: complete (2026-11-17), ADR-048.** Import a dslrBooth template ZIP into a new editable project: safe ZIP reading, tolerant XML reader, mapping to photo slots / image layers / assets, two-strip sheet → one 2×6 strip (or as is), import report, unknown data preserved in `sourceCompatibility`. Validated against the five fixtures and their own previews. (Replaces the historical "Phase 13 — DSLR Booth importer".)
 
 ### Phase 6C — Real DSLR Booth compatibility validation
-Not started. Import Template Studio-generated exports into the authorized Windows dslrBooth environment and test rendering, printing and sharing. The DNP physical-printer checks (2-inch cut, `/print` endpoint) may run in parallel before or during 6C.
+Not started; **next proposed** (awaiting owner approval). Hardware ready: the owner installed the DNP printer on a test laptop (2026-11-17). Scope: (A) run Template Studio on Windows for the first time (build from source, `npm test`, dialogs, Explorer reveal, fonts, rendering); (B) import Template Studio's dslrBooth exports (native strip + 4×6 sheet, 4×6 postcards at 300/600 DPI) into dslrBooth 7.48 and check slots, frames, rounded corners, rotation pivot, `_1x`/`_2x` outputs, re-import with an equal `Id`, preview requirements; (C) print on the DNP printer with the 2-inch cut (printer/driver settings recorded, never stored in templates) and test the `/print` endpoint; (D) import the owner's own dslrBooth templates into Template Studio, export them back and compare prints. Results come back as a numbered pass/fail list; fixes and doc updates follow.
 
 ### GUI mockup rounds → Design Guide + Editor redesign (after 6B)
 Rounds 1–2 done as mockups (2026-11-16). **Sequencing (owner):** Phase 6B first; then a few more rounds of redesign, scoping and Guide work, then the build as its own phase(s). Several rounds of GUI mockups for owner review **before** any UI rebuild. Owner feedback from the first manual test (2026-11-16) that the mockups must answer:
@@ -112,7 +112,7 @@ Rounds 1–2 done as mockups (2026-11-16). **Sequencing (owner):** Phase 6B firs
 ### Later
 Badge Builder, template library, Design Recipes, asset library (global), external providers, further polish.
 
-**Numbering note:** the historical phase list below keeps its original numbers so completed history stays readable. Where it conflicts with the sequence above, the sequence above wins: old Phase 5 (photo placeholders) is largely delivered already; old Phase 6 (text, shapes, **image import**) is delivered by 5A and 5D; old Phase 7 → 5D; old Phase 12 (render/export) → 6A and 14 (DSLR exporter) → 6B/6C; old Phase 13 (importer) is unscheduled until approved.
+**Numbering note:** the historical phase list below keeps its original numbers so completed history stays readable. Where it conflicts with the sequence above, the sequence above wins: old Phase 5 (photo placeholders) is largely delivered already; old Phase 6 (text, shapes, **image import**) is delivered by 5A and 5D; old Phase 7 → 5D; old Phase 12 (render/export) → 6A and 14 (DSLR exporter) → 6B/6C; old Phase 13 (importer) → 6D (done).
 
 ---
 ## Historical phase list (original numbering)
@@ -173,14 +173,14 @@ Badge Builder, template library, Design Recipes, asset library (global), externa
 - **Acceptance:** same input → identical output; visual regression baseline established.
 - **Non-goals:** DSLR packaging.
 
-## Phase 13 — DSLR Booth importer
+## Phase 13 — DSLR Booth importer (delivered as Phase 6D, 2026-11-17)
 - **Objective:** Import real DSLR Booth ZIPs.
 - **Deliverables:** fixture analysis findings, safe extraction, parser, mapper, import report, unknown preservation.
 - **Dependencies:** real fixtures; Phases 2, 12.
 - **Acceptance:** all supplied fixtures import with documented warnings; compatibility doc updated with confirmed facts.
 - **Non-goals:** export.
 
-## Phase 14 — DSLR Booth exporter
+## Phase 14 — DSLR Booth exporter (delivered as Phase 6B; real-booth acceptance in 6C)
 - **Objective:** Produce DSLR Booth-compatible ZIPs.
 - **Deliverables:** exporter, deterministic packaging, preview image, round-trip tests.
 - **Dependencies:** Phase 13.

@@ -16,7 +16,7 @@
 - **Library Asset** — An asset in the user's reusable local library; copied into a project when used.
 - **Palette** — A set of colors assigned to semantic roles (primary, secondary, accent, background, text, …).
 - **Preflight** — Validation run before export producing errors and warnings.
-- **Fixture** — A real DSLR Booth template export stored in `tests/fixtures/dslrbooth/` as a compatibility reference.
+- **Fixture** — A real DSLR Booth template export stored in `tests/fixtures/dslrbooth/source/` as a compatibility reference (private client data: local only, never committed).
 - **Round Trip** — Converting DSLR Booth → internal → DSLR Booth (or reverse) and checking nothing is lost.
 - **DSLR Booth Adapter** — The importer/exporter pair that converts between the internal model and DSLR Booth's format.
 - **Flattened Export** — A single merged image (e.g., PNG) of the whole design.
@@ -25,3 +25,12 @@
 - **Proof PNG** — The print with the current sample photos in the slots, for client approval only; never production artwork.
 - **Print PNG / Design PNG** — Production raster exports: the whole print sheet / one copy of the design. Photo areas empty, native frames drawn.
 - **Provider Adapter** — An isolated module integrating an external asset/AI service.
+- **Design Guide** — (planned) the guided way to make a template, one question per screen with a live preview, for first-time staff; produces an export-ready template.
+- **Editor** — the Canva-style canvas editor for power users (exists; redesign planned).
+- **Event Theme** — (planned) a saved set of design choices (style, colours, fonts, layout) to start a similar event from.
+- **Safe area / 2-inch cut** — the region of a print that survives the printer's cut (a 4×6 cut into two 2×6 strips); content outside it is lost. The cut is printer/driver configuration, never stored in a template.
+- **Native strip** — a dslrBooth template whose canvas is one 2×6 strip with `print_2_per_page="True"`; dslrBooth prints it two per 4×6 sheet (`_2x`) and shares the single strip (`_1x`).
+- **Two-strip sheet** — a 4×6 dslrBooth template holding two hand-copied 2×6 strips (how existing templates were built); the importer can turn it into one native strip.
+- **Import notes** — data from an imported dslrBooth template that Template Studio does not use but keeps verbatim (`sourceCompatibility.dslrbooth`), listed in the import dialog.
+- **Company profile** — (planned) the operator's company details (logos, website, booking number) that "company" elements in templates pull from.
+- **Main client** — the event client who approves the template proof before the event; clients never use the app.
