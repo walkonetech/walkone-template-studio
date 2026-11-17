@@ -34,7 +34,8 @@ const ports: EditorPorts = {
   requestClose: (reason) => window.api.document.requestClose({ reason }),
   recoveryList: () => window.api.recovery.list(),
   recover: (sessionId) => window.api.recovery.recover({ sessionId }),
-  discardRecovery: (sessionId) => window.api.recovery.discard({ sessionId })
+  discardRecovery: (sessionId) => window.api.recovery.discard({ sessionId }),
+  dslrImportCommit: (token, layout) => window.api.dslrImport.commit({ token, layout })
 }
 
 export type ImportPlacementArg = ImportPlacement

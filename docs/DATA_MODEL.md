@@ -68,7 +68,7 @@ Package rules (implemented in `src/projects/`): asset `path` values must live un
 - Adding schema version 2 requires a migration entry, a stored v1 sample and a test, in the same change.
 
 ## 9. Source compatibility metadata (ADR-017)
-Optional `sourceCompatibility: { [adapterId]: { adapterVersion?, importedAt, project?, layers?, unmapped? } }`. `project` holds project-level vendor fields (e.g. for DSLR Booth: root flags); `layers` is keyed by layer id and used only where round-tripping needs it; `unmapped` holds verbatim leftovers. Values are `JsonValue` only (no functions, no `any`). The editor never reads it; copying a layer must not copy its entry; the exporter decides what is still valid. Not populated yet.
+Optional `sourceCompatibility: { [adapterId]: { adapterVersion?, importedAt, project?, layers?, unmapped? } }`. `project` holds project-level vendor fields (e.g. for DSLR Booth: root flags); `layers` is keyed by layer id and used only where round-tripping needs it; `unmapped` holds verbatim leftovers. Values are `JsonValue` only (no functions, no `any`). The editor never reads it; copying a layer must not copy its entry; the exporter decides what is still valid. Populated by the DSLR Booth importer (ADR-048, adapter id `dslrbooth`); every edit prunes `layers` entries whose layer no longer exists (`src/editor/compatibility.ts`).
 
 ## 10. JSON safety
 The model is plain data produced by schemas: no functions, DOM/canvas/Electron objects or Buffers. Opaque compatibility data is restricted to JSON values and key-sorted on serialize.

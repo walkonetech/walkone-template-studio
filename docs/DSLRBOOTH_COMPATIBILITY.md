@@ -29,6 +29,25 @@ Reported by the project owner (treated as **Confirmed by owner**, not independen
 
 Root values written: `Dimensions="0"`, `IsLegacy="True"`, `PrintToSecondaryPrinter="False"`, `LastSavedDate` (local, US format), stable 25-character `Id` (project + variant), `OriginalDevice="WalkOneTemplateStudio"`. Elements: observed defaults (Opacity 100, shadows off, KeepAspect True, StrokeColor default), `IsLocked="False"`. Encoding and ZIP layout as in §1a. **Needs Validation in 6C:** import into the real 7.48 install, native strip printing/sharing (`_2x`/`_1x`), `Dimensions` on a strip canvas, rotation pivot, re-import with an equal `Id`, preview requirements.
 
+## 1d. Importer (Phase 6D, ADR-048)
+`src/import/dslrbooth/` (pure) + `src/projects/dslrImport.ts` (ZIP reading). Mapping (test-covered):
+
+| dslrBooth | Template Studio | Status |
+|---|---|---|
+| `Width`/`Height`/`Resolution` | canvas inches = px / Resolution, DPI | CONFIRMED FROM FILE |
+| `BackgroundColor="#AARRGGBB"` | canvas colour `#rrggbb[aa]` | CONFIRMED FROM FILE |
+| `<Photo>` PhotoNumber, box, Rotation, Opacity/100, IsVisible, IsLocked | photo slot, Cover, same values | format CONFIRMED; rotation pivot Needs Validation |
+| `<Photo Thickness>0 StrokeColor>` | inside frame, slot grown by Thickness (borders grow outward) | Assumption (never seen non-zero) |
+| `<Image ImagePath KeepAspect>` | image layer + asset; True → Fit, False → Stretch | runtime findings |
+| `ZIndex` | stacking order (higher in front) | LIKELY (fixtures) |
+| `print_2_per_page="True"` (portrait) | two-up 4×6 output | runtime findings |
+| two strips repeated on a 4×6 sheet | one 2×6 strip printed two-up (default when the copies match) or the sheet as is | design choice (ADR-048) |
+| shadows, unknown attributes/elements, `Id`, `Dimensions`, `IsLegacy`, … | kept verbatim in `sourceCompatibility.dslrbooth` + report | preserved, not interpreted |
+| `OriginalDevice` | dropped (privacy), reported | — |
+| `preview.png` | shown in the import dialog only | — |
+
+Measured (validate-import.js, built app): every fixture imported as is renders as close to its own `preview.png` (outside photo boxes) as a direct Python rebuild of the XML does (mean difference 1.5–4.3 of 255; the residue is dslrBooth's own resampling); every photo slot exports back to its original box.
+
 ## 1a. Observed in the five current fixtures (OBSERVED)
 - Flat ZIP, deflate; always `template.xml` + `preview.png` + referenced PNGs; no folders; no unreferenced files.
 - `template.xml`: UTF-8 with BOM, CRLF; root `<Template Name Width Height Dimensions Resolution BackgroundColor print_2_per_page PrintToSecondaryPrinter LastSavedDate Id IsLegacy OriginalDevice>` with one `<Elements>` child holding only `<Image>` and `<Photo>` elements (self-closing, no nesting).

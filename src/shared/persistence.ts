@@ -27,6 +27,8 @@ export const PERSISTENCE_ERROR_CODES = [
   // Export (Phase 6A)
   'export-destination-missing',
   'export-invalid-output',
+  // DSLR Booth importer
+  'import-invalid',
   'invalid-request',
   'unexpected'
 ] as const

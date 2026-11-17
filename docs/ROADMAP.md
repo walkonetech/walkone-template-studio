@@ -76,6 +76,9 @@ A real production template recreated through the UI ([../research/REAL_TEMPLATE_
 ### Phase 6B — DSLR Booth 7.48 Export Adapter
 **Status: complete (2026-11-16), ADR-047.** dslrBooth template ZIP from the Export dialog: native 2×6 strip (default) and a 4×6 sheet fallback; photo slots native, artwork/text flattened into images by stacking order, frames and rounded corners exact; fixture-faithful `template.xml`/ZIP; dslrBooth preflight; verified before writing. Real-booth checks are Phase 6C. Original brief: uses the externally established interoperability rules in [../research/DSLRBOOTH_748_RUNTIME_FINDINGS.md](../research/DSLRBOOTH_748_RUNTIME_FINDINGS.md): native 2×6 by default (dslrBooth composes the two-up `_2x` print; sharing uses `_1x`), pre-composed 4×6 compatibility export later, outward photo borders, KeepAspect mapping, text native vs rasterized, PhotoNumber 1–12. Builds on the 6A renderer and file lifecycle.
 
+### Phase 6D — DSLR Booth Importer (done before 6C)
+**Status: complete (2026-11-17), ADR-048.** Import a dslrBooth template ZIP into a new editable project: safe ZIP reading, tolerant XML reader, mapping to photo slots / image layers / assets, two-strip sheet → one 2×6 strip (or as is), import report, unknown data preserved in `sourceCompatibility`. Validated against the five fixtures and their own previews. (Replaces the historical "Phase 13 — DSLR Booth importer".)
+
 ### Phase 6C — Real DSLR Booth compatibility validation
 Not started. Import Template Studio-generated exports into the authorized Windows dslrBooth environment and test rendering, printing and sharing. The DNP physical-printer checks (2-inch cut, `/print` endpoint) may run in parallel before or during 6C.
 
@@ -102,7 +105,7 @@ Rounds 1–2 done as mockups (2026-11-16). **Sequencing (owner):** Phase 6B firs
 
 ### Owner direction after 6A (2026-11-16) — see DECISIONS ADR-042…046
 - **Done:** Phase 6B (ADR-047). **Next:** The owner will bring the DNP printer to the booth PC for the open printer checks.
-- **Proposed after 6B:** the **DSLR Booth importer** (owner: needed), then 6C validating import + export on the Windows booth PC — the first Windows test of the app (ADR-043).
+- **Done after 6B:** the **DSLR Booth importer** (Phase 6D, ADR-048). **Next proposed:** 6C validating import + export + printing on the Windows booth PC / test laptop with the DNP printer — the first Windows test of the app (ADR-043).
 - **Then:** more GUI rounds (Design Guide + Editor), including the **font library** (ADR-044), **company profile/settings** and **asset library**; then the redesign build.
 - **Long term:** the editor becomes a module of a standalone booth application replacing dslrBooth (ADR-042); iPad exploration (ADR-043); video option; installer.
 

@@ -43,6 +43,7 @@ import {
 import type { EditorPorts } from './ports'
 import type {
   CloseReason,
+  DslrImportLayout,
   ImportAssetsResult,
   DocumentRequestKind,
   DocumentResult,
@@ -50,6 +51,7 @@ import type {
   OpenProjectInfo,
   RecoveryCandidateInfo
 } from '@shared/ipc'
+import { pruneCompatibility } from './compatibility'
 import { createAutosaver, type AutosaveStatus, type AutosaveTimers } from './autosave'
 import type { IpcResult } from '@shared/persistence'
 import { isEditable, topmostIds } from '@domain'
@@ -188,6 +190,8 @@ export interface EditorActions {
   }): Promise<OpResult>
   createSample(): Promise<OpResult>
   openFromDialog(): Promise<OpResult>
+  /** DSLR Booth importer: adopts the project created from an analysed ZIP (new, unsaved). */
+  importDslr(token: string, layout: DslrImportLayout): Promise<OpResult>
   openRecent(path: string): Promise<OpResult>
   save(): Promise<OpResult>
   saveAs(): Promise<OpResult>
@@ -654,6 +658,7 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
       createProject: (req) => run(() => ports.create(req)),
       createSample: () => run(() => ports.newSample()),
       openFromDialog: () => run(() => ports.open()),
+      importDslr: (token, layout) => run(() => ports.dslrImportCommit(token, layout)),
       openRecent: (path) => run(() => ports.openRecent(path)),
       save: () => saveWith('save'),
       saveAs: () => saveWith('saveAs'),
@@ -678,8 +683,9 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
           set({ lastMessage: READ_ONLY_MESSAGE })
           return false
         }
-        const next = mutate(project, ctx())
-        if (next === project) return false
+        const changed = mutate(project, ctx())
+        if (changed === project) return false
+        const next = pruneCompatibility(changed)
         apply(next, project, o)
         return true
       },

@@ -193,6 +193,11 @@ export function fakePorts(initial?: TemplateProject): FakePorts {
     recover: (sessionId) =>
       rec('recover', [sessionId], { status: 'ok' as const, value: info(initial ?? scene(), true) }),
     discardRecovery: (sessionId) =>
-      rec('discardRecovery', [sessionId], { status: 'ok' as const, value: null })
+      rec('discardRecovery', [sessionId], { status: 'ok' as const, value: null }),
+    dslrImportCommit: (token, layout) =>
+      rec('dslrImportCommit', [token, layout], {
+        status: 'ok' as const,
+        value: info(initial ?? scene(), true)
+      })
   }
 }

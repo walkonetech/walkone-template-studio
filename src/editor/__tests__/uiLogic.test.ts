@@ -89,14 +89,14 @@ describe('drawer auto-collapse', () => {
 })
 
 describe('command model', () => {
-  it('only New and Open work without a project', () => {
+  it('only New, Open and Import dslrBooth template work without a project', () => {
     const enabled = (Object.keys(COMMANDS) as CommandId[]).filter((id) =>
       isCommandEnabled(
         id,
         ctx({ hasProject: false, canUndo: true, canRedo: true, selectionCount: 3 })
       )
     )
-    expect(enabled.sort()).toEqual(['file.new', 'file.open'])
+    expect(enabled.sort()).toEqual(['file.importDslr', 'file.new', 'file.open'])
   })
 
   it('selection commands need a selection; undo/redo follow history', () => {

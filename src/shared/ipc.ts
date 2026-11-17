@@ -22,6 +22,10 @@ export const IpcChannel = {
   ProjectImportAssetData: 'project:importAssetData',
   /** Native picker for ONE preview photo; returns its bytes only (never stored in the project, no path crosses IPC). */
   ProjectPickPreviewPhoto: 'project:pickPreviewPhoto',
+  /** DSLR Booth importer: main shows the ZIP picker and returns the analysis (an opaque token, never a path). */
+  DslrImportChoose: 'dslrImport:choose',
+  /** Creates the project from an analysed ZIP (by token) in the chosen layout. */
+  DslrImportCommit: 'dslrImport:commit',
   /** Export (Phase 6A): main shows the folder picker and returns an opaque destination id (no path crosses IPC). */
   ExportChooseDestination: 'export:chooseDestination',
   /** Writes rendered outputs (PNG bytes / package entries) into a chosen destination. */
@@ -123,6 +127,46 @@ export interface PreviewPhotoData {
   pixelWidth: number
   pixelHeight: number
 }
+// ------------------------------------------------------------------------------------------- DSLR Booth importer
+
+/** 'strip' = one 2×6 strip printed two-up (the second strip on the sheet was a copy); 'as-is' = the sheet unchanged. */
+export type DslrImportLayout = 'as-is' | 'strip'
+export interface DslrImportCheck {
+  severity: 'error' | 'warning' | 'info'
+  code: string
+  message: string
+}
+export interface DslrImportPreview {
+  /** Opaque handle for the analysed file (main keeps the path). */
+  token: string
+  fileName: string
+  templateName: string
+  widthPx: number
+  heightPx: number
+  dpi: number
+  widthIn: number
+  heightIn: number
+  photoSlots: number
+  photoCount: number
+  images: number
+  /** Present when the sheet holds two matching strips side by side. */
+  twoUp: {
+    stripWidthIn: number
+    stripHeightIn: number
+    differences: string[]
+    crossing: number
+  } | null
+  recommendedLayout: DslrImportLayout
+  /** Import notes per layout ('strip' only when `twoUp`). */
+  checks: Partial<Record<DslrImportLayout, DslrImportCheck[]>>
+  /** dslrBooth's own preview from the ZIP (not imported), for comparison. */
+  preview: { data: Uint8Array; width: number; height: number } | null
+}
+export interface DslrImportCommitRequest {
+  token: string
+  layout: DslrImportLayout
+}
+
 // ------------------------------------------------------------------------------------------------ export (6A)
 
 /** A chosen export folder, known to the renderer only by an opaque id and a display name. */
@@ -261,6 +305,12 @@ export interface RendererApi {
     importAssetData(req: ImportAssetDataRequest): Promise<IpcResult<ImportAssetsResult>>
     /** Shows the native picker and returns the chosen picture's bytes for use as a PREVIEW sample (not saved anywhere). */
     pickPreviewPhoto(): Promise<IpcResult<PreviewPhotoData>>
+  }
+  dslrImport: {
+    /** Shows the native ZIP picker and analyses the chosen dslrBooth template (nothing is created yet). */
+    choose(): Promise<IpcResult<DslrImportPreview>>
+    /** Creates a new, unsaved project from the analysed template. */
+    commit(req: DslrImportCommitRequest): Promise<IpcResult<OpenProjectInfo>>
   }
   export: {
     /** Shows the native folder picker (main-owned); `cancelled` when dismissed. */

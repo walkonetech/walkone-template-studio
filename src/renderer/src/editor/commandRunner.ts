@@ -3,6 +3,7 @@ import type { OpResult } from '@editor/store'
 import type { CommandId } from '@editor/commands'
 import { editorStore } from './editorStore'
 import { layoutStore } from './layoutStore'
+import { chooseDslrTemplate } from './dslrImportActions'
 
 const st = editorStore.getState
 
@@ -26,6 +27,9 @@ export function runCommand(id: CommandId): void {
       return
     case 'file.open':
       void guarded('replace', () => s.openFromDialog())()
+      return
+    case 'file.importDslr':
+      void chooseDslrTemplate()
       return
     case 'file.save':
       void s.save()

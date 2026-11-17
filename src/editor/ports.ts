@@ -1,6 +1,7 @@
 import type { TemplateProject } from '@domain'
 import type {
   CloseReason,
+  DslrImportLayout,
   ImportAssetsResult,
   NewProjectRequest,
   OpenProjectInfo,
@@ -38,5 +39,7 @@ export interface EditorPorts {
   requestClose(reason: CloseReason): Promise<IpcResult<{ proceed: boolean }>>
   recoveryList(): Promise<IpcResult<RecoveryOverview>>
   recover(sessionId: string): Promise<IpcResult<OpenProjectInfo>>
+  /** DSLR Booth importer: creates the project from a ZIP main already analysed (by token). */
+  dslrImportCommit(token: string, layout: DslrImportLayout): Promise<IpcResult<OpenProjectInfo>>
   discardRecovery(sessionId: string): Promise<IpcResult<null>>
 }

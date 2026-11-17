@@ -47,6 +47,20 @@ function createDialogs(): ProjectDialogs {
         : await dialog.showOpenDialog(options)
       return r.canceled || r.filePaths.length === 0 ? null : r.filePaths
     },
+    async showImportDslr(ctx) {
+      const override = devValue('WALKONE_DEV_IMPORT_DSLR_PATH')
+      if (override) return override === 'CANCEL' ? null : override
+      const options = {
+        title: 'Import dslrBooth Template',
+        properties: ['openFile' as const],
+        filters: [{ name: 'dslrBooth template (ZIP)', extensions: ['zip'] }]
+      }
+      const win = windowOf(ctx)
+      const r = win
+        ? await dialog.showOpenDialog(win, options)
+        : await dialog.showOpenDialog(options)
+      return r.canceled || r.filePaths.length === 0 ? null : (r.filePaths[0] ?? null)
+    },
     async showSave(ctx, suggestedName) {
       const override = devValue('WALKONE_DEV_SAVE_PATH')
       if (override) return override === 'CANCEL' ? null : override
@@ -137,6 +151,14 @@ export function registerProjectIpc(
   ipcMain.handle(
     IpcChannel.ProjectPickPreviewPhoto,
     guard((e) => handlers.pickPreviewPhoto(win(e)))
+  )
+  ipcMain.handle(
+    IpcChannel.DslrImportChoose,
+    guard((e) => handlers.dslrImportChoose(win(e)))
+  )
+  ipcMain.handle(
+    IpcChannel.DslrImportCommit,
+    guard((_e, p: unknown) => handlers.dslrImportCommit(p))
   )
   ipcMain.handle(
     IpcChannel.RecoveryList,

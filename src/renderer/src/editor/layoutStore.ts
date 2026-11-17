@@ -8,6 +8,11 @@ import {
   clampSidebarWidth,
   drawerStartsOpen
 } from '@editor/layout'
+import type { DslrImportPreview } from '@shared/ipc'
+
+export type DslrImportState =
+  | { kind: 'preview'; preview: DslrImportPreview }
+  | { kind: 'error'; fileHint: string | null; message: string }
 import { nextToolState, type ToolId } from '@editor/tools'
 
 /**
@@ -23,12 +28,15 @@ interface LayoutState {
   collapsedSections: string[]
   newProjectOpen: boolean
   exportOpen: boolean
+  /** The dslrBooth import dialog: an analysed ZIP, or why it cannot be imported (null = closed). */
+  dslrImport: DslrImportState | null
   setSidebarWidth(px: number): void
   setLayersSplit(fraction: number): void
   clickTool(id: ToolId): void
   toggleSection(id: string): void
   setNewProjectOpen(open: boolean): void
   setExportOpen(open: boolean): void
+  setDslrImport(state: DslrImportState | null): void
 }
 
 export const layoutStore = createStore<LayoutState>((set, get) => ({
@@ -39,6 +47,7 @@ export const layoutStore = createStore<LayoutState>((set, get) => ({
   collapsedSections: [],
   newProjectOpen: false,
   exportOpen: false,
+  dslrImport: null,
   setSidebarWidth: (px) => set({ sidebarWidth: clampSidebarWidth(px, window.innerWidth) }),
   setLayersSplit: (f) => set({ layersSplit: clampLayersSplit(f) }),
   clickTool(id) {
@@ -52,7 +61,8 @@ export const layoutStore = createStore<LayoutState>((set, get) => ({
         : [...s.collapsedSections, id]
     })),
   setNewProjectOpen: (newProjectOpen) => set({ newProjectOpen }),
-  setExportOpen: (exportOpen) => set({ exportOpen })
+  setExportOpen: (exportOpen) => set({ exportOpen }),
+  setDslrImport: (dslrImport) => set({ dslrImport })
 }))
 
 export const useLayout = <T>(selector: (s: LayoutState) => T): T => useStore(layoutStore, selector)

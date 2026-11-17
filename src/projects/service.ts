@@ -169,7 +169,8 @@ export class ProjectService {
   /** Starts a never-saved project (dirty until first Save As). */
   async createNew(
     project: TemplateProject,
-    initialAssets: InitialAsset[] = []
+    initialAssets: InitialAsset[] = [],
+    warnings: string[] = []
   ): Promise<OpenProjectInfo> {
     const valid = loadProject(project)
     if (!valid.ok)
@@ -187,7 +188,7 @@ export class ProjectService {
     })
     const entry: OpenEntry = { session, filePath: null, assets: indexAssets(project) }
     this.open.set(session.id, entry)
-    return this.info(entry, project, true)
+    return this.info(entry, project, true, warnings)
   }
 
   /** Opens a `.boothproject`: validates it, extracts assets into a new session, returns clean state. */

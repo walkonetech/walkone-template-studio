@@ -5,7 +5,12 @@ import { createProject, IdSchema, PRINT_PRESET_IDS, type TemplateProject } from 
 import { createSampleTemplate } from './sampleProject'
 import type { IpcResult } from '../shared/persistence'
 import { MAX_IMPORT_FILES } from '../shared/ipc'
+import { randomBytes } from 'node:crypto'
+import { analyzeDslrPackage } from './dslrImport'
 import type {
+  DslrImportCommitRequest,
+  DslrImportLayout,
+  DslrImportPreview,
   RecoveryOverview,
   AssetData,
   ImportAssetDataRequest,
@@ -33,6 +38,8 @@ export interface ProjectDialogs {
   showSave(ctx: unknown, suggestedName: string): Promise<string | null>
   /** Resolves to the chosen image file paths, or null if the user cancelled. */
   showImportImages(ctx: unknown, multiple: boolean): Promise<string[] | null>
+  /** Resolves to the chosen dslrBooth template ZIP, or null if the user cancelled. */
+  showImportDslr?(ctx: unknown): Promise<string | null>
 }
 
 export interface HandlerDeps {
@@ -62,6 +69,12 @@ const ImportDataSchema = z.strictObject({
     .min(1)
     .max(MAX_IMPORT_FILES)
 })
+const DslrCommitSchema = z.strictObject({
+  token: z.string().regex(/^[0-9a-f]{32}$/),
+  layout: z.enum(['as-is', 'strip'])
+})
+/** Analysed-but-not-imported ZIPs, by token (main keeps the path; the renderer only ever sees the token). */
+const MAX_PENDING_DSLR = 8
 const OpenRecentSchema = z.strictObject({ path: z.string().min(1).max(4096) })
 // The project itself is fully validated by the domain loader inside the service.
 const SessionProjectSchema = z.strictObject({ sessionId: IdSchema, project: z.unknown() })
@@ -76,6 +89,7 @@ function safeFileStem(name: string): string {
 
 export function createProjectHandlers(deps: HandlerDeps) {
   const { service, recents, dialogs } = deps
+  const pendingDslr = new Map<string, string>()
 
   async function run<T>(op: () => Promise<IpcResult<T>>): Promise<IpcResult<T>> {
     try {
@@ -206,6 +220,58 @@ export function createProjectHandlers(deps: HandlerDeps) {
       run(async () => {
         const req: ImportAssetDataRequest = parse(ImportDataSchema, payload)
         return ok(await service.importAssetBytes(req.sessionId, req.files))
+      }),
+
+    /** DSLR Booth importer, step 1: pick a ZIP and analyse it. Nothing is created yet. */
+    dslrImportChoose: (ctx: unknown): Promise<IpcResult<DslrImportPreview>> =>
+      run(async () => {
+        const chosen = dialogs.showImportDslr ? await dialogs.showImportDslr(ctx) : null
+        if (chosen === null) return { status: 'cancelled' }
+        const main = await analyzeDslrPackage(chosen)
+        const checks: DslrImportPreview['checks'] = { [main.result.layout]: main.result.items }
+        const other: DslrImportLayout = main.result.layout === 'strip' ? 'as-is' : 'strip'
+        if (main.result.twoUp)
+          checks[other] = (await analyzeDslrPackage(chosen, other)).result.items
+        const token = randomBytes(16).toString('hex')
+        pendingDslr.set(token, chosen)
+        while (pendingDslr.size > MAX_PENDING_DSLR) {
+          const oldest = pendingDslr.keys().next().value
+          if (oldest === undefined) break
+          pendingDslr.delete(oldest)
+        }
+        const s = main.result.summary
+        return ok({
+          token,
+          fileName: s.fileName,
+          templateName: s.templateName,
+          widthPx: s.widthPx,
+          heightPx: s.heightPx,
+          dpi: s.dpi,
+          widthIn: s.widthIn,
+          heightIn: s.heightIn,
+          photoSlots: s.photoSlots,
+          photoCount: s.photoCount,
+          images: s.images,
+          twoUp: main.result.twoUp,
+          recommendedLayout: main.result.recommendedLayout,
+          checks,
+          preview: main.preview
+        })
+      }),
+
+    /** DSLR Booth importer, step 2: create a new, unsaved project from the analysed ZIP. */
+    dslrImportCommit: (payload: unknown): Promise<IpcResult<OpenProjectInfo>> =>
+      run(async () => {
+        const req: DslrImportCommitRequest = parse(DslrCommitSchema, payload)
+        const path = pendingDslr.get(req.token)
+        if (path === undefined)
+          throw new PersistenceError('not-allowed', 'Choose the dslrBooth template again.')
+        const { result, initialAssets } = await analyzeDslrPackage(path, req.layout)
+        const info = await service.createNew(result.project, initialAssets, [
+          `Imported “${result.summary.fileName}” from dslrBooth. Save it to keep it as a Template Studio project.`
+        ])
+        pendingDslr.delete(req.token)
+        return ok(info)
       }),
 
     open: (ctx: unknown): Promise<IpcResult<OpenProjectInfo>> =>

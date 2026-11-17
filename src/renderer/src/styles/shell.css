@@ -696,3 +696,108 @@
   color: var(--c-success);
   vertical-align: -2px;
 }
+
+/* Import dslrBooth template dialog (DSLR Booth importer) */
+.dslr-import {
+  display: grid;
+  grid-template-columns: minmax(140px, 220px) 1fr;
+  gap: var(--sp-5);
+  align-items: start;
+}
+@media (max-width: 640px) {
+  .dslr-import {
+    grid-template-columns: 1fr;
+  }
+}
+.dslr-import-preview {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.dslr-import-preview img,
+.dslr-import-nopreview {
+  width: 100%;
+  max-height: 340px;
+  object-fit: contain;
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+  background: repeating-conic-gradient(rgb(127 127 127 / 0.18) 0 25%, transparent 0 50%) 0 0 / 16px
+    16px;
+}
+.dslr-import-nopreview {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 2 / 3;
+  color: var(--c-text-3);
+  font-size: var(--fs-meta);
+}
+.dslr-import-preview figcaption {
+  font-size: var(--fs-meta);
+  color: var(--c-text-3);
+  text-align: center;
+}
+.dslr-import-file {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.dslr-import-facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--sp-1) var(--sp-4);
+  margin: 0 0 var(--sp-4);
+}
+.dslr-import-facts dt {
+  color: var(--c-text-3);
+}
+.dslr-import-facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.dslr-import-layouts {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.dslr-import-layouts legend {
+  font-size: var(--fs-section-heading);
+  font-weight: 600;
+  color: var(--c-text-2);
+  margin-bottom: var(--sp-2);
+}
+.dslr-import-layout {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: flex-start;
+  padding: var(--sp-3);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+  cursor: pointer;
+}
+.dslr-import-layout:has(input:checked) {
+  border-color: var(--c-accent);
+  box-shadow: 0 0 0 1px var(--c-accent);
+}
+.dslr-import-layout input {
+  margin-top: 3px;
+  accent-color: var(--c-accent);
+}
+.dslr-import-layout > span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.dslr-import-layout .title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-weight: 600;
+}
+.dslr-import-layout .muted,
+.dslr-import ~ .muted {
+  color: var(--c-text-3);
+  font-size: var(--fs-meta);
+}

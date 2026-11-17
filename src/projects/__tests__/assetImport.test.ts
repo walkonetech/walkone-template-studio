@@ -410,7 +410,10 @@ describe('asset import through the IPC handlers', () => {
         }
       })
     )
+    // dslrImportCommit takes a token for a ZIP main itself picked and analysed, never a path.
     expect(names.filter((n) => /import/i.test(n)).sort()).toEqual([
+      'dslrImportChoose',
+      'dslrImportCommit',
       'importAssetData',
       'importAssets'
     ])

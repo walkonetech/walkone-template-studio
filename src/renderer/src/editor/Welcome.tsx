@@ -1,4 +1,4 @@
-import { FilePlus2, FolderOpen, TriangleAlert } from 'lucide-react'
+import { FileInput, FilePlus2, FolderOpen, TriangleAlert } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import type { RecentProjectItem } from '@shared/ipc'
 import { describeWhen } from '@editor/welcome'
@@ -36,6 +36,13 @@ export function Welcome(): React.JSX.Element {
           </Button>
           <Button icon={FolderOpen} onClick={() => runCommand('file.open')}>
             Open project…
+          </Button>
+          <Button
+            icon={FileInput}
+            title="Turn a dslrBooth template ZIP into a new project you can edit"
+            onClick={() => runCommand('file.importDslr')}
+          >
+            Import from dslrBooth…
           </Button>
           {isDebugSession() && (
             <Button

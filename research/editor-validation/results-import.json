@@ -1,0 +1,293 @@
+{
+  "when": "2026-11-17T13:08:43.861Z",
+  "fixtures": 5,
+  "pass": 17,
+  "total": 17,
+  "results": [
+    {
+      "name": "1 start screen offers “Import from dslrBooth…” next to New and Open",
+      "ok": true,
+      "detail": ["New project", "Open project…", "Import from dslrBooth…", "New sample project"]
+    },
+    {
+      "name": "2 a ZIP without template.xml shows “could not be imported” with the reason",
+      "ok": true,
+      "detail": {
+        "title": "This template could not be imported",
+        "msg": " This ZIP is not a dslrBooth template: it has no template.xml."
+      }
+    },
+    {
+      "name": "3 dialog facts: name, 4 × 6 in · 300 DPI, 3 photos per session (6 slots), 6 pictures",
+      "ok": true,
+      "detail": [
+        "Synthetic Two Strips",
+        "4 × 6 in · 300 DPI (1200 × 1800 px)",
+        "3 per session (6 slots on the sheet)",
+        "6"
+      ]
+    },
+    {
+      "name": "3b two strips detected: strip (recommended, selected) or the sheet as is",
+      "ok": true,
+      "detail": [
+        {
+          "v": "strip",
+          "checked": true,
+          "rec": true
+        },
+        {
+          "v": "as-is",
+          "checked": false,
+          "rec": false
+        }
+      ]
+    },
+    {
+      "name": "3c notes: two-up, unknown setting kept, machine name dropped; dslrBooth preview shown",
+      "ok": true,
+      "detail": [
+        "unknown-attributes",
+        "two-up",
+        "two-up-offset",
+        "locked",
+        "original-device",
+        "flattened-artwork"
+      ]
+    },
+    {
+      "name": "3d choosing “as is” shows that layout’s notes",
+      "ok": true,
+      "detail": [
+        "unknown-attributes",
+        "two-up-sheet",
+        "locked",
+        "original-device",
+        "flattened-artwork"
+      ]
+    },
+    {
+      "name": "4 imported as one 2×6 @300 strip, printed two-up on 4×6",
+      "ok": true,
+      "detail": {
+        "print": {
+          "width": 2,
+          "height": 6,
+          "unit": "in",
+          "dpi": 300
+        },
+        "output": {
+          "print": {
+            "width": 4,
+            "height": 6,
+            "unit": "in",
+            "dpi": 300
+          },
+          "layout": {
+            "kind": "grid",
+            "columns": 2,
+            "rows": 1,
+            "gap": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "4b layers back to front: background, photos 1–3, frames overlay, badge; 3 assets",
+      "ok": true,
+      "detail": [
+        "image:background:Strip BG",
+        "P1",
+        "P2",
+        "P3",
+        "image:overlay:Frames",
+        "image:graphic:Badge Copy"
+      ]
+    },
+    {
+      "name": "4c new and unsaved (Modified, no file); locks kept; unknown attribute noted on its layer",
+      "ok": true,
+      "detail": {
+        "file": null,
+        "dirty": true,
+        "locked": 6,
+        "compat": 1,
+        "msg": "Imported “Synthetic Two Strips.zip” from dslrBooth. Save it to keep it as a Template Studio project."
+      }
+    },
+    {
+      "name": "5 print sheet vs the template’s preview.png outside photo boxes: the kept strip is identical (mean < 0.1, no pixel off by > 32) except 4 px at the strip edge",
+      "ok": true,
+      "detail": {
+        "previewSize": [1200, 1800],
+        "renderSize": [1200, 1800],
+        "photos": 6,
+        "compared": 1018314,
+        "meanDiff": 2.051,
+        "pctOver32": 1.181,
+        "left": {
+          "meanDiff": 0,
+          "pctOver32": 0
+        },
+        "right": {
+          "meanDiff": 2.827,
+          "pctOver32": 1.678
+        }
+      }
+    },
+    {
+      "name": "6 Save As writes a .boothproject and clears Modified",
+      "ok": true,
+      "detail": {
+        "r6": {
+          "status": "ok"
+        },
+        "after": {
+          "file": "Imported.boothproject",
+          "dirty": false
+        }
+      }
+    },
+    {
+      "name": "6b reopens with all layers and the import notes",
+      "ok": true,
+      "detail": {
+        "n": 6,
+        "v": "7.48-import-1",
+        "src": "Synthetic Two Strips.zip"
+      }
+    },
+    {
+      "name": "7 deleting an imported layer with notes, then Save: succeeds, notes gone",
+      "ok": true,
+      "detail": {
+        "status": "ok"
+      }
+    },
+    {
+      "name": "8 export back: native strip 600×1800, print 2 per page, photo boxes = the original left strip",
+      "ok": true,
+      "detail": {
+        "root": ["600", "1800", "True"],
+        "photos": [
+          [1, 37, 84, 526, 350],
+          [2, 37, 520, 526, 350],
+          [3, 37, 956, 526, 350]
+        ]
+      }
+    },
+    {
+      "name": "9 all 5 local fixtures import in the built app (recommended layout and as is) and render at their canvas size",
+      "ok": true,
+      "detail": [
+        {
+          "n": 1,
+          "layout": "strip",
+          "mean": 4.079,
+          "over32": 2.964,
+          "leftMean": 2.405,
+          "rightMean": 5.752
+        },
+        {
+          "n": 2,
+          "layout": "as-is",
+          "mean": 2.35,
+          "over32": 1.541
+        },
+        {
+          "n": 3,
+          "layout": "strip",
+          "mean": 13.459,
+          "over32": 8.141,
+          "leftMean": 4.736,
+          "rightMean": 22.182
+        },
+        {
+          "n": 4,
+          "layout": "strip",
+          "mean": 2.396,
+          "over32": 1.209,
+          "leftMean": 1.585,
+          "rightMean": 3.206
+        },
+        {
+          "n": 5,
+          "layout": "as-is",
+          "mean": 2.059,
+          "over32": 0.981
+        }
+      ]
+    },
+    {
+      "name": "9b imported AS IS, each print sheet is as close to dslrBooth’s own preview (outside photo boxes) as a direct rebuild of the XML (mean ≤ rebuild + 0.5, and < 5)",
+      "ok": true,
+      "detail": [
+        {
+          "n": 1,
+          "layout": "as-is",
+          "mean": 2.212,
+          "over32": 1.688,
+          "rebuild": 2.453
+        },
+        {
+          "n": 2,
+          "layout": "as-is",
+          "mean": 2.35,
+          "over32": 1.541,
+          "rebuild": 2.355
+        },
+        {
+          "n": 3,
+          "layout": "as-is",
+          "mean": 4.269,
+          "over32": 3.167,
+          "rebuild": 4.187
+        },
+        {
+          "n": 4,
+          "layout": "as-is",
+          "mean": 1.497,
+          "over32": 0.526,
+          "rebuild": 1.361
+        },
+        {
+          "n": 5,
+          "layout": "as-is",
+          "mean": 2.059,
+          "over32": 0.981,
+          "rebuild": 2.093
+        }
+      ]
+    },
+    {
+      "name": "9c imported as a STRIP, the kept (left) strip renders as on the sheet (mean ≤ as-is + 1); the right strip is a copy",
+      "ok": true,
+      "detail": [
+        {
+          "n": 1,
+          "layout": "strip",
+          "mean": 4.079,
+          "over32": 2.964,
+          "leftMean": 2.405,
+          "rightMean": 5.752
+        },
+        {
+          "n": 3,
+          "layout": "strip",
+          "mean": 13.459,
+          "over32": 8.141,
+          "leftMean": 4.736,
+          "rightMean": 22.182
+        },
+        {
+          "n": 4,
+          "layout": "strip",
+          "mean": 2.396,
+          "over32": 1.209,
+          "leftMean": 1.585,
+          "rightMean": 3.206
+        }
+      ]
+    }
+  ]
+}

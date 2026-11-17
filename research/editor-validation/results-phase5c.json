@@ -1,14 +1,14 @@
 {
-  "passed": 58,
+  "passed": 59,
   "total": 59,
-  "failed": ["26 crash recovery restores the off-artboard asset geometry (x −300) and its image"],
+  "failed": [],
   "results": [
     {
       "name": "setup: 2×6 strip with 3 photos and an imported overlay placed partly outside the artboard (x+width = 1500 > 1200)",
       "ok": true,
       "detail": {
         "overlay": {
-          "id": "386c9838-b1dc-448e-987c-dd09a573f679",
+          "id": "24162d36-c704-4846-bdb3-903ebea14592",
           "type": "image",
           "name": "petals",
           "x": 900,
@@ -362,11 +362,11 @@
       "ok": true,
       "detail": {
         "crop": {
-          "layerId": "f1cea2fb-a2d0-4474-ad2b-f5cb56ba7a58",
+          "layerId": "0ff26d27-9acb-4ca1-9381-607d36c97b0c",
           "original": null
         },
         "interaction": "cropping",
-        "selected": ["f1cea2fb-a2d0-4474-ad2b-f5cb56ba7a58"],
+        "selected": ["0ff26d27-9acb-4ca1-9381-607d36c97b0c"],
         "mode": "design"
       }
     },
@@ -400,7 +400,7 @@
       "name": "20b Enter commits: the crop is kept, the mode is left",
       "ok": true,
       "detail": {
-        "f1cea2fb-a2d0-4474-ad2b-f5cb56ba7a58": {
+        "0ff26d27-9acb-4ca1-9381-607d36c97b0c": {
           "zoom": 1.25,
           "x": -0.004743833017077814,
           "y": 0
@@ -472,7 +472,7 @@
       "name": "25 save → reopen: negative X, rotation and oversized extent are preserved exactly",
       "ok": true,
       "detail": {
-        "id": "386c9838-b1dc-448e-987c-dd09a573f679",
+        "id": "24162d36-c704-4846-bdb3-903ebea14592",
         "type": "image",
         "name": "petals",
         "x": -120,
@@ -492,7 +492,21 @@
     },
     {
       "name": "26 crash recovery restores the off-artboard asset geometry (x −300) and its image",
-      "ok": false
+      "ok": true,
+      "detail": {
+        "id": "24162d36-c704-4846-bdb3-903ebea14592",
+        "type": "image",
+        "name": "petals",
+        "x": -300,
+        "y": 2000,
+        "width": 900,
+        "height": 900,
+        "rotation": 15,
+        "z": 3,
+        "fit": "stretch",
+        "role": "overlay",
+        "locked": false
+      }
     },
     {
       "name": "S1 renderer still has no Node access and the CSP is unchanged",

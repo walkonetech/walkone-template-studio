@@ -7,6 +7,7 @@
 export type CommandId =
   | 'file.new'
   | 'file.open'
+  | 'file.importDslr'
   | 'file.save'
   | 'file.saveAs'
   | 'file.export'
@@ -83,6 +84,10 @@ export const COMMANDS: Readonly<Record<CommandId, CommandDef>> = {
     hint: 'Open a saved .boothproject file',
     shortcut: { key: 'O', mod: true }
   },
+  'file.importDslr': {
+    label: 'Import dslrBooth template…',
+    hint: 'Turn a dslrBooth template ZIP into a new project you can edit'
+  },
   'file.save': {
     label: 'Save',
     hint: 'Save the project to its .boothproject file',
@@ -97,7 +102,7 @@ export const COMMANDS: Readonly<Record<CommandId, CommandDef>> = {
   },
   'file.export': {
     label: 'Export…',
-    hint: 'Export print PNGs, a proof or a layer package after checking the design',
+    hint: 'Export a dslrBooth template, print PNGs or a proof after checking the design',
     shortcut: { key: 'E', mod: true },
     needsProject: true
   },
@@ -289,6 +294,7 @@ export const MENUS: readonly { id: string; label: string; items: readonly (Comma
       items: [
         'file.new',
         'file.open',
+        'file.importDslr',
         '-',
         'file.save',
         'file.saveAs',
