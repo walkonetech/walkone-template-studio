@@ -13,6 +13,22 @@ Reported by the project owner (treated as **Confirmed by owner**, not independen
 ## 1b. dslrBooth 7.48 runtime findings (external, owner-reported)
 **Confirmed via external clean-room runtime research reported by the owner; not independently reproducible from repository fixtures.** Summary only; details and labels in [../research/DSLRBOOTH_748_RUNTIME_FINDINGS.md](../research/DSLRBOOTH_748_RUNTIME_FINDINGS.md): native 2×6 with `print_2_per_page=True` yields `_1x` (one strip; used for gallery, email, SMS, QR, LumaShare) and `_2x` (two-up 4×6; used for printing); photos are centred Cover, rotated clockwise after the crop, borders grow outward, PhotoNumber 1–12; images map `KeepAspect` True → fit, False → stretch; transparent PNG overlays work; text has newlines but no wrapping, clips, `FontSize=0` auto-fits, missing fonts silently fall back. Printer finishing (2-inch cut) belongs to the printer/driver, not the template (**Needs Validation** on the DNP printer, as is the `/print` endpoint). Used by Phase 6B; validated by Phase 6C.
 
+## 1c. Exporter (Phase 6B, ADR-047)
+`src/export/dslrbooth/` writes dslrBooth 7.48 template ZIPs. Mapping (data-driven, test-covered):
+
+| Template Studio | dslrBooth | Status |
+|---|---|---|
+| Photo slot (number, box, rotation) | `<Photo PhotoNumber Left Top Width Height [Rotation]>` integer px, whole degrees | Format CONFIRMED FROM FILE; rotation pivot (centre) Needs Validation |
+| Slot frame (inside the box) | drawn into the `<Image>` above the photo; `Thickness="0"` | exact by construction (borders would grow outward natively) |
+| Slot corner radius | rounded-corner mask in the `<Image>` above (what lies beneath) | exact by construction (no corner attribute exists) |
+| Slot fit Cover / Fit / Stretch | always Cover (dslrBooth fills) | Fit/Stretch warn |
+| Images, shapes, text, groups, background | flattened into full-canvas PNG `<Image>`s by stacking order | text always raster (fonts not needed on the booth PC) |
+| Canvas colour | `BackgroundColor="#AARRGGBB"` + the opaque base image | — |
+| 2×6 strip on a two-up 4×6 | native strip canvas, `print_2_per_page="True"` (default) / 4×6 sheet with duplicated elements (fallback) | native strip Needs Validation (6C) |
+| Project name | `Name` = ZIP stem | as in every fixture |
+
+Root values written: `Dimensions="0"`, `IsLegacy="True"`, `PrintToSecondaryPrinter="False"`, `LastSavedDate` (local, US format), stable 25-character `Id` (project + variant), `OriginalDevice="WalkOneTemplateStudio"`. Elements: observed defaults (Opacity 100, shadows off, KeepAspect True, StrokeColor default), `IsLocked="False"`. Encoding and ZIP layout as in §1a. **Needs Validation in 6C:** import into the real 7.48 install, native strip printing/sharing (`_2x`/`_1x`), `Dimensions` on a strip canvas, rotation pivot, re-import with an equal `Id`, preview requirements.
+
 ## 1a. Observed in the five current fixtures (OBSERVED)
 - Flat ZIP, deflate; always `template.xml` + `preview.png` + referenced PNGs; no folders; no unreferenced files.
 - `template.xml`: UTF-8 with BOM, CRLF; root `<Template Name Width Height Dimensions Resolution BackgroundColor print_2_per_page PrintToSecondaryPrinter LastSavedDate Id IsLegacy OriginalDevice>` with one `<Elements>` child holding only `<Image>` and `<Photo>` elements (self-closing, no nesting).

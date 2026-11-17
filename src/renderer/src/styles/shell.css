@@ -560,10 +560,35 @@
   align-items: flex-start;
   gap: var(--sp-3);
   padding: var(--sp-3) 0;
+}
+.export-output-wrap + .export-output-wrap .export-output {
   border-top: 1px solid var(--c-divider);
 }
-.export-output:first-of-type {
+/* Output group heading ("For dslrBooth", "Images"), 6B */
+.export-group {
+  font-size: var(--fs-meta);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--c-text-3);
+  padding: var(--sp-3) 0 var(--sp-1);
+}
+.export-output-wrap + .export-output-wrap .export-group {
+  border-top: 1px solid var(--c-divider);
+  margin-top: var(--sp-1);
+}
+.export-output-wrap + .export-output-wrap .export-group + .export-output {
   border-top: 0;
+}
+.preflight-tag {
+  display: inline-block;
+  margin-right: var(--sp-2);
+  padding: 0 6px;
+  border-radius: 4px;
+  font-size: var(--fs-meta);
+  font-weight: 600;
+  background: var(--c-surface-2, rgb(127 127 127 / 0.18));
+  color: var(--c-text-2);
 }
 .export-output input {
   margin-top: 3px;

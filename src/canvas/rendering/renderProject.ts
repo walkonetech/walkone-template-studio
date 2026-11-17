@@ -121,7 +121,8 @@ export function renderProjectToCanvas(
  * Renders the print SHEET (output composition) to a raster canvas of an exact pixel size: the authored design drawn
  * once per copy, each translated to its cell and clipped to it, on a white sheet. For a single-up project this is
  * the design render. Nothing is duplicated in the project; copies are derived (see `composition.ts`). Editor-only
- * guides (cut line, labels) do not exist in this scene. Synchronous; images must already be decoded.
+ * guides (cut line, labels) do not exist in this scene. With `background: 'transparent'` neither the white sheet nor the
+ * cell colour is painted (dslrBooth overlay images, 6B). Synchronous; images must already be decoded.
  */
 export function renderOutputToCanvas(
   project: TemplateProject,
@@ -146,7 +147,11 @@ export function renderOutputToCanvas(
   try {
     const layer = new Konva.Layer({ listening: false })
     stage.add(layer)
-    layer.add(new Konva.Rect({ x: 0, y: 0, width: out.width, height: out.height, fill: '#ffffff' }))
+    const opaque = options.background !== 'transparent'
+    if (opaque)
+      layer.add(
+        new Konva.Rect({ x: 0, y: 0, width: out.width, height: out.height, fill: '#ffffff' })
+      )
     for (const copy of out.copies) {
       const group = new Konva.Group({
         x: 0,
@@ -157,15 +162,16 @@ export function renderOutputToCanvas(
         clipHeight: copy.cell.height
       })
       layer.add(group)
-      group.add(
-        new Konva.Rect({
-          x: copy.cell.x,
-          y: copy.cell.y,
-          width: copy.cell.width,
-          height: copy.cell.height,
-          fill: resolveColor(project.palette, project.canvas.backgroundColor)
-        })
-      )
+      if (opaque)
+        group.add(
+          new Konva.Rect({
+            x: copy.cell.x,
+            y: copy.cell.y,
+            width: copy.cell.width,
+            height: copy.cell.height,
+            fill: resolveColor(project.palette, project.canvas.backgroundColor)
+          })
+        )
       addDesignNodes(group, project, copy.layers, images, options)
     }
     layer.draw()

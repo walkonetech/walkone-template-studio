@@ -1,0 +1,248 @@
+{
+  "when": "2026-11-16T22:14:57.036Z",
+  "pass": 26,
+  "total": 26,
+  "results": [
+    {
+      "name": "1 strip built: band, photos 1–3 (frame / rounded / rotated), text, gold line",
+      "ok": true,
+      "detail": ["shape:", "photo:1", "photo:2", "photo:3", "text:", "shape:"]
+    },
+    {
+      "name": "2 outputs: dslrBooth strip (ticked), dslrBooth 4×6, then print, design, proof",
+      "ok": true,
+      "detail": [
+        "dslrbooth:true",
+        "dslrbooth-4x6:false",
+        "print:true",
+        "design:true",
+        "proof:false"
+      ]
+    },
+    {
+      "name": "2b ZIP names equal the template names: \"Sam & Alex.zip\", \"Sam & Alex 4x6.zip\"",
+      "ok": true,
+      "detail": [
+        "Sam & Alex.zip",
+        "Sam & Alex 4x6.zip",
+        "Sam & Alex-print.png",
+        "Sam & Alex-design.png",
+        "Sam & Alex-proof.png"
+      ]
+    },
+    {
+      "name": "2c grouped under “For dslrBooth” and “Images”",
+      "ok": true,
+      "detail": ["For dslrBooth", "Images"]
+    },
+    {
+      "name": "2d dslrBooth notes shown (rotation, flattened, two-up); nothing blocks",
+      "ok": true,
+      "detail": ["dslr-photo-rotation", "dslr-flattened", "dslr-two-up"]
+    },
+    {
+      "name": "3 export finishes",
+      "ok": true,
+      "detail": " Exported 4 files to “out”."
+    },
+    {
+      "name": "3b four files written",
+      "ok": true,
+      "detail": [
+        "Sam & Alex 4x6.zip",
+        "Sam & Alex-design.png",
+        "Sam & Alex-print.png",
+        "Sam & Alex.zip"
+      ]
+    },
+    {
+      "name": "4 entries in case-insensitive alphabetical order, all deflated, ZIP intact",
+      "ok": true,
+      "detail": ["artwork-1.png", "background.png", "preview.png", "template.xml"]
+    },
+    {
+      "name": "4b template.xml: BOM, CRLF only, XML declaration, ends with </Template>",
+      "ok": true
+    },
+    {
+      "name": "4c root: Name, 600×1800 @300, Dimensions 0, print_2_per_page True, ARGB background, US date, 25-char Id, no machine name",
+      "ok": true,
+      "detail": {
+        "Name": "Sam & Alex",
+        "Width": "600",
+        "Height": "1800",
+        "Dimensions": "0",
+        "Resolution": "300",
+        "BackgroundColor": "#FFFFFFFF",
+        "print_2_per_page": "True",
+        "PrintToSecondaryPrinter": "False",
+        "LastSavedDate": "11/16/2026 17:14:54",
+        "Id": "OnNN3JRvMH1HmYtMfaleFM0fY",
+        "IsLegacy": "True",
+        "OriginalDevice": "WalkOneTemplateStudio"
+      }
+    },
+    {
+      "name": "4d elements (descending ZIndex): Artwork, Photo 3, 2, 1, Background",
+      "ok": true,
+      "detail": [
+        "Image:Artwork:4:",
+        "Photo:Photo 3:3:3",
+        "Photo:Photo 2:2:2",
+        "Photo:Photo 1:1:1",
+        "Image:Background:0:"
+      ]
+    },
+    {
+      "name": "4e photo boxes: integer pixels (framed/rounded slots rounded inward, others to nearest), rotated slot −3°",
+      "ok": true,
+      "detail": {
+        "1": "30,30,540,360,0",
+        "2": "30,420,540,360,0",
+        "3": "30,811,540,360,-3"
+      }
+    },
+    {
+      "name": "4f attribute order matches the real exports (root + every element sequence)",
+      "ok": true,
+      "detail": {
+        "ours": [
+          "Image:Name,Opacity,ShadowEnabled,ShadowColor,ShadowDepth,ShadowRadius,ShadowDirection,Width,Height,Top,Left,ImagePath,KeepAspect,Thickness,StrokeColor,ZIndex,IsLocked",
+          "Photo:Name,Opacity,ShadowEnabled,ShadowColor,ShadowDepth,ShadowRadius,ShadowDirection,Width,Height,Top,Left,ImagePath,KeepAspect,Thickness,StrokeColor,PhotoNumber,ZIndex,IsLocked",
+          "Photo:Name,Opacity,ShadowEnabled,ShadowColor,ShadowDepth,ShadowRadius,ShadowDirection,Width,Height,Top,Left,ImagePath,KeepAspect,Thickness,StrokeColor,PhotoNumber,ZIndex,Rotation,IsLocked"
+        ]
+      }
+    },
+    {
+      "name": "4g every PNG is 600×1800 at 300 DPI",
+      "ok": true,
+      "detail": {
+        "artwork-1.png": [600, 1800, [300, 300]],
+        "background.png": [600, 1800, [300, 300]],
+        "preview.png": [600, 1800, [300, 300]]
+      }
+    },
+    {
+      "name": "4h images stacked without photos = Template Studio’s design PNG (pixel-exact)",
+      "ok": true,
+      "detail": {
+        "max": 1,
+        "over2": 0
+      }
+    },
+    {
+      "name": "4i booth composite: photo shows in slot 1, its red frame on top",
+      "ok": true,
+      "detail": {
+        "c": [255, 0, 255, 255],
+        "f": [255, 0, 0, 255]
+      }
+    },
+    {
+      "name": "4j rounded slot 2: photo inside, background in the rounded corner, photo up to the edge",
+      "ok": true,
+      "detail": {
+        "c": [255, 0, 255, 255],
+        "corner": [32, 48, 74, 255],
+        "edge": [255, 0, 255, 255]
+      }
+    },
+    {
+      "name": "4k artwork stays above and around: gold line, band between slots, rotated slot filled",
+      "ok": true,
+      "detail": {
+        "p1Centre": [255, 0, 255, 255],
+        "p1Frame": [255, 0, 0, 255],
+        "p2Centre": [255, 0, 255, 255],
+        "p2Corner": [32, 48, 74, 255],
+        "p2Edge": [255, 0, 255, 255],
+        "gap": [32, 48, 74, 255],
+        "gold": [200, 160, 64, 255],
+        "p3Centre": [255, 0, 255, 255]
+      }
+    },
+    {
+      "name": "5 sheet: 1200×1800, print_2_per_page False, Name “Sam & Alex 4x6”",
+      "ok": true,
+      "detail": {
+        "Name": "Sam & Alex 4x6",
+        "Width": "1200",
+        "Height": "1800",
+        "Dimensions": "0",
+        "Resolution": "300",
+        "BackgroundColor": "#FFFFFFFF",
+        "print_2_per_page": "False",
+        "PrintToSecondaryPrinter": "False",
+        "LastSavedDate": "11/16/2026 17:14:54",
+        "Id": "quuk50s2lye7Hzy0R9GFvLy2B",
+        "IsLegacy": "True",
+        "OriginalDevice": "WalkOneTemplateStudio"
+      }
+    },
+    {
+      "name": "5b every photo twice, same PhotoNumber, “Copy” names",
+      "ok": true,
+      "detail": [
+        "Photo 3 Copy@630",
+        "Photo 3@30",
+        "Photo 2 Copy@630",
+        "Photo 2@30",
+        "Photo 1 Copy@630",
+        "Photo 1@30"
+      ]
+    },
+    {
+      "name": "5c images stacked = Template Studio’s print PNG (pixel-exact)",
+      "ok": true,
+      "detail": {
+        "max": 1,
+        "over2": 0
+      }
+    },
+    {
+      "name": "5d both copies: photo, frame and rounded-corner mask",
+      "ok": true,
+      "detail": {
+        "c1": [255, 0, 255, 255],
+        "c2": [255, 0, 255, 255],
+        "corner2": [32, 48, 74, 255],
+        "frame2": [255, 0, 0, 255]
+      }
+    },
+    {
+      "name": "5e same Id per project+variant, different for strip and sheet",
+      "ok": true
+    },
+    {
+      "name": "6 PhotoNumber 13 blocks the dslrBooth template",
+      "ok": true,
+      "detail": {
+        "codes": [
+          "dslr-photo-number-range",
+          "dslr-photo-rotation",
+          "dslr-flattened",
+          "dslr-two-up",
+          "photo-number-gap"
+        ],
+        "disabled": true
+      }
+    },
+    {
+      "name": "6b unticking the dslrBooth templates hides their checks and allows the PNG export",
+      "ok": true,
+      "detail": {
+        "codes": ["photo-number-gap"],
+        "disabled": false
+      }
+    },
+    {
+      "name": "6c no photo slots: the dslrBooth template is blocked (ADR-045)",
+      "ok": true,
+      "detail": {
+        "nPhotos": 0,
+        "codes": ["dslr-no-photo-slots", "no-photo-slots", "dslr-two-up"],
+        "disabled": true
+      }
+    }
+  ]
+}

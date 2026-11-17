@@ -13,7 +13,7 @@ All commands run from `/Users/walkone/Projects/Apps/walkone-template-studio`.
 | Dev mode (hot reload) | `npm run dev` |
 | Throwaway profile (clean recents/recovery; real data untouched) | `npm run build && npx electron out/main/index.js --user-data-dir=$HOME/wts-test` |
 | Reset the throwaway profile | `rm -rf $HOME/wts-test` |
-| Quality gate | `npm run typecheck && npm run lint && npm run format:check && npm run build && npm test` (expect **760** tests) |
+| Quality gate | `npm run typecheck && npm run lint && npm run format:check && npm run build && npm test` (expect **805** tests) |
 
 Tips
 - Use the throwaway profile for destructive tests (crash recovery, quit prompts) so your real autosave sessions stay safe.
@@ -97,6 +97,12 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] "Show in Finder" opens the folder with the file selected.
 - [ ] Exporting does not mark the project Modified.
 
+### G3. dslrBooth template (Phase 6B)
+- [ ] 2×6 strip: Export shows **For dslrBooth** first: “dslrBooth template · 2×6 strip” (ticked) and “… · 4×6 sheet”; file names `<Project>.zip` / `<Project> 4x6.zip`.
+- [ ] Checks show dslrBooth notes only while a dslrBooth template is ticked; a design with no photo slots, or a slot numbered 13, blocks it.
+- [ ] Unzip the strip ZIP: `template.xml`, `preview.png`, `background.png`, `artwork-…png`. Stack the PNGs in Photoshop/Preview: it matches the design PNG (photo areas empty).
+- [ ] **On the booth PC (Phase 6C):** import both ZIPs into dslrBooth 7.48; check photo slots, frames, rounded corners, text, the two-up print and the 2-inch cut.
+
 ### H. UI, accessibility, polish
 - [ ] Tooltips on icon-only controls, with shortcut hints.
 - [ ] Everything reachable by keyboard; visible focus ring; labels on fields.
@@ -113,7 +119,7 @@ DSLR Booth ZIP export (Phase 6B), font embedding, image palette extraction, badg
 
 ## 3. Automated suites (optional cross-check)
 
-Built-app suites live in `research/editor-validation/` (see its README). Self-launching: `node research/editor-validation/validate-5d.js` (also `-5c`, `-5b`, `-5a`, `-4b`, `-4c`, `-4d`). `validate.js` needs the app running with the `WALKONE_DEV_*` variables and anti-occlusion flags (see README). Last recorded: 4:97, 4B:40, 4C:97, 5A:53, 5B:39, 5C:59, 5D:40, 6A:48 (`validate-6a.js`, needs python3 + Pillow).
+Built-app suites live in `research/editor-validation/` (see its README). Self-launching: `node research/editor-validation/validate-5d.js` (also `-5c`, `-5b`, `-5a`, `-4b`, `-4c`, `-4d`). `validate.js` needs the app running with the `WALKONE_DEV_*` variables and anti-occlusion flags (see README). Last recorded: 4:97, 4B:40, 4C:97, 5A:53, 5B:39, 5C:58/59 (check 26 open, see CURRENT_STATE), 5D:40, 6A:37, 6B:26 (`validate-6a.js`, `validate-6b.js`, need python3 + Pillow).
 
 ## 4. Reporting issues
 For each failure note: steps, expected vs actual, screenshot, OS/version, and whether it reproduces on a fresh `--user-data-dir`. Bring the list to the next session; it becomes the input for fixes before Phase 6.

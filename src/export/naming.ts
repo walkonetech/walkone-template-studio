@@ -23,14 +23,20 @@ export function exportFileStem(projectName: string): string {
   return stem
 }
 
-/** What an export produces. Vendor-neutral; DSLR Booth output is a later adapter (Phase 6B). */
-export type ExportKind = 'print' | 'design' | 'proof' | 'package'
+/**
+ * What an export produces. The first four are vendor-neutral (6A); `dslrbooth` is the dslrBooth 7.48 template ZIP
+ * (Phase 6B: the native 2×6 strip, or the design as-is), `dslrbooth-4x6` the pre-composed 4×6 sheet version. A
+ * dslrBooth ZIP is named exactly like its template (`<Project>.zip`), as in every real export.
+ */
+export type ExportKind = 'print' | 'design' | 'proof' | 'package' | 'dslrbooth' | 'dslrbooth-4x6'
 
 export const EXPORT_SUFFIX: Readonly<Record<ExportKind, string>> = {
   print: '-print.png',
   design: '-design.png',
   proof: '-proof.png',
-  package: '-layers.zip'
+  package: '-layers.zip',
+  dslrbooth: '.zip',
+  'dslrbooth-4x6': ' 4x6.zip'
 }
 
 export const exportFileName = (projectName: string, kind: ExportKind): string =>

@@ -343,7 +343,7 @@
     "name": "Layers/Properties splitter drags (mouse)",
     "ok": true,
     "detail": {
-      "split0": 319.6015625,
+      "split0": 319.59375,
       "split1": 399.5
     }
   },
@@ -532,8 +532,8 @@
     "detail": {
       "sw": 1728,
       "iw": 1728,
-      "sh": 1005,
-      "ih": 1005
+      "sh": 1051,
+      "ih": 1051
     }
   },
   {
@@ -548,8 +548,8 @@
     "name": "1920×1080: Layers and Properties each ≥ 150 px tall",
     "ok": true,
     "detail": {
-      "layers": 373,
-      "props": 559
+      "layers": 391,
+      "props": 587
     }
   },
   {

@@ -145,7 +145,7 @@ export interface ExportPngFile extends ExportPngFacts {
   data: Uint8Array
 }
 export interface ExportPackageEntry {
-  /** Flat entry name inside the package (see `isSafePackageEntryPath`). */
+  /** Flat entry name inside the package (`isSafePackageEntryPath`, or `isSafeDslrEntryPath` for dslrBooth). */
   path: string
   data: Uint8Array
   /** Present for PNG entries: verified, and the density is recorded. */
@@ -153,6 +153,8 @@ export interface ExportPackageEntry {
 }
 export interface ExportZipFile {
   kind: 'zip'
+  /** 'layers' = the vendor-neutral layer package (6A); 'dslrbooth' = a dslrBooth 7.48 template (6B). */
+  format: 'layers' | 'dslrbooth'
   name: string
   entries: ExportPackageEntry[]
 }

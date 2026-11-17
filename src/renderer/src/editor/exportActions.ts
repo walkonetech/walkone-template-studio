@@ -13,6 +13,21 @@ import {
 } from '@editor/exportPlan'
 import { sampleIdFor } from '@editor/previewPhotos'
 import type { ExportKind } from '@export/naming'
+import { clampCornerRadius } from '@canvas/rendering/photoFit'
+import { PREVIEW_PNG, TEMPLATE_XML } from '@export/dslrbooth/profile'
+import {
+  buildDslrTemplate,
+  planDslrTemplate,
+  type DslrImagePlan,
+  type DslrPlan
+} from '@export/dslrbooth/plan'
+import {
+  dslrOutputs,
+  dslrTemplateNameFor,
+  dslrVariantFor,
+  isDslrKind
+} from '@export/dslrbooth/outputs'
+import { encodeTemplateXml, writeTemplateXml } from '@export/dslrbooth/templateXml'
 import { editorStore, imageCache } from './editorStore'
 import { fontEnvironment } from './fontCatalog'
 import { previewCache } from './samplePhotos'
@@ -86,6 +101,81 @@ async function appVersion(): Promise<string> {
   }
 }
 
+/** Every output the Export dialog offers: dslrBooth templates first (6B), then the vendor-neutral files (6A). */
+export const allExportOutputs = (project: TemplateProject): ExportOutput[] => [
+  ...dslrOutputs(project),
+  ...exportOutputs(project)
+]
+
+type Render = (options: RenderOptions & { photoLabels: boolean }) => HTMLCanvasElement
+
+const onlyIds = (ids: readonly string[]): ((l: Layer) => boolean) => {
+  const set = new Set(ids)
+  return (l) => set.has(l.id)
+}
+
+/**
+ * One dslrBooth image (Phase 6B): the base (opaque, canvas colour + the artwork behind the first photo), or a
+ * transparent image above a run of photo slots holding, bottom to top: rounded-corner masks (what lies beneath each
+ * slot, outside its rounded rectangle), the slots' native frames, then the artwork stacked above them.
+ */
+function renderDslrImage(
+  project: TemplateProject,
+  plan: DslrPlan,
+  img: DslrImagePlan,
+  render: Render
+): HTMLCanvasElement {
+  if (img.base) return render({ photos: 'omit', photoLabels: false, include: onlyIds(img.leafIds) })
+  const out = document.createElement('canvas')
+  out.width = plan.canvas.width
+  out.height = plan.canvas.height
+  const ctx = out.getContext('2d')
+  if (!ctx) throw new Error('The image could not be drawn.')
+  for (const id of img.maskIds) {
+    const p = project.layers.find((l): l is PhotoLayer => l.id === id && l.type === 'photo')
+    if (!p) continue
+    const beneath = render({
+      photos: 'omit',
+      photoLabels: false,
+      include: onlyIds(plan.under[id] ?? [])
+    })
+    const r = clampCornerRadius(p.cornerRadius, p.width, p.height)
+    for (const c of plan.copies) {
+      ctx.save()
+      ctx.beginPath()
+      ctx.rect(c.left, c.top, c.width, c.height)
+      ctx.clip()
+      ctx.translate(c.left + p.x + p.width / 2, c.top + p.y + p.height / 2)
+      ctx.rotate((p.rotation * Math.PI) / 180)
+      ctx.beginPath()
+      ctx.rect(-p.width / 2, -p.height / 2, p.width, p.height)
+      ctx.roundRect(-p.width / 2, -p.height / 2, p.width, p.height, r)
+      ctx.clip('evenodd')
+      ctx.setTransform(1, 0, 0, 1, 0, 0)
+      ctx.drawImage(beneath, 0, 0)
+      ctx.restore()
+    }
+  }
+  if (img.frameIds.length > 0 || img.leafIds.length > 0)
+    ctx.drawImage(
+      render({
+        photos: 'frame',
+        photoLabels: false,
+        include: onlyIds([...img.frameIds, ...img.leafIds]),
+        background: 'transparent'
+      }),
+      0,
+      0
+    )
+  return out
+}
+
+const dslrSteps = (plan: DslrPlan): number =>
+  plan.items.reduce(
+    (n, it) => n + (it.kind === 'image' ? 1 + it.image.maskIds.length : 0),
+    2 // preview + template.xml
+  )
+
 /** Renders the selected outputs. Throws (with a user-readable message) when a render fails. */
 export async function renderExports(
   project: TemplateProject,
@@ -93,7 +183,7 @@ export async function renderExports(
   kinds: readonly ExportKind[],
   onProgress: (p: ExportProgress) => void
 ): Promise<ExportFile[]> {
-  const outputs = exportOutputs(project).filter((o) => kinds.includes(o.kind))
+  const outputs = allExportOutputs(project).filter((o) => kinds.includes(o.kind))
   const unreadable = await loadExportImages(project, sessionId)
   if (unreadable.length > 0)
     throw new Error('Some images could not be loaded. Run the checks again.')
@@ -104,7 +194,14 @@ export async function renderExports(
   const photoPreview = needsProof ? await proofPhotos(project) : undefined
 
   const bands = outputs.some((o) => o.kind === 'package') ? classifyLayerPackage(project) : null
-  const steps = outputs.reduce((n, o) => n + (o.kind === 'package' ? 7 : 1), 0)
+  const dslrPlans = new Map<ExportKind, DslrPlan>()
+  for (const o of outputs)
+    if (isDslrKind(o.kind))
+      dslrPlans.set(o.kind, planDslrTemplate(project, dslrVariantFor(project, o.kind)))
+  const steps = outputs.reduce((n, o) => {
+    const plan = dslrPlans.get(o.kind)
+    return n + (plan ? dslrSteps(plan) : o.kind === 'package' ? 7 : 1)
+  }, 0)
   let done = 0
   const step = async (label: string): Promise<void> => {
     onProgress({ label, done, total: steps })
@@ -124,7 +221,38 @@ export async function renderExports(
   })
 
   for (const o of outputs) {
-    if (o.kind === 'print') {
+    const dslr = dslrPlans.get(o.kind)
+    if (dslr) {
+      const render: Render = (options) =>
+        dslr.variant === 'sheet'
+          ? renderOutputToCanvas(project, images, options)
+          : renderProjectToCanvas(project, images, options)
+      const facts = { width: dslr.canvas.width, height: dslr.canvas.height, dpi: dslr.canvas.dpi }
+      const entries: ExportPackageEntry[] = []
+      for (const it of dslr.items) {
+        if (it.kind !== 'image') continue
+        for (let m = 0; m < it.image.maskIds.length; m++) await step(`${o.label}: rounded corners`)
+        await step(`${o.label}: ${it.image.name}`)
+        entries.push({
+          path: it.image.path,
+          data: await toPng(renderDslrImage(project, dslr, it.image, render)),
+          png: facts
+        })
+      }
+      await step(`${o.label}: preview`)
+      entries.push({
+        path: PREVIEW_PNG,
+        data: await toPng(render({ photos: 'placeholder', photoLabels: false })),
+        png: facts
+      })
+      await step(`${o.label}: template.xml`)
+      const template = buildDslrTemplate(project, dslr, {
+        name: dslrTemplateNameFor(o.fileName),
+        now: new Date()
+      })
+      entries.push({ path: TEMPLATE_XML, data: encodeTemplateXml(writeTemplateXml(template)) })
+      files.push({ kind: 'zip', format: 'dslrbooth', name: o.fileName, entries })
+    } else if (o.kind === 'print') {
       await step(`Rendering ${o.label}`)
       files.push(png(o, await toPng(renderOutputToCanvas(project, images, PRODUCTION))))
     } else if (o.kind === 'design') {
@@ -195,7 +323,7 @@ export async function renderExports(
         { path: 'manifest.json', data: enc.encode(JSON.stringify(manifest, null, 2) + '\n') },
         { path: 'readme.txt', data: enc.encode(packageReadme(manifest)) }
       )
-      files.push({ kind: 'zip', name: o.fileName, entries })
+      files.push({ kind: 'zip', format: 'layers', name: o.fileName, entries })
     }
   }
   onProgress({ label: 'Writing files', done: steps, total: steps })

@@ -2,15 +2,22 @@ import { CircleCheck, CircleX, FolderOpen, Info, TriangleAlert } from 'lucide-re
 import { useEffect, useId, useMemo, useState } from 'react'
 import type { TemplateProject } from '@domain'
 import type { ExportFile, ExportWriteResult } from '@shared/ipc'
-import { describeSize, exportOutputs } from '@editor/exportPlan'
+import { describeSize } from '@editor/exportPlan'
 import {
   runExportPreflight,
   type ExportPreflight,
-  type PreflightItem
+  type PreflightSeverity
 } from '@editor/exportPreflight'
+import { isDslrKind } from '@export/dslrbooth/outputs'
+import { runDslrPreflight } from '@export/dslrbooth/preflight'
 import type { ExportKind } from '@export/naming'
 import { editorStore, useEditor } from './editorStore'
-import { loadExportImages, renderExports, type ExportProgress } from './exportActions'
+import {
+  allExportOutputs,
+  loadExportImages,
+  renderExports,
+  type ExportProgress
+} from './exportActions'
 import { fontEnvironment } from './fontCatalog'
 import { layoutStore, useLayout } from './layoutStore'
 import { isMac } from './platform'
@@ -40,26 +47,38 @@ const formatBytes = (n: number): string =>
     : `${Math.max(1, Math.round(n / 1024))} KB`
 
 const ICONS = { error: CircleX, warning: TriangleAlert, info: Info } as const
+const SEVERITY_ORDER: Record<PreflightSeverity, number> = { error: 0, warning: 1, info: 2 }
 
-function PreflightRow({ item }: { item: PreflightItem }): React.JSX.Element {
+interface CheckItem {
+  code: string
+  severity: PreflightSeverity
+  message: string
+  /** Shown as a small tag: the check only applies to the dslrBooth template. */
+  dslr?: boolean
+}
+
+function PreflightRow({ item }: { item: CheckItem }): React.JSX.Element {
   const Icon = ICONS[item.severity]
   return (
     <li className={`preflight-item ${item.severity}`} data-code={item.code}>
       <Icon size={14} aria-hidden="true" />
       <span>
         <span className="sr-only">{item.severity}: </span>
+        {item.dslr && <span className="preflight-tag">dslrBooth</span>}
         {item.message}
       </span>
     </li>
   )
 }
 
-function summary(p: ExportPreflight): string {
-  if (p.items.length === 0) return 'No problems found.'
+function summary(items: readonly CheckItem[]): string {
+  if (items.length === 0) return 'No problems found.'
+  const count = (s: PreflightSeverity): number => items.filter((i) => i.severity === s).length
+  const [e, w, n] = [count('error'), count('warning'), count('info')]
   const parts = [
-    p.errors ? `${p.errors} ${p.errors === 1 ? 'error' : 'errors'}` : '',
-    p.warnings ? `${p.warnings} ${p.warnings === 1 ? 'warning' : 'warnings'}` : '',
-    p.infos ? `${p.infos} ${p.infos === 1 ? 'note' : 'notes'}` : ''
+    e ? `${e} ${e === 1 ? 'error' : 'errors'}` : '',
+    w ? `${w} ${w === 1 ? 'warning' : 'warnings'}` : '',
+    n ? `${n} ${n === 1 ? 'note' : 'notes'}` : ''
   ].filter(Boolean)
   return parts.join(' · ')
 }
@@ -71,7 +90,8 @@ function ExportForm({
   project: TemplateProject
   sessionId: string
 }): React.JSX.Element {
-  const outputs = useMemo(() => exportOutputs(project), [project])
+  const outputs = useMemo(() => allExportOutputs(project), [project])
+  const dslrCheck = useMemo(() => runDslrPreflight(project), [project])
   const [selected, setSelected] = useState<ExportKind[]>(() =>
     outputs.filter((o) => o.defaultSelected).map((o) => o.kind)
   )
@@ -157,7 +177,17 @@ function ExportForm({
   }
 
   const working = phase.kind === 'working'
-  const blocked = preflight !== null && !preflight.canExport
+  const dslrSelected = selected.some(isDslrKind)
+  // dslrBooth checks only matter (and only block) when a dslrBooth template is selected.
+  const checks: CheckItem[] =
+    preflight === null
+      ? []
+      : [
+          ...(dslrSelected ? dslrCheck.items.map((i) => ({ ...i, dslr: true })) : []),
+          ...preflight.items
+        ].sort((a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity])
+  const blocked =
+    preflight !== null && (!preflight.canExport || (dslrSelected && !dslrCheck.canExport))
   let footer: React.ReactNode
   let body: React.ReactNode
 
@@ -254,27 +284,36 @@ function ExportForm({
       <>
         <fieldset className="export-outputs" disabled={working}>
           <legend>Files</legend>
-          {outputs.map((o) => {
+          {outputs.map((o, i) => {
             const id = `${listId}-${o.kind}`
+            const group = isDslrKind(o.kind) ? 'For dslrBooth' : 'Images'
+            const prev = outputs[i - 1]
+            const heading =
+              !prev || isDslrKind(prev.kind) !== isDslrKind(o.kind) ? (
+                <div className="export-group">{group}</div>
+              ) : null
             return (
-              <div key={o.kind} className="export-output" data-kind={o.kind}>
-                <input
-                  type="checkbox"
-                  id={id}
-                  checked={selected.includes(o.kind)}
-                  onChange={() => toggle(o.kind)}
-                  aria-describedby={`${id}-desc`}
-                />
-                <label htmlFor={id}>
-                  <span className="title">
-                    {o.label}
-                    {!o.production && <span className="ui-badge warn">Not for printing</span>}
-                  </span>
-                  <span className="file">{o.fileName}</span>
-                  <span className="muted" id={`${id}-desc`}>
-                    {o.description} {describeSize(o)}
-                  </span>
-                </label>
+              <div key={o.kind} className="export-output-wrap">
+                {heading}
+                <div className="export-output" data-kind={o.kind}>
+                  <input
+                    type="checkbox"
+                    id={id}
+                    checked={selected.includes(o.kind)}
+                    onChange={() => toggle(o.kind)}
+                    aria-describedby={`${id}-desc`}
+                  />
+                  <label htmlFor={id}>
+                    <span className="title">
+                      {o.label}
+                      {!o.production && <span className="ui-badge warn">Not for printing</span>}
+                    </span>
+                    <span className="file">{o.fileName}</span>
+                    <span className="muted" id={`${id}-desc`}>
+                      {o.description} {describeSize(o)}
+                    </span>
+                  </label>
+                </div>
               </div>
             )
           })}
@@ -286,12 +325,12 @@ function ExportForm({
           ) : (
             <>
               <p id="preflight-summary" className={blocked ? 'blocked' : ''}>
-                {summary(preflight)}
+                {summary(checks)}
                 {blocked && ' Fix the errors before exporting.'}
               </p>
-              {preflight.items.length > 0 && (
+              {checks.length > 0 && (
                 <ul className="preflight-list">
-                  {preflight.items.map((item) => (
+                  {checks.map((item) => (
                     <PreflightRow key={item.code} item={item} />
                   ))}
                 </ul>

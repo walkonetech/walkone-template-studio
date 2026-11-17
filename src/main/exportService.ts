@@ -5,6 +5,12 @@ import yazl from 'yazl'
 import { z } from 'zod'
 import { isSafeExportFileName, uniqueFileName } from '../export/naming'
 import { MAX_PACKAGE_ENTRIES, isSafePackageEntryPath } from '../export/package'
+import {
+  compareEntryNames,
+  DslrPackageError,
+  verifyDslrPackage
+} from '../export/dslrbooth/container'
+import { MAX_DSLR_ENTRIES } from '../export/dslrbooth/profile'
 import { readPngInfo, withPngDensity } from '../export/png'
 import { writeFileAtomic } from '../projects/atomicFile'
 import { PersistenceError, fromFsError, toSafeError } from '../projects/errors'
@@ -53,6 +59,7 @@ const PngFileSchema = z.strictObject({
 })
 const ZipFileSchema = z.strictObject({
   kind: z.literal('zip'),
+  format: z.enum(['layers', 'dslrbooth']),
   name: z.string().min(1).max(200),
   entries: z
     .array(
@@ -63,7 +70,7 @@ const ZipFileSchema = z.strictObject({
       })
     )
     .min(1)
-    .max(MAX_PACKAGE_ENTRIES)
+    .max(Math.max(MAX_PACKAGE_ENTRIES, MAX_DSLR_ENTRIES))
 })
 const WriteSchema = z.strictObject({
   destinationId: z.string().min(1).max(100),
@@ -131,6 +138,9 @@ export async function prepareFile(file: ExportFile): Promise<Uint8Array> {
     return preparePng(file.data, file, file.name)
   }
   if (!file.name.toLowerCase().endsWith('.zip')) throw invalid('A package export must end in .zip.')
+  if (file.format === 'dslrbooth') return prepareDslrZip(file)
+  if (file.entries.length > MAX_PACKAGE_ENTRIES)
+    throw invalid('The layer package contained too many files.')
   const seen = new Set<string>()
   let total = 0
   const entries = file.entries.map((e) => {
@@ -146,6 +156,33 @@ export async function prepareFile(file: ExportFile): Promise<Uint8Array> {
     return { path: e.path, data, compress: !isPng }
   })
   if (total > MAX_EXPORT_FILE_BYTES) throw invalid('The layer package is too large to export.')
+  return buildZip(entries)
+}
+
+/**
+ * A dslrBooth 7.48 template ZIP (Phase 6B): structure verified by re-reading template.xml (every image referenced and
+ * present, photo numbers 1-12, unique ZIndex, BOM), every PNG verified like any export, entries in case-insensitive
+ * alphabetical order and all deflated, as in the real exports; fixed timestamps keep it deterministic.
+ */
+async function prepareDslrZip(file: Extract<ExportFile, { kind: 'zip' }>): Promise<Uint8Array> {
+  try {
+    verifyDslrPackage(file.entries)
+  } catch (e) {
+    if (e instanceof DslrPackageError) throw invalid(e.message, e.detail)
+    throw e
+  }
+  let total = 0
+  const entries = [...file.entries]
+    .sort((a, b) => compareEntryNames(a.path, b.path))
+    .map((e) => {
+      const isPng = e.path.endsWith('.png')
+      if (isPng !== Boolean(e.png))
+        throw invalid('The dslrBooth template contained an invalid entry.', e.path)
+      const data = e.png ? preparePng(e.data, e.png, `${file.name}/${e.path}`) : e.data
+      total += data.byteLength
+      return { path: e.path, data, compress: true }
+    })
+  if (total > MAX_EXPORT_FILE_BYTES) throw invalid('The dslrBooth template is too large to export.')
   return buildZip(entries)
 }
 

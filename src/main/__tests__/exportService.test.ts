@@ -6,6 +6,7 @@ import yauzl from 'yauzl'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { readPngInfo } from '../../export/png'
 import { makePng } from '../../export/__tests__/testPng'
+import { encodeTemplateXml, writeTemplateXml } from '../../export/dslrbooth/templateXml'
 import { ExportService, type ExportDeps } from '../exportService'
 import type { ExportFile, ExportWriteResult } from '../../shared/ipc'
 import type { IpcResult } from '../../shared/persistence'
@@ -255,7 +256,7 @@ describe('ExportService layer package', () => {
     written(
       await service.write({
         destinationId: id,
-        files: [{ kind: 'zip', name: 'E-layers.zip', entries: entries() }],
+        files: [{ kind: 'zip', format: 'layers', name: 'E-layers.zip', entries: entries() }],
         onConflict: 'ask'
       })
     )
@@ -267,7 +268,12 @@ describe('ExportService layer package', () => {
   it('produces identical bytes for identical input', async () => {
     const { service } = make()
     const id = await destination(service)
-    const file = (name: string): ExportFile => ({ kind: 'zip', name, entries: entries() })
+    const file = (name: string): ExportFile => ({
+      kind: 'zip',
+      format: 'layers',
+      name,
+      entries: entries()
+    })
     written(
       await service.write({
         destinationId: id,
@@ -292,7 +298,9 @@ describe('ExportService layer package', () => {
     const id = await destination(service)
     const r = await service.write({
       destinationId: id,
-      files: [{ kind: 'zip', name: 'E-layers.zip', entries: [entry] } as ExportFile],
+      files: [
+        { kind: 'zip', format: 'layers', name: 'E-layers.zip', entries: [entry] } as ExportFile
+      ],
       onConflict: 'ask'
     })
     expect(r.status).toBe('error')
@@ -312,5 +320,103 @@ describe('ExportService.reveal', () => {
     const r = await service.reveal({ destinationId: id, name: '../../etc/passwd' })
     expect(r).toMatchObject({ status: 'error', error: { code: 'not-allowed' } })
     expect(showItemInFolder).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('ExportService dslrBooth template (6B)', () => {
+  const facts = { width: 4, height: 12, dpi: 300 }
+  const xml = (images: string[], photos = 1): Uint8Array =>
+    encodeTemplateXml(
+      writeTemplateXml({
+        root: {
+          name: 'Sam & Alex',
+          width: 4,
+          height: 12,
+          dimensions: 0,
+          resolution: 300,
+          backgroundColor: '#FFFFFFFF',
+          print2PerPage: true,
+          lastSavedDate: '11/16/2026 10:00:00',
+          id: 'A'.repeat(25),
+          originalDevice: 'WalkOneTemplateStudio'
+        },
+        elements: [
+          ...images.map((p, i) => ({
+            type: 'Image' as const,
+            name: p,
+            imagePath: p,
+            left: 0,
+            top: 0,
+            width: 4,
+            height: 12,
+            zIndex: i * 2
+          })),
+          ...Array.from({ length: photos }, (_, i) => ({
+            type: 'Photo' as const,
+            name: `Photo ${i + 1}`,
+            photoNumber: i + 1,
+            left: 1,
+            top: 1,
+            width: 2,
+            height: 2,
+            zIndex: i * 2 + 1
+          }))
+        ]
+      })
+    )
+  const entries = (images = ['background.png', 'artwork-1.png']) => [
+    ...images.map((path) => ({ path, data: makePng(4, 12), png: facts })),
+    { path: 'preview.png', data: makePng(4, 12), png: facts },
+    { path: 'template.xml', data: xml(images) }
+  ]
+
+  it('writes the entries in case-insensitive alphabetical order, deflated, with density', async () => {
+    const { service } = make()
+    const id = await destination(service)
+    written(
+      await service.write({
+        destinationId: id,
+        files: [{ kind: 'zip', format: 'dslrbooth', name: 'Sam & Alex.zip', entries: entries() }],
+        onConflict: 'ask'
+      })
+    )
+    const zip = await zipEntries(join(dir, 'Sam & Alex.zip'))
+    expect([...zip.keys()]).toEqual([
+      'artwork-1.png',
+      'background.png',
+      'preview.png',
+      'template.xml'
+    ])
+    expect(readPngInfo(new Uint8Array(zip.get('preview.png')!)).dpi).toEqual({ x: 300, y: 300 })
+    expect([...zip.get('template.xml')!.subarray(0, 3)]).toEqual([0xef, 0xbb, 0xbf])
+  })
+
+  it.each([
+    [
+      'an unreferenced image',
+      [...entries(), { path: 'extra.png', data: makePng(4, 12), png: facts }]
+    ],
+    ['a missing preview', entries().filter((e) => e.path !== 'preview.png')],
+    [
+      'a wrong-size image',
+      entries().map((e) => (e.path === 'background.png' ? { ...e, data: makePng(2, 2) } : e))
+    ],
+    [
+      'a template without photo slots',
+      [
+        ...entries().filter((e) => e.path !== 'template.xml'),
+        { path: 'template.xml', data: xml(['background.png', 'artwork-1.png'], 0) }
+      ]
+    ]
+  ])('refuses %s and writes nothing', async (_label, list) => {
+    const { service } = make()
+    const id = await destination(service)
+    const r = await service.write({
+      destinationId: id,
+      files: [{ kind: 'zip', format: 'dslrbooth', name: 'T.zip', entries: list } as ExportFile],
+      onConflict: 'ask'
+    })
+    expect(r).toMatchObject({ status: 'error', error: { code: 'export-invalid-output' } })
+    expect(await fs.readdir(dir)).toEqual([])
   })
 })

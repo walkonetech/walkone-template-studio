@@ -76,6 +76,15 @@ const waitFor = async (c, expr, ms = 30000) => {
   }
   return false
 }
+// Phase 6B added dslrBooth templates (ticked by default) to the same dialog; this script covers the vendor-neutral
+// outputs only (validate-6b.js covers dslrBooth), so it unticks them whenever the dialog opens.
+const untickDslr = async (c) => {
+  await waitFor(c, `!!document.querySelector('.export-output')`, 5000)
+  await c.ev(
+    `[...document.querySelectorAll('.export-output[data-kind^="dslrbooth"] input')].filter(i=>i.checked).forEach(i=>i.click()); 1`
+  )
+  await sleep(150)
+}
 const near = (a, b, tol = 3) =>
   a.length === b.length && a.every((v, i) => Math.abs(v - b[i]) <= tol)
 const BG = [0x20, 0x30, 0x4a, 255]
@@ -188,10 +197,11 @@ const RED = [255, 0, 0, 255]
       await c.ev(`!document.getElementById('export-button').disabled`)
     )
     await c.ev(`document.getElementById('export-button').click(); 1`)
+    await untickDslr(c)
     await sleep(500)
     check('2b Export dialog opens', await dialogOpen(c))
     const outs = await J(c)(
-      `[...document.querySelectorAll('.export-output')].map(e=>({kind:e.dataset.kind, checked:e.querySelector('input').checked, file:e.querySelector('.file').textContent, text:e.textContent}))`
+      `[...document.querySelectorAll('.export-output:not([data-kind^="dslrbooth"])')].map(e=>({kind:e.dataset.kind, checked:e.querySelector('input').checked, file:e.querySelector('.file').textContent, text:e.textContent}))`
     )
     check(
       '2c strip offers Print sheet / Design / Proof (no layer package); print + design ticked',
@@ -221,7 +231,7 @@ const RED = [255, 0, 0, 255]
 
     // ---- 3: export all three
     await c.ev(
-      `[...document.querySelectorAll('.export-output')].filter(e=>!e.querySelector('input').checked).forEach(e=>e.querySelector('input').click()); 1`
+      `[...document.querySelectorAll('.export-output:not([data-kind^="dslrbooth"])')].filter(e=>!e.querySelector('input').checked).forEach(e=>e.querySelector('input').click()); 1`
     )
     await sleep(200)
     await c.ev(`document.getElementById('export-start').click(); 1`)
@@ -353,6 +363,7 @@ const RED = [255, 0, 0, 255]
     await c.clickButton('Done')
     await sleep(300)
     await c.ev(`document.getElementById('export-button').click(); 1`)
+    await untickDslr(c)
     await waitFor(c, `!!document.getElementById('preflight-summary')`, 10000)
     await c.ev(`document.getElementById('export-start').click(); 1`)
     const conflict = await waitFor(
@@ -384,6 +395,7 @@ const RED = [255, 0, 0, 255]
 
     // ---- 7: cancel the folder picker
     await c.ev(`document.getElementById('export-button').click(); 1`)
+    await untickDslr(c)
     await waitFor(c, `!!document.getElementById('preflight-summary')`, 10000)
     await c.ev(`document.getElementById('export-start').click(); 1`)
     await sleep(800)
@@ -401,6 +413,7 @@ const RED = [255, 0, 0, 255]
     const textId = await c.ev(`${S}.project.layers.find(l=>l.type==='text').id`)
     await c.ev(`${S}.editLayers(['${textId}'], {fontFamily:'Zz Not Installed Font'}); 1`)
     await c.key('e', { code: 'KeyE', vk: 69, modifiers: 4 })
+    await untickDslr(c)
     await sleep(500)
     check('8b ⌘E opens the Export dialog', await dialogOpen(c))
     await waitFor(c, `!!document.getElementById('preflight-summary')`, 10000)
@@ -420,6 +433,7 @@ const RED = [255, 0, 0, 255]
       `${S}.commit((p)=>({...p, layers:p.layers.map(l=>l.id==='${textId}'?{...l, fill:{kind:'palette', paletteColorId:'deleted-colour'}}:l)}))`
     )
     await c.ev(`document.getElementById('export-button').click(); 1`)
+    await untickDslr(c)
     await waitFor(c, `!!document.getElementById('preflight-summary')`, 10000)
     const blocked = await J(c)(
       `({s:document.getElementById('preflight-summary').textContent, codes:[...document.querySelectorAll('.preflight-item')].map(i=>i.dataset.code), disabled:document.getElementById('export-start').disabled})`
@@ -443,9 +457,10 @@ const RED = [255, 0, 0, 255]
     await sleep(900)
     await c.ev(`${S}.addNewLayer('photo'); 1`)
     await c.ev(`document.getElementById('export-button').click(); 1`)
+    await untickDslr(c)
     await waitFor(c, `!!document.getElementById('preflight-summary')`, 10000)
     const single = await J(c)(
-      `[...document.querySelectorAll('.export-output')].map(e=>e.dataset.kind+':'+e.querySelector('.title').textContent)`
+      `[...document.querySelectorAll('.export-output:not([data-kind^="dslrbooth"])')].map(e=>e.dataset.kind+':'+e.querySelector('.title').textContent)`
     )
     check(
       '9 a single-up 4×6 offers one Print PNG (no separate design) and the proof',

@@ -24,7 +24,8 @@ export interface RenderOptions {
    * to render one semantic band of the stack at a time. Omitted = every printable layer.
    */
   include?: (layer: Layer) => boolean
-  /** 'transparent' leaves the canvas background colour out (overlay bands of the layer package). Default 'canvas'. */
+  /** 'transparent' leaves the canvas background colour out (layer package bands, dslrBooth overlay images). Default
+   *  'canvas'. */
   background?: 'canvas' | 'transparent'
   /**
    * Sample pictures (with `photos: 'preview'`). A DESIGN-PREVIEW render may bake sample photos in; PRODUCTION output
