@@ -7,7 +7,10 @@ WalkOne Template Studio is an internal desktop app (Electron + React + TypeScrip
 
 **Long-term direction (owner-approved, planning only):** Template Studio stays a standalone app and will also become the full-capability template editor inside **WalkOne Booth**, a future Windows-first booth platform that replaces dslrBooth. One shared editor, never two. dslrBooth compatibility is the migration path, later a legacy adapter. WalkOne Booth work has **not** started and is not approved; Phase 6C is about Template Studio + dslrBooth + the DNP printer only.
 
-## Where things stand
+## Results are in (2026-11-17)
+**Stage 1 ran on the Windows test laptop and the Mac-side fixes are done.** Results: `research/PHASE_6C_RESULTS.md` (observed findings only, ADR-050). Still open with the owner: read the measurement print (Test 16), the manual `/print` check (Test 18), the booth PC's own printer settings, and one real dslrBooth template with made-up live text so the live-text import can be built. The rest of this handoff is the original plan, kept for reference.
+
+## Where things stood before 6C
 Phases 0–6B and 6D are complete. All of it was developed and tested on macOS only. **Windows has never been tested.**
 
 | Phase | What it delivered | Status |

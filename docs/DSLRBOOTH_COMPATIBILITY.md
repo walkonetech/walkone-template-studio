@@ -13,21 +13,33 @@ Reported by the project owner (treated as **Confirmed by owner**, not independen
 ## 1b. dslrBooth 7.48 runtime findings (external, owner-reported)
 **Confirmed via external clean-room runtime research reported by the owner; not independently reproducible from repository fixtures.** Summary only; details and labels in [../research/DSLRBOOTH_748_RUNTIME_FINDINGS.md](../research/DSLRBOOTH_748_RUNTIME_FINDINGS.md): native 2×6 with `print_2_per_page=True` yields `_1x` (one strip; used for gallery, email, SMS, QR, LumaShare) and `_2x` (two-up 4×6; used for printing); photos are centred Cover, rotated clockwise after the crop, borders grow outward, PhotoNumber 1–12; images map `KeepAspect` True → fit, False → stretch; transparent PNG overlays work; text has newlines but no wrapping, clips, `FontSize=0` auto-fits, missing fonts silently fall back. Printer finishing (2-inch cut) belongs to the printer/driver, not the template (**Needs Validation** on the DNP printer, as is the `/print` endpoint). Used by Phase 6B; validated by Phase 6C.
 
+## 1e. Phase 6C observations (dslrBooth 7.48.0903.1, Windows 11, DNP DS-RX1; ADR-050)
+**OBSERVED at runtime or in files dslrBooth wrote; code-derived conclusions are not recorded here.** Details: [../research/PHASE_6C_RESULTS.md](../research/PHASE_6C_RESULTS.md).
+- dslrBooth **accepts** Template Studio's native 2×6 (`Dimensions="0"`, `print_2_per_page="True"`, 1:3 canvas) and its 4×6 sheet: right paper, dpi, two-up switch, layers and slot boxes. For a non-1:3 canvas the two-up switch is hidden.
+- A live session matches Template Studio's design outside the photo slots (mean 1.2/255). Photos fill their slot (centred cover); rotation is **clockwise about the slot centre**; `Thickness` borders grow **outward**.
+- `_1x` = one strip; `_2x` = two equal strips side by side, no gutter (300 and 600 dpi).
+- **Re-import always creates a copy** with a new Id ("… Copy1"); a template is never replaced in place.
+- `preview.png` is **optional**: without it the template imports and runs, but its picker thumbnail is blank.
+- `Dimensions` is the unit dslrBooth's editor displays (0 px, 1 in, 2 cm); geometry stays in pixels.
+- On import dslrBooth renames image layers to their file names, adds `IsVisible`, rewrites `OriginalDevice`, keeps `IsLegacy="True"` and saves at once.
+- **Live `<Text>` elements exist** in real templates made in dslrBooth's editor (seen in two owner templates; none of the five repository fixtures has one). Attributes seen: `Text`, `FontName`, `FontSize`, `FontColor`, `IsBold`, `IsItalic`, `TextHorizontalAlignment`, `Rotation`. Units and rendering are **Unknown** until a real sample is in the fixtures.
+- Printing: the `_2x` sheet goes to the DNP as one borderless page; the 2-inch cut is the driver's `CUT_2INCH` setting in the print settings dslrBooth saved, not a template value.
+
 ## 1c. Exporter (Phase 6B, ADR-047)
 `src/export/dslrbooth/` writes dslrBooth 7.48 template ZIPs. Mapping (data-driven, test-covered):
 
 | Template Studio | dslrBooth | Status |
 |---|---|---|
-| Photo slot (number, box, rotation) | `<Photo PhotoNumber Left Top Width Height [Rotation]>` integer px, whole degrees | Format CONFIRMED FROM FILE; rotation pivot (centre) Needs Validation |
+| Photo slot (number, box, rotation) | `<Photo PhotoNumber Left Top Width Height [Rotation]>` integer px, whole degrees | Format CONFIRMED FROM FILE; rotation clockwise about the centre OBSERVED (6C) |
 | Slot frame (inside the box) | drawn into the `<Image>` above the photo; `Thickness="0"` | exact by construction (borders would grow outward natively) |
 | Slot corner radius | rounded-corner mask in the `<Image>` above (what lies beneath) | exact by construction (no corner attribute exists) |
 | Slot fit Cover / Fit / Stretch | always Cover (dslrBooth fills) | Fit/Stretch warn |
 | Images, shapes, text, groups, background | flattened into full-canvas PNG `<Image>`s by stacking order | text always raster (fonts not needed on the booth PC) |
 | Canvas colour | `BackgroundColor="#AARRGGBB"` + the opaque base image | — |
-| 2×6 strip on a two-up 4×6 | native strip canvas, `print_2_per_page="True"` (default) / 4×6 sheet with duplicated elements (fallback) | native strip Needs Validation (6C) |
+| 2×6 strip on a two-up 4×6 | native strip canvas, `print_2_per_page="True"` (default) / 4×6 sheet with duplicated elements (fallback) | native strip ACCEPTED by dslrBooth 7.48 (6C) |
 | Project name | `Name` = ZIP stem | as in every fixture |
 
-Root values written: `Dimensions="0"`, `IsLegacy="True"`, `PrintToSecondaryPrinter="False"`, `LastSavedDate` (local, US format), stable 25-character `Id` (project + variant), `OriginalDevice="WalkOneTemplateStudio"`. Elements: observed defaults (Opacity 100, shadows off, KeepAspect True, StrokeColor default), `IsLocked="False"`. Encoding and ZIP layout as in §1a. **Needs Validation in 6C:** import into the real 7.48 install, native strip printing/sharing (`_2x`/`_1x`), `Dimensions` on a strip canvas, rotation pivot, re-import with an equal `Id`, preview requirements.
+Root values written: `Dimensions="0"` (or an imported template's own editor unit, 6C C2), `IsLegacy="True"`, `PrintToSecondaryPrinter="False"`, `LastSavedDate` (local, US format), stable 25-character `Id` (project + variant), `OriginalDevice="WalkOneTemplateStudio"`. Elements: observed defaults (Opacity 100, shadows off, KeepAspect True, StrokeColor default), `IsLocked="False"`. Encoding and ZIP layout as in §1a. **Validated in 6C (§1e):** import into the real 7.48 install, native strip sharing/printing (`_1x`/`_2x`), `Dimensions` on a strip canvas, rotation pivot, re-import (always a copy), preview (optional). **Still open:** the physical cut/trim readout and the booth PC's own printer settings.
 
 ## 1d. Importer (Phase 6D, ADR-048)
 `src/import/dslrbooth/` (pure) + `src/projects/dslrImport.ts` (ZIP reading). Mapping (test-covered):
@@ -36,13 +48,14 @@ Root values written: `Dimensions="0"`, `IsLegacy="True"`, `PrintToSecondaryPrint
 |---|---|---|
 | `Width`/`Height`/`Resolution` | canvas inches = px / Resolution, DPI | CONFIRMED FROM FILE |
 | `BackgroundColor="#AARRGGBB"` | canvas colour `#rrggbb[aa]` | CONFIRMED FROM FILE |
-| `<Photo>` PhotoNumber, box, Rotation, Opacity/100, IsVisible, IsLocked | photo slot, Cover, same values | format CONFIRMED; rotation pivot Needs Validation |
+| `<Photo>` PhotoNumber, box, Rotation, Opacity/100, IsVisible, IsLocked | photo slot, Cover, same values | format CONFIRMED; centre pivot OBSERVED (6C) |
 | `<Photo Thickness>0 StrokeColor>` | inside frame, slot grown by Thickness (borders grow outward) | Assumption (never seen non-zero) |
 | `<Image ImagePath KeepAspect>` | image layer + asset; True → Fit, False → Stretch | runtime findings |
 | `ZIndex` | stacking order (higher in front) | LIKELY (fixtures) |
 | `print_2_per_page="True"` (portrait) | two-up 4×6 output | runtime findings |
 | two strips repeated on a 4×6 sheet | one 2×6 strip printed two-up (default when the copies match) or the sheet as is | design choice (ADR-048) |
-| shadows, unknown attributes/elements, `Id`, `Dimensions`, `IsLegacy`, … | kept verbatim in `sourceCompatibility.dslrbooth` + report | preserved, not interpreted |
+| shadows, unknown attributes/elements, `Id`, `Dimensions`, `IsLegacy`, … | kept verbatim in `sourceCompatibility.dslrbooth` + report | preserved; `Dimensions` (editor unit) written back on export (6C C2) |
+| live `<Text>` | **not imported yet** (6C C1): kept in `sourceCompatibility.dslrbooth`, `live-text` warning quoting the text; missing on export | editable import planned once a real sample exists (ADR-050) |
 | `OriginalDevice` | dropped (privacy), reported | — |
 | `preview.png` | shown in the import dialog only | — |
 

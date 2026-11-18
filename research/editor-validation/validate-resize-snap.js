@@ -150,7 +150,7 @@ edge = [p.getpixel((x, 843)) for x in range(45, 555)] + [p.getpixel((41, y)) for
 inner = p.getpixel((300, 670))
 print(json.dumps({'minEdge': min(min(px) for px in edge), 'inner': inner}))
 `
-    const m = JSON.parse(execFileSync('python3', ['-P', '-c', py, proof]).toString())
+    const m = JSON.parse(execFileSync(h.PY, ['-P', '-c', py, proof]).toString())
     check(
       '4b no hairline: every outer-edge pixel of the white-framed slot is white (min channel ≥ 250)',
       m.minEdge >= 250,

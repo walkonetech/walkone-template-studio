@@ -122,11 +122,12 @@ DSLR Booth packages (workflow K) are Phase 6B; workflow L (layer package) was bu
 
 ## W. Import a dslrBooth template (Phase 6D, implemented)
 **Happy:** Start screen **Import from dslrBooth…** (or File › Import dslrBooth template…) → pick the ZIP dslrBooth exported → the dialog shows dslrBooth's preview, size/DPI, photos per session and notes → for a 4×6 sheet with two copied strips choose **one 2×6 strip printed two per sheet** (recommended) or **the sheet as is** → Import (asks about unsaved changes) → a new, Modified project opens; locked layers stay locked → Save.
-**Edge:** not a template (no template.xml) → clear error + Choose another…; missing/unreadable pictures, unknown settings, shadows, differences between the two strips → listed in the dialog, kept in the project's import notes, never silently dropped; text and decorations arrive as pictures (dslrBooth stored them flattened).
+**Edge:** not a template (no template.xml) → clear error + Choose another…; missing/unreadable pictures, unknown settings, shadows, differences between the two strips → listed in the dialog, kept in the project's import notes, never silently dropped; text and decorations made as pictures arrive as pictures. **Live text typed in dslrBooth's own editor is not imported yet** (6C C1): the dialog warns and quotes it, the text is kept in the import notes but not shown, and it would be missing on export back to dslrBooth, so add it again in Template Studio.
 
 ## K2. Export for dslrBooth (Phase 6B, implemented)
 **Happy:** Export → **dslrBooth template · 2×6 strip** is ticked (one native strip, dslrBooth prints two per 4×6) → optional **4×6 sheet** version → Export → import the ZIP into dslrBooth on the booth PC.
-**Edge:** no photo slots or a photo number above 12 → blocked with the reason; Fit/Stretch slots, faded photos, unusual DPI → warnings. Real-booth behaviour is validated in Phase 6C.
+**Edge:** no photo slots or a photo number above 12 → blocked with the reason; Fit/Stretch slots, faded photos, unusual DPI → warnings. Validated in dslrBooth 7.48 in Phase 6C (both versions import and print correctly).
+**Updating a template already in dslrBooth (observed in 6C):** dslrBooth never replaces a template on Import; importing a newer export always adds a copy ("… Copy1") with its own Id. Select the new copy for the event, then delete the old one in dslrBooth if it is no longer needed.
 
 ## X. Design Guide (planned; owner direction, mockups first)
 Print size → event type → style → colours/background → photos (count, orientation, size) → logo/monogram → words → company branding → layout → done (export, client proof, open in the editor). Conditional steps per event type; automatic safe-area / 2-inch-cut check; "Save as event theme" for the next similar event. Clients never use it; the main client approves the proof.

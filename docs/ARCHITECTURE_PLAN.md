@@ -110,7 +110,7 @@ tests/
 Consider a monorepo-lite or path aliases to enforce one-way dependency (domain ← everything) with lint rules — **Future Research**.
 
 ## 13. Cross-platform
-macOS and Windows targets (Windows workstation first-class, ADR-043; **untested on Windows until Phase 6C**); iPad later would need the renderer-side editor in another shell with the main-process services behind the existing typed IPC ports; avoid platform-specific paths; test fonts and rendering on both; DSLR Booth itself is Windows ([DSLRBOOTH_COMPATIBILITY.md](DSLRBOOTH_COMPATIBILITY.md)).
+macOS and Windows targets (Windows workstation first-class, ADR-043; **first run on Windows 11 in Phase 6C Stage 1: works, see research/PHASE_6C_RESULTS.md**); iPad later would need the renderer-side editor in another shell with the main-process services behind the existing typed IPC ports; avoid platform-specific paths; test fonts and rendering on both; DSLR Booth itself is Windows ([DSLRBOOTH_COMPATIBILITY.md](DSLRBOOTH_COMPATIBILITY.md)).
 
 ## 14. Packaging/updates
 Deferred to Phase 18 (signing/notarization, installers, auto-update are unresolved).

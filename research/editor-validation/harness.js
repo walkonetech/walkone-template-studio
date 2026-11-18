@@ -10,6 +10,30 @@ const electron = require(path.join(root, 'node_modules/electron'))
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
 exports.root = root
+
+// ---- platform conventions (6C: the suites must run on Windows too) ----------------------------------------------------
+const MAC = process.platform === 'darwin'
+exports.MAC = MAC
+/** Python launcher: `python3` on macOS/Linux, `python` on Windows (the python.org installer's name). */
+exports.PY = process.platform === 'win32' ? 'python' : 'python3'
+/** DevTools modifier bit for the app's primary shortcut key: Meta (4) on macOS, Control (2) elsewhere. */
+exports.MOD_BIT = MAC ? 4 : 2
+/** A shortcut label as the app shows it: "⌘D" / "⇧⌘Z" on macOS, "Ctrl+D" / "Ctrl+Shift+Z" elsewhere. */
+exports.keyLabel = (key, shift = false) =>
+  MAC ? `${shift ? '⇧' : ''}⌘${key}` : `Ctrl+${shift ? 'Shift+' : ''}${key}`
+/** Fonts that exist on a stock install of each system (Didot and Helvetica are not on Windows). */
+exports.SERIF = MAC ? { name: 'Didot', query: 'did' } : { name: 'Times New Roman', query: 'times' }
+exports.SANS = MAC ? 'Helvetica' : 'Arial'
+/** Asks the running Electron app to quit normally (not a kill). */
+exports.quitElectron = () =>
+  MAC
+    ? execSync(`osascript -e 'tell application id "com.github.Electron" to quit'`, {
+        stdio: 'ignore'
+      })
+    : execSync(
+        'powershell -NoProfile -Command "Get-Process electron -ErrorAction SilentlyContinue | ForEach-Object { [void]$_.CloseMainWindow() }"',
+        { stdio: 'ignore' }
+      )
 exports.sleep = sleep
 exports.tmpDir = (prefix) => fs.mkdtempSync(path.join(os.tmpdir(), prefix))
 

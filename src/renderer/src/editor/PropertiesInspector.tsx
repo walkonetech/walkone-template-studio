@@ -706,6 +706,11 @@ function MultiInspector({
           </Button>
         </div>
       </Section>
+      {/* Aligning is the main job with several layers: keep it near the top, so it stays reachable on short windows
+          (6C W6: 1920×1080 at 125 % left it below the fold). */}
+      <Section id="arrange" title="Align and distribute">
+        <ArrangeControls count={editableIds.length} />
+      </Section>
       <Section id="selection-bounds" title="Selection position">
         <div className="grid-2">
           <CompactNumber
@@ -741,9 +746,6 @@ function MultiInspector({
           X and Y move the whole selection, keeping the spacing between layers. Resize on the
           canvas.
         </p>
-      </Section>
-      <Section id="arrange" title="Align and distribute">
-        <ArrangeControls count={editableIds.length} />
       </Section>
     </>
   )

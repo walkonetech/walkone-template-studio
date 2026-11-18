@@ -1,0 +1,17 @@
+# Keep LF line endings in every checkout (Windows included), so `npm run format:check` passes everywhere (6C W1).
+* text=auto eol=lf
+
+# Binary files: never touch line endings.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.icns binary
+*.zip binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.boothproject binary

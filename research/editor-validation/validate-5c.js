@@ -402,14 +402,16 @@ const tipText = (c) =>
       y: at.y,
       deltaX: 0,
       deltaY: -300,
-      modifiers: 4 /* ctrl */
+      modifiers: h.MOD_BIT /* the primary modifier */
     })
     await sleep(300)
     const d1 = await toDesign()
+    // At fit zoom one screen pixel can be several design px (6C W7: 125 % scaling), so sub-pixel rounding is not drift.
+    const tol = Math.max(2, 1 / d0.scale)
     check(
-      '5b Ctrl/Cmd + wheel zooms around the pointer: the design point under the pointer stays put (±2 design px) while the scale grows',
-      d1.scale > d0.scale * 1.3 && Math.abs(d1.x - d0.x) < 2 && Math.abs(d1.y - d0.y) < 2,
-      { d0, d1 }
+      '5b Ctrl/Cmd + wheel zooms around the pointer: the design point under the pointer stays put (±2 design px, or one screen pixel when that is larger) while the scale grows',
+      d1.scale > d0.scale * 1.3 && Math.abs(d1.x - d0.x) < tol && Math.abs(d1.y - d0.y) < tol,
+      { d0, d1, tol }
     )
     // plain wheel pans (no zoom)
     const s0 = await J(c, `__wts.stageSnapshot()`)

@@ -235,12 +235,29 @@ export function readDslrTemplate(bytes: Uint8Array): DslrTemplateIn {
     }
   }
 
-  for (const u of unknown)
+  // Live text typed in dslrBooth's own editor (6C finding C1). Mapping it to editable text needs a real sample with
+  // known font/size/colour semantics; until then it is kept in the import notes and called out loudly, because it
+  // will be missing from the canvas and from any export back to dslrBooth.
+  const liveText = unknown.filter((u) => u.element === 'Text')
+  if (liveText.length > 0) {
+    const samples = liveText
+      .map((u) => (u.attributes.Text ?? '').replace(/\s+/g, ' ').trim())
+      .filter((s) => s !== '')
+      .slice(0, 3)
+      .map((s) => `“${s.length > 40 ? `${s.slice(0, 40)}…` : s}”`)
     add(
       'warning',
-      'unknown-element',
-      `<${u.element}> is not something Template Studio knows. It was kept in the project's import notes but is not shown.`
+      'live-text',
+      `${liveText.length === 1 ? 'One live text element' : `${liveText.length} live text elements`} from dslrBooth’s editor${samples.length > 0 ? ` (${samples.join(', ')})` : ''} cannot be imported yet. ${liveText.length === 1 ? 'It is' : 'They are'} kept in the project’s import notes but not shown, and will be missing if you export this project back to dslrBooth. Add the text again in Template Studio.`
     )
+  }
+  for (const u of unknown)
+    if (u.element !== 'Text')
+      add(
+        'warning',
+        'unknown-element',
+        `<${u.element}> is not something Template Studio knows. It was kept in the project's import notes but is not shown.`
+      )
   const unknownAttrs = new Set(
     elements.flatMap((e) =>
       Object.keys(e.extra).filter(

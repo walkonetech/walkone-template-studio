@@ -210,6 +210,33 @@ def compare(spec):
         _, lm, lo = stats(0, half - edge)
         _, rm, ro = stats(half + edge, preview.size[0])
         out.update({"left": {"meanDiff": lm, "pctOver32": lo}, "right": {"meanDiff": rm, "pctOver32": ro}})
+    # Live <Text> boxes on their own (6C C1: a whole-sheet mean hid missing text). Only where the template has any.
+    tmask = Image.new("L", preview.size, 0)
+    td = ImageDraw.Draw(tmask)
+    texts = 0
+    for e in root.find("Elements"):
+        if e.tag != "Text":
+            continue
+        try:
+            a = e.attrib
+            td.polygon(photo_polygon(float(a["Left"]), float(a["Top"]), float(a["Width"]), float(a["Height"]),
+                                     float(a.get("Rotation", "0") or 0), 0), fill=255)
+            texts += 1
+        except (KeyError, ValueError):
+            pass
+    if texts:
+        tm = tmask.load()
+        n = s = big = 0
+        for y in range(preview.size[1]):
+            for x in range(preview.size[0]):
+                if tm[x, y] and mm[x, y]:
+                    n += 1
+                    v = dd[x, y]
+                    s += v
+                    if v > 48:
+                        big += 1
+        out["textBoxes"] = {"count": texts, "compared": n, "meanDiff": round(s / max(n, 1), 3),
+                            "pctOver48": round(100 * big / max(n, 1), 3)}
     if spec.get("save"):
         heat = Image.eval(diff, lambda v: min(255, v * 4))
         heat.save(spec["save"])

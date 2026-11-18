@@ -1,12 +1,17 @@
 # Current State
 
-_Last updated: 2026-11-17 (end of Phase 6D, DSLR Booth importer)_
+_Last updated: 2026-11-17 (Phase 6C Stage 1 results and Mac-side fixes)_
 
 ## Project status
 The editor has a redesigned, original dark-neutral interface: welcome screen, File/Edit/View menus, document title with Modified/Saved state, tool rail + drawer, canvas workspace with a floating artboard, resizable Layers + Properties column, status bar with zoom/snap/preview controls, and one accessible dialog shell. Underneath: vendor-neutral domain model, `.boothproject` persistence with working sessions, autosave and crash recovery, snapshot undo/redo, exact-size render API. Images can be imported as project assets (Phase 5A). **Vendor-neutral export exists (Phase 6A):** Print / Design / Proof PNGs, a semantic layer package and an export preflight, through one Export dialog. No DSLR Booth importer/exporter, global asset library, templates or badges exist.
 
 ## Current phase
-**Phase 6D — DSLR Booth Importer: COMPLETE** (ADR-048). Next (proposed, awaiting owner approval): Phase 6C on the Windows booth PC / test laptop with the DNP printer (import + export + printing), then the GUI rounds. ([ROADMAP.md](ROADMAP.md))
+**Phase 6C — Real-booth validation: Stage 1 COMPLETE, fixes done** (ADR-050). Still open with the owner: the measurement-print readout, the manual `/print` check, the booth PC's own printer settings, and one real dslrBooth template with made-up live text (needed for the editable live-text import). ([ROADMAP.md](ROADMAP.md))
+
+## Phase 6C — Windows / dslrBooth / DNP (Stage 1 done)
+Run by Craft Anything on the owner's Windows 11 test laptop (dslrBooth 7.48.0903.1 trial, DNP DS-RX1), from commit `3a39f23`, unmodified. Full results: [../research/PHASE_6C_RESULTS.md](../research/PHASE_6C_RESULTS.md) (observed findings only; code-derived conclusions left out, ADR-050).
+**Confirmed on Windows:** the app launches and the whole project lifecycle works (4B 40/40), native dialogs, Show in Explorer, non-ASCII paths, fonts (missing ones warned, names kept), crisp UI at 125 %. **Confirmed in dslrBooth 7.48:** both exports import with the right paper, dpi, two-up switch and slot boxes; a live session matches Template Studio's design outside the photo slots (mean 1.2/255); `_1x` / `_2x` as expected; rotation clockwise about the slot centre; re-import always makes a copy; `preview.png` optional (blank thumbnail without it). **Printer:** dslrBooth sends the `_2x` sheet as one borderless page; the 2-inch cut is a driver setting; interim keep-out 3 mm from strip edges and the cut until the measurement print is read. **Security (dslrBooth):** its web server's file list and photo downloads need no password on the local network.
+**Fixed on the Mac after 6C:** C1 interim (clear `live-text` warning naming the text, corrected flattened note, separate text-box check in `validate-import`); C2 (`Dimensions` unit kept on export); W1 `.gitattributes` (LF everywhere); W2 separator-independent test; W5 one file-name rule for Save and Export (`exportFileStem`); W6 Align and distribute moved to the top for multi-selections; suites platform-aware (`h.MOD_BIT`, `h.keyLabel`, `h.SERIF`/`h.SANS`, `h.PY`, `h.quitElectron`) and 4C's File-menu expectation updated for 6D's Import item. **Verified (macOS):** gate green, **880 unit tests**; app-driving suites on the built macOS app: 4B 40/40, 4C 97/97, 5A 53/53, 5C 59/59, 5D 40/40, 6A 37/37, 6B 26/26, import 18/18 (new 9d live-text check), resize-snap 9/9. **Not verified:** the fixes on Windows (rerun there); editable live-text import (needs a sample); W4 icon (needs an icon file); W3 Electron install step (documented workaround).
 
 ## Product direction recorded (2026-11-17, planning only)
 ADR-049 (Accepted): Template Studio remains a first-class standalone app **and** will become the full-capability editor module inside **WalkOne Booth**, the future Windows-first all-in-one booth platform; one shared core, never a second editor. Authoritative: [PRODUCT_ECOSYSTEM.md](PRODUCT_ECOSYSTEM.md). **No code, schema, format or behaviour changed.** WalkOne Booth development is not approved; Phase 6C remains next.
@@ -72,7 +77,7 @@ Native Save / Don't Save / Cancel on every close path via a main-process coordin
 ADR-012 SQLite scope; ADR-015 remainder (font embedding/bundling; native-vs-rasterized text for the DSLR Booth adapter, 6B). ADR-014 was accepted in Phase 6A.
 
 ## Known risks
-- DSLR Booth semantics still unknown for several fields ([analysis §25](../research/DSLRBOOTH_FIXTURE_ANALYSIS.md)); Windows-only booth software vs macOS development; Windows untested for persistence and the editor.
+- DSLR Booth semantics still unknown for several fields ([analysis §25](../research/DSLRBOOTH_FIXTURE_ANALYSIS.md)); Windows-only booth software vs macOS development; Windows validated once in 6C Stage 1 on Windows 11 (the post-6C fixes not yet rerun there; no installer).
 - Konva cannot run under Vitest and React components have no DOM test environment, so UI behavior rests on the scripted app run rather than CI tests.
 - Panel layout assumes a desktop window (~1280×770 or larger); no responsive collapsing yet.
 - Strict schema: every model change needs a version bump and migration. Vite held at 7 (ADR-016).

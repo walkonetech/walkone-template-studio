@@ -127,11 +127,11 @@ async function session(opts, fn) {
         labels
       )
       check(
-        'File menu: only New and Open enabled with no project',
+        'File menu: only New, Open and Import dslrBooth template enabled with no project',
         items
           .filter((i) => !i.d)
           .map((i) => i.t)
-          .join() === 'New project…,Open…'
+          .join() === 'New project…,Open…,Import dslrBooth template…'
       )
       check('menu exposes no diagnostic entries', !labels.some((l) => /sample|debug|dev/i.test(l)))
       await c.key('Escape', { code: 'Escape', vk: 27 })
@@ -142,7 +142,7 @@ async function session(opts, fn) {
       )
 
       // Cmd+N works from the welcome screen
-      await c.key('n', { code: 'KeyN', vk: 78, modifiers: 4 })
+      await c.key('n', { code: 'KeyN', vk: 78, modifiers: h.MOD_BIT })
       await sleep(400)
       check(
         '⌘N opens the New project dialog (welcome screen)',
@@ -175,14 +175,14 @@ async function session(opts, fn) {
         type: 'keyDown',
         key: 'a',
         code: 'KeyA',
-        modifiers: 4,
+        modifiers: h.MOD_BIT,
         windowsVirtualKeyCode: 65
       })
       await c.send('Input.dispatchKeyEvent', {
         type: 'keyUp',
         key: 'a',
         code: 'KeyA',
-        modifiers: 4,
+        modifiers: h.MOD_BIT,
         windowsVirtualKeyCode: 65
       })
       await c.insertText('Studio Test')
@@ -350,14 +350,14 @@ async function session(opts, fn) {
         type: 'keyDown',
         key: 'a',
         code: 'KeyA',
-        modifiers: 4,
+        modifiers: h.MOD_BIT,
         windowsVirtualKeyCode: 65
       })
       await c.send('Input.dispatchKeyEvent', {
         type: 'keyUp',
         key: 'a',
         code: 'KeyA',
-        modifiers: 4,
+        modifiers: h.MOD_BIT,
         windowsVirtualKeyCode: 65
       })
       await c.insertText('Title')
@@ -446,7 +446,7 @@ async function session(opts, fn) {
       await sleep(250)
       check('Duplicate (panel action) adds a layer', (await a.state()).layers === n0 + 1)
       n0 = (await a.state()).layers
-      await c.key('z', { code: 'KeyZ', vk: 90, modifiers: 4 })
+      await c.key('z', { code: 'KeyZ', vk: 90, modifiers: h.MOD_BIT })
       await sleep(250)
       check(
         '⌘Z undoes the duplicate (shortcut works from the canvas/panel)',
@@ -540,8 +540,8 @@ async function session(opts, fn) {
       )
       check(
         'Edit menu shows shortcut hints and enablement',
-        editItems.find((i) => i.t === 'Duplicate')?.k === '⌘D' &&
-          editItems.find((i) => i.t === 'Redo')?.k === '⇧⌘Z',
+        editItems.find((i) => i.t === 'Duplicate')?.k === h.keyLabel('D') &&
+          editItems.find((i) => i.t === 'Redo')?.k === h.keyLabel('Z', true),
         editItems.map((i) => i.t + (i.d ? '(off)' : ''))
       )
       await a.clickEl(a.menuItem('Duplicate'))
@@ -592,13 +592,13 @@ async function session(opts, fn) {
         z1 !== z0 && z100 === '100%' && zfit === z0,
         { z0, z1, z100, zfit }
       )
-      await c.key('1', { code: 'Digit1', vk: 49, modifiers: 4 })
+      await c.key('1', { code: 'Digit1', vk: 49, modifiers: h.MOD_BIT })
       await sleep(250)
       const zk1 = await a.S(`document.querySelector('#zoom-label').textContent`)
-      await c.key('0', { code: 'Digit0', vk: 48, modifiers: 4 })
+      await c.key('0', { code: 'Digit0', vk: 48, modifiers: h.MOD_BIT })
       await sleep(250)
       const zk0 = await a.S(`document.querySelector('#zoom-label').textContent`)
-      await c.key('=', { code: 'Equal', vk: 187, modifiers: 4 })
+      await c.key('=', { code: 'Equal', vk: 187, modifiers: h.MOD_BIT })
       await sleep(250)
       const zkp = await a.S(`document.querySelector('#zoom-label').textContent`)
       check('⌘1 = 100%, ⌘0 = fit, ⌘= zooms in', zk1 === '100%' && zk0 === z0 && zkp !== z0, {
@@ -670,8 +670,8 @@ async function session(opts, fn) {
       await a.clickEl(a.field('X (px)'))
       await c.key('Delete', { code: 'Delete', vk: 46 })
       await c.key('Backspace', { code: 'Backspace', vk: 8 })
-      await c.key('d', { code: 'KeyD', vk: 68, modifiers: 4 })
-      await c.key('z', { code: 'KeyZ', vk: 90, modifiers: 4 })
+      await c.key('d', { code: 'KeyD', vk: 68, modifiers: h.MOD_BIT })
+      await c.key('z', { code: 'KeyZ', vk: 90, modifiers: h.MOD_BIT })
       await sleep(250)
       s = await a.state()
       check(

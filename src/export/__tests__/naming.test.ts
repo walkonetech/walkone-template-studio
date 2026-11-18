@@ -13,6 +13,10 @@ describe('exportFileStem', () => {
     expect(exportFileStem('A/B\\C:D*E?F"G<H>I|J')).toBe('A B C D E F G H I J')
     expect(exportFileStem('  lots   of\tspace  ')).toBe('lots of space')
   })
+  it('is the one rule for Save and Export (6C W5: the same name gave two different files)', () => {
+    expect(exportFileStem('Sam: "A/B" <Test>? June')).toBe('Sam A B Test June')
+  })
+
   it('trims leading/trailing dots and handles empty or reserved names', () => {
     expect(exportFileStem('...hidden...')).toBe('hidden')
     expect(exportFileStem('///')).toBe('Untitled')

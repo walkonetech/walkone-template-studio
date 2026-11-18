@@ -535,11 +535,18 @@ export function mapDslrTemplate(
       'original-device',
       'The name of the computer that made the template (OriginalDevice) was not kept.'
     )
-  add(
-    'info',
-    'flattened-artwork',
-    'Text and decorations come in as the pictures dslrBooth stored (they were already flattened); they can be moved and resized, but not retyped.'
-  )
+  if (t.unknown.some((u) => u.element === 'Text'))
+    add(
+      'info',
+      'flattened-artwork',
+      'Pictures come in as dslrBooth stored them; they can be moved and resized. Text that is part of a picture cannot be retyped.'
+    )
+  else
+    add(
+      'info',
+      'flattened-artwork',
+      'Text and decorations come in as the pictures dslrBooth stored (they were already flattened); they can be moved and resized, but not retyped.'
+    )
 
   const rootAttributes: Record<string, string> = { ...t.root }
   delete rootAttributes.OriginalDevice

@@ -178,7 +178,7 @@ const RED = [255, 0, 0, 255]
         width: 600,
         height: 120,
         fontSize: 80,
-        fontFamily: 'Helvetica',
+        fontFamily: h.SANS,
         fill: { kind: 'literal', value: '#ffffff' }
       })
     )
@@ -292,7 +292,7 @@ const RED = [255, 0, 0, 255]
     let m = null
     try {
       m = JSON.parse(
-        execFileSync('python3', [
+        execFileSync(h.PY, [
           '-P',
           path.join(__dirname, 'inspect-export.py'),
           JSON.stringify(spec)
@@ -412,7 +412,7 @@ const RED = [255, 0, 0, 255]
     check('8 Escape closes the dialog', !(await dialogOpen(c)))
     const textId = await c.ev(`${S}.project.layers.find(l=>l.type==='text').id`)
     await c.ev(`${S}.editLayers(['${textId}'], {fontFamily:'Zz Not Installed Font'}); 1`)
-    await c.key('e', { code: 'KeyE', vk: 69, modifiers: 4 })
+    await c.key('e', { code: 'KeyE', vk: 69, modifiers: h.MOD_BIT })
     await untickDslr(c)
     await sleep(500)
     check('8b ⌘E opens the Export dialog', await dialogOpen(c))

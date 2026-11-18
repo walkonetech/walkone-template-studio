@@ -87,7 +87,7 @@ function makeFixtures(dir) {
   )
   w('doc.pdf', '%PDF-1.4 not an image')
   // real JPEG / WebP / large JPEG via PIL (Pillow) so the renderer's decoder is exercised on real encodings
-  execFileSync('python3', [
+  execFileSync(h.PY, [
     '-c',
     `
 import sys

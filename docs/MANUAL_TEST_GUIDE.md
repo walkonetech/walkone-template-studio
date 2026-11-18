@@ -13,12 +13,12 @@ All commands run from `/Users/walkone/Projects/Apps/walkone-template-studio`.
 | Dev mode (hot reload) | `npm run dev` |
 | Throwaway profile (clean recents/recovery; real data untouched) | `npm run build && npx electron out/main/index.js --user-data-dir=$HOME/wts-test` |
 | Reset the throwaway profile | `rm -rf $HOME/wts-test` |
-| Quality gate | `npm run typecheck && npm run lint && npm run format:check && npm run build && npm test` (expect **876** tests) |
+| Quality gate | `npm run typecheck && npm run lint && npm run format:check && npm run build && npm test` (expect **880** tests) |
 
 Tips
 - Use the throwaway profile for destructive tests (crash recovery, quit prompts) so your real autosave sessions stay safe.
 - Real DSLR Booth fixture ZIPs are private and local-only (`tests/fixtures/dslrbooth/source/`); never upload or commit them.
-- Windows is untested everywhere. If you have a Windows machine, run section 12 there.
+- **Windows** (validated in Phase 6C on Windows 11): install Node.js 24 LTS, Git and (for the scripted suites) Python 3 with Pillow (`python -m pip install Pillow`). Clone, then `npm ci`, `npm run build`, `npm start`. If `npm start` says Electron failed to install, run `node node_modules/electron/install.js` once (seen in 6C, W3). Clones made before `.gitattributes` existed have CRLF files and fail `format:check`: re-clone, or run `git rm -r --cached -q . && git reset --hard` in a clean working tree. The suites run on Windows too (`node research/editor-validation/validate-4b.js`, …).
 
 Key shortcuts to know: ⌘Z / ⇧⌘Z undo/redo, ⌘S save, ⌘O open, ⌘E export, hold **Space** to pan, **Shift**-drag to lock an axis, arrows nudge (Shift = bigger step). Hover any toolbar button for its tooltip.
 
@@ -122,7 +122,7 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] No client data appears in `git status`.
 
 ### J. Not built yet (expect absent)
-Design Guide and the Canva-style redesign, safe-area / 2-inch-cut check, event themes, bundled font library, company profile, asset library, client approval, Light/Dark appearance, installer, Windows build (untested), font embedding, image palette extraction, badge builder, templates/recipes.
+Design Guide and the Canva-style redesign, safe-area / 2-inch-cut check, event themes, bundled font library, company profile, asset library, client approval, Light/Dark appearance, installer, Windows installer/packaging, font embedding, image palette extraction, badge builder, templates/recipes.
 
 ## 3. Automated suites (optional cross-check)
 

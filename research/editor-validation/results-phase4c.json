@@ -25,10 +25,18 @@
   {
     "name": "File menu lists New, Open, Save, Save As, Close",
     "ok": true,
-    "detail": ["New project…", "Open…", "Save", "Save As…", "Export…", "Close project"]
+    "detail": [
+      "New project…",
+      "Open…",
+      "Import dslrBooth template…",
+      "Save",
+      "Save As…",
+      "Export…",
+      "Close project"
+    ]
   },
   {
-    "name": "File menu: only New and Open enabled with no project",
+    "name": "File menu: only New, Open and Import dslrBooth template enabled with no project",
     "ok": true
   },
   {
@@ -343,7 +351,7 @@
     "name": "Layers/Properties splitter drags (mouse)",
     "ok": true,
     "detail": {
-      "split0": 319.59375,
+      "split0": 319.6015625,
       "split1": 399.5
     }
   },
@@ -532,8 +540,8 @@
     "detail": {
       "sw": 1728,
       "iw": 1728,
-      "sh": 1051,
-      "ih": 1051
+      "sh": 1005,
+      "ih": 1005
     }
   },
   {
@@ -548,8 +556,8 @@
     "name": "1920×1080: Layers and Properties each ≥ 150 px tall",
     "ok": true,
     "detail": {
-      "layers": 391,
-      "props": 587
+      "layers": 373,
+      "props": 559
     }
   },
   {

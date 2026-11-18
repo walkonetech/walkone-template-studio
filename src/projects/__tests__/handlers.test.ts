@@ -71,7 +71,7 @@ describe('project IPC handlers', () => {
       status: 'ok',
       value: { fileName: 'My Event.boothproject', dirty: false }
     })
-    expect(d.saveNames).toEqual(['My Event.boothproject'])
+    expect(d.saveNames).toEqual(['My Event!.boothproject'])
     expect(await handlers.close({ sessionId: created.value.sessionId })).toEqual({
       status: 'ok',
       value: null

@@ -225,7 +225,7 @@ describe('mapDslrTemplate: problems are reported, never silently dropped', () =>
 
   it('unknown elements and attributes are kept and reported', () => {
     const r = run(
-      xml([`<Text Name="t" Content="Hello" />`, slot(1, [0, 0, 10, 10], 0, { Corner: '12' })])
+      xml([`<Sticker Name="t" Content="Hello" />`, slot(1, [0, 0, 10, 10], 0, { Corner: '12' })])
     )
     expect(codes(r)).toEqual(expect.arrayContaining(['unknown-element', 'unknown-attributes']))
     const c = r.project.sourceCompatibility?.dslrbooth
@@ -233,6 +233,54 @@ describe('mapDslrTemplate: problems are reported, never silently dropped', () =>
     const photoId = r.project.layers[0]?.id as string
     expect(c?.layers?.[photoId]).toEqual({ element: 'Photo', attributes: { Corner: '12' } })
     valid(r.project)
+  })
+
+  it('live <Text> from dslrBooth’s editor is kept, and loudly reported as not imported (6C C1)', () => {
+    // Synthetic element: attribute names as reported by 6C; no real sample with live text is in the fixtures yet.
+    const r = run(
+      xml([
+        slot(1, [0, 0, 10, 10], 0),
+        `<Text ${attrs({ Name: 'Text 1', Text: 'Sam & Alex', FontName: 'Arial', ZIndex: 1 })} />`,
+        `<Text ${attrs({ Name: 'Text 2', Text: 'June 2026', ZIndex: 2 })} />`
+      ])
+    )
+    expect(codes(r)).toContain('live-text')
+    expect(codes(r)).not.toContain('unknown-element')
+    const warning = r.items.find((i) => i.code === 'live-text')
+    expect(warning?.severity).toBe('warning')
+    expect(warning?.message).toMatch(/2 live text elements/)
+    expect(warning?.message).toContain('“Sam & Alex”')
+    expect(warning?.message).toMatch(/missing if you export/)
+    expect(r.items.find((i) => i.code === 'flattened-artwork')?.message).not.toMatch(
+      /already flattened/
+    )
+    expect(JSON.stringify(r.project.sourceCompatibility?.dslrbooth?.unmapped)).toContain(
+      'June 2026'
+    )
+    valid(r.project)
+  })
+
+  it('without live text the note still says text arrived flattened', () => {
+    const r = run(xml([slot(1, [0, 0, 10, 10], 0)]))
+    expect(codes(r)).not.toContain('live-text')
+    expect(r.items.find((i) => i.code === 'flattened-artwork')?.message).toMatch(
+      /already flattened/
+    )
+  })
+
+  it('the dslrBooth editor unit (Dimensions) survives import → export (6C C2)', () => {
+    const unit = (root: Record<string, string>): number => {
+      const r = run(xml([slot(1, [0, 0, 600, 400], 0)], root))
+      const project = r.project
+      return buildDslrTemplate(project, planDslrTemplate(project, mainVariant(project)), {
+        name: 'x',
+        now: new Date(2026, 0, 1)
+      }).root.dimensions
+    }
+    expect(unit({ Dimensions: '1' })).toBe(1)
+    expect(unit({ Dimensions: '2' })).toBe(2)
+    expect(unit({ Dimensions: '0' })).toBe(0)
+    expect(unit({ Dimensions: '7' })).toBe(0)
   })
 
   it('an enabled shadow is reported (not drawn) and its settings kept', () => {

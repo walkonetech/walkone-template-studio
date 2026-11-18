@@ -1,8 +1,8 @@
 {
-  "when": "2026-11-17T13:08:43.861Z",
+  "when": "2026-11-18T00:58:03.958Z",
   "fixtures": 5,
-  "pass": 17,
-  "total": 17,
+  "pass": 18,
+  "total": 18,
   "results": [
     {
       "name": "1 start screen offers “Import from dslrBooth…” next to New and Open",
@@ -258,6 +258,11 @@
           "rebuild": 2.093
         }
       ]
+    },
+    {
+      "name": "9d live-text boxes match dslrBooth’s preview (no local fixture has live text: nothing to compare)",
+      "ok": true,
+      "detail": []
     },
     {
       "name": "9c imported as a STRIP, the kept (left) strip renders as on the sheet (mean ≤ as-is + 1); the right strip is a copy",

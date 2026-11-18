@@ -38,7 +38,7 @@ const MAGENTA = [255, 0, 255, 255]
 
 function inspect(spec) {
   return JSON.parse(
-    execFileSync('python3', [
+    execFileSync(h.PY, [
       '-P',
       path.join(__dirname, 'inspect-dslr.py'),
       JSON.stringify(spec)
@@ -62,7 +62,7 @@ for p in sys.argv[1:]:
         orders.add(e.tag + ':' + ','.join(e.attrib.keys()))
 print(json.dumps({'roots': sorted(roots), 'orders': sorted(orders)}))`
   return JSON.parse(
-    execFileSync('python3', ['-I', '-c', py, ...zips.map((z) => path.join(dir, z))]).toString()
+    execFileSync(h.PY, ['-I', '-c', py, ...zips.map((z) => path.join(dir, z))]).toString()
   )
 }
 
@@ -131,7 +131,7 @@ print(json.dumps({'roots': sorted(roots), 'orders': sorted(orders)}))`
         width: 600,
         height: 120,
         fontSize: 80,
-        fontFamily: 'Helvetica',
+        fontFamily: h.SANS,
         fill: { kind: 'literal', value: '#ffffff' }
       }),
       await add('rectangle', {

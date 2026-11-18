@@ -66,8 +66,7 @@ const waitExit = async (ms = 6000) => {
   }
   return false
 }
-const quitApp = () =>
-  execSync(`osascript -e 'tell application id "com.github.Electron" to quit'`, { stdio: 'ignore' })
+const quitApp = () => require('./harness').quitElectron()
 const state = (c) =>
   c
     .ev(

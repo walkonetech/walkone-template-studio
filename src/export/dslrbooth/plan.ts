@@ -231,6 +231,18 @@ export const dslrTemplateName = (
   main: boolean
 ): string => exportFileStem(projectName) + (main ? '' : variant === 'sheet' ? ' 4x6' : '')
 
+/**
+ * dslrBooth's `Dimensions` is the unit its editor shows sizes in (0 px, 1 in, 2 cm; observed in 6C: a template
+ * imported with 1 showed inches and came back in pixels). Keep the unit of an imported template; 0 otherwise. It never
+ * changes geometry: every size in the XML is in pixels.
+ */
+export function dslrDimensionsUnit(project: TemplateProject): number {
+  const raw = project.sourceCompatibility?.['dslrbooth']?.project?.['rootAttributes']
+  const value =
+    raw && typeof raw === 'object' && !Array.isArray(raw) ? raw['Dimensions'] : undefined
+  return typeof value === 'string' && /^\s*[012]\s*$/.test(value) ? Number(value) : 0
+}
+
 /** The `template.xml` model for a plan. `now` is the save time written as `LastSavedDate`. */
 export function buildDslrTemplate(
   project: TemplateProject,
@@ -269,7 +281,7 @@ export function buildDslrTemplate(
       name: opts.name,
       width: plan.canvas.width,
       height: plan.canvas.height,
-      dimensions: 0,
+      dimensions: dslrDimensionsUnit(project),
       resolution: plan.canvas.dpi,
       backgroundColor: toArgb(resolveColor(project.palette, project.canvas.backgroundColor)),
       print2PerPage: plan.variant === 'strip',

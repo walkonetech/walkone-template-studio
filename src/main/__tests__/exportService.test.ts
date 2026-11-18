@@ -1,7 +1,7 @@
 import { promises as fs } from 'node:fs'
 import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { basename, join } from 'node:path'
 import yauzl from 'yauzl'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { readPngInfo } from '../../export/png'
@@ -78,7 +78,7 @@ describe('ExportService destinations', () => {
     const { service } = make()
     const v = ok(await service.chooseDestination(null))
     expect(v.destinationId).toMatch(/^[0-9a-f-]{36}$/)
-    expect(v.folderName).toBe(dir.split('/').pop())
+    expect(v.folderName).toBe(basename(dir))
     expect(JSON.stringify(v)).not.toContain(dir)
   })
   it('treats a dismissed picker as cancelled', async () => {

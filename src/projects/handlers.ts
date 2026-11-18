@@ -7,6 +7,7 @@ import type { IpcResult } from '../shared/persistence'
 import { MAX_IMPORT_FILES } from '../shared/ipc'
 import { randomBytes } from 'node:crypto'
 import { analyzeDslrPackage } from './dslrImport'
+import { exportFileStem } from '../export/naming'
 import type {
   DslrImportCommitRequest,
   DslrImportLayout,
@@ -83,10 +84,6 @@ function ensureExtension(path: string): string {
   return path.toLowerCase().endsWith(PROJECT_EXTENSION) ? path : path + PROJECT_EXTENSION
 }
 
-function safeFileStem(name: string): string {
-  return name.replace(/[^\w\- .]+/g, '').trim() || 'Untitled'
-}
-
 export function createProjectHandlers(deps: HandlerDeps) {
   const { service, recents, dialogs } = deps
   const pendingDslr = new Map<string, string>()
@@ -120,7 +117,7 @@ export function createProjectHandlers(deps: HandlerDeps) {
     const typed = project as TemplateProject
     const chosen = await dialogs.showSave(
       ctx,
-      `${safeFileStem(typed?.metadata?.name ?? 'Untitled')}${PROJECT_EXTENSION}`
+      `${exportFileStem(typed?.metadata?.name ?? 'Untitled')}${PROJECT_EXTENSION}`
     )
     if (chosen === null) return { status: 'cancelled' }
     return ok(await service.saveAs(sessionId, typed, ensureExtension(chosen)))

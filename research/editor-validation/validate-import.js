@@ -37,7 +37,7 @@ const waitFor = async (c, expr, ms = 30000) => {
 }
 const py = (...args) =>
   JSON.parse(
-    execFileSync('python3', ['-P', path.join(__dirname, 'inspect-import.py'), ...args]).toString()
+    execFileSync(h.PY, ['-P', path.join(__dirname, 'inspect-import.py'), ...args]).toString()
   )
 
 const FIXTURES = path.join(h.root, 'tests', 'fixtures', 'dslrbooth', 'source')
@@ -56,7 +56,7 @@ const fixtures = fs.existsSync(FIXTURES)
   py('make', synthetic)
   const notTemplate = path.join(work, 'Not a template.zip')
   // a ZIP with only a picture in it
-  execFileSync('python3', [
+  execFileSync(h.PY, [
     '-I',
     '-c',
     `import zipfile,sys; z=zipfile.ZipFile(sys.argv[1],'w'); z.writestr('photo.png', b'x'); z.close()`,
@@ -286,7 +286,7 @@ const fixtures = fs.existsSync(FIXTURES)
     let boxes = null
     if (done && fs.existsSync(zipOut)) {
       boxes = JSON.parse(
-        execFileSync('python3', [
+        execFileSync(h.PY, [
           '-I',
           '-c',
           `import sys,zipfile,json,xml.etree.ElementTree as ET
@@ -375,6 +375,15 @@ print(json.dumps({'root':[r.get('Width'),r.get('Height'),r.get('print_2_per_page
         '9b imported AS IS, each print sheet is as close to dslrBooth’s own preview (outside photo boxes) as a direct rebuild of the XML (mean ≤ rebuild + 0.5, and < 5)',
         asIs.every((r) => r.meanDiff <= r.reconstructMean + 0.5 && r.meanDiff < 5),
         asIs.map((r) => ({ ...brief(r), rebuild: r.reconstructMean }))
+      )
+      // Live dslrBooth text (6C C1) is checked inside its own boxes, where a whole-sheet mean cannot hide it.
+      const withText = asIs.filter((r) => r.textBoxes)
+      check(
+        withText.length === 0
+          ? '9d live-text boxes match dslrBooth’s preview (no local fixture has live text: nothing to compare)'
+          : '9d live-text boxes match dslrBooth’s preview (mean < 10, under 2 % of pixels off by more than 48)',
+        withText.every((r) => r.textBoxes.meanDiff < 10 && r.textBoxes.pctOver48 < 2),
+        withText.map((r) => ({ n: r.fixture, ...r.textBoxes }))
       )
       const stripRows = rec.filter((r) => r.layout === 'strip')
       check(

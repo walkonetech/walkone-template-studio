@@ -126,17 +126,19 @@ const drawer = (c, name) =>
     )
     await shot(c, '5d-01-font-selector.png')
     await dbg(c, "01-font-selector.png')")
-    await c.insertText('did')
+    await c.insertText(h.SERIF.query)
     await sleep(400)
     const filtered = await J(
       c,
       `[...document.querySelectorAll('[role=listbox] [role=option]')].map(o=>o.textContent.trim())`
     )
     check(
-      '2 typing searches case-insensitively by substring (all rows contain "did"; Didot is offered)',
+      `2 typing searches case-insensitively by substring (all rows contain "${h.SERIF.query}"; ${h.SERIF.name} is offered)`,
       filtered.length > 0 &&
-        filtered.every((n) => /did/i.test(n) || /^Use “did”/.test(n)) &&
-        filtered.some((n) => /^Didot/.test(n)),
+        filtered.every(
+          (n) => n.toLowerCase().includes(h.SERIF.query) || n.startsWith(`Use “${h.SERIF.query}”`)
+        ) &&
+        filtered.some((n) => n.startsWith(h.SERIF.name)),
       filtered.slice(0, 6)
     )
     await shot(c, '5d-02-font-search.png')
@@ -153,11 +155,11 @@ const drawer = (c, name) =>
       (await state(c)).layers.find((l) => l.id === T.id).font === 'Georgia' &&
         !(await c.ev(`!!document.querySelector('[role=listbox]')`))
     )
-    // choose Didot with the keyboard
+    // choose the installed serif with the keyboard
     const pastBefore = (await state(c)).past
     await c.click(await elCentre(c, `document.querySelector(${JSON.stringify(FONT_INPUT)})`))
     await sleep(300)
-    await c.insertText('didot')
+    await c.insertText(h.SERIF.name.toLowerCase())
     await sleep(300)
     await c.key('ArrowDown', { code: 'ArrowDown', vk: 40 })
     await c.key('Enter', { code: 'Enter', vk: 13, text: '\r' })
@@ -166,7 +168,7 @@ const drawer = (c, name) =>
     const fontNow = st.layers.find((l) => l.id === T.id).font
     check(
       '4 choosing an installed font with the keyboard sets it (one history entry)',
-      /^Didot$/i.test(fontNow) && st.past === pastBefore + 1,
+      fontNow.toLowerCase() === h.SERIF.name.toLowerCase() && st.past === pastBefore + 1,
       { fontNow }
     )
     const canvasFont = await c.ev(`__wts.textFont(${JSON.stringify(T.id)})`)

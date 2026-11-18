@@ -24,3 +24,6 @@ Run: `npm run build`; launch `WALKONE_DEV_UNSAVED_CHOICES=discard WALKONE_DEV_SA
 
 ## validate-import.js (Phase 6D, DSLR Booth importer) — 17/17
 `npm run build && node research/editor-validation/validate-import.js` (needs python3 + Pillow; `inspect-import.py` makes a SYNTHETIC two-strip template ZIP and compares renders with a template's own `preview.png` outside photo boxes, plus a direct Python rebuild of the XML as a yardstick). Uses the private fixtures only when present locally; their renders and diff images stay in a temp folder. Results: `results-import.json`.
+
+## Windows (after Phase 6C)
+The self-launching suites run on Windows too. `harness.js` holds the platform conventions: `PY` (`python` on Windows), `MOD_BIT` (Ctrl instead of ⌘ for DevTools key events), `keyLabel` (shortcut labels as the app shows them), `SERIF`/`SANS` (fonts present on a stock install: Didot/Helvetica on macOS, Times New Roman/Arial on Windows) and `quitElectron` (a normal quit). 5C's pointer-centred zoom check allows one screen pixel at the starting zoom (at fit zoom on a 125 % display that is several design pixels). `validate-import.js` check 9d compares live dslrBooth `<Text>` boxes separately (6C C1); none of the five local fixtures has live text, so it reports "nothing to compare" until a sample is added.

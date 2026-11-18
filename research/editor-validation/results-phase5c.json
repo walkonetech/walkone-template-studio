@@ -8,7 +8,7 @@
       "ok": true,
       "detail": {
         "overlay": {
-          "id": "24162d36-c704-4846-bdb3-903ebea14592",
+          "id": "eb9f2d73-7ab8-49b3-a422-3939cb27bfbd",
           "type": "image",
           "name": "petals",
           "x": 900,
@@ -120,7 +120,7 @@
       }
     },
     {
-      "name": "5b Ctrl/Cmd + wheel zooms around the pointer: the design point under the pointer stays put (±2 design px) while the scale grows",
+      "name": "5b Ctrl/Cmd + wheel zooms around the pointer: the design point under the pointer stays put (±2 design px, or one screen pixel when that is larger) while the scale grows",
       "ok": true,
       "detail": {
         "d0": {
@@ -132,7 +132,8 @@
           "x": 798.6827127659576,
           "y": 1417.0212765957444,
           "scale": 4
-        }
+        },
+        "tol": 4.787234042553191
       }
     },
     {
@@ -362,11 +363,11 @@
       "ok": true,
       "detail": {
         "crop": {
-          "layerId": "0ff26d27-9acb-4ca1-9381-607d36c97b0c",
+          "layerId": "7e713668-51b9-4974-a3ba-e2c7f91a876d",
           "original": null
         },
         "interaction": "cropping",
-        "selected": ["0ff26d27-9acb-4ca1-9381-607d36c97b0c"],
+        "selected": ["7e713668-51b9-4974-a3ba-e2c7f91a876d"],
         "mode": "design"
       }
     },
@@ -400,7 +401,7 @@
       "name": "20b Enter commits: the crop is kept, the mode is left",
       "ok": true,
       "detail": {
-        "0ff26d27-9acb-4ca1-9381-607d36c97b0c": {
+        "7e713668-51b9-4974-a3ba-e2c7f91a876d": {
           "zoom": 1.25,
           "x": -0.004743833017077814,
           "y": 0
@@ -472,7 +473,7 @@
       "name": "25 save → reopen: negative X, rotation and oversized extent are preserved exactly",
       "ok": true,
       "detail": {
-        "id": "24162d36-c704-4846-bdb3-903ebea14592",
+        "id": "eb9f2d73-7ab8-49b3-a422-3939cb27bfbd",
         "type": "image",
         "name": "petals",
         "x": -120,
@@ -494,7 +495,7 @@
       "name": "26 crash recovery restores the off-artboard asset geometry (x −300) and its image",
       "ok": true,
       "detail": {
-        "id": "24162d36-c704-4846-bdb3-903ebea14592",
+        "id": "eb9f2d73-7ab8-49b3-a422-3939cb27bfbd",
         "type": "image",
         "name": "petals",
         "x": -300,
