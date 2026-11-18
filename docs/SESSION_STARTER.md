@@ -71,7 +71,7 @@ HOW TO RUN / CHECK
 - Screenshots go to research/editor-validation/shots/ (git-ignored). Always write script outputs with __dirname, never the repo root.
 
 LESSONS / GOTCHAS
-- Windows (6C): use `npm ci`; if Electron's install step fails run `node node_modules/electron/install.js`; Python is `python` there (harness h.PY); the app shows Ctrl+ shortcut labels and has no Didot/Helvetica. dslrBooth on the laptop is a trial (demo watermark in outputs).
+- Windows (6C): use `npm ci` (Electron 44 has no install step; its binary downloads on first use, no workaround needed); Python is `python` there (harness h.PY); the app shows Ctrl+ shortcut labels and has no Didot/Helvetica. dslrBooth on the laptop is a trial (demo watermark in outputs).
 - macOS can mark the Electron window occluded and scripted input then stalls; the harness passes occlusion-disabling switches and Page.bringToFront. validate-4c's SIGKILL/recovery scenario is timing-sensitive (one 93/97 run in 6A, 97/97 on rerun): rerun before suspecting a regression.
 - `python3 -I` hides the user-site Pillow install; use `python3 -P` for inspect-export.py.
 - When a focused button becomes disabled, Chromium moves focus to <body>: dialogs must not rely on focus being inside them (fixed in Dialog + useEditorKeyboard; ExportDialog re-focuses its primary action after each phase).

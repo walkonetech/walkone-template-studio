@@ -493,10 +493,10 @@ async function session(opts, fn) {
       const p1 = await a.layer('Photo 1')
       const p3 = await a.layer('Photo 3')
       await a.clickEl(`document.getElementById('layer-row-${p1.id}')`)
-      await a.c.clickMod(await a.center(`document.getElementById('layer-row-${p3.id}')`), 4)
+      await a.c.clickMod(await a.center(`document.getElementById('layer-row-${p3.id}')`), h.MOD_BIT)
       await sleep(300)
       s = await a.state()
-      check('Cmd-click extends selection to two layers', s.sel.length === 2)
+      check('Cmd/Ctrl-click extends selection to two layers', s.sel.length === 2)
       check(
         'multi-selection inspector shows count + actions',
         await a.S(

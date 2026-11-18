@@ -22,7 +22,7 @@ Hardware results hold for this laptop. **The production booth PC's printer setti
 | 1 | Launch | Pass (default Electron icon in the title bar) |
 | 2 | New / Save / Save As / close / reopen / autosave / recovery | Pass (4B suite 40/40; non-ASCII paths with `&` work) |
 | 3 | Windows dialogs, Show in Explorer, file names | Pass (Save and Export cleaned names differently, W5) |
-| 4 | Automated tests | Pass with notes: typecheck, lint, build pass; format check fails on CRLF checkout (W1); 1 unit test assumed `/` (W2); Electron's install step had to be run by hand (W3) |
+| 4 | Automated tests | Pass with notes: typecheck, lint, build pass; format check fails on CRLF checkout (W1); 1 unit test assumed `/` (W2); Electron appeared not to install (W3; re-test: Electron 44 downloads its binary on first use, nothing to fix) |
 | 5 | UI and rendering at 125 % | Pass: crisp text, smooth canvas edges, Ctrl+ shortcut labels |
 | 6 | Native 2×6 dslrBooth export | Pass |
 | 7 | 4×6 sheet export | Pass |
@@ -67,7 +67,7 @@ Observed at runtime: dslrBooth's built-in web server listens on the local networ
 | C4 | No `preview.png` gives a blank thumbnail | No change: Template Studio always writes one |
 | W1 | Format check fails on Windows (CRLF checkout) | **Fixed**: `.gitattributes` forces LF |
 | W2 | One unit test assumed `/` | **Fixed** |
-| W3 | Electron install step did not complete | Documented workaround (MANUAL_TEST_GUIDE) |
+| W3 | Electron install step seemed not to complete | **Not a defect** (Windows re-test of `cfcc9cf`): Electron 44 has no install step; `npm ci` completes and the binary downloads on first use. Noted in MANUAL_TEST_GUIDE |
 | W4 | Default Electron icon | Open: needs a WalkOne icon file from the owner |
 | W5 | Save and Export cleaned names differently | **Fixed**: one rule |
 | W6 | Align row below the fold on short windows | **Fixed** for several selected layers: Align and distribute moved to the top |
@@ -79,3 +79,7 @@ Observed at runtime: dslrBooth's built-in web server listens on the local networ
 2. The one manual `/print` check (Test 18).
 3. The production booth PC's own print settings (this run was on the research laptop).
 4. **One real dslrBooth template with made-up live text** (no client data) as a fixture, to build the editable text import.
+
+## Windows re-test of `cfcc9cf` (2026-11-17)
+Craft Anything re-ran the checks on the same laptop: the post-6C fixes are **validated on Windows**. One suite portability gap remained: 4C's "Cmd-click extends selection" step sent a Meta-click; Windows correctly uses Ctrl-click (Ctrl-click selected two layers, Meta-click correctly did not), and a follow-on multi-selection check failed with it. The suite now uses the platform modifier (`h.MOD_BIT`). W3 was clarified: Electron 44 has no install step, `npm ci` completes, and the binary downloads on first use.
+

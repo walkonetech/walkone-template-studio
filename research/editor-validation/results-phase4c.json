@@ -259,7 +259,7 @@
     "ok": true
   },
   {
-    "name": "Cmd-click extends selection to two layers",
+    "name": "Cmd/Ctrl-click extends selection to two layers",
     "ok": true
   },
   {
@@ -540,8 +540,8 @@
     "detail": {
       "sw": 1728,
       "iw": 1728,
-      "sh": 1005,
-      "ih": 1005
+      "sh": 1004,
+      "ih": 1004
     }
   },
   {
@@ -556,7 +556,7 @@
     "name": "1920×1080: Layers and Properties each ≥ 150 px tall",
     "ok": true,
     "detail": {
-      "layers": 373,
+      "layers": 372,
       "props": 559
     }
   },
