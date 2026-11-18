@@ -61,7 +61,7 @@ Observed at runtime: dslrBooth's built-in web server listens on the local networ
 ## Defects and Template Studio fixes
 | Id | Issue | Status (2026-11-17) |
 |---|---|---|
-| C1 | dslrBooth live `<Text>` dropped on import, lost on round trip; the import note wrongly said text was "already flattened" | **Partly fixed:** a clear `live-text` warning names the text and says it will be missing on export; the note is corrected; the import suite now checks text boxes separately. **Editable import waits for one real sample** (owner decision: editable text) |
+| C1 | dslrBooth live `<Text>` dropped on import, lost on round trip; the import note wrongly said text was "already flattened" | **Implemented (2026-11-18), pending the Windows/dslrBooth round-trip re-test:** live text imports as editable text layers (ADR-051), built against the synthetic fixture below; the import suite checks each text box on its own |
 | C2 | `Dimensions` 1 (inches) came back as 0 (pixels) | **Fixed**: the imported unit is kept on export |
 | C3 | Re-import always creates a copy | Workflow documented (USER_WORKFLOWS) |
 | C4 | No `preview.png` gives a blank thumbnail | No change: Template Studio always writes one |
@@ -78,8 +78,23 @@ Observed at runtime: dslrBooth's built-in web server listens on the local networ
 1. Read the measurement print (Test 16): for each strip, the smallest mark still visible at the top, bottom, outer edge and cut edge; whether it was cut automatically; whether the cut is on the seam; whether both strips are identical.
 2. The one manual `/print` check (Test 18).
 3. The production booth PC's own print settings (this run was on the research laptop).
-4. **One real dslrBooth template with made-up live text** (no client data) as a fixture, to build the editable text import.
+4. ~~One real dslrBooth template with made-up live text~~: supplied 2026-11-18 (below).
+5. Craft Anything: the C1 round-trip re-test in dslrBooth (synthetic fixture and owner templates A and D).
 
 ## Windows re-test of `cfcc9cf` (2026-11-17)
 Craft Anything re-ran the checks on the same laptop: the post-6C fixes are **validated on Windows**. One suite portability gap remained: 4C's "Cmd-click extends selection" step sent a Meta-click; Windows correctly uses Ctrl-click (Ctrl-click selected two layers, Meta-click correctly did not), and a follow-on multi-selection check failed with it. The suite now uses the platform modifier (`h.MOD_BIT`). W3 was clarified: Electron 44 has no install step, `npm ci` completes, and the binary downloads on first use.
 
+
+## Live-text fixture (2026-11-18, C1)
+Craft Anything made a synthetic template **only with dslrBooth 7.48's visible editor** on the same laptop (made-up text, a script-drawn picture, synthetic photos; no print made). It is committed as `tests/fixtures/dslrbooth/synthetic/live-text-fixture.zip` with the laptop name removed from `OriginalDevice`; the unedited export, the session output (trial watermark), the editor screenshots and the manifest stay outside the repository. Fixture table: `tests/fixtures/dslrbooth/synthetic/README.md`.
+
+**Observed in dslrBooth:**
+- Text controls: X/Y/W/H, Keep aspect ratio, Rotate, a single-line Text box, Color (hex/RGB, no alpha), Font, Weight (the font's style names), Size (Auto, or fixed 8–96), alignment (left/centre/right; centre default), Drop Shadow. No opacity, stroke, vertical alignment, spacing, wrapping or line-break control, so the planned "semi-transparent" text (T8) could not be made.
+- `FontWeight` holds the style name; `IsBold`/`IsItalic` stay `False`. **"Bold Italic" is drawn as Italic only**: in the editor, in `preview.png` and in the live session (Arial).
+- `TextHorizontalAlignment` 0/1/2 = left/centre/right. `FontColor` `#AARRGGBB`. `Rotation` only written when non-zero; clockwise.
+- Choosing a fixed Size resizes the box to the text at that moment (Arial 48 → 55 px high). Arial 48 capitals are 35 px tall on the 600-dpi canvas: **consistent with Size = em size in canvas pixels; inferred, not proven.**
+- `FontSize="0"` is **Auto**: the text is stretched unevenly to fill the box (same 97 px capital height in a 1000- and a 250-px-wide box of 150 px height; widths 984 and 246 px).
+- Enter inserts nothing (`LINE ONE`⏎`LINE TWO` → `LINE ONELINE TWO`); a pasted second line is dropped. A line wider than its box is cut off at the box edge.
+- Stacking follows the layer order: text over a photo slot and under a picture as placed. Special characters kept, XML-escaped.
+
+**Template Studio on the Mac (built app, `validate-import.js` step 10):** all 16 texts import as editable layers; every text box outside the photo slots shows its text; fixed-size Arial text matches dslrBooth's `preview.png` inside its box (ink 0.98–1.12 ×, mean difference 1.7–12.7 of 255); Segoe UI (not on the Mac) keeps its name and shows the normal missing-font warning; an edited text appears in the exported artwork and the export has no native `<Text>`. Known, reported differences: Auto size (uniform letters), the over-long line wraps instead of being cut off, the drop shadow is not drawn.

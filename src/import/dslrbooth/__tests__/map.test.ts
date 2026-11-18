@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { loadProject, type ImageLayer, type Layer, type PhotoLayer } from '@domain'
+import { loadProject, type ImageLayer, type Layer, type PhotoLayer, type TextLayer } from '@domain'
 import { makeProject, photo, T0 } from '../../../editor/__tests__/helpers'
 import { buildDslrTemplate, mainVariant, planDslrTemplate } from '../../../export/dslrbooth/plan'
 import { encodeTemplateXml, writeTemplateXml } from '../../../export/dslrbooth/templateXml'
@@ -163,7 +163,7 @@ describe('mapDslrTemplate: canvas, layers, stacking', () => {
 
   it('records the template’s own values for the dslrBooth adapter, without the machine name', () => {
     const c = r.project.sourceCompatibility?.dslrbooth
-    expect(c?.adapterVersion).toBe('7.48-import-1')
+    expect(c?.adapterVersion).toBe('7.48-import-2')
     expect(c?.importedAt).toBe(T0)
     const root = (c?.project as { rootAttributes: Record<string, string> }).rootAttributes
     expect(root.Id).toBe('abcdefghijklmnopqrstuvwxy')
@@ -235,29 +235,134 @@ describe('mapDslrTemplate: problems are reported, never silently dropped', () =>
     valid(r.project)
   })
 
-  it('live <Text> from dslrBooth’s editor is kept, and loudly reported as not imported (6C C1)', () => {
-    // Synthetic element: attribute names as reported by 6C; no real sample with live text is in the fixtures yet.
-    const r = run(
-      xml([
-        slot(1, [0, 0, 10, 10], 0),
-        `<Text ${attrs({ Name: 'Text 1', Text: 'Sam & Alex', FontName: 'Arial', ZIndex: 1 })} />`,
-        `<Text ${attrs({ Name: 'Text 2', Text: 'June 2026', ZIndex: 2 })} />`
-      ])
-    )
-    expect(codes(r)).toContain('live-text')
+  // Edge cases around live <Text> (6C C1). Attribute set and defaults as in dslrBooth 7.48's own export
+  // (tests/fixtures/dslrbooth/synthetic/live-text-fixture.zip, covered end to end in projects/__tests__).
+  const text = (
+    content: string,
+    box: [number, number, number, number],
+    z: number,
+    more: Attrs = {}
+  ): string =>
+    `<Text ${attrs({ Name: content, ...SHADOW, Text: content, FontName: 'Arial', FontWeight: 'Regular', Width: box[2], Height: box[3], Top: box[1], Left: box[0], FontColor: '#FF000000', KeepAspect: 'False', IsBold: 'False', IsItalic: 'False', FontSize: 48, TextHorizontalAlignment: 0, ZIndex: z, ...more })} />`
+  const textLayers = (r: ReturnType<typeof run>): TextLayer[] =>
+    r.project.layers.filter((l): l is TextLayer => l.type === 'text')
+
+  it('live <Text> becomes an editable text layer; no “will be missing” warning (6C C1)', () => {
+    const r = run(xml([slot(1, [0, 0, 600, 400], 0), text('Sam & Alex', [100, 500, 600, 55], 1)]))
     expect(codes(r)).not.toContain('unknown-element')
-    const warning = r.items.find((i) => i.code === 'live-text')
-    expect(warning?.severity).toBe('warning')
-    expect(warning?.message).toMatch(/2 live text elements/)
-    expect(warning?.message).toContain('“Sam & Alex”')
-    expect(warning?.message).toMatch(/missing if you export/)
-    expect(r.items.find((i) => i.code === 'flattened-artwork')?.message).not.toMatch(
-      /already flattened/
-    )
-    expect(JSON.stringify(r.project.sourceCompatibility?.dslrbooth?.unmapped)).toContain(
-      'June 2026'
+    const note = r.items.find((i) => i.code === 'live-text')
+    expect(note?.severity).toBe('info')
+    expect(note?.message).toMatch(/1 live text element .*editable text \(“Sam & Alex”\)/)
+    expect(note?.message).not.toMatch(/missing/)
+    expect(textLayers(r)[0]).toMatchObject({
+      content: 'Sam & Alex',
+      fontFamily: 'Arial',
+      x: 100,
+      width: 600
+    })
+    expect(r.project.sourceCompatibility?.dslrbooth?.unmapped).toBeUndefined()
+    expect(r.items.find((i) => i.code === 'flattened-artwork')?.message).toMatch(
+      /live text is editable/
     )
     valid(r.project)
+  })
+
+  it('legacy IsBold / IsItalic flags are honoured; style names map to weight and italic', () => {
+    const r = run(
+      xml([
+        slot(1, [0, 0, 600, 400], 0),
+        text('A', [0, 500, 600, 55], 1, { IsBold: 'True', IsItalic: 'True' }),
+        text('B', [0, 600, 600, 55], 2, { FontWeight: 'Semi Bold Oblique' }),
+        text('C', [0, 700, 600, 55], 3, { FontWeight: 'Black' }),
+        text('D', [0, 800, 600, 55], 4, { FontWeight: 'Bold Italic' })
+      ])
+    )
+    expect(textLayers(r).map((l) => [l.content, l.fontWeight, l.fontStyle])).toEqual([
+      ['A', 700, 'italic'],
+      ['B', 600, 'italic'],
+      ['C', 900, 'normal'],
+      ['D', 400, 'italic'] // dslrBooth prints its "Bold Italic" as Italic (observed)
+    ])
+    expect(codes(r)).toContain('text-bold-italic')
+  })
+
+  it('a condensed style, an unknown style word, alignment and colour are imported with specific warnings', () => {
+    const r = run(
+      xml([
+        slot(1, [0, 0, 600, 400], 0),
+        text('Narrow', [0, 500, 600, 55], 1, { FontWeight: 'Bold Condensed' }),
+        text('Odd', [0, 600, 600, 55], 2, { FontWeight: 'Wobbly', TextHorizontalAlignment: 7 }),
+        text('Hue', [0, 700, 600, 55], 3, { FontColor: 'teal' })
+      ])
+    )
+    expect(codes(r)).toEqual(
+      expect.arrayContaining(['text-font-stretch', 'text-weight', 'text-align', 'text-color'])
+    )
+    const [narrow, odd, hue] = textLayers(r)
+    expect(narrow).toMatchObject({ fontWeight: 700, content: 'Narrow' })
+    expect(odd).toMatchObject({ fontWeight: 400, align: 'center' })
+    expect(hue?.fill).toEqual({ kind: 'literal', value: '#000000' })
+    expect(r.items.find((i) => i.code === 'text-weight')?.message).toContain('“Wobbly”')
+    valid(r.project)
+  })
+
+  it('a FontColor with alpha keeps its transparency', () => {
+    const r = run(
+      xml([
+        slot(1, [0, 0, 600, 400], 0),
+        text('Faded', [0, 500, 600, 55], 1, { FontColor: '#80E01010' })
+      ])
+    )
+    expect(textLayers(r)[0]?.fill).toEqual({ kind: 'literal', value: '#e0101080' })
+  })
+
+  it('a line break (only possible by editing the XML) is kept, with a note', () => {
+    const r = run(
+      xml(
+        [slot(1, [0, 0, 600, 400], 0), text('LINE ONE&#10;LINE TWO', [0, 500, 600, 110], 1)].map(
+          (x) => x.replaceAll('&amp;#10;', '&#10;')
+        )
+      )
+    )
+    expect(textLayers(r)[0]?.content).toBe('LINE ONE\nLINE TWO')
+    expect(textLayers(r)[0]?.lineHeight).toBe(1.15)
+    expect(codes(r)).toContain('text-line-breaks')
+  })
+
+  it('a slightly too narrow, rotated, left-aligned box grows without moving the text start', () => {
+    // 'REGULAR TEXT 2026' at 48 px ≈ 488 px in Arial/Helvetica, dslrBooth stored a 486 px box.
+    const r = run(
+      xml([
+        slot(1, [0, 0, 600, 400], 0),
+        text('REGULAR TEXT 2026', [100, 800, 486, 55], 1, { Rotation: 90 })
+      ])
+    )
+    const l = textLayers(r)[0] as TextLayer
+    expect(l.width).toBeGreaterThan(486)
+    expect(codes(r)).toContain('text-box-widened')
+    // Rotated 90° clockwise, the left edge is at the top: the box's top (local left) end must stay put.
+    const localLeftEnd = (x: number, y: number, w: number, h: number): [number, number] => [
+      x + w / 2,
+      y + h / 2 - w / 2
+    ]
+    expect(localLeftEnd(l.x, l.y, l.width, l.height)[1]).toBeCloseTo(
+      localLeftEnd(100, 800, 486, 55)[1],
+      1
+    )
+    expect(l.rotation).toBe(90)
+  })
+
+  it('two strips with the same text side by side still import as one strip', () => {
+    const r = run(
+      xml([
+        slot(1, [50, 100, 500, 400], 0),
+        slot(1, [650, 100, 500, 400], 1),
+        text('Sam & Alex', [50, 1500, 500, 55], 2, { TextHorizontalAlignment: 1 }),
+        text('Sam & Alex', [650, 1500, 500, 55], 3, { TextHorizontalAlignment: 1 })
+      ])
+    )
+    expect(r.recommendedLayout).toBe('strip')
+    expect(textLayers(r)).toHaveLength(1)
   })
 
   it('without live text the note still says text arrived flattened', () => {

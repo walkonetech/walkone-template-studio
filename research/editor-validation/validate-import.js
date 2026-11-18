@@ -41,6 +41,15 @@ const py = (...args) =>
   )
 
 const FIXTURES = path.join(h.root, 'tests', 'fixtures', 'dslrbooth', 'source')
+// dslrBooth 7.48 live-text fixture (synthetic, committed; machine name sanitized): tests/fixtures/dslrbooth/synthetic/
+const LIVE_TEXT = path.join(
+  h.root,
+  'tests',
+  'fixtures',
+  'dslrbooth',
+  'synthetic',
+  'live-text-fixture.zip'
+)
 const fixtures = fs.existsSync(FIXTURES)
   ? fs
       .readdirSync(FIXTURES)
@@ -71,7 +80,8 @@ const fixtures = fs.existsSync(FIXTURES)
         notTemplate,
         synthetic,
         // each fixture twice: imported with the recommended layout, then exactly as it is
-        ...fixtures.flatMap((f) => [path.join(FIXTURES, f), path.join(FIXTURES, f)])
+        ...fixtures.flatMap((f) => [path.join(FIXTURES, f), path.join(FIXTURES, f)]),
+        LIVE_TEXT
       ].join(';'),
       WALKONE_DEV_SAVE_PATH: saved,
       WALKONE_DEV_OPEN_PATH: saved,
@@ -255,7 +265,7 @@ const fixtures = fs.existsSync(FIXTURES)
       '6b reopens with all layers and the import notes',
       r6b.status === 'ok' &&
         reopened.n === 6 &&
-        reopened.v === '7.48-import-1' &&
+        reopened.v === '7.48-import-2' &&
         reopened.src === 'Synthetic Two Strips.zip',
       reopened
     )
@@ -394,6 +404,157 @@ print(json.dumps({'root':[r.get('Width'),r.get('Height'),r.get('print_2_per_page
         }),
         stripRows.map(brief)
       )
+    }
+
+    // ---- 10: dslrBooth live text (6C C1) — the synthetic fixture made in dslrBooth's own editor
+    {
+      const menu = await fileMenu('Import dslrBooth template…')
+      await waitFor(c, `!!document.querySelector('.dslr-import')`, 20000)
+      const notes = await J(c)(
+        `[...document.querySelectorAll('.dslr-import .preflight-item')].map(e=>({code:e.dataset.code, text:e.textContent}))`
+      )
+      const codes10 = notes.map((n) => n.code)
+      check(
+        '10 live-text fixture: notes say the text came in editable (Auto size, overflow, shadow, fonts); nothing “missing”, no unknown element',
+        menu === 'ok' &&
+          ['live-text', 'text-fonts', 'text-auto-size', 'text-overflow', 'shadow'].every((k) =>
+            codes10.includes(k)
+          ) &&
+          !codes10.includes('unknown-element') &&
+          !notes.some((n) => /missing if you export|cannot be imported yet/.test(n.text)),
+        codes10
+      )
+      await clickButton('Import')
+      await waitFor(c, `!document.querySelector('.dslr-import')`, 30000)
+      await sleep(1500)
+      const tl = await J(c)(
+        `${S}.project.layers.filter(l=>l.type==='text').map(l=>({id:l.id, c:l.content, f:l.fontFamily, s:l.fontSize, w:l.fontWeight, i:l.fontStyle, a:l.align, r:l.rotation}))`
+      )
+      const find = (txt) => tl.find((t) => t.c === txt) || {}
+      check(
+        '10b 16 editable text layers: weights, italic, alignment, rotation, colour text and special characters kept',
+        tl.length === 16 &&
+          find('BOLD ITALIC').w === 400 && // dslrBooth prints its “Bold Italic” as Italic (observed)
+          find('BOLD ITALIC').i === 'italic' &&
+          find('RIGHT ALIGNED').a === 'right' &&
+          find('ROTATED 15').r === 15 &&
+          !!find(`Tom & Jerry's "Party" 50% / 2026 <ok>`).id,
+        tl.map((t) => [t.c.slice(0, 18), t.s, t.w, t.i, t.a, t.r])
+      )
+      // Segoe UI: kept by name; on a machine without it the inspector shows the usual missing-font warning.
+      await c.ev(`${S}.selectLayer(${JSON.stringify(find('SEGOE UI TEST').id)}); 1`)
+      await sleep(400)
+      const seg = await J(c)(
+        `({fam:${S}.project.layers.find(l=>l.content==='SEGOE UI TEST').fontFamily, warn:document.querySelector('[data-testid=font-missing]')?.textContent||null})`
+      )
+      check(
+        '10c “Segoe UI” is kept by name; when it is not installed the normal missing-font warning names it',
+        seg.fam === 'Segoe UI' && (seg.warn === null || /Segoe UI/.test(seg.warn)),
+        seg
+      )
+      await c.ev(`${S}.selectLayer(null); 1`)
+
+      // Every text box on its own against dslrBooth's preview.png (a whole-sheet mean hid missing text before).
+      const ltRender = path.join(work, 'live-text-design.png')
+      const rr = await JA(c)(`__wts.renderToDataUrl(1200, 3600, false)`)
+      fs.writeFileSync(ltRender, Buffer.from(rr.dataUrl.split(',')[1], 'base64'))
+      fs.copyFileSync(ltRender, path.join(shotsDir, 'import-10-live-text.png'))
+      // Photo slots are left out (Template Studio draws a numbered placeholder there; T14A lies wholly on Photo 2).
+      const tb = py(
+        'textboxes',
+        JSON.stringify({ zip: LIVE_TEXT, render: ltRender, maskPhotos: true })
+      ).boxes
+      const segoeMissing = seg.warn !== null
+      // Known, reported differences: Auto size is approximated, T13 wraps instead of being cut off, the drop shadow
+      // is not drawn, and a missing Segoe UI is drawn with the stand-in font.
+      const kind = (b) =>
+        b.size === '0'
+          ? 'auto'
+          : /^THIS IS A VERY LONG/.test(b.text)
+            ? 'overflow'
+            : b.text === 'DROP SHADOW TEST'
+              ? 'shadow'
+              : b.text === 'SEGOE UI TEST' && segoeMissing
+                ? 'fallback'
+                : 'fixed'
+      const visible = tb.filter((b) => b.pixels > 0)
+      const fixedRows = tb.filter((b) => kind(b) === 'fixed' && b.pixels > 0)
+      check(
+        '10d no text is missing: every live-text box outside the photo slots shows text (ink ≥ 60 % of dslrBooth’s; ≥ 30 % for Auto size, whose letters are not stretched here)',
+        tb.length === 16 &&
+          visible.length === 15 &&
+          visible.every(
+            (b) => b.refInk > 0 && b.renderInk >= (kind(b) === 'auto' ? 0.3 : 0.6) * b.refInk
+          ),
+        tb.map((b) => [b.text.slice(0, 18), kind(b), b.inkRatio, b.meanDiff])
+      )
+      check(
+        '10e fixed-size text matches dslrBooth’s preview inside its box (ink 0.8–1.25 ×, mean < 15)',
+        fixedRows.length >= 9 &&
+          fixedRows.every((b) => b.inkRatio >= 0.8 && b.inkRatio <= 1.25 && b.meanDiff < 15),
+        fixedRows.map((b) => [b.text.slice(0, 18), b.inkRatio, b.meanDiff])
+      )
+      const order = await J(c)(`${S}.project.layers.map(l=>l.type==='text'?l.content:l.name)`)
+      check(
+        '10h stacking as in dslrBooth: “TEXT ABOVE PHOTO” over Photo 2, “TEXT BELOW ART” under the picture',
+        order.indexOf('TEXT ABOVE PHOTO') > order.indexOf('Photo 2') &&
+          order.indexOf('TEXT BELOW ART') < order.indexOf('art-block'),
+        order
+      )
+
+      // Edit one text, export, and rebuild the exported pictures: the edited text is in the artwork, nothing native.
+      await c.ev(
+        `(()=>{const s=${S}; const l=s.project.layers.find(l=>l.content==='REGULAR TEXT 2026'); return s.editLayers([l.id],{content:'EDITED TEXT 2026'})})()`
+      )
+      await sleep(500)
+      const edited = path.join(work, 'live-text-edited.png')
+      const re = await JA(c)(`__wts.renderToDataUrl(1200, 3600, false)`)
+      fs.writeFileSync(edited, Buffer.from(re.dataUrl.split(',')[1], 'base64'))
+      await c.ev(`document.getElementById('export-button').click(); 1`)
+      await waitFor(c, `!!document.getElementById('preflight-summary')`, 10000)
+      await sleep(300)
+      await c.ev(`document.getElementById('export-start').click(); 1`)
+      const done10 = await waitFor(c, `!!document.getElementById('export-result')`, 90000)
+      const ltZip = path.join(out, 'WalkOne Live Text Fixture.zip')
+      let ex = null
+      if (done10 && fs.existsSync(ltZip)) {
+        ex = JSON.parse(
+          execFileSync(h.PY, [
+            '-I',
+            '-c',
+            `import sys,zipfile,json
+z=zipfile.ZipFile(sys.argv[1]); x=z.read('template.xml').decode('utf-8-sig')
+print(json.dumps({'text':x.count('<Text'),'photos':x.count('<Photo'),'images':x.count('<Image'),'twoUp':'print_2_per_page="True"' in x,'size':[x.split('Width="')[1].split('"')[0],x.split('Height="')[1].split('"')[0]]}))`,
+            ltZip
+          ]).toString()
+        )
+        const rebuilt = path.join(work, 'live-text-export-rebuilt.png')
+        py('rebuild', JSON.stringify({ zip: ltZip, out: rebuilt }))
+        ex.boxes = py(
+          'textboxes',
+          JSON.stringify({ zip: LIVE_TEXT, render: rebuilt, reference: edited, maskPhotos: true })
+        ).boxes
+      }
+      check(
+        '10f export back: native 2×6 (1200×3600, print 2 per page), 2 photo slots, no native <Text>',
+        ex && ex.text === 0 && ex.photos === 2 && ex.twoUp && ex.size.join('x') === '1200x3600',
+        ex && { ...ex, boxes: undefined }
+      )
+      const edRow = ex && ex.boxes ? ex.boxes.find((b) => b.text === 'REGULAR TEXT 2026') : null
+      check(
+        '10g the exported artwork carries every text as drawn in Template Studio, including the edit (ink 0.9–1.1 ×, mean < 3 outside photo slots)',
+        ex &&
+          ex.boxes &&
+          edRow &&
+          ex.boxes
+            .filter((b) => b.pixels > 0 && b.refInk > 0)
+            .every((b) => b.inkRatio >= 0.9 && b.inkRatio <= 1.1 && b.meanDiff < 3),
+        ex &&
+          ex.boxes &&
+          ex.boxes.map((b) => [b.text.slice(0, 18), b.pixels, b.inkRatio, b.meanDiff])
+      )
+      await clickButton('Done')
+      await sleep(300)
     }
   } catch (e) {
     check('script error', false, String(e && e.stack))

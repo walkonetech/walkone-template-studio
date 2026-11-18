@@ -22,7 +22,14 @@ Reported by the project owner (treated as **Confirmed by owner**, not independen
 - `preview.png` is **optional**: without it the template imports and runs, but its picker thumbnail is blank.
 - `Dimensions` is the unit dslrBooth's editor displays (0 px, 1 in, 2 cm); geometry stays in pixels.
 - On import dslrBooth renames image layers to their file names, adds `IsVisible`, rewrites `OriginalDevice`, keeps `IsLegacy="True"` and saves at once.
-- **Live `<Text>` elements exist** in real templates made in dslrBooth's editor (seen in two owner templates; none of the five repository fixtures has one). Attributes seen: `Text`, `FontName`, `FontSize`, `FontColor`, `IsBold`, `IsItalic`, `TextHorizontalAlignment`, `Rotation`. Units and rendering are **Unknown** until a real sample is in the fixtures.
+- **Live `<Text>` elements exist** in real templates made in dslrBooth's editor (seen in two owner templates). A synthetic template made only in dslrBooth's visible editor (`tests/fixtures/dslrbooth/synthetic/live-text-fixture.zip`, 2026-11-18) showed:
+  - Visible text controls: X/Y/W/H, Keep aspect ratio, Rotate, a **single-line** Text box, Color (hex/RGB, **no alpha**), Font, Weight (the font's style names), Size (**Auto** or 8–96), Text alignment (left/centre/right), Drop Shadow. No opacity, stroke, vertical alignment, spacing, wrapping or line-break control.
+  - `FontWeight` stores the style name (`Regular`, `Bold`, `Italic`, `Bold Italic`); `IsBold`/`IsItalic` stay `False`. **"Bold Italic" is drawn as Italic only** (editor, `preview.png` and live session; Arial).
+  - `TextHorizontalAlignment` 0 left, 1 centre, 2 right (centre is the default). `FontColor` `#AARRGGBB`. `Rotation` written only when non-zero; clockwise.
+  - A fixed Size resizes the box to fit the text at that moment (Arial 48 → box height 55). Arial 48 capitals render 35 px tall on the 600-dpi canvas: **consistent with Size being the em size in canvas pixels (inferred, not a vendor rule).**
+  - `FontSize="0"` = **Auto**: the text is stretched, unevenly, to fill the whole box (capitals about 0.65 × the box height; width = box width).
+  - Enter inserts nothing; a pasted second line is dropped. A line wider than its box is **cut off at the box edge** (no wrap, no shrink).
+  - Stacking follows layer order (`ZIndex`), including text above a photo slot and below a picture. Special characters are kept, XML-escaped.
 - Printing: the `_2x` sheet goes to the DNP as one borderless page; the 2-inch cut is the driver's `CUT_2INCH` setting in the print settings dslrBooth saved, not a template value.
 
 ## 1c. Exporter (Phase 6B, ADR-047)
@@ -55,11 +62,24 @@ Root values written: `Dimensions="0"` (or an imported template's own editor unit
 | `print_2_per_page="True"` (portrait) | two-up 4×6 output | runtime findings |
 | two strips repeated on a 4×6 sheet | one 2×6 strip printed two-up (default when the copies match) or the sheet as is | design choice (ADR-048) |
 | shadows, unknown attributes/elements, `Id`, `Dimensions`, `IsLegacy`, … | kept verbatim in `sourceCompatibility.dslrbooth` + report | preserved; `Dimensions` (editor unit) written back on export (6C C2) |
-| live `<Text>` | **not imported yet** (6C C1): kept in `sourceCompatibility.dslrbooth`, `live-text` warning quoting the text; missing on export | editable import planned once a real sample exists (ADR-050) |
+| live `<Text>` `Text` | editable text layer, content exactly as stored | OBSERVED (synthetic fixture, 6C C1, ADR-051) |
+| `FontName` | font family, kept by name even when not installed (normal missing-font warning) | OBSERVED |
+| `FontSize` > 0 | font size, same number (em in canvas px) | INFERRED from the fixture render |
+| `FontSize="0"` (Auto) | largest uniform size that fits the box (0.9 × box height, or less if the box is narrow), `text-auto-size` warning; `FontSize` kept in the notes | approximation: Template Studio cannot stretch letters |
+| `FontWeight` | weight 100–900 + italic from the style name; **"Bold Italic" → Italic** (what dslrBooth prints), `text-bold-italic` note; condensed/expanded styles → normal width + warning | OBSERVED (Regular/Bold/Italic/Bold Italic); others by name |
+| `IsBold` / `IsItalic` | honoured if `True` | Assumption (7.48 always writes False) |
+| `TextHorizontalAlignment` 0/1/2 | left / centre / right (other values → centre + warning) | OBSERVED |
+| `FontColor` | text colour, alpha kept | OBSERVED (no alpha in dslrBooth's picker) |
+| text box, `Rotation`, `Opacity`, `IsVisible`, `IsLocked`, `ZIndex` | same as other layers; one line vertically centred in the box (line height = box height ÷ size) | OBSERVED (box, rotation, stacking) |
+| a box dslrBooth fitted to its line | up to a few % wider (anchored by alignment, so the text does not move) so the line does not wrap here | design choice |
+| a line much wider than its box | box and text kept; **wraps** onto more lines here (dslrBooth cuts it off), `text-overflow` warning | known difference (no schema change) |
+| Drop Shadow | not drawn; `shadow` warning; settings kept in the notes | unsupported |
+| line breaks (`&#10;`, never typed by dslrBooth) | kept; `text-line-breaks` warning | Unknown how dslrBooth draws them |
+| export back | drawn into the artwork PNGs like all Template Studio text (6B policy); **no native `<Text>`** | design choice (ADR-047, ADR-051) |
 | `OriginalDevice` | dropped (privacy), reported | — |
 | `preview.png` | shown in the import dialog only | — |
 
-Measured (validate-import.js, built app): every fixture imported as is renders as close to its own `preview.png` (outside photo boxes) as a direct Python rebuild of the XML does (mean difference 1.5–4.3 of 255; the residue is dslrBooth's own resampling); every photo slot exports back to its original box.
+Measured (validate-import.js, built app): the live-text fixture's 16 texts all import; every text box outside the photo slots shows its text, fixed-size Arial text matches dslrBooth's `preview.png` inside its box (ink 0.98–1.12 ×, mean 1.7–12.7 of 255); the exported artwork carries every text, including an edit. Every client fixture imported as is renders as close to its own `preview.png` (outside photo boxes) as a direct Python rebuild of the XML does (mean difference 1.5–4.3 of 255; the residue is dslrBooth's own resampling); every photo slot exports back to its original box.
 
 ## 1a. Observed in the five current fixtures (OBSERVED)
 - Flat ZIP, deflate; always `template.xml` + `preview.png` + referenced PNGs; no folders; no unreferenced files.
@@ -80,7 +100,7 @@ Measured (validate-import.js, built app): every fixture imported as is renders a
 - Images in the ZIP are PNG (possibly other formats). **PNG only observed; other formats unknown.**
 - Template ZIP may contain a preview/thumbnail image. **Observed (`preview.png`, all five); whether required is unknown.**
 - Coordinates are pixels in the template's own canvas (not necessarily at our DPI). **Observed (integers at `Resolution`).**
-- Fonts/text may be rasterized or unsupported as live text. **Text rasterized in all fixtures; live-text support not observed (unknown).**
+- Fonts/text may be rasterized or unsupported as live text. **Text rasterized in the five client fixtures; live `<Text>` exists and was observed in 6C (§1e).**
 - Format details may differ between DSLR Booth versions.
 
 ## 3. Remaining unknowns
@@ -118,7 +138,7 @@ To determine: file layout, naming, compression, required entries, ordering, time
 Whether a preview is required and its size/format is **Unknown**. Preview will be produced from the same render pipeline as export.
 
 ## 12. Fixture strategy
-Real exports copied (by the owner) into `tests/fixtures/dslrbooth/`, one directory per template, with the original ZIP untouched plus (later) an extracted copy and a notes file stating DSLR Booth version, template description, and any client-sensitive content removed. Never fabricate or hand-edit fixtures except clearly labeled derived test cases. Golden expectations (parsed JSON snapshots) are generated only after human review.
+Synthetic templates made in dslrBooth itself with made-up content may be committed under `tests/fixtures/dslrbooth/synthetic/` after removing machine-identifying values (`OriginalDevice`); the unedited original stays outside the repository as evidence. Real exports copied (by the owner) into `tests/fixtures/dslrbooth/`, one directory per template, with the original ZIP untouched plus (later) an extracted copy and a notes file stating DSLR Booth version, template description, and any client-sensitive content removed. Never fabricate or hand-edit fixtures except clearly labeled derived test cases. Golden expectations (parsed JSON snapshots) are generated only after human review.
 
 ## 13. Round-trip tests
 (a) DSLR ZIP → internal → DSLR ZIP: structure/semantic equivalence to the original (byte-equality not assumed). (b) internal → DSLR → internal: lossless for supported features. (c) Manual: import exported ZIP in real DSLR Booth and compare render. See [TESTING_STRATEGY.md](TESTING_STRATEGY.md).

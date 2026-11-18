@@ -24,6 +24,13 @@ import {
   type DslrImportSeverity,
   type DslrTemplateIn
 } from './template'
+import {
+  AUTO_EM_PER_BOX_HEIGHT,
+  estimateWidthEm,
+  fitMargin,
+  overflowRatio,
+  parseDslrWeight
+} from './textFit'
 import { detectTwoUp, type TwoUpDetection } from './twoUp'
 
 /**
@@ -33,7 +40,7 @@ import { detectTwoUp, type TwoUpDetection } from './twoUp'
  */
 
 export const DSLR_ADAPTER_ID = 'dslrbooth'
-export const DSLR_IMPORTER_VERSION = '7.48-import-1'
+export const DSLR_IMPORTER_VERSION = '7.48-import-2'
 
 export type DslrImportLayout = 'as-is' | 'strip'
 
@@ -153,6 +160,128 @@ function displayName(raw: string, ext: string): string {
   return name.length > 255 ? name.slice(name.length - 255) : name
 }
 
+const tagOf = (e: DslrElementIn): string =>
+  e.kind === 'photo' ? 'Photo' : e.kind === 'text' ? 'Text' : 'Image'
+
+const quote = (s: string): string => {
+  const one = s.replace(/\s+/g, ' ').trim()
+  return `“${one.length > 40 ? `${one.slice(0, 40)}…` : one}”`
+}
+
+/** What importing one live `<Text>` produced besides the layer, for the import notes. */
+interface TextNotes {
+  auto: boolean
+  widened: boolean
+  overflow: boolean
+  lineBreaks: boolean
+  stretch: string[]
+  unknownWeight: string | null
+  badAlign: string | null
+  badColor: string | null
+  badSize: string | null
+  noFont: boolean
+  boldItalicAsItalic: boolean
+}
+
+/** dslrBooth's default text font (its Font list starts on Arial; observed). */
+const DSLR_DEFAULT_FONT = 'Arial'
+
+/**
+ * A live `<Text>` → the fields of an editable text layer (6C C1; mapping table in docs/DSLRBOOTH_COMPATIBILITY.md §1d).
+ * Geometry is the dslrBooth box, except that a single line dslrBooth sized to fit gets a little extra width (anchored by
+ * its alignment, so the text does not move) because Template Studio wraps a line that is even slightly too wide.
+ */
+function mapText(e: DslrElementIn & { text: NonNullable<DslrElementIn['text']> }): {
+  fields: Record<string, unknown>
+  box: { x: number; y: number; width: number }
+  notes: TextNotes
+} {
+  const t = e.text
+  const notes: TextNotes = {
+    auto: false,
+    widened: false,
+    overflow: false,
+    lineBreaks: /[\r\n]/.test(t.content),
+    stretch: [],
+    unknownWeight: null,
+    badAlign: null,
+    badColor: null,
+    badSize: null,
+    noFont: t.fontName === '',
+    boldItalicAsItalic: false
+  }
+  const fontFamily = (t.fontName || DSLR_DEFAULT_FONT).slice(0, 200)
+  const w = parseDslrWeight(t.fontWeight)
+  notes.stretch = w.unsupported
+  if (w.unknown.length > 0) notes.unknownWeight = t.fontWeight
+  // dslrBooth 7.48 offers "Bold Italic" but draws it as plain Italic: in its editor, its preview.png and a live session
+  // (observed, fixture T4, Arial). Import what it prints; the style name stays in the import notes.
+  notes.boldItalicAsItalic = w.weight === 700 && w.italic && !t.isBold
+  // The legacy flags are honoured if a file sets them (7.48's editor never does: observed always False).
+  const fontWeight = t.isBold ? Math.max(w.weight, 700) : notes.boldItalicAsItalic ? 400 : w.weight
+  const italic = w.italic || t.isItalic
+  // TextHorizontalAlignment: observed 0 left, 1 centre, 2 right. dslrBooth's default for new text is centre.
+  const align = t.alignment === 0 ? 'left' : t.alignment === 2 ? 'right' : 'center'
+  if (![0, 1, 2].includes(t.alignment))
+    notes.badAlign = e.attributes.TextHorizontalAlignment ?? '(none)'
+  if (t.color === null && t.colorRaw !== undefined) notes.badColor = t.colorRaw
+  const fill = t.color ?? '#000000'
+
+  const emWidth = Math.max(estimateWidthEm(t.content, fontWeight >= 600), 0.01)
+  const margin = fitMargin(fontFamily)
+  let fontSize: number
+  if (Number.isFinite(t.fontSize) && t.fontSize > 0) fontSize = t.fontSize
+  else {
+    // FontSize 0 = "Auto" (observed). Absent/unreadable sizes are treated the same way, with their own note.
+    if (t.fontSize !== 0) notes.badSize = e.attributes.FontSize ?? '(none)'
+    notes.auto = t.fontSize === 0
+    const byHeight = e.height * AUTO_EM_PER_BOX_HEIGHT
+    const byWidth = e.width / (emWidth * margin)
+    fontSize = Math.max(1, Math.floor(Math.min(byHeight, byWidth) * 10) / 10)
+  }
+
+  let { x, y, width } = e
+  // An approximated size was already chosen to fit the box, so only a stored size can need a wider box.
+  if (!notes.lineBreaks && !notes.auto && notes.badSize === null) {
+    const estimated = emWidth * fontSize
+    const need = Math.ceil(estimated * margin + 2)
+    if (estimated > width * overflowRatio(fontFamily)) notes.overflow = true
+    else if (need > width) {
+      // Grow the box without moving the text: keep the aligned edge (or the centre) where it was, also when rotated.
+      const d = need - width
+      const shift = align === 'left' ? d / 2 : align === 'right' ? -d / 2 : 0
+      const r = (e.rotation * Math.PI) / 180
+      const cx = e.x + e.width / 2 + shift * Math.cos(r)
+      const cy = e.y + e.height / 2 + shift * Math.sin(r)
+      width = need
+      x = Math.round((cx - width / 2) * 100) / 100
+      y = Math.round((cy - e.height / 2) * 100) / 100
+      notes.widened = true
+    }
+  }
+  // One line, vertically centred in the dslrBooth box (a fixed size makes dslrBooth fit the box to the line, observed).
+  const lineHeight = notes.lineBreaks
+    ? 1.15
+    : Math.max(0.5, Math.round((e.height / fontSize) * 10000) / 10000)
+
+  return {
+    fields: {
+      type: 'text',
+      content: t.content,
+      fontFamily,
+      fontSize,
+      fontWeight,
+      fontStyle: italic ? 'italic' : 'normal',
+      align,
+      lineHeight,
+      letterSpacing: 0,
+      fill: literalColor(fill)
+    },
+    box: { x, y, width },
+    notes
+  }
+}
+
 function finiteBox(e: DslrElementIn): boolean {
   return [e.x, e.y, e.width, e.height, e.rotation].every(Number.isFinite)
 }
@@ -171,7 +300,7 @@ export function mapDslrTemplate(
   const keep = (reason: string, e: DslrElementIn): void => {
     unmapped.push({
       reason,
-      element: e.kind === 'photo' ? 'Photo' : 'Image',
+      element: tagOf(e),
       attributes: e.attributes
     })
   }
@@ -195,6 +324,15 @@ export function mapDslrTemplate(
     if (e.width < 0 || e.height < 0) {
       badGeometry.push(e.name || e.kind)
       keep('invalid-geometry', e)
+      continue
+    }
+    if (e.kind === 'text') {
+      if (e.width <= 0 || e.height <= 0) {
+        badGeometry.push(e.name || 'text')
+        keep('invalid-geometry', e)
+        continue
+      }
+      usable.push(e)
       continue
     }
     if (e.kind === 'photo') {
@@ -389,11 +527,18 @@ export function mapDslrTemplate(
   let photoKeepAspect = 0
   let locked = 0
   let hidden = 0
+  const texts: { name: string; notes: TextNotes; fontFamily: string }[] = []
   kept.forEach((e, z) => {
     const id = makeId()
     const base = {
       id,
-      name: e.name || (e.kind === 'photo' ? `Photo ${e.photoNumber}` : 'Picture'),
+      name:
+        e.name ||
+        (e.kind === 'photo'
+          ? `Photo ${e.photoNumber}`
+          : e.kind === 'text'
+            ? (e.text?.content.replace(/\s+/g, ' ').trim().slice(0, 200) ?? '') || 'Text'
+            : 'Picture'),
       x: e.x,
       y: e.y,
       width: e.width,
@@ -408,7 +553,11 @@ export function mapDslrTemplate(
     if (!e.visible) hidden++
     if (e.shadowEnabled) shadows++
     let layer: Layer
-    if (e.kind === 'photo') {
+    if (e.kind === 'text' && e.text) {
+      const m = mapText({ ...e, text: e.text })
+      layer = { ...base, ...m.box, ...m.fields } as Layer
+      texts.push({ name: base.name, notes: m.notes, fontFamily: m.fields.fontFamily as string })
+    } else if (e.kind === 'photo') {
       if (e.keepAspect === false) photoKeepAspect++
       // dslrBooth borders grow OUTWARD from the photo (runtime findings); Template Studio frames sit inside the slot
       // box, so the slot grows by the border on every side. Non-zero borders were never seen in a real file.
@@ -448,8 +597,7 @@ export function mapDslrTemplate(
       }
     }
     project.layers.push(layer)
-    if (Object.keys(e.extra).length > 0)
-      layerData[id] = { element: e.kind === 'photo' ? 'Photo' : 'Image', attributes: e.extra }
+    if (Object.keys(e.extra).length > 0) layerData[id] = { element: tagOf(e), attributes: e.extra }
   })
   // Renumber zIndex densely (a skipped image above leaves a gap).
   project.layers.forEach((l, i) => (l.zIndex = i))
@@ -473,6 +621,110 @@ export function mapDslrTemplate(
   const gaps = (numbers[numbers.length - 1] ?? 0) - numbers.length
   if (gaps > 0)
     add('info', 'photo-number-gap', `Photo numbers skip some values: ${numbers.join(', ')}.`)
+  // ---- live text (6C C1) ------------------------------------------------------------------------------------------
+  const listOf = (rows: typeof texts): string =>
+    rows
+      .slice(0, 3)
+      .map((r) => quote(r.name))
+      .join(', ') + (rows.length > 3 ? ', …' : '')
+  const textNote = (
+    severity: DslrImportSeverity,
+    code: string,
+    pick: (n: TextNotes) => boolean,
+    message: (n: number, list: string) => string
+  ): void => {
+    const rows = texts.filter((r) => pick(r.notes))
+    if (rows.length > 0) add(severity, code, message(rows.length, listOf(rows)))
+  }
+  if (texts.length > 0) {
+    add(
+      'info',
+      'live-text',
+      `${plural(texts.length, 'live text element')} from dslrBooth’s editor came in as editable text (${listOf(texts)}). When you export back to dslrBooth, Template Studio draws text into the artwork, as it does for all text: the booth PC needs no fonts, but the text can no longer be retyped in dslrBooth’s own editor.`
+    )
+    const fonts = [...new Set(texts.map((r) => r.fontFamily))].sort()
+    add(
+      'info',
+      'text-fonts',
+      `Text uses ${fonts.length === 1 ? 'the font' : 'these fonts'}: ${fonts.join(', ')}. A font that is not installed on this computer keeps its name and is shown with a stand-in font until it is installed (see the font warnings).`
+    )
+  }
+  textNote(
+    'warning',
+    'text-auto-size',
+    (n) => n.auto,
+    (n, list) =>
+      `${plural(n, 'text')} (${list}) used dslrBooth’s “Auto” size, which stretches the letters to fill the whole box. Template Studio cannot stretch letters, so ${n === 1 ? 'it was' : 'each was'} given the largest normal size that fits ${n === 1 ? 'its' : 'their'} box. Compare with dslrBooth’s preview and adjust the size if needed.`
+  )
+  textNote(
+    'warning',
+    'text-overflow',
+    (n) => n.overflow,
+    (n, list) =>
+      `${plural(n, 'text')} (${list}) ${n === 1 ? 'is' : 'are'} wider than ${n === 1 ? 'its' : 'their'} box. dslrBooth cuts such text off at the box edge; Template Studio wraps it onto more lines instead, below the box. Shorten the text or widen the box.`
+  )
+  textNote(
+    'info',
+    'text-box-widened',
+    (n) => n.widened,
+    (n, list) =>
+      `${plural(n, 'text box', 'text boxes')} (${list}) ${n === 1 ? 'was' : 'were'} made a little wider so the line is not wrapped (fonts measure slightly differently here). The text stays where it was.`
+  )
+  textNote(
+    'warning',
+    'text-line-breaks',
+    (n) => n.lineBreaks,
+    (n, list) =>
+      `${plural(n, 'text')} (${list}) ${n === 1 ? 'contains' : 'contain'} line breaks, which dslrBooth’s editor cannot type (seen: only one line is kept). How dslrBooth draws them is not known; Template Studio shows separate lines.`
+  )
+  textNote(
+    'warning',
+    'text-font-stretch',
+    (n) => n.stretch.length > 0,
+    (n, list) =>
+      `${plural(n, 'text')} (${list}) used a condensed or expanded font style. Template Studio has no width setting, so the font’s normal width is used; choose a condensed font family instead if you have one.`
+  )
+  textNote(
+    'warning',
+    'text-weight',
+    (n) => n.unknownWeight !== null,
+    (n, list) =>
+      `${plural(n, 'text')} (${list}) had a font style Template Studio did not recognise (${[...new Set(texts.flatMap((r) => (r.notes.unknownWeight === null ? [] : [quote(r.notes.unknownWeight)])))].join(', ')}); the recognised parts were used, otherwise Regular.`
+  )
+  textNote(
+    'info',
+    'text-bold-italic',
+    (n) => n.boldItalicAsItalic,
+    (n, list) =>
+      `${plural(n, 'text')} (${list}) ${n === 1 ? 'is' : 'are'} set to “Bold Italic” in dslrBooth, but dslrBooth draws that as Italic only, so ${n === 1 ? 'it was' : 'they were'} imported as printed: Italic. Choose Bold in the inspector if you want bold.`
+  )
+  textNote(
+    'warning',
+    'text-align',
+    (n) => n.badAlign !== null,
+    (n, list) => `${plural(n, 'text')} (${list}) had an unknown alignment; centred is used.`
+  )
+  textNote(
+    'warning',
+    'text-color',
+    (n) => n.badColor !== null,
+    (n, list) =>
+      `${plural(n, 'text')} (${list}) had a colour that could not be read; black is used.`
+  )
+  textNote(
+    'warning',
+    'text-size',
+    (n) => n.badSize !== null,
+    (n, list) =>
+      `${plural(n, 'text')} (${list}) had no readable font size; the largest size that fits the box is used.`
+  )
+  textNote(
+    'info',
+    'text-font-default',
+    (n) => n.noFont,
+    (n, list) =>
+      `${plural(n, 'text')} (${list}) named no font; Arial (dslrBooth’s default) is used.`
+  )
   if (shadows > 0)
     add(
       'warning',
@@ -535,11 +787,11 @@ export function mapDslrTemplate(
       'original-device',
       'The name of the computer that made the template (OriginalDevice) was not kept.'
     )
-  if (t.unknown.some((u) => u.element === 'Text'))
+  if (texts.length > 0)
     add(
       'info',
       'flattened-artwork',
-      'Pictures come in as dslrBooth stored them; they can be moved and resized. Text that is part of a picture cannot be retyped.'
+      'Pictures come in as dslrBooth stored them; they can be moved and resized. Text that is part of a picture cannot be retyped (dslrBooth’s live text is editable).'
     )
   else
     add(

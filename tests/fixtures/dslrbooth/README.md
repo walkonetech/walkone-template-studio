@@ -3,6 +3,7 @@
 Real DSLR Booth / LumaSoft template exports used as compatibility evidence. Strategy: [../../../docs/TESTING_STRATEGY.md](../../../docs/TESTING_STRATEGY.md). Findings: [../../../research/DSLRBOOTH_FIXTURE_ANALYSIS.md](../../../research/DSLRBOOTH_FIXTURE_ANALYSIS.md).
 
 ## Layout
+- `synthetic/` — **committed** test templates with made-up content only, made in dslrBooth itself (machine names sanitized). See [synthetic/README.md](synthetic/README.md).
 - `source/` — **immutable** original production exports (ZIPs). Never modify, rename, re-save, recompress, or delete files here. Never use it as a working directory.
 - `expected/` — *(future, not created yet)* human-reviewed expected normalized representations used by tests.
 - `generated/` — *(future, not created yet)* outputs written by automated compatibility tests. Should be git-ignored.

@@ -45,6 +45,36 @@ export const KNOWN_ELEMENT_ATTRIBUTES = new Set([
   'Rotation',
   'IsLocked'
 ])
+/**
+ * Attributes the importer understands on `<Text>` (dslrBooth 7.48 live text, synthetic fixture
+ * tests/fixtures/dslrbooth/synthetic/, research/PHASE_6C_RESULTS.md). `KeepAspect` on text only locks resizing in
+ * dslrBooth's editor; it is kept in the import notes.
+ */
+export const KNOWN_TEXT_ATTRIBUTES = new Set([
+  'Name',
+  'IsVisible',
+  'Opacity',
+  'ShadowEnabled',
+  'ShadowColor',
+  'ShadowDepth',
+  'ShadowRadius',
+  'ShadowDirection',
+  'Text',
+  'FontName',
+  'FontWeight',
+  'Width',
+  'Height',
+  'Top',
+  'Left',
+  'FontColor',
+  'IsBold',
+  'IsItalic',
+  'FontSize',
+  'TextHorizontalAlignment',
+  'ZIndex',
+  'Rotation',
+  'IsLocked'
+])
 const SHADOW_ATTRIBUTES = [
   'ShadowEnabled',
   'ShadowColor',
@@ -53,8 +83,29 @@ const SHADOW_ATTRIBUTES = [
   'ShadowDirection'
 ]
 
+/** A live `<Text>` element's own settings (observed meanings: research/PHASE_6C_RESULTS.md, live-text fixture). */
+export interface DslrTextIn {
+  /** `Text`, exactly as stored (entities decoded, nothing trimmed). */
+  content: string
+  /** `FontName`, trimmed; '' when absent. */
+  fontName: string
+  /** `FontWeight` as stored ("Regular", "Bold", "Bold Italic", …); '' when absent. */
+  fontWeight: string
+  /** `FontSize`: a positive number, 0 = dslrBooth's "Auto" (stretch to fill the box), NaN when absent/unreadable. */
+  fontSize: number
+  /** Legacy `IsBold` / `IsItalic` flags (dslrBooth 7.48's editor leaves them False). */
+  isBold: boolean
+  isItalic: boolean
+  /** `TextHorizontalAlignment` as stored (observed 0 left, 1 centre, 2 right); NaN when absent/unreadable. */
+  alignment: number
+  /** Domain hex, or null when absent/unreadable. */
+  color: string | null
+  /** The raw `FontColor` (for a precise warning). */
+  colorRaw: string | undefined
+}
+
 export interface DslrElementIn {
-  kind: 'photo' | 'image'
+  kind: 'photo' | 'image' | 'text'
   /** Position in the XML (0 = first). */
   index: number
   name: string
@@ -76,6 +127,8 @@ export interface DslrElementIn {
   /** Domain hex (`#rrggbb[aa]`) or null when absent/unreadable. */
   strokeColor: string | null
   shadowEnabled: boolean
+  /** Present for `kind: 'text'`. */
+  text?: DslrTextIn
   /** Values the model cannot hold, kept verbatim for the adapter (unknown attributes, enabled shadow, …). */
   extra: Record<string, string>
   attributes: Record<string, string>
@@ -193,15 +246,17 @@ export function readDslrTemplate(bytes: Uint8Array): DslrTemplateIn {
   for (const container of containers) {
     for (const el of container.children) {
       const i = index++
-      if (el.name !== 'Image' && el.name !== 'Photo') {
+      // A <Text> without a Text attribute was never seen; it stays an unknown element rather than an empty layer.
+      const isText = el.name === 'Text' && el.attributes.Text !== undefined
+      if (el.name !== 'Image' && el.name !== 'Photo' && !isText) {
         unknown.push(toJsonish(el))
         continue
       }
       const a = el.attributes
-      const kind = el.name === 'Photo' ? 'photo' : 'image'
+      const kind = el.name === 'Photo' ? 'photo' : isText ? 'text' : 'image'
+      const known = kind === 'text' ? KNOWN_TEXT_ATTRIBUTES : KNOWN_ELEMENT_ATTRIBUTES
       const extra: Record<string, string> = {}
-      for (const key of el.order)
-        if (!KNOWN_ELEMENT_ATTRIBUTES.has(key)) extra[key] = a[key] as string
+      for (const key of el.order) if (!known.has(key)) extra[key] = a[key] as string
       if (el.children.length > 0 || el.text !== '')
         extra['#content'] = JSON.stringify(el.children.map(toJsonish)).slice(0, 4000)
       const shadowEnabled = bool(a.ShadowEnabled, false)
@@ -210,6 +265,30 @@ export function readDslrTemplate(bytes: Uint8Array): DslrTemplateIn {
       const keepAspect = bool(a.KeepAspect, true)
       if (kind === 'photo' && !keepAspect) extra.KeepAspect = a.KeepAspect as string
       const opacityRaw = num(a.Opacity)
+      const fontSize = num(a.FontSize)
+      // Auto size is kept in the notes: Template Studio stores a fixed size that approximates it.
+      if (kind === 'text' && fontSize === 0) extra.FontSize = a.FontSize as string
+      // A style name Template Studio maps differently from its name (Bold Italic → Italic) is kept verbatim.
+      if (
+        kind === 'text' &&
+        /bold/i.test(a.FontWeight ?? '') &&
+        /italic|oblique/i.test(a.FontWeight ?? '')
+      )
+        extra.FontWeight = a.FontWeight as string
+      const text: DslrTextIn | undefined =
+        kind === 'text'
+          ? {
+              content: a.Text as string,
+              fontName: (a.FontName ?? '').trim(),
+              fontWeight: (a.FontWeight ?? '').trim(),
+              fontSize,
+              isBold: bool(a.IsBold, false),
+              isItalic: bool(a.IsItalic, false),
+              alignment: num(a.TextHorizontalAlignment),
+              color: fromArgb(a.FontColor),
+              colorRaw: a.FontColor
+            }
+          : undefined
       elements.push({
         kind,
         index: i,
@@ -229,39 +308,27 @@ export function readDslrTemplate(bytes: Uint8Array): DslrTemplateIn {
         thickness: Number.isFinite(num(a.Thickness)) ? Math.max(0, num(a.Thickness)) : 0,
         strokeColor: fromArgb(a.StrokeColor),
         shadowEnabled,
+        ...(text ? { text } : {}),
         extra,
         attributes: { ...a }
       })
     }
   }
 
-  // Live text typed in dslrBooth's own editor (6C finding C1). Mapping it to editable text needs a real sample with
-  // known font/size/colour semantics; until then it is kept in the import notes and called out loudly, because it
-  // will be missing from the canvas and from any export back to dslrBooth.
-  const liveText = unknown.filter((u) => u.element === 'Text')
-  if (liveText.length > 0) {
-    const samples = liveText
-      .map((u) => (u.attributes.Text ?? '').replace(/\s+/g, ' ').trim())
-      .filter((s) => s !== '')
-      .slice(0, 3)
-      .map((s) => `“${s.length > 40 ? `${s.slice(0, 40)}…` : s}”`)
+  for (const u of unknown)
     add(
       'warning',
-      'live-text',
-      `${liveText.length === 1 ? 'One live text element' : `${liveText.length} live text elements`} from dslrBooth’s editor${samples.length > 0 ? ` (${samples.join(', ')})` : ''} cannot be imported yet. ${liveText.length === 1 ? 'It is' : 'They are'} kept in the project’s import notes but not shown, and will be missing if you export this project back to dslrBooth. Add the text again in Template Studio.`
+      'unknown-element',
+      `<${u.element}> is not something Template Studio knows. It was kept in the project's import notes but is not shown.`
     )
-  }
-  for (const u of unknown)
-    if (u.element !== 'Text')
-      add(
-        'warning',
-        'unknown-element',
-        `<${u.element}> is not something Template Studio knows. It was kept in the project's import notes but is not shown.`
-      )
   const unknownAttrs = new Set(
     elements.flatMap((e) =>
       Object.keys(e.extra).filter(
-        (k) => !k.startsWith('Shadow') && k !== 'KeepAspect' && k !== '#content'
+        (k) =>
+          !k.startsWith('Shadow') &&
+          k !== 'KeepAspect' &&
+          k !== '#content' &&
+          !(e.kind === 'text' && (k === 'FontSize' || k === 'FontWeight'))
       )
     )
   )

@@ -261,3 +261,14 @@ The template defines how many photos a session takes: the booth stops at the num
 4. **Observed facts adopted for design:** dslrBooth accepts the native 2×6 export (`Dimensions="0"`, `print_2_per_page="True"`, 1:3 canvas); re-importing always creates a copy with a new Id (no in-place update); `preview.png` is optional but gives the thumbnail; rotation is clockwise about the slot centre; the 2-inch cut is a printer-driver setting. These confirm ADR-047's choices; nothing in the exporter changes except C2.
 **Not decided here:** the Output Profile format and safe-area check (next track step, needs the measurement print), the app icon (needs an owner-supplied WalkOne icon), and `/print` exposure (owner check pending).
 
+## ADR-051 — dslrBooth live text imports as editable text; export stays rasterized — Accepted (owner brief, 2026-11-18)
+**Context:** ADR-050 approved editable import of dslrBooth live `<Text>` (C1) once a real sample existed. Craft Anything made a synthetic template in dslrBooth 7.48's visible editor (made-up text only) and recorded what dslrBooth showed and rendered. Template Studio's text layer has no auto-fit, no letter stretching, no clipping to its box and no shadow; changing the schema was not approved.
+**Decisions:**
+1. **Each `<Text>` becomes an editable text layer** with the mapping in [DSLRBOOTH_COMPATIBILITY.md](DSLRBOOTH_COMPATIBILITY.md) §1d. A text is never dropped or rasterized on import; anything not representable is imported as closely as possible with a specific note.
+2. **Import what dslrBooth prints:** "Bold Italic" becomes Italic because dslrBooth draws it as Italic only (observed in its editor, preview and session); the style name stays in the import notes.
+3. **"Auto" size** (`FontSize="0"`) becomes the largest uniform size that fits the box (0.9 × box height, inferred from the fixture), with a warning; `FontSize="0"` stays in the notes.
+4. **No wrapping dslrBooth would not do:** a box dslrBooth fitted to its line may grow a few percent, anchored by its alignment so the text does not move. A line far wider than its box keeps its box and wraps here (dslrBooth cuts it off); this is reported, because the text layer cannot clip without a schema change.
+5. **Export is unchanged (ADR-047 / 6B):** imported text is drawn into the artwork like all Template Studio text, so it survives the round trip and the booth PC needs no fonts, but it is no longer live text inside dslrBooth's editor. Writing native `<Text>` would need a separate approved reason.
+6. **Fixture policy:** synthetic dslrBooth templates with made-up content may be committed under `tests/fixtures/dslrbooth/synthetic/` once machine-identifying values are removed; the unedited original stays outside the repository.
+**Status:** implemented and verified on macOS; **C1 stays open until the Windows/dslrBooth round-trip re-test** confirms it.
+

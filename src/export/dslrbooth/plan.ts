@@ -25,8 +25,8 @@ import type { DslrElement, DslrTemplate } from './templateXml'
  *  - a slot's frame is drawn INSIDE the slot box in Template Studio but grows OUTWARD in dslrBooth, and dslrBooth has
  *    no corner radius: so frames and rounded-corner masks are drawn into the image right above the photo instead of
  *    using `Thickness`/`StrokeColor` (always 0 / default, as in every fixture);
- *  - text is always rasterized (no dslrBooth text element is in the evidence, and missing fonts silently fall back on
- *    the booth PC), so the booth needs no fonts.
+ *  - text is always rasterized, so the booth needs no fonts (missing fonts silently fall back on the booth PC). This
+ *    includes dslrBooth live text imported as editable text (6C C1): it is NOT written back as a native `<Text>`.
  */
 
 export type DslrVariant = 'strip' | 'sheet' | 'single'

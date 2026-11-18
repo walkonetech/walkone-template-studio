@@ -13,7 +13,7 @@ All commands run from `/Users/walkone/Projects/Apps/walkone-template-studio`.
 | Dev mode (hot reload) | `npm run dev` |
 | Throwaway profile (clean recents/recovery; real data untouched) | `npm run build && npx electron out/main/index.js --user-data-dir=$HOME/wts-test` |
 | Reset the throwaway profile | `rm -rf $HOME/wts-test` |
-| Quality gate | `npm run typecheck && npm run lint && npm run format:check && npm run build && npm test` (expect **880** tests) |
+| Quality gate | `npm run typecheck && npm run lint && npm run format:check && npm run build && npm test` (expect **897** tests) |
 
 Tips
 - Use the throwaway profile for destructive tests (crash recovery, quit prompts) so your real autosave sessions stay safe.

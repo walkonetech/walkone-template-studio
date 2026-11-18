@@ -28,7 +28,11 @@ const normAngle = (deg: number): number => {
 }
 
 const label = (e: DslrElementIn): string =>
-  e.kind === 'photo' ? `photo slot ${e.photoNumber}` : `“${e.name || e.imagePath}”`
+  e.kind === 'photo'
+    ? `photo slot ${e.photoNumber}`
+    : e.kind === 'text'
+      ? `text “${e.text?.content ?? e.name}”`
+      : `“${e.name || e.imagePath}”`
 
 export function detectTwoUp(
   elements: readonly DslrElementIn[],
@@ -48,7 +52,11 @@ export function detectTwoUp(
 
   const sameThing = (a: DslrElementIn, b: DslrElementIn): boolean =>
     a.kind === b.kind &&
-    (a.kind === 'photo' ? a.photoNumber === b.photoNumber : a.imagePath === b.imagePath)
+    (a.kind === 'photo'
+      ? a.photoNumber === b.photoNumber
+      : a.kind === 'text'
+        ? a.text?.content === b.text?.content
+        : a.imagePath === b.imagePath)
   const closeness = (l: DslrElementIn, r: DslrElementIn): number =>
     Math.max(
       Math.abs(r.x - cellWidth - l.x),
@@ -82,15 +90,24 @@ export function detectTwoUp(
       what.push(`rotated ${Math.round(r.rotation)}° instead of ${Math.round(l.rotation)}°`)
     if (Math.abs(l.opacity - r.opacity) > 0.005) what.push('different transparency')
     if (l.visible !== r.visible) what.push(r.visible ? 'visible' : 'hidden')
+    if (l.text && r.text) {
+      if (l.text.fontName !== r.text.fontName || l.text.fontWeight !== r.text.fontWeight)
+        what.push('in a different font')
+      if (l.text.fontSize !== r.text.fontSize) what.push('a different size')
+      if (l.text.color !== r.text.color) what.push('a different colour')
+      if (l.text.alignment !== r.text.alignment) what.push('aligned differently')
+    }
     if (what.length > 0) differences.push(`In the right strip, ${label(r)} is ${what.join(', ')}.`)
   }
   // Stacking: what covers what is decided by the order of pictures relative to photo slots. Compare that sequence.
   const order = (list: DslrElementIn[]): DslrElementIn[] =>
     [...list].sort((a, b) => a.zIndex - b.zIndex || b.index - a.index)
   const kinds = (list: DslrElementIn[]): string =>
-    list.map((e) => (e.kind === 'photo' ? 'P' : 'I')).join('')
+    list.map((e) => (e.kind === 'photo' ? 'P' : e.kind === 'text' ? 'T' : 'I')).join('')
   if (kinds(order(left)) !== kinds(order(right)))
-    differences.push('The two strips stack their pictures and photo slots in a different order.')
+    differences.push(
+      'The two strips stack their pictures, text and photo slots in a different order.'
+    )
 
   const crossing = left.filter((e) => e.x + e.width > cellWidth + tol).length
   const maxOffset = Math.max(0, ...pairs.map(([l, r]) => closeness(l, r)))

@@ -1,8 +1,8 @@
 {
-  "when": "2026-11-18T00:58:03.958Z",
+  "when": "2026-11-18T18:56:07.460Z",
   "fixtures": 5,
-  "pass": 18,
-  "total": 18,
+  "pass": 26,
+  "total": 26,
   "results": [
     {
       "name": "1 start screen offers “Import from dslrBooth…” next to New and Open",
@@ -153,7 +153,7 @@
       "ok": true,
       "detail": {
         "n": 6,
-        "v": "7.48-import-1",
+        "v": "7.48-import-2",
         "src": "Synthetic Two Strips.zip"
       }
     },
@@ -292,6 +292,149 @@
           "leftMean": 1.585,
           "rightMean": 3.206
         }
+      ]
+    },
+    {
+      "name": "10 live-text fixture: notes say the text came in editable (Auto size, overflow, shadow, fonts); nothing “missing”, no unknown element",
+      "ok": true,
+      "detail": [
+        "text-auto-size",
+        "text-overflow",
+        "shadow",
+        "print-2-per-page",
+        "live-text",
+        "text-fonts",
+        "text-box-widened",
+        "text-bold-italic",
+        "photo-keep-aspect",
+        "original-device",
+        "flattened-artwork"
+      ]
+    },
+    {
+      "name": "10b 16 editable text layers: weights, italic, alignment, rotation, colour text and special characters kept",
+      "ok": true,
+      "detail": [
+        ["REGULAR TEXT 2026", 48, 400, "normal", "left", 0],
+        ["BOLD TEXT", 48, 700, "normal", "left", 0],
+        ["ITALIC TEXT", 48, 400, "italic", "left", 0],
+        ["BOLD ITALIC", 48, 400, "italic", "left", 0],
+        ["CENTERED RED", 48, 400, "normal", "center", 0],
+        ["RIGHT ALIGNED", 48, 400, "normal", "right", 0],
+        ["ROTATED 15", 48, 400, "normal", "center", 15],
+        ["SEGOE UI TEST", 48, 400, "normal", "left", 0],
+        ["LINE ONELINE TWO", 48, 400, "normal", "left", 0],
+        ["AUTO", 135, 400, "normal", "center", 0],
+        ["AUTO", 86.5, 400, "normal", "center", 0],
+        ["Tom & Jerry's \"Par", 48, 400, "normal", "left", 0],
+        ["THIS IS A VERY LON", 48, 400, "normal", "left", 0],
+        ["TEXT ABOVE PHOTO", 48, 700, "normal", "center", 0],
+        ["TEXT BELOW ART", 48, 400, "normal", "left", 0],
+        ["DROP SHADOW TEST", 48, 400, "normal", "center", 0]
+      ]
+    },
+    {
+      "name": "10c “Segoe UI” is kept by name; when it is not installed the normal missing-font warning names it",
+      "ok": true,
+      "detail": {
+        "fam": "Segoe UI",
+        "warn": " Font unavailable“Segoe UI” is not installed on this computer. Template Studio is displaying a fallback font; the project keeps asking for “Segoe UI”.Replace withReplace on this layerReplace all uses (1)"
+      }
+    },
+    {
+      "name": "10d no text is missing: every live-text box outside the photo slots shows text (ink ≥ 60 % of dslrBooth’s; ≥ 30 % for Auto size, whose letters are not stretched here)",
+      "ok": true,
+      "detail": [
+        ["DROP SHADOW TEST", "shadow", 0.813, 18.7],
+        ["TEXT BELOW ART", "fixed", 0.981, 5.87],
+        ["TEXT ABOVE PHOTO", "fixed", null, 0],
+        ["THIS IS A VERY LON", "overflow", 0.996, 31.06],
+        ["Tom & Jerry's \"Par", "fixed", 1.115, 6.29],
+        ["AUTO", "auto", 0.684, 42.53],
+        ["AUTO", "auto", 0.404, 53.76],
+        ["LINE ONELINE TWO", "fixed", 1.097, 8.03],
+        ["SEGOE UI TEST", "fallback", 1.302, 64.89],
+        ["ROTATED 15", "fixed", 1.079, 2.3],
+        ["RIGHT ALIGNED", "fixed", 1.109, 9.23],
+        ["CENTERED RED", "fixed", 1.119, 1.69],
+        ["BOLD ITALIC", "fixed", 1.102, 6.13],
+        ["ITALIC TEXT", "fixed", 1.112, 5.8],
+        ["BOLD TEXT", "fixed", 1.058, 6],
+        ["REGULAR TEXT 2026", "fixed", 1.113, 12.73]
+      ]
+    },
+    {
+      "name": "10e fixed-size text matches dslrBooth’s preview inside its box (ink 0.8–1.25 ×, mean < 15)",
+      "ok": true,
+      "detail": [
+        ["TEXT BELOW ART", 0.981, 5.87],
+        ["Tom & Jerry's \"Par", 1.115, 6.29],
+        ["LINE ONELINE TWO", 1.097, 8.03],
+        ["ROTATED 15", 1.079, 2.3],
+        ["RIGHT ALIGNED", 1.109, 9.23],
+        ["CENTERED RED", 1.119, 1.69],
+        ["BOLD ITALIC", 1.102, 6.13],
+        ["ITALIC TEXT", 1.112, 5.8],
+        ["BOLD TEXT", 1.058, 6],
+        ["REGULAR TEXT 2026", 1.113, 12.73]
+      ]
+    },
+    {
+      "name": "10h stacking as in dslrBooth: “TEXT ABOVE PHOTO” over Photo 2, “TEXT BELOW ART” under the picture",
+      "ok": true,
+      "detail": [
+        "REGULAR TEXT 2026",
+        "BOLD TEXT",
+        "ITALIC TEXT",
+        "BOLD ITALIC",
+        "CENTERED RED",
+        "RIGHT ALIGNED",
+        "ROTATED 15",
+        "SEGOE UI TEST",
+        "LINE ONELINE TWO",
+        "AUTO",
+        "AUTO",
+        "Tom & Jerry's \"Party\" 50% / 2026 <ok>",
+        "THIS IS A VERY LONG SINGLE LINE THAT SHOULD SHOW WHETHER DSLRBOOTH WRAPS OR CLIPS THE TEXT",
+        "Photo 1",
+        "Photo 2",
+        "TEXT ABOVE PHOTO",
+        "TEXT BELOW ART",
+        "art-block",
+        "DROP SHADOW TEST"
+      ]
+    },
+    {
+      "name": "10f export back: native 2×6 (1200×3600, print 2 per page), 2 photo slots, no native <Text>",
+      "ok": true,
+      "detail": {
+        "text": 0,
+        "photos": 2,
+        "images": 2,
+        "twoUp": true,
+        "size": ["1200", "3600"]
+      }
+    },
+    {
+      "name": "10g the exported artwork carries every text as drawn in Template Studio, including the edit (ink 0.9–1.1 ×, mean < 3 outside photo slots)",
+      "ok": true,
+      "detail": [
+        ["DROP SHADOW TEST", 56056, 1, 0],
+        ["TEXT BELOW ART", 23240, 1, 0],
+        ["TEXT ABOVE PHOTO", 0, null, 0],
+        ["THIS IS A VERY LON", 22456, 1, 0],
+        ["Tom & Jerry's \"Par", 46200, 1, 0],
+        ["AUTO", 37901, 1, 0],
+        ["AUTO", 151151, 1, 0],
+        ["LINE ONELINE TWO", 25536, 1, 0],
+        ["SEGOE UI TEST", 20224, 1, 0],
+        ["ROTATED 15", 55396, 1, 0],
+        ["RIGHT ALIGNED", 56056, 1, 0],
+        ["CENTERED RED", 56056, 1, 0],
+        ["BOLD ITALIC", 16240, 1, 0],
+        ["ITALIC TEXT", 15792, 1, 0],
+        ["BOLD TEXT", 15232, 1, 0],
+        ["REGULAR TEXT 2026", 27272, 1, 0]
       ]
     }
   ]

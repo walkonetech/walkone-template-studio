@@ -10,7 +10,7 @@ import sys
 import zipfile
 import xml.etree.ElementTree as ET
 
-from PIL import Image, ImageChops, ImageDraw
+from PIL import Image, ImageChops, ImageDraw, ImageStat
 
 W, H, STRIP = 1200, 1800, 600
 BOXES = [(37, 84, 526, 350), (37, 520, 526, 350), (37, 956, 526, 350)]  # left strip, photos 1..3
@@ -243,8 +243,75 @@ def compare(spec):
     print(json.dumps(out))
 
 
+def box_mask(size, a, grow=0):
+    m = Image.new("L", size, 0)
+    ImageDraw.Draw(m).polygon(photo_polygon(float(a["Left"]), float(a["Top"]), float(a["Width"]), float(a["Height"]),
+                                            float(a.get("Rotation", "0") or 0), grow), fill=255)
+    return m
+
+
+def ink(img, mask):
+    """Pixels inside the mask that clearly differ from the box's most common colour (the text's own pixels)."""
+    box = mask.getbbox()
+    if not box:
+        return 0, 0
+    crop, mc = img.crop(box), mask.crop(box)
+    colours = crop.getcolors(crop.width * crop.height)
+    bg = max(colours)[1]
+    px, mp = crop.load(), mc.load()
+    n = hit = 0
+    for y in range(crop.height):
+        for x in range(crop.width):
+            if mp[x, y]:
+                n += 1
+                if sum(abs(px[x, y][i] - bg[i]) for i in range(3)) > 240:
+                    hit += 1
+    return n, hit
+
+
+def textboxes(spec):
+    """Each live <Text> box on its own: dslrBooth's preview.png (or `reference`) vs `render`. Ink = the text's pixels;
+    a missing text shows up as renderInk ≈ 0 however small the box is."""
+    with zipfile.ZipFile(spec["zip"]) as z:
+        root = ET.fromstring(z.read("template.xml").decode("utf-8-sig").encode("utf-8"))
+        ref = Image.open(spec["reference"]) if spec.get("reference") else Image.open(io.BytesIO(z.read("preview.png")))
+        ref.load()
+    a, b = on_white(ref), on_white(Image.open(spec["render"]))
+    if a.size != b.size:
+        print(json.dumps({"error": "size mismatch", "ref": list(a.size), "render": list(b.size)}))
+        return
+    diff = ImageChops.difference(a, b).convert("L")
+    rows = []
+    for e in root.find("Elements"):
+        if e.tag != "Text":
+            continue
+        m = box_mask(a.size, e.attrib, spec.get("grow", 0))
+        if spec.get("maskPhotos"):  # leave out photo slots (an exported template leaves them empty)
+            for p in root.find("Elements"):
+                if p.tag == "Photo":
+                    m = ImageChops.subtract(m, box_mask(a.size, p.attrib, 3))
+        n, ia = ink(a, m)
+        _, ib = ink(b, m)
+        st = ImageStat.Stat(diff, m)
+        rows.append({"text": e.get("Text"), "size": e.get("FontSize"), "pixels": n, "refInk": ia, "renderInk": ib,
+                     "inkRatio": round(ib / ia, 3) if ia else None, "meanDiff": round(st.mean[0], 2)})
+    print(json.dumps({"boxes": rows}))
+
+
+def rebuild(spec):
+    """A template ZIP's pictures composited by ZIndex (photo slots left empty): what dslrBooth draws around the photos."""
+    with zipfile.ZipFile(spec["zip"]) as z:
+        root = ET.fromstring(z.read("template.xml").decode("utf-8-sig").encode("utf-8"))
+        reconstruct(z, root).save(spec["out"])
+    print(json.dumps({"ok": True}))
+
+
 if __name__ == "__main__":
     if sys.argv[1] == "make":
         make(sys.argv[2])
+    elif sys.argv[1] == "textboxes":
+        textboxes(json.loads(sys.argv[2]))
+    elif sys.argv[1] == "rebuild":
+        rebuild(json.loads(sys.argv[2]))
     else:
         compare(json.loads(sys.argv[2]))
