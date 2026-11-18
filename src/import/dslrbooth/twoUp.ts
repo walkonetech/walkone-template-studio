@@ -3,8 +3,14 @@ import type { DslrElementIn } from './template'
 /**
  * Two 2×6 strips side by side on one 4×6 sheet (the structure of the owner's hand-built dslrBooth templates,
  * research/DSLRBOOTH_FIXTURE_ANALYSIS.md §10): every element of the right half repeats one in the left half, offset by
- * half the canvas width, with the same photo number or picture. Copies are placed by hand, so positions match only
- * approximately (a few pixels); the tolerance is 2% of the strip width (24 px on a 1200 px strip).
+ * about half the canvas width, with the same photo number, picture or text.
+ *
+ * Copies are placed by hand, so positions match only approximately. The photo slots are the structural evidence and
+ * are held to a tight tolerance (2 % of the strip width, 24 px on a 1200 px strip). Text and pictures are matched by
+ * their content and may sit further off (5 % of the strip width, 60 px), measured either from an exact half-sheet copy
+ * or from how the photo slots themselves were copied (6C C1 re-test: owner template D's photos were copied 1187 px
+ * across and its two text lines 1165 px; with text held to the photo tolerance the sheet stopped being recognised).
+ * Every element must still find its copy, so two genuinely different strips are never treated as one.
  */
 
 export interface TwoUpDetection {
@@ -44,6 +50,7 @@ export function detectTwoUp(
   // Only a portrait strip makes sense as "two strips side by side".
   if (canvasHeight <= cellWidth) return null
   const tol = Math.max(8, cellWidth * 0.02)
+  const looseTol = Math.max(tol, cellWidth * 0.05)
   const left: DslrElementIn[] = []
   const right: DslrElementIn[] = []
   for (const e of elements) (e.x + e.width / 2 < cellWidth ? left : right).push(e)
@@ -57,31 +64,66 @@ export function detectTwoUp(
       : a.kind === 'text'
         ? a.text?.content === b.text?.content
         : a.imagePath === b.imagePath)
-  const closeness = (l: DslrElementIn, r: DslrElementIn): number =>
+  /** Largest position/size difference between `l` and `r` when `r` should be `l` moved by (dx, dy). */
+  const closeness = (l: DslrElementIn, r: DslrElementIn, dx = cellWidth, dy = 0): number =>
     Math.max(
-      Math.abs(r.x - cellWidth - l.x),
-      Math.abs(r.y - l.y),
+      Math.abs(r.x - dx - l.x),
+      Math.abs(r.y - dy - l.y),
       Math.abs(r.width - l.width),
       Math.abs(r.height - l.height)
     )
 
   const unpaired = new Set(left)
   const pairs: [DslrElementIn, DslrElementIn][] = []
-  for (const r of right) {
-    let best: DslrElementIn | null = null
-    let bestD = Infinity
-    for (const l of unpaired) {
-      if (!sameThing(l, r)) continue
-      const d = closeness(l, r)
-      if (d < bestD) {
-        best = l
-        bestD = d
+  const pairAll = (
+    rights: DslrElementIn[],
+    distance: (l: DslrElementIn, r: DslrElementIn) => number,
+    limit: number
+  ): boolean => {
+    for (const r of rights) {
+      let best: DslrElementIn | null = null
+      let bestD = Infinity
+      for (const l of unpaired) {
+        if (!sameThing(l, r)) continue
+        const d = distance(l, r)
+        if (d < bestD) {
+          best = l
+          bestD = d
+        }
       }
+      if (!best || bestD > limit) return false
+      unpaired.delete(best)
+      pairs.push([best, r])
     }
-    if (!best || bestD > tol) return null
-    unpaired.delete(best)
-    pairs.push([best, r])
+    return true
   }
+  // 1. Photo slots: the structure. Each must be a close copy of a left slot with the same photo number.
+  if (
+    !pairAll(
+      right.filter((e) => e.kind === 'photo'),
+      (l, r) => closeness(l, r),
+      tol
+    )
+  )
+    return null
+  // 2. Text and pictures, matched by content, against an exact copy or the photo slots' own copy offset.
+  const median = (v: number[]): number => {
+    const s = [...v].sort((a, b) => a - b)
+    const m = s.length >> 1
+    return s.length % 2 ? (s[m] as number) : ((s[m - 1] as number) + (s[m] as number)) / 2
+  }
+  const photoDx = median(pairs.map(([l, r]) => r.x - l.x))
+  const photoDy = median(pairs.map(([l, r]) => r.y - l.y))
+  const decoration = (l: DslrElementIn, r: DslrElementIn): number =>
+    Math.min(closeness(l, r), closeness(l, r, photoDx, photoDy))
+  if (
+    !pairAll(
+      right.filter((e) => e.kind !== 'photo'),
+      decoration,
+      looseTol
+    )
+  )
+    return null
 
   const differences: string[] = []
   for (const [l, r] of pairs) {
@@ -93,9 +135,10 @@ export function detectTwoUp(
     if (l.text && r.text) {
       if (l.text.fontName !== r.text.fontName || l.text.fontWeight !== r.text.fontWeight)
         what.push('in a different font')
-      if (l.text.fontSize !== r.text.fontSize) what.push('a different size')
+      // Object.is: an absent size or alignment (NaN, e.g. owner template D) equals an absent one in the copy.
+      if (!Object.is(l.text.fontSize, r.text.fontSize)) what.push('a different size')
       if (l.text.color !== r.text.color) what.push('a different colour')
-      if (l.text.alignment !== r.text.alignment) what.push('aligned differently')
+      if (!Object.is(l.text.alignment, r.text.alignment)) what.push('aligned differently')
     }
     if (what.length > 0) differences.push(`In the right strip, ${label(r)} is ${what.join(', ')}.`)
   }

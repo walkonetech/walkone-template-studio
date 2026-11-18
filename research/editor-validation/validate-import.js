@@ -63,6 +63,9 @@ const fixtures = fs.existsSync(FIXTURES)
   fs.mkdirSync(out, { recursive: true })
   const synthetic = path.join(work, 'Synthetic Two Strips.zip')
   py('make', synthetic)
+  // owner template D's structure (6C C1 re-test): two strips whose text copies sit further off than the photo copies
+  const textStrips = path.join(work, 'Synthetic Text Strips.zip')
+  py('make-text-sheet', textStrips)
   const notTemplate = path.join(work, 'Not a template.zip')
   // a ZIP with only a picture in it
   execFileSync(h.PY, [
@@ -81,7 +84,8 @@ const fixtures = fs.existsSync(FIXTURES)
         synthetic,
         // each fixture twice: imported with the recommended layout, then exactly as it is
         ...fixtures.flatMap((f) => [path.join(FIXTURES, f), path.join(FIXTURES, f)]),
-        LIVE_TEXT
+        LIVE_TEXT,
+        textStrips
       ].join(';'),
       WALKONE_DEV_SAVE_PATH: saved,
       WALKONE_DEV_OPEN_PATH: saved,
@@ -265,7 +269,7 @@ const fixtures = fs.existsSync(FIXTURES)
       '6b reopens with all layers and the import notes',
       r6b.status === 'ok' &&
         reopened.n === 6 &&
-        reopened.v === '7.48-import-2' &&
+        reopened.v === '7.48-import-3' &&
         reopened.src === 'Synthetic Two Strips.zip',
       reopened
     )
@@ -414,6 +418,17 @@ print(json.dumps({'root':[r.get('Width'),r.get('Height'),r.get('print_2_per_page
         `[...document.querySelectorAll('.dslr-import .preflight-item')].map(e=>({code:e.dataset.code, text:e.textContent}))`
       )
       const codes10 = notes.map((n) => n.code)
+      const overflow = notes.find((n) => n.code === 'text-overflow')
+      check(
+        '10i the over-long line (T13) gets its own warning: dslrBooth cuts it off, here it wraps onto about N lines, nothing removed',
+        !!overflow &&
+          /“THIS IS A VERY LONG/.test(overflow.text) &&
+          /cuts the line off at the box edge/.test(overflow.text) &&
+          /about \d+ lines/.test(overflow.text) &&
+          /under photo slot 2/.test(overflow.text) &&
+          /Nothing was removed/.test(overflow.text),
+        overflow && overflow.text
+      )
       check(
         '10 live-text fixture: notes say the text came in editable (Auto size, overflow, shadow, fonts); nothing “missing”, no unknown element',
         menu === 'ok' &&
@@ -555,6 +570,48 @@ print(json.dumps({'text':x.count('<Text'),'photos':x.count('<Photo'),'images':x.
       )
       await clickButton('Done')
       await sleep(300)
+    }
+
+    // ---- 11: two strips with live text copied slightly off (owner template D's structure, 6C C1 re-test)
+    {
+      const menu = await fileMenu('Import dslrBooth template…')
+      await waitFor(c, `!!document.querySelector('.dslr-import')`, 20000)
+      const d11 = await J(c)(`({
+        layouts:[...document.querySelectorAll('.dslr-import-layout')].map(e=>({v:e.dataset.layout, checked:e.querySelector('input').checked, rec:!!e.querySelector('.ui-badge')})),
+        notes:[...document.querySelectorAll('.dslr-import .preflight-item')].map(e=>({code:e.dataset.code, text:e.textContent}))
+      })`)
+      const codes11 = d11.notes.map((n) => n.code)
+      check(
+        '11 two strips whose text copies sit 35 px off (photos 13 px): strip (recommended, selected) or the sheet as is',
+        menu === 'ok' &&
+          JSON.stringify(d11.layouts) ===
+            JSON.stringify([
+              { v: 'strip', checked: true, rec: true },
+              { v: 'as-is', checked: false, rec: false }
+            ]) &&
+          codes11.includes('two-up') &&
+          !codes11.includes('two-up-difference') &&
+          /up to 35 px/.test((d11.notes.find((n) => n.code === 'two-up-offset') || {}).text || ''),
+        { layouts: d11.layouts, codes: codes11 }
+      )
+      await clickButton('Import')
+      await waitFor(c, `!document.querySelector('.dslr-import')`, 30000)
+      await sleep(1000)
+      const p11 = await J(c)(
+        `({print:${S}.project.canvas.print, out:${S}.project.output.layout.kind, texts:${S}.project.layers.filter(l=>l.type==='text').map(l=>[l.content,l.fontFamily,l.x]), photos:${S}.project.layers.filter(l=>l.type==='photo').length})`
+      )
+      check(
+        '11b imported as one 2×6 @600 strip printed two-up: both text lines (Poppins kept) and both photo slots of the left strip',
+        p11.print.width === 2 &&
+          p11.print.height === 6 &&
+          p11.print.dpi === 600 &&
+          p11.out === 'grid' &&
+          p11.photos === 2 &&
+          JSON.stringify(p11.texts.map((t) => t[0]).sort()) ===
+            JSON.stringify(['11.07.2026', 'SAM & ALEX']) &&
+          p11.texts.every((t) => t[1] === 'Poppins' && t[2] < 1200),
+        p11
+      )
     }
   } catch (e) {
     check('script error', false, String(e && e.stack))

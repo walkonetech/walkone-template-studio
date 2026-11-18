@@ -13,7 +13,7 @@ All commands run from `/Users/walkone/Projects/Apps/walkone-template-studio`.
 | Dev mode (hot reload) | `npm run dev` |
 | Throwaway profile (clean recents/recovery; real data untouched) | `npm run build && npx electron out/main/index.js --user-data-dir=$HOME/wts-test` |
 | Reset the throwaway profile | `rm -rf $HOME/wts-test` |
-| Quality gate | `npm run typecheck && npm run lint && npm run format:check && npm run build && npm test` (expect **897** tests) |
+| Quality gate | `npm run typecheck && npm run lint && npm run format:check && npm run build && npm test` (expect **911** tests; 899 + 2 skipped without the private fixtures) |
 
 Tips
 - Use the throwaway profile for destructive tests (crash recovery, quit prompts) so your real autosave sessions stay safe.
@@ -106,6 +106,8 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 ### G4. Import a dslrBooth template (Phase 6D)
 - [ ] Start screen **Import from dslrBooth…** (or File › Import dslrBooth template…): pick one of your real template ZIPs. The dialog shows dslrBooth's preview, size/DPI, photos per session, pictures and notes.
 - [ ] A two-strip 4×6 sheet offers **One 2×6 strip** (recommended) or **the 4×6 sheet as it is**; switching changes the notes.
+- [ ] A two-strip sheet with live text in both strips (e.g. owner template D) still offers **One 2×6 strip** (recommended); the strip import keeps one copy of each text line.
+- [ ] A text wider than its box shows a `text-overflow` warning naming it, about how many lines it wraps to and what it runs over or under; elements sharing one stacking number show a `z-index-tie` note naming them.
 - [ ] Import: the design looks like dslrBooth's preview (Print Preview for strips); locked layers stay locked (unlock in Layers); title shows Modified; Save asks where.
 - [ ] Pick a ZIP that is not a template: a clear "could not be imported" message with Choose another….
 - [ ] Export the imported project for dslrBooth; **on the booth PC (6C)** import that ZIP into dslrBooth and compare.

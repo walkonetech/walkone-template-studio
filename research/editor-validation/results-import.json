@@ -1,8 +1,8 @@
 {
-  "when": "2026-11-18T18:56:07.460Z",
+  "when": "2026-11-18T23:17:45.266Z",
   "fixtures": 5,
-  "pass": 26,
-  "total": 26,
+  "pass": 29,
+  "total": 29,
   "results": [
     {
       "name": "1 start screen offers “Import from dslrBooth…” next to New and Open",
@@ -153,7 +153,7 @@
       "ok": true,
       "detail": {
         "n": 6,
-        "v": "7.48-import-2",
+        "v": "7.48-import-3",
         "src": "Synthetic Two Strips.zip"
       }
     },
@@ -293,6 +293,11 @@
           "rightMean": 3.206
         }
       ]
+    },
+    {
+      "name": "10i the over-long line (T13) gets its own warning: dslrBooth cuts it off, here it wraps onto about N lines, nothing removed",
+      "ok": true,
+      "detail": "warning: Text “THIS IS A VERY LONG SINGLE LINE THAT SHO…” is wider than its 400 px box. dslrBooth cuts the line off at the box edge; Template Studio keeps all of the text and wraps it, here onto about 8 lines running below the box and under photo slot 2, “TEXT BELOW ART”. The guest photo covers the part under the photo slot in the print. Nothing was removed. Widen the box, shorten the text or make it smaller before exporting."
     },
     {
       "name": "10 live-text fixture: notes say the text came in editable (Auto size, overflow, shadow, fonts); nothing “missing”, no unknown element",
@@ -436,6 +441,52 @@
         ["BOLD TEXT", 15232, 1, 0],
         ["REGULAR TEXT 2026", 27272, 1, 0]
       ]
+    },
+    {
+      "name": "11 two strips whose text copies sit 35 px off (photos 13 px): strip (recommended, selected) or the sheet as is",
+      "ok": true,
+      "detail": {
+        "layouts": [
+          {
+            "v": "strip",
+            "checked": true,
+            "rec": true
+          },
+          {
+            "v": "as-is",
+            "checked": false,
+            "rec": false
+          }
+        ],
+        "codes": [
+          "text-align",
+          "text-size",
+          "two-up",
+          "two-up-offset",
+          "live-text",
+          "text-fonts",
+          "original-device",
+          "flattened-artwork"
+        ]
+      }
+    },
+    {
+      "name": "11b imported as one 2×6 @600 strip printed two-up: both text lines (Poppins kept) and both photo slots of the left strip",
+      "ok": true,
+      "detail": {
+        "print": {
+          "width": 2,
+          "height": 6,
+          "unit": "in",
+          "dpi": 600
+        },
+        "out": "grid",
+        "texts": [
+          ["11.07.2026", "Poppins", 230],
+          ["SAM & ALEX", "Poppins", 130]
+        ],
+        "photos": 2
+      }
     }
   ]
 }

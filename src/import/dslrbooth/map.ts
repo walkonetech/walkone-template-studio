@@ -12,7 +12,8 @@ import {
   type JsonValue,
   type Layer,
   type PrintConfiguration,
-  type TemplateProject
+  type TemplateProject,
+  type TextLayer
 } from '@domain'
 import { MAX_PHOTO_NUMBER, PREVIEW_PNG, TEMPLATE_XML } from '../../export/dslrbooth/profile'
 import {
@@ -29,6 +30,7 @@ import {
   estimateWidthEm,
   fitMargin,
   overflowRatio,
+  estimateWrappedLines,
   parseDslrWeight
 } from './textFit'
 import { detectTwoUp, type TwoUpDetection } from './twoUp'
@@ -40,7 +42,7 @@ import { detectTwoUp, type TwoUpDetection } from './twoUp'
  */
 
 export const DSLR_ADAPTER_ID = 'dslrbooth'
-export const DSLR_IMPORTER_VERSION = '7.48-import-2'
+export const DSLR_IMPORTER_VERSION = '7.48-import-3'
 
 export type DslrImportLayout = 'as-is' | 'strip'
 
@@ -168,11 +170,28 @@ const quote = (s: string): string => {
   return `“${one.length > 40 ? `${one.slice(0, 40)}…` : one}”`
 }
 
+/** How an element is named in the import notes. */
+const elementLabel = (e: DslrElementIn): string =>
+  e.kind === 'photo'
+    ? `photo slot ${e.photoNumber}`
+    : e.kind === 'text'
+      ? `text ${quote(e.text?.content ?? e.name)}`
+      : quote(e.name || e.imagePath)
+
+/** Whether two boxes overlap (unrotated boxes: an estimate for the import notes). */
+const boxesOverlap = (
+  a: { x: number; y: number; width: number; height: number },
+  b: { x: number; y: number; width: number; height: number }
+): boolean =>
+  a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height
+
 /** What importing one live `<Text>` produced besides the layer, for the import notes. */
 interface TextNotes {
   auto: boolean
   widened: boolean
   overflow: boolean
+  /** Estimated wrapped lines when `overflow` (Template Studio wraps what dslrBooth cuts off). */
+  overflowLines: number
   lineBreaks: boolean
   stretch: string[]
   unknownWeight: string | null
@@ -201,6 +220,7 @@ function mapText(e: DslrElementIn & { text: NonNullable<DslrElementIn['text']> }
     auto: false,
     widened: false,
     overflow: false,
+    overflowLines: 1,
     lineBreaks: /[\r\n]/.test(t.content),
     stretch: [],
     unknownWeight: null,
@@ -245,8 +265,10 @@ function mapText(e: DslrElementIn & { text: NonNullable<DslrElementIn['text']> }
   if (!notes.lineBreaks && !notes.auto && notes.badSize === null) {
     const estimated = emWidth * fontSize
     const need = Math.ceil(estimated * margin + 2)
-    if (estimated > width * overflowRatio(fontFamily)) notes.overflow = true
-    else if (need > width) {
+    if (estimated > width * overflowRatio(fontFamily)) {
+      notes.overflow = true
+      notes.overflowLines = estimateWrappedLines(t.content, fontWeight >= 600, width / fontSize)
+    } else if (need > width) {
       // Grow the box without moving the text: keep the aligned edge (or the centre) where it was, also when rotated.
       const d = need - width
       const shift = align === 'left' ? d / 2 : align === 'right' ? -d / 2 : 0
@@ -391,7 +413,10 @@ export function mapDslrTemplate(
 
   // ---- stacking order ------------------------------------------------------------------------------------------------
   // dslrBooth draws higher ZIndex in front (fixtures list elements in descending ZIndex). Ties and missing values fall
-  // back to file order (later in the file = further back).
+  // back to file order (later in the file = further back). How dslrBooth orders EQUAL ZIndex values is not confirmed:
+  // no local fixture has a tie, and the one observed case (6C owner template A, text and an opaque full-sheet picture
+  // both at 0) only suggests that dslrBooth may draw the later one in front. The rule is kept (it keeps such text
+  // visible) and each tie is reported by name; see docs/DSLRBOOTH_COMPATIBILITY.md §1d.
   const noZ = usable.filter((e) => !Number.isFinite(e.zIndex)).length
   if (noZ > 0)
     add(
@@ -400,13 +425,6 @@ export function mapDslrTemplate(
       `${plural(noZ, 'element')} had no stacking order (ZIndex); ${noZ === 1 ? 'it was' : 'they were'} placed at the back.`
     )
   const zKey = (e: DslrElementIn): number => (Number.isFinite(e.zIndex) ? e.zIndex : -Infinity)
-  const zs = usable.map(zKey).filter(Number.isFinite)
-  if (new Set(zs).size !== zs.length)
-    add(
-      'info',
-      'z-index-tie',
-      'Some elements share a stacking position; file order decided which is in front.'
-    )
   const stacked = [...usable].sort((a, b) => zKey(a) - zKey(b) || b.index - a.index)
 
   // ---- layout (two strips side by side?) ------------------------------------------------------------------------------
@@ -430,6 +448,29 @@ export function mapDslrTemplate(
     dpi: t.dpi
   }
   const kept = asStrip && two ? stacked.filter((e) => two.left.includes(e)) : stacked
+
+  // Equal ZIndex values among the kept elements: say which, which one Template Studio put in front, and whether they
+  // overlap (only then can the choice change the picture).
+  const tied = new Map<number, DslrElementIn[]>()
+  for (const e of kept)
+    if (Number.isFinite(e.zIndex)) tied.set(e.zIndex, [...(tied.get(e.zIndex) ?? []), e])
+  for (const [z, group] of tied) {
+    if (group.length < 2) continue
+    const frontFirst = [...group].sort((a, b) => a.index - b.index)
+    const overlap = frontFirst.some((a, i) =>
+      frontFirst.slice(i + 1).some((b) => boxesOverlap(a, b))
+    )
+    const names = frontFirst.map(elementLabel)
+    add(
+      overlap ? 'warning' : 'info',
+      'z-index-tie',
+      `${names.length} elements share the same stacking number (ZIndex ${z}): ${names.join(', ')}. ` +
+        `dslrBooth’s order for equal numbers is not confirmed; Template Studio puts the one earlier in the file in front, so ${names[0]} is in front. ` +
+        (overlap
+          ? 'They overlap, so the order matters: compare with dslrBooth’s preview and reorder them in the Layers panel if needed.'
+          : 'They do not overlap, so the order does not change the picture.')
+    )
+  }
   if (asStrip && two) {
     for (const e of two.right) keep('right-strip-copy', e)
     add(
@@ -527,7 +568,7 @@ export function mapDslrTemplate(
   let photoKeepAspect = 0
   let locked = 0
   let hidden = 0
-  const texts: { name: string; notes: TextNotes; fontFamily: string }[] = []
+  const texts: { name: string; notes: TextNotes; fontFamily: string; layer: TextLayer }[] = []
   kept.forEach((e, z) => {
     const id = makeId()
     const base = {
@@ -556,7 +597,12 @@ export function mapDslrTemplate(
     if (e.kind === 'text' && e.text) {
       const m = mapText({ ...e, text: e.text })
       layer = { ...base, ...m.box, ...m.fields } as Layer
-      texts.push({ name: base.name, notes: m.notes, fontFamily: m.fields.fontFamily as string })
+      texts.push({
+        name: base.name,
+        notes: m.notes,
+        fontFamily: m.fields.fontFamily as string,
+        layer: layer as TextLayer
+      })
     } else if (e.kind === 'photo') {
       if (e.keepAspect === false) photoKeepAspect++
       // dslrBooth borders grow OUTWARD from the photo (runtime findings); Template Studio frames sit inside the slot
@@ -656,13 +702,44 @@ export function mapDslrTemplate(
     (n, list) =>
       `${plural(n, 'text')} (${list}) used dslrBooth’s “Auto” size, which stretches the letters to fill the whole box. Template Studio cannot stretch letters, so ${n === 1 ? 'it was' : 'each was'} given the largest normal size that fits ${n === 1 ? 'its' : 'their'} box. Compare with dslrBooth’s preview and adjust the size if needed.`
   )
-  textNote(
-    'warning',
-    'text-overflow',
-    (n) => n.overflow,
-    (n, list) =>
-      `${plural(n, 'text')} (${list}) ${n === 1 ? 'is' : 'are'} wider than ${n === 1 ? 'its' : 'their'} box. dslrBooth cuts such text off at the box edge; Template Studio wraps it onto more lines instead, below the box. Shorten the text or widen the box.`
-  )
+  // A line wider than its box: dslrBooth cuts it off at the box edge (observed, fixture T13); Template Studio cannot
+  // (text always wraps; a no-wrap/clip mode would need a TextLayer field, proposed in ADR-052, OPEN) and keeps all of it. Say
+  // per text how far the wrapped lines reach and what they run into, so the operator fixes it before exporting.
+  for (const r of texts.filter((x) => x.notes.overflow)) {
+    const l = r.layer
+    const lines = r.notes.overflowLines
+    const reach = { x: l.x, y: l.y, width: l.width, height: lines * l.fontSize * l.lineHeight }
+    const hit = project.layers.filter(
+      (o) =>
+        o.id !== l.id &&
+        o.visible &&
+        boxesOverlap(
+          { ...reach, y: l.y + l.height, height: Math.max(0, reach.height - l.height) },
+          o
+        )
+    )
+    const name = (o: Layer): string =>
+      o.type === 'photo'
+        ? `photo slot ${o.photoNumber}`
+        : quote(o.type === 'text' ? o.content : o.name)
+    const over = hit.filter((o) => o.zIndex < l.zIndex).map(name)
+    const under = hit.filter((o) => o.zIndex > l.zIndex).map(name)
+    const runs = [
+      over.length > 0 ? `over ${over.join(', ')}` : '',
+      under.length > 0 ? `under ${under.join(', ')}` : ''
+    ].filter(Boolean)
+    const covered = hit.some((o) => o.type === 'photo' && o.zIndex > l.zIndex)
+    add(
+      'warning',
+      'text-overflow',
+      `Text ${quote(r.name)} is wider than its ${Math.round(l.width)} px box. dslrBooth cuts the line off at the box edge; Template Studio keeps all of the text and wraps it` +
+        (lines > 1
+          ? `, here onto about ${lines} lines running below the box${runs.length > 0 ? ` and ${runs.join(' and ')}` : ''}.`
+          : '.') +
+        (covered ? ' The guest photo covers the part under the photo slot in the print.' : '') +
+        ' Nothing was removed. Widen the box, shorten the text or make it smaller before exporting.'
+    )
+  }
   textNote(
     'info',
     'text-box-widened',

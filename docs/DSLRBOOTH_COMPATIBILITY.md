@@ -30,6 +30,9 @@ Reported by the project owner (treated as **Confirmed by owner**, not independen
   - `FontSize="0"` = **Auto**: the text is stretched, unevenly, to fill the whole box (capitals about 0.65 × the box height; width = box width).
   - Enter inserts nothing; a pasted second line is dropped. A line wider than its box is **cut off at the box edge** (no wrap, no shrink).
   - Stacking follows layer order (`ZIndex`), including text above a photo slot and below a picture. Special characters are kept, XML-escaped.
+- **Windows re-test of the C1 import (`5f7c26a`, 2026-11-18):** the synthetic fixture round-trips Template Studio → dslrBooth → live session with all 16 texts present, placed within a few pixels and editable in Template Studio. Also observed:
+  - Owner template D (two strips with two live text lines) stores **no `FontSize` or `TextHorizontalAlignment`** on its text, and its text copies sit 1165 px across while its photo copies sit 1187 px across.
+  - Owner template A has a live text and an opaque full-canvas picture **both at `ZIndex` 0**. dslrBooth's `preview.png` **appears not to show the text** (no text strokes against a text-free rebuild): suggestive, not conclusive, and a single case. dslrBooth's rule for equal ZIndex values is therefore **still unknown**.
 - Printing: the `_2x` sheet goes to the DNP as one borderless page; the 2-inch cut is the driver's `CUT_2INCH` setting in the print settings dslrBooth saved, not a template value.
 
 ## 1c. Exporter (Phase 6B, ADR-047)
@@ -59,8 +62,10 @@ Root values written: `Dimensions="0"` (or an imported template's own editor unit
 | `<Photo Thickness>0 StrokeColor>` | inside frame, slot grown by Thickness (borders grow outward) | Assumption (never seen non-zero) |
 | `<Image ImagePath KeepAspect>` | image layer + asset; True → Fit, False → Stretch | runtime findings |
 | `ZIndex` | stacking order (higher in front) | LIKELY (fixtures) |
+| equal `ZIndex` values | earlier in the file = in front (deterministic); a `z-index-tie` note names the tied elements, says which one is in front and that dslrBooth's order for ties is **not confirmed**; a warning when they overlap, info when they do not | UNKNOWN (no local fixture has a tie; one Windows observation, owner template A, only *suggests* dslrBooth may draw the later one in front) |
 | `print_2_per_page="True"` (portrait) | two-up 4×6 output | runtime findings |
 | two strips repeated on a 4×6 sheet | one 2×6 strip printed two-up (default when the copies match) or the sheet as is | design choice (ADR-048) |
+| … copy matching | every element must have a copy: photo slots (same number) within 2 % of the strip width of an exact half-sheet copy (24 px on a 1200 px strip); text (same wording) and pictures (same file) within 5 % (60 px) of an exact copy **or** of the photo slots' own copy offset; absent text values (size, alignment) compare equal | design choice (6C C1 re-test: owner template D's photos sit 1187 px apart, its text copies 1165 px) |
 | shadows, unknown attributes/elements, `Id`, `Dimensions`, `IsLegacy`, … | kept verbatim in `sourceCompatibility.dslrbooth` + report | preserved; `Dimensions` (editor unit) written back on export (6C C2) |
 | live `<Text>` `Text` | editable text layer, content exactly as stored | OBSERVED (synthetic fixture, 6C C1, ADR-051) |
 | `FontName` | font family, kept by name even when not installed (normal missing-font warning) | OBSERVED |
@@ -72,14 +77,14 @@ Root values written: `Dimensions="0"` (or an imported template's own editor unit
 | `FontColor` | text colour, alpha kept | OBSERVED (no alpha in dslrBooth's picker) |
 | text box, `Rotation`, `Opacity`, `IsVisible`, `IsLocked`, `ZIndex` | same as other layers; one line vertically centred in the box (line height = box height ÷ size) | OBSERVED (box, rotation, stacking) |
 | a box dslrBooth fitted to its line | up to a few % wider (anchored by alignment, so the text does not move) so the line does not wrap here | design choice |
-| a line much wider than its box | box and text kept; **wraps** onto more lines here (dslrBooth cuts it off), `text-overflow` warning | known difference (no schema change) |
+| a line much wider than its box | box and all text kept; **wraps** onto more lines here (dslrBooth cuts it off at the box edge). One `text-overflow` warning per text: box width, about how many lines it wraps to, which layers those lines run over or under, whether a photo covers part of it, "Nothing was removed", and what to do (widen the box, shorten the text or make it smaller) | known difference; clipping needs a TextLayer field (proposed, ADR-052 OPEN) |
 | Drop Shadow | not drawn; `shadow` warning; settings kept in the notes | unsupported |
 | line breaks (`&#10;`, never typed by dslrBooth) | kept; `text-line-breaks` warning | Unknown how dslrBooth draws them |
 | export back | drawn into the artwork PNGs like all Template Studio text (6B policy); **no native `<Text>`** | design choice (ADR-047, ADR-051) |
 | `OriginalDevice` | dropped (privacy), reported | — |
 | `preview.png` | shown in the import dialog only | — |
 
-Measured (validate-import.js, built app): the live-text fixture's 16 texts all import; every text box outside the photo slots shows its text, fixed-size Arial text matches dslrBooth's `preview.png` inside its box (ink 0.98–1.12 ×, mean 1.7–12.7 of 255); the exported artwork carries every text, including an edit. Every client fixture imported as is renders as close to its own `preview.png` (outside photo boxes) as a direct Python rebuild of the XML does (mean difference 1.5–4.3 of 255; the residue is dslrBooth's own resampling); every photo slot exports back to its original box.
+Measured (validate-import.js, built app): the live-text fixture's 16 texts all import (step 10; 10i checks the specific overflow warning); a two-strip sheet with owner template D's structure (text copies 35 px, photo copies 13 px off an exact copy) is offered as one strip (recommended) or as is, and imports as one 2×6 strip with both text lines (step 11); every text box outside the photo slots shows its text, fixed-size Arial text matches dslrBooth's `preview.png` inside its box (ink 0.98–1.12 ×, mean 1.7–12.7 of 255); the exported artwork carries every text, including an edit. Every client fixture imported as is renders as close to its own `preview.png` (outside photo boxes) as a direct Python rebuild of the XML does (mean difference 1.5–4.3 of 255; the residue is dslrBooth's own resampling); every photo slot exports back to its original box.
 
 ## 1a. Observed in the five current fixtures (OBSERVED)
 - Flat ZIP, deflate; always `template.xml` + `preview.png` + referenced PNGs; no folders; no unreferenced files.

@@ -132,3 +132,32 @@ export function parseDslrWeight(raw: string): DslrWeight {
   }
   return { weight: Math.min(900, weight), italic, unsupported, unknown }
 }
+
+/**
+ * About how many lines Template Studio's word wrap makes of `text` in a box `widthEm` wide (greedy, like Konva's
+ * `wrap: 'word'`; a word longer than the line is split). An estimate for the import notes only.
+ */
+export function estimateWrappedLines(text: string, bold: boolean, widthEm: number): number {
+  if (!(widthEm > 0)) return 1
+  const space = estimateWidthEm(' ', bold)
+  let lines = 0
+  for (const para of text.split('\n')) {
+    lines++
+    let used = 0
+    for (const word of para.split(' ')) {
+      let w = estimateWidthEm(word, bold)
+      const need = used === 0 ? w : used + space + w
+      if (need <= widthEm) {
+        used = need
+        continue
+      }
+      if (used > 0) lines++
+      while (w > widthEm) {
+        lines++
+        w -= widthEm
+      }
+      used = w
+    }
+  }
+  return lines
+}

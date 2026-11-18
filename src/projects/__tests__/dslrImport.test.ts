@@ -216,7 +216,7 @@ describe('handlers: choose → commit', () => {
     const saved = await env.service.saveAs(r.value.sessionId, r.value.project, target)
     expect(saved.dirty).toBe(false)
     const reopened = await env.service.openFile(target)
-    expect(reopened.project.sourceCompatibility?.dslrbooth?.adapterVersion).toBe('7.48-import-2')
+    expect(reopened.project.sourceCompatibility?.dslrbooth?.adapterVersion).toBe('7.48-import-3')
     expect(reopened.project.layers).toHaveLength(2)
   })
 })

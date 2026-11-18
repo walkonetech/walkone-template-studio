@@ -61,7 +61,7 @@ Observed at runtime: dslrBooth's built-in web server listens on the local networ
 ## Defects and Template Studio fixes
 | Id | Issue | Status (2026-11-17) |
 |---|---|---|
-| C1 | dslrBooth live `<Text>` dropped on import, lost on round trip; the import note wrongly said text was "already flattened" | **Implemented (2026-11-18), pending the Windows/dslrBooth round-trip re-test:** live text imports as editable text layers (ADR-051), built against the synthetic fixture below; the import suite checks each text box on its own |
+| C1 | dslrBooth live `<Text>` dropped on import, lost on round trip; the import note wrongly said text was "already flattened" | **Implemented — pending Windows revalidation.** Editable import (ADR-051) validated on Windows at `5f7c26a` as **partial** (no text lost; three follow-ups); the follow-ups were addressed in the stabilization pass (2026-11-18, below): two-strip regression fixed, ZIndex ties reported by name (rule unchanged), over-long lines warned specifically (clipping proposed, ADR-052 OPEN) |
 | C2 | `Dimensions` 1 (inches) came back as 0 (pixels) | **Fixed**: the imported unit is kept on export |
 | C3 | Re-import always creates a copy | Workflow documented (USER_WORKFLOWS) |
 | C4 | No `preview.png` gives a blank thumbnail | No change: Template Studio always writes one |
@@ -79,7 +79,8 @@ Observed at runtime: dslrBooth's built-in web server listens on the local networ
 2. The one manual `/print` check (Test 18).
 3. The production booth PC's own print settings (this run was on the research laptop).
 4. ~~One real dslrBooth template with made-up live text~~: supplied 2026-11-18 (below).
-5. Craft Anything: the C1 round-trip re-test in dslrBooth (synthetic fixture and owner templates A and D).
+5. Craft Anything: re-test the C1 stabilization commit on Windows (owner template D's strip choice, A's tie note, the fixture's overflow note; narrow steps in SESSION_STARTER / the final report).
+6. Owner: approve or decline ADR-052 (clip over-long imported text to its box; needs a schema change).
 
 ## Windows re-test of `cfcc9cf` (2026-11-17)
 Craft Anything re-ran the checks on the same laptop: the post-6C fixes are **validated on Windows**. One suite portability gap remained: 4C's "Cmd-click extends selection" step sent a Meta-click; Windows correctly uses Ctrl-click (Ctrl-click selected two layers, Meta-click correctly did not), and a follow-on multi-selection check failed with it. The suite now uses the platform modifier (`h.MOD_BIT`). W3 was clarified: Electron 44 has no install step, `npm ci` completes, and the binary downloads on first use.
@@ -98,3 +99,16 @@ Craft Anything made a synthetic template **only with dslrBooth 7.48's visible ed
 - Stacking follows the layer order: text over a photo slot and under a picture as placed. Special characters kept, XML-escaped.
 
 **Template Studio on the Mac (built app, `validate-import.js` step 10):** all 16 texts import as editable layers; every text box outside the photo slots shows its text; fixed-size Arial text matches dslrBooth's `preview.png` inside its box (ink 0.98–1.12 ×, mean difference 1.7–12.7 of 255); Segoe UI (not on the Mac) keeps its name and shows the normal missing-font warning; an edited text appears in the exported artwork and the export has no native `<Text>`. Known, reported differences: Auto size (uniform letters), the over-long line wraps instead of being cut off, the drop shadow is not drawn.
+
+## C1 Windows re-test of `5f7c26a` and stabilization (2026-11-18)
+**Observed on Windows by Craft Anything** (same laptop, dslrBooth 7.48 trial; owner templates only in a private temp folder, compared offline; evidence stays on the laptop):
+- Gates: `npm ci`, build pass; `npm test` 885 passed, 2 skipped (the private client fixtures are not on the laptop; 885 + 12 = 897); `validate-import.js` 22/22 (+4 private-fixture checks = 26). Step 10 passes in full; Segoe UI is installed there and matches dslrBooth's preview and session exactly.
+- Synthetic fixture, real UI: 16 editable text layers; T1 retyped; exported 2×6 has 0 native `<Text>`, every text in the artwork; dslrBooth imported it ("… Copy1", Print 2 per page on) with all 16 texts visible; a live session (print off) kept all text, fixed-size texts within 0–5 px of the original `_1x`. Auto size judged **acceptable**; Bold Italic → Italic matches dslrBooth; rotation, alignment and stacking match.
+- **Partial:** (1) owner template D was no longer offered "one strip (recommended)" / "as is"; (2) owner template A has a text and an opaque full-canvas picture both at ZIndex 0: Template Studio shows the text, dslrBooth's preview appears not to (suggestive, not conclusive); (3) the over-long line (T13) wraps into about 8 lines, overlaps "TEXT BELOW ART" and its last words go under Photo 2, where the camera photo covers them in the print.
+- Owner templates: no text lost (A 1 text, D 2 texts). D's texts use Poppins (not installed there; stand-in font) and store no size or alignment. Whole-box pixel percentages (A 35.5 %, D 25.9 %) are not used as the acceptance measure: A's text may be hidden by stacking in dslrBooth and D's font differs.
+
+**Mac-side stabilization (this pass; code, not vendor findings):**
+1. **Two-strip regression, root cause (verified in code with D's measured structure):** C1 made text a real element, so text now takes part in pairing the two strips. Two things then failed: the text copies (35 px off an exact copy) were held to the photo-slot tolerance (24 px on a 1200 px strip), and D's absent `FontSize`/`TextHorizontalAlignment` are read as "not a number", which never equals itself, so the copies were reported as different. **Fix:** photo slots pair first with the tight tolerance (unchanged); text and pictures pair by content within 5 % of the strip width of an exact copy or of the photo slots' own copy offset; absent values compare equal. Every element must still find a copy (different wording or a text moved 100 px → not two strips). Test: `map.test.ts` "two strips with live text" (D's structure) and built-app step 11.
+2. **ZIndex ties:** no local fixture has a tie and the only evidence is the single suggestive observation on A, so **the rule is unchanged** (earlier in the file = in front; it keeps such text visible). The `z-index-tie` note now names the tied elements and which one is in front, says dslrBooth's order is not confirmed, and is a **warning when they overlap**. No parity is claimed.
+3. **Long lines:** clipping needs a persisted text setting (schema change), proposed as **ADR-052 (OPEN)**. Until then the text still wraps and nothing is removed; the `text-overflow` warning is now per text and specific (box width, about how many lines, what the lines run over/under, whether a photo covers part, how to fix). Fixture T13: "about 8 lines … under photo slot 2, “TEXT BELOW ART”", matching the Windows observation.
+- Mac results: `npm test` 911 passed; `validate-import.js` 29/29 (new 10i, 11, 11b); `validate-6b.js` 26/26. Importer version `7.48-import-3`.

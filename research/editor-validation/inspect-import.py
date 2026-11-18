@@ -306,9 +306,58 @@ def rebuild(spec):
     print(json.dumps({"ok": True}))
 
 
+def make_text_sheet(path):
+    """The structure of owner template D (6C C1 re-test; no client content): a 4x6 @600 sheet with two 2x6 strips
+    whose photo slots were copied 1187 px across and whose two live text lines (Poppins, no size or alignment stored)
+    were copied 1165 px across."""
+    frame = Image.new("RGBA", (1200, 3600), (0, 0, 0, 0))
+    ImageDraw.Draw(frame).rectangle([0, 3000, 1199, 3599], fill=(240, 236, 228, 255))
+    shadow = dict(Opacity="100", ShadowEnabled="False", ShadowColor="#FF000000", ShadowDepth="10",
+                  ShadowRadius="20", ShadowDirection="-45")
+    els = []  # front to back, as dslrBooth writes them (descending ZIndex)
+    z = [9]
+
+    def add(tag, a):
+        els.append((tag, dict(**a, ZIndex=str(z[0]))))
+        z[0] -= 1
+
+    def box(left, top, w, h):
+        return dict(Width=str(w), Height=str(h), Top=str(top), Left=str(left))
+
+    for dx, nm in ((1200, "frame Copy"), (0, "frame")):
+        add("Image", dict(Name=nm, **shadow, **box(dx, 0, 1200, 3600), ImagePath="frame.png", KeepAspect="True",
+                          Thickness="0", StrokeColor="#FF000000"))
+    for txt, top, left, w, h in (("SAM & ALEX", 3080, 130, 940, 150), ("11.07.2026", 3260, 230, 740, 110)):
+        for dx in (0, 1165):
+            add("Text", dict(Name=txt, **shadow, Text=txt, FontName="Poppins", FontWeight="Regular",
+                             **box(left + dx, top, w, h), FontColor="#FF202020", KeepAspect="False",
+                             IsBold="False", IsItalic="False"))
+    for n, top in ((1, 160), (2, 1100)):
+        for dx in (0, 1187):
+            add("Photo", dict(Name=f"Photo {n}{' Copy' if dx else ''}", **shadow, **box(110 + dx, top, 980, 860),
+                              ImagePath="", KeepAspect="True", Thickness="0", StrokeColor="#FF000000",
+                              PhotoNumber=str(n)))
+    root = [("Name", "Synthetic Text Strips"), ("Width", "2400"), ("Height", "3600"), ("Dimensions", "0"),
+            ("Resolution", "600"), ("BackgroundColor", "#FFFFFFFF"), ("print_2_per_page", "False"),
+            ("PrintToSecondaryPrinter", "False"), ("LastSavedDate", "11/18/2026 08:00:00"),
+            ("Id", "SyntheticTextStripsAbcdef"), ("IsLegacy", "True"), ("OriginalDevice", "TEST-PC")]
+    esc = lambda v: v.replace("&", "&amp;").replace('"', "&quot;").replace("<", "&lt;")
+    lines = ['<?xml version="1.0" encoding="UTF-8"?>',
+             "<Template " + " ".join(f'{k}="{esc(v)}"' for k, v in root) + ">", "  <Elements>"]
+    for tag, a in els:
+        lines.append(f"    <{tag} " + " ".join(f'{k}="{esc(v)}"' for k, v in a.items()) + " />")
+    lines += ["  </Elements>", "</Template>"]
+    with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as z_:
+        z_.writestr("template.xml", ("\ufeff" + "\r\n".join(lines)).encode("utf-8"))
+        z_.writestr("frame.png", png_bytes(frame))
+    print(json.dumps({"ok": True, "elements": len(els)}))
+
+
 if __name__ == "__main__":
     if sys.argv[1] == "make":
         make(sys.argv[2])
+    elif sys.argv[1] == "make-text-sheet":
+        make_text_sheet(sys.argv[2])
     elif sys.argv[1] == "textboxes":
         textboxes(json.loads(sys.argv[2]))
     elif sys.argv[1] == "rebuild":

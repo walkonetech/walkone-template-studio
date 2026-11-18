@@ -51,6 +51,17 @@ const slot = (
   more: Attrs = {}
 ): string =>
   `<Photo ${attrs({ Name: `Photo ${n}`, ...SHADOW, Width: box[2], Height: box[3], Top: box[1], Left: box[0], ImagePath: '', KeepAspect: 'True', Thickness: 0, StrokeColor: '#FF000000', PhotoNumber: n, ZIndex: z, ...more })} />`
+// Edge cases around live <Text> (6C C1). Attribute set and defaults as in dslrBooth 7.48's own export
+// (tests/fixtures/dslrbooth/synthetic/live-text-fixture.zip, covered end to end in projects/__tests__).
+const text = (
+  content: string,
+  box: [number, number, number, number],
+  z: number,
+  more: Attrs = {}
+): string =>
+  `<Text ${attrs({ Name: content, ...SHADOW, Text: content, FontName: 'Arial', FontWeight: 'Regular', Width: box[2], Height: box[3], Top: box[1], Left: box[0], FontColor: '#FF000000', KeepAspect: 'False', IsBold: 'False', IsItalic: 'False', FontSize: 48, TextHorizontalAlignment: 0, ZIndex: z, ...more })} />`
+const textLayers = (r: ReturnType<typeof run>): TextLayer[] =>
+  r.project.layers.filter((l): l is TextLayer => l.type === 'text')
 const xml = (elements: string[], root: Attrs = {}): Uint8Array =>
   new TextEncoder().encode(
     `\ufeff<?xml version="1.0" encoding="UTF-8"?>\r\n<Template ${attrs({ ...ROOT, ...root })}>\r\n  <Elements>\r\n    ${elements.join('\r\n    ')}\r\n  </Elements>\r\n</Template>`
@@ -163,7 +174,7 @@ describe('mapDslrTemplate: canvas, layers, stacking', () => {
 
   it('records the template’s own values for the dslrBooth adapter, without the machine name', () => {
     const c = r.project.sourceCompatibility?.dslrbooth
-    expect(c?.adapterVersion).toBe('7.48-import-2')
+    expect(c?.adapterVersion).toBe('7.48-import-3')
     expect(c?.importedAt).toBe(T0)
     const root = (c?.project as { rootAttributes: Record<string, string> }).rootAttributes
     expect(root.Id).toBe('abcdefghijklmnopqrstuvwxy')
@@ -234,18 +245,6 @@ describe('mapDslrTemplate: problems are reported, never silently dropped', () =>
     expect(c?.layers?.[photoId]).toEqual({ element: 'Photo', attributes: { Corner: '12' } })
     valid(r.project)
   })
-
-  // Edge cases around live <Text> (6C C1). Attribute set and defaults as in dslrBooth 7.48's own export
-  // (tests/fixtures/dslrbooth/synthetic/live-text-fixture.zip, covered end to end in projects/__tests__).
-  const text = (
-    content: string,
-    box: [number, number, number, number],
-    z: number,
-    more: Attrs = {}
-  ): string =>
-    `<Text ${attrs({ Name: content, ...SHADOW, Text: content, FontName: 'Arial', FontWeight: 'Regular', Width: box[2], Height: box[3], Top: box[1], Left: box[0], FontColor: '#FF000000', KeepAspect: 'False', IsBold: 'False', IsItalic: 'False', FontSize: 48, TextHorizontalAlignment: 0, ZIndex: z, ...more })} />`
-  const textLayers = (r: ReturnType<typeof run>): TextLayer[] =>
-    r.project.layers.filter((l): l is TextLayer => l.type === 'text')
 
   it('live <Text> becomes an editable text layer; no “will be missing” warning (6C C1)', () => {
     const r = run(xml([slot(1, [0, 0, 600, 400], 0), text('Sam & Alex', [100, 500, 600, 55], 1)]))
@@ -549,6 +548,229 @@ describe('two strips side by side', () => {
     expect(detectTwoUp([el(0), el(700)], 1200, 1800)).toBeNull() // 100 px off (tolerance 24)
     expect(detectTwoUp([el(0), el(600)], 1200, 600)).toBeNull() // landscape: halves are not strips
     expect(detectTwoUp([el(0), el(610)], 1200, 1800)).not.toBeNull()
+  })
+})
+
+describe('two strips with live text (6C C1 re-test: owner template D)', () => {
+  // The structure of owner template D as measured on Windows (no client content): a 4×6 @600 sheet, two 2×6 strips; the
+  // right photo slots were copied 1187 px across, the two text lines (Poppins, no alignment or size stored) 1165 px.
+  const D = { Width: '2400', Height: '3600', Resolution: '600' }
+  const poppins = { FontName: 'Poppins', FontWeight: 'Regular' }
+  const noStyle = (t: string): string =>
+    t.replace(/ FontSize="[^"]*"/, '').replace(/ TextHorizontalAlignment="[^"]*"/, '')
+  const sheetD = (
+    opts: { textDx?: number; photoDx?: number; rightLine?: string } = {}
+  ): Uint8Array => {
+    const tdx = opts.textDx ?? 1165
+    const pdx = opts.photoDx ?? 1187
+    return xml(
+      [
+        image('frame Copy', 'frame.png', [1200, 0, 1200, 3600], 9),
+        image('frame', 'frame.png', [0, 0, 1200, 3600], 8),
+        noStyle(text('SAM & ALEX', [130, 3080, 940, 150], 7, poppins)),
+        noStyle(text('SAM & ALEX', [130 + tdx, 3080, 940, 150], 6, poppins)),
+        noStyle(text('11.07.2026', [230, 3260, 740, 110], 5, poppins)),
+        noStyle(text(opts.rightLine ?? '11.07.2026', [230 + tdx, 3260, 740, 110], 4, poppins)),
+        slot(1, [110, 160, 980, 860], 3),
+        slot(1, [110 + pdx, 160, 980, 860], 2, { Name: 'Photo 1 Copy' }),
+        slot(2, [110, 1100, 980, 860], 1),
+        slot(2, [110 + pdx, 1100, 980, 860], 0, { Name: 'Photo 2 Copy' })
+      ],
+      D
+    )
+  }
+  const files = { 'frame.png': facts('f', 1200, 3600) }
+
+  it('is offered as one strip (recommended) again, with the text copies 35 px off an exact copy', () => {
+    const r = run(sheetD(), files)
+    expect(r.twoUp?.differences).toEqual([])
+    expect(r.recommendedLayout).toBe('strip')
+    expect(r.layout).toBe('strip')
+    expect(r.project.canvas.print).toEqual({ width: 2, height: 6, unit: 'in', dpi: 600 })
+    // one copy of each text and slot is kept, nothing is lost: the right copies go to the import notes
+    expect(textLayers(r).map((t) => t.content)).toEqual(['11.07.2026', 'SAM & ALEX'])
+    expect(r.project.layers.filter((l) => l.type === 'photo')).toHaveLength(2)
+    const unmapped = JSON.stringify(r.project.sourceCompatibility?.dslrbooth?.unmapped)
+    expect(unmapped.match(/right-strip-copy/g)).toHaveLength(5)
+    expect(r.items.find((i) => i.code === 'two-up-offset')?.message).toMatch(/up to 35 px/)
+    valid(r.project)
+  })
+
+  it('can still be kept as the whole sheet, with every text', () => {
+    const r = run(sheetD(), files, { layout: 'as-is' })
+    expect(textLayers(r)).toHaveLength(4)
+    expect(codes(r)).toContain('two-up-sheet')
+  })
+
+  it('text copies matching the photo copy offset, or an exact copy, are also accepted', () => {
+    expect(run(sheetD({ textDx: 1187 }), files).recommendedLayout).toBe('strip')
+    expect(run(sheetD({ textDx: 1200, photoDx: 1200 }), files).recommendedLayout).toBe('strip')
+  })
+
+  it('genuinely different strips are not collapsed: other wording, or text moved well away', () => {
+    const other = run(sheetD({ rightLine: '12.07.2026' }), files)
+    expect(other.twoUp).toBeNull()
+    expect(other.recommendedLayout).toBe('as-is')
+    expect(textLayers(other)).toHaveLength(4)
+    expect(() => run(sheetD({ rightLine: '12.07.2026' }), files, { layout: 'strip' })).toThrow(
+      DslrImportError
+    )
+    expect(run(sheetD({ textDx: 1100 }), files).twoUp).toBeNull() // 100 px off both offsets (text limit 60)
+  })
+
+  it('the photo slots stay the strict evidence: slots 30 px off are not a copy, even with matching text', () => {
+    expect(run(sheetD({ photoDx: 1230, textDx: 1230 }), files).twoUp).toBeNull()
+  })
+
+  it('a different text style in one strip is listed and makes "as is" the default', () => {
+    const r = run(
+      xml(
+        [
+          slot(1, [110, 160, 980, 860], 3),
+          slot(1, [1297, 160, 980, 860], 2),
+          text('SAM & ALEX', [130, 3080, 940, 150], 1, poppins),
+          text('SAM & ALEX', [1295, 3080, 940, 150], 0, { ...poppins, FontColor: '#FFE01010' })
+        ],
+        D
+      )
+    )
+    expect(r.recommendedLayout).toBe('as-is')
+    expect(r.twoUp?.differences[0]).toMatch(/text “SAM & ALEX” is a different colour/)
+  })
+
+  it('detection without text is unchanged (photos only, strict)', () => {
+    const base = {
+      kind: 'photo',
+      index: 0,
+      name: '',
+      rotation: 0,
+      opacity: 1,
+      visible: true,
+      locked: false,
+      zIndex: 0,
+      photoNumber: 1,
+      imagePath: '',
+      keepAspect: true,
+      thickness: 0,
+      strokeColor: null,
+      shadowEnabled: false,
+      extra: {},
+      attributes: {}
+    } as const
+    const el = (x: number) => ({ ...base, x, y: 0, width: 500, height: 300 })
+    expect(detectTwoUp([el(0), el(1225)], 2400, 3600)).toBeNull() // 25 px (photo limit 24)
+    expect(detectTwoUp([el(0), el(1224)], 2400, 3600)?.maxOffset).toBe(24)
+  })
+})
+
+describe('equal ZIndex (6C C1 re-test: owner template A)', () => {
+  // Owner template A's structure: a live text and an opaque full-canvas picture both at ZIndex 0.
+  const files = { 'bg.png': facts('b', 1200, 1800) }
+  const order = (r: ReturnType<typeof run>): string[] =>
+    r.project.layers.map((l) => (l.type === 'text' ? l.content : l.name))
+
+  it('keeps the deterministic rule (earlier in the file = in front) and warns by name when they overlap', () => {
+    const r = run(
+      xml([
+        slot(1, [100, 100, 1000, 800], 1),
+        text('PARTY TIME', [100, 1500, 1000, 55], 0, { TextHorizontalAlignment: 1 }),
+        image('bg', 'bg.png', [0, 0, 1200, 1800], 0)
+      ]),
+      files
+    )
+    expect(order(r)).toEqual(['bg', 'PARTY TIME', 'Photo 1'])
+    const tie = r.items.filter((i) => i.code === 'z-index-tie')
+    expect(tie).toHaveLength(1)
+    expect(tie[0]?.severity).toBe('warning')
+    expect(tie[0]?.message).toMatch(/ZIndex 0\): text “PARTY TIME”, “bg”/)
+    expect(tie[0]?.message).toMatch(/not confirmed/)
+    expect(tie[0]?.message).toMatch(/text “PARTY TIME” is in front/)
+    expect(tie[0]?.message).toMatch(/overlap/)
+    // same input, same result
+    expect(
+      order(
+        run(
+          xml([
+            text('PARTY TIME', [100, 1500, 1000, 55], 0),
+            image('bg', 'bg.png', [0, 0, 1200, 1800], 0)
+          ]),
+          files
+        )
+      )
+    ).toEqual(['bg', 'PARTY TIME'])
+  })
+
+  it('the opposite file order puts the picture in front, and says so', () => {
+    const r = run(
+      xml([
+        image('bg', 'bg.png', [0, 0, 1200, 1800], 0),
+        text('PARTY TIME', [100, 1500, 1000, 55], 0)
+      ]),
+      files
+    )
+    expect(order(r)).toEqual(['PARTY TIME', 'bg'])
+    expect(r.items.find((i) => i.code === 'z-index-tie')?.message).toMatch(/so “bg” is in front/)
+  })
+
+  it('a tie between elements that do not overlap is only an info note', () => {
+    const r = run(xml([slot(1, [0, 0, 500, 500], 0), text('HELLO', [100, 1500, 600, 55], 0)]))
+    const tie = r.items.find((i) => i.code === 'z-index-tie')
+    expect(tie?.severity).toBe('info')
+    expect(tie?.message).toMatch(/do not overlap/)
+  })
+
+  it('distinct ZIndex values give no tie note', () => {
+    const r = run(xml([slot(1, [0, 0, 500, 500], 1), text('HELLO', [0, 0, 600, 55], 0)]))
+    expect(codes(r)).not.toContain('z-index-tie')
+  })
+})
+
+describe('a single line wider than its box (6C C1 re-test, fixture T13)', () => {
+  const LONG =
+    'THIS IS A VERY LONG SINGLE LINE THAT SHOULD SHOW WHETHER DSLRBOOTH WRAPS OR CLIPS THE TEXT'
+
+  it('keeps the whole line and the box; warns specifically, naming what the wrapped lines run into', () => {
+    const r = run(
+      xml([
+        slot(1, [100, 1400, 1000, 300], 2),
+        text(LONG, [100, 1100, 400, 55], 1),
+        text('BELOW', [100, 1250, 400, 55], 0)
+      ])
+    )
+    const t = textLayers(r).find((l) => l.content === LONG) as TextLayer
+    expect([t.x, t.y, t.width, t.height, t.fontSize]).toEqual([100, 1100, 400, 55, 48])
+    const w = r.items.filter((i) => i.code === 'text-overflow')
+    expect(w).toHaveLength(1)
+    expect(w[0]?.severity).toBe('warning')
+    const m = w[0]?.message ?? ''
+    expect(m).toMatch(
+      /^Text “THIS IS A VERY LONG SINGLE LINE THAT SHO…” is wider than its 400 px box/
+    )
+    expect(m).toMatch(
+      /dslrBooth cuts the line off at the box edge; Template Studio keeps all of the text and wraps it/
+    )
+    expect(m).toMatch(
+      /about \d+ lines running below the box and over “BELOW” and under photo slot 1/
+    )
+    expect(m).toMatch(/guest photo covers/)
+    expect(m).toMatch(
+      /Nothing was removed\. Widen the box, shorten the text or make it smaller before exporting/
+    )
+  })
+
+  it('a line that fits gets no overflow warning', () => {
+    const r = run(xml([slot(1, [0, 0, 10, 10], 1), text('SHORT', [100, 1100, 400, 55], 0)]))
+    expect(codes(r)).not.toContain('text-overflow')
+  })
+
+  it('exports with the whole text drawn into the artwork (6B policy), no native <Text>', () => {
+    const r = run(xml([slot(1, [100, 1400, 1000, 300], 1), text(LONG, [100, 1100, 400, 55], 0)]))
+    const plan = planDslrTemplate(r.project, mainVariant(r.project))
+    const drawn = new Set(plan.items.flatMap((i) => (i.kind === 'image' ? i.image.leafIds : [])))
+    for (const l of textLayers(r)) expect(drawn.has(l.id)).toBe(true)
+    expect(
+      writeTemplateXml(buildDslrTemplate(r.project, plan, { name: 'x', now: new Date(0) }))
+    ).not.toContain('<Text')
   })
 })
 
