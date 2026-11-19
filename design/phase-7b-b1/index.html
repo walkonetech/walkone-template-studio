@@ -1,0 +1,4920 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Template Studio B1 Mockups</title>
+    <meta name="claude:viewport-fit-sides" content="cover" />
+    <meta
+      name="description"
+      content="Phase 7B B1 owner-review mockups for the WalkOne Template Studio editor and shell refresh. Design-only; not wired into the app."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Allura&family=Cormorant+Garamond:wght@500;600&display=swap"
+    />
+    <style>
+      /* ============================================================================================
+     REVIEW PAGE (the package around the mockups). Follows the viewer's theme.
+     Layout: sticky section index on the left (wide screens), mockups in one column that scales.
+     ============================================================================================ */
+      :root {
+        --bg: #f5f5f8;
+        --card: #ffffff;
+        --fg: #1a1b22;
+        --muted: #585b68;
+        --line: #e1e2e9;
+        --accent: #4456e0;
+        --accent-soft: #e9ebfd;
+        --note-bg: #fbfbfd;
+        --ann: #ffcc00;
+        --ann-fg: #1a1400;
+        --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) {
+          --bg: #0e0f13;
+          --card: #16171c;
+          --fg: #e9e9ef;
+          --muted: #a2a5b2;
+          --line: #272932;
+          --accent: #8e9cff;
+          --accent-soft: #23264a;
+          --note-bg: #13141a;
+          color-scheme: dark;
+        }
+      }
+      :root[data-theme='dark'] {
+        --bg: #0e0f13;
+        --card: #16171c;
+        --fg: #e9e9ef;
+        --muted: #a2a5b2;
+        --line: #272932;
+        --accent: #8e9cff;
+        --accent-soft: #23264a;
+        --note-bg: #13141a;
+        color-scheme: dark;
+      }
+      html,
+      body {
+        background: var(--bg);
+        color: var(--fg);
+      }
+      body {
+        font: 400 15px/1.55 var(--font);
+        padding-left: max(16px, env(safe-area-inset-left, 0px));
+        padding-right: max(16px, env(safe-area-inset-right, 0px));
+      }
+      a {
+        color: var(--accent);
+      }
+      .page {
+        max-width: 1680px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 220px minmax(0, 1fr);
+        gap: 40px;
+        padding-block: 32px 80px;
+      }
+      .toc {
+        position: sticky;
+        top: calc(env(safe-area-inset-top, 0px) + 16px);
+        align-self: start;
+        font-size: 13px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        max-height: calc(100vh - 32px);
+        overflow: auto;
+      }
+      .toc b {
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 14px 0 4px;
+      }
+      .toc a {
+        color: var(--fg);
+        text-decoration: none;
+        padding: 3px 8px;
+        border-radius: 6px;
+      }
+      .toc a:hover {
+        background: var(--accent-soft);
+      }
+      .toc a span {
+        color: var(--muted);
+        font-variant-numeric: tabular-nums;
+        display: inline-block;
+        width: 22px;
+      }
+      main {
+        min-width: 0;
+      }
+      header.top h1 {
+        font-size: 34px;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        margin: 0 0 8px;
+        text-wrap: balance;
+      }
+      .eyebrow {
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .lede {
+        max-width: 72ch;
+        color: var(--muted);
+        margin: 0;
+      }
+      .facts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 16px 0 0;
+        padding: 0;
+        list-style: none;
+        font-size: 13px;
+      }
+      .facts li {
+        border: 1px solid var(--line);
+        background: var(--card);
+        border-radius: 6px;
+        padding: 4px 10px;
+      }
+      .controls {
+        position: sticky;
+        top: env(safe-area-inset-top, 0px);
+        z-index: 30;
+        background: var(--bg);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        padding-block: 12px;
+        margin-top: 20px;
+        border-bottom: 1px solid var(--line);
+      }
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0 0 auto;
+        height: env(safe-area-inset-top, 0px);
+        z-index: 40;
+        background: var(--bg);
+      }
+      .controls button {
+        font: 500 13px var(--font);
+        color: var(--fg);
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        height: 32px;
+        padding: 0 12px;
+        cursor: pointer;
+      }
+      .controls button[aria-pressed='true'] {
+        background: var(--accent-soft);
+        border-color: var(--accent);
+      }
+      .controls button:focus-visible,
+      .toc a:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      .controls .hint {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      section.s {
+        padding-top: 56px;
+        scroll-margin-top: 64px;
+      }
+      section.s > h2 {
+        font-size: 24px;
+        letter-spacing: -0.01em;
+        margin: 0 0 4px;
+        text-wrap: balance;
+      }
+      section.s > .meta {
+        font-size: 13px;
+        color: var(--muted);
+        margin: 0 0 14px;
+      }
+      h3 {
+        font-size: 16px;
+        margin: 24px 0 8px;
+      }
+      .prose {
+        max-width: 78ch;
+      }
+      .prose p,
+      .prose li {
+        margin: 0 0 8px;
+      }
+      .notes {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 14px;
+      }
+      .notes > div {
+        background: var(--note-bg);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 12px 14px;
+        font-size: 14px;
+        min-width: 0;
+      }
+      .notes h4 {
+        margin: 0 0 6px;
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .notes ul {
+        margin: 0;
+        padding-left: 18px;
+      }
+      .notes li {
+        margin-bottom: 4px;
+      }
+      .notes .q {
+        border-color: var(--accent);
+      }
+      .anns {
+        margin: 10px 0 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 6px 18px;
+        font-size: 14px;
+      }
+      .anns li {
+        display: flex;
+        gap: 8px;
+        align-items: baseline;
+      }
+      .anns li i {
+        font-style: normal;
+        flex: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--ann);
+        color: var(--ann-fg);
+        font-size: 12px;
+        font-weight: 700;
+        display: inline-grid;
+        place-items: center;
+      }
+      .tbl {
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--card);
+      }
+      .tbl table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 14px;
+      }
+      .tbl th,
+      .tbl td {
+        text-align: left;
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      .tbl th {
+        font-size: 12px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .tbl tr:last-child td {
+        border-bottom: 0;
+      }
+      .two {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+      .checklist {
+        counter-reset: q;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px 24px;
+      }
+      .checklist li {
+        counter-increment: q;
+        display: flex;
+        gap: 10px;
+        align-items: baseline;
+        padding: 8px 12px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        font-size: 14px;
+      }
+      .checklist li::before {
+        content: counter(q);
+        font-weight: 700;
+        color: var(--accent);
+        font-variant-numeric: tabular-nums;
+        width: 20px;
+        flex: none;
+      }
+      .checklist li span {
+        color: var(--muted);
+      }
+      code {
+        font-family: var(--mono);
+        font-size: 0.88em;
+      }
+
+      /* Frame wrapper: shows one app viewport, scaled to fit or at 1:1 */
+      .fw {
+        position: relative;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        overflow: hidden;
+        background: #000;
+      }
+      .fw > .frame {
+        position: absolute;
+        left: 0;
+        top: 0;
+        transform-origin: 0 0;
+      }
+      body.actual .fw {
+        overflow: auto;
+      }
+      body.actual .fw > .frame {
+        position: relative;
+        transform: none !important;
+      }
+      .ann {
+        position: absolute;
+        z-index: 90;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--ann);
+        color: var(--ann-fg);
+        font: 700 14px/26px var(--font);
+        text-align: center;
+        box-shadow:
+          0 0 0 3px rgb(0 0 0 / 0.55),
+          0 4px 10px rgb(0 0 0 / 0.4);
+      }
+      body.no-ann .ann {
+        display: none;
+      }
+      .swatches {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 8px;
+      }
+      @media (max-width: 1100px) {
+        .page {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .toc {
+          position: static;
+          flex-direction: row;
+          flex-wrap: wrap;
+          max-height: none;
+        }
+        .toc b {
+          width: 100%;
+        }
+        .notes,
+        .two,
+        .checklist {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          scroll-behavior: auto !important;
+        }
+      }
+
+      /* ============================================================================================
+     PROPOSED APP DESIGN SYSTEM (what the mockups demonstrate). Three layers:
+     1) primitives (not used by components)  2) semantic tokens per theme  3) components.
+     Theme is fixed per mockup frame (.t-dark / .t-light), independent of the page theme.
+     ============================================================================================ */
+      .app {
+        /* primitives: neutral ramp (cool, slightly indigo-biased) */
+        --n-0: #ffffff;
+        --n-25: #f6f6f9;
+        --n-50: #eeeff3;
+        --n-100: #e3e4ea;
+        --n-200: #d4d6de;
+        --n-300: #b9bbc6;
+        --n-400: #9a9dab;
+        --n-500: #7d808e;
+        --n-600: #5d606c;
+        --n-700: #3b3d46;
+        --n-800: #2a2c33;
+        --n-850: #222329;
+        --n-900: #1c1d22;
+        --n-925: #17181c;
+        --n-950: #121317;
+        --n-1000: #0e0f12;
+        /* primitives: accent + status + kinds + overlays */
+        --indigo-400: #8e9cff;
+        --indigo-500: #7b8cff;
+        --indigo-600: #5b6ef0;
+        --indigo-700: #4456e0;
+        --indigo-800: #3445c4;
+        --red-400: #ff8f8a;
+        --red-700: #c4312b;
+        --amber-400: #f4bb5f;
+        --amber-800: #8f5300;
+        --green-400: #5fd39a;
+        --green-700: #1c7f4e;
+        --blue-400: #7cbcff;
+        --blue-700: #1d68bd;
+        --orchid-400: #e58ae0;
+        --orchid-700: #a8329a;
+        --lime-400: #b5dc6a;
+        --lime-700: #557d0f;
+        --violet-400: #b69bff;
+        --violet-700: #6a46d4;
+        --slate-400: #97a3ba;
+        --slate-700: #56627a;
+        --ov-teal: #2fc4bc;
+        --ov-orange: #ff9447;
+        --ov-red: #ff4d4d;
+        --ov-white: #f4f4f4;
+        --ov-pink: #ff5f8f;
+
+        --ui: 'Inter', system-ui, -apple-system, 'Segoe UI Variable', 'Segoe UI', sans-serif;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+        font: 400 13px/1.4 var(--ui);
+        font-feature-settings: 'cv11', 'ss01';
+        color: var(--text-primary);
+        background: var(--surface-app);
+        -webkit-font-smoothing: antialiased;
+      }
+      .t-dark {
+        color-scheme: dark;
+        --surface-canvas: var(--n-1000);
+        --surface-app: var(--n-925);
+        --surface-panel: var(--n-900);
+        --surface-raised: var(--n-850);
+        --surface-overlay: #2a2c34;
+        --surface-input: var(--n-950);
+        --text-primary: #ececf1;
+        --text-secondary: #b6b8c3;
+        --text-label: #a8abb8;
+        --text-muted: #8f92a0;
+        --text-disabled: #5d606c;
+        --border-subtle: #282a31;
+        --border: #363842;
+        --border-strong: #4d505c;
+        --hover: rgb(255 255 255 / 0.055);
+        --pressed: rgb(255 255 255 / 0.09);
+        --accent: var(--indigo-500);
+        --accent-hover: var(--indigo-400);
+        --accent-pressed: var(--indigo-600);
+        --accent-subtle: rgb(123 140 255 / 0.15);
+        --accent-border: rgb(123 140 255 / 0.55);
+        --on-accent: #0b0e24;
+        --focus-ring: #aab6ff;
+        --selection: var(--indigo-500);
+        --status-error-fg: var(--red-400);
+        --status-error-bg: rgb(242 110 104 / 0.13);
+        --status-error-border: rgb(242 110 104 / 0.45);
+        --status-warning-fg: var(--amber-400);
+        --status-warning-bg: rgb(244 187 95 / 0.12);
+        --status-warning-border: rgb(244 187 95 / 0.5);
+        --status-success-fg: var(--green-400);
+        --status-success-bg: rgb(95 211 154 / 0.13);
+        --status-success-border: rgb(95 211 154 / 0.45);
+        --status-info-fg: var(--blue-400);
+        --status-info-bg: rgb(124 188 255 / 0.12);
+        --status-info-border: rgb(124 188 255 / 0.45);
+        --kind-photo: var(--orchid-400);
+        --kind-text: var(--lime-400);
+        --kind-image: var(--violet-400);
+        --kind-shape: var(--slate-400);
+        --kind-group: #c9ccd6;
+        --overlay-safe: var(--ov-teal);
+        --overlay-trim: var(--ov-orange);
+        --overlay-flag: var(--ov-red);
+        --overlay-cut: var(--ov-white);
+        --overlay-guide: var(--ov-pink);
+        --overlay-halo: rgb(0 0 0 / 0.7);
+        --shadow-1: 0 1px 2px rgb(0 0 0 / 0.35);
+        --shadow-2: 0 10px 28px rgb(0 0 0 / 0.5), 0 0 0 1px rgb(255 255 255 / 0.06);
+        --shadow-3: 0 28px 70px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(255 255 255 / 0.07);
+        --artboard-shadow: 0 0 0 1px rgb(255 255 255 / 0.04), 0 8px 30px rgb(0 0 0 / 0.55);
+        --scrim: rgb(6 7 10 / 0.6);
+      }
+      .t-light {
+        color-scheme: light;
+        --surface-canvas: #e6e7ec;
+        --surface-app: var(--n-25);
+        --surface-panel: var(--n-0);
+        --surface-raised: var(--n-0);
+        --surface-overlay: var(--n-0);
+        --surface-input: var(--n-0);
+        --text-primary: #1b1c22;
+        --text-secondary: #474a56;
+        --text-label: #545766;
+        --text-muted: #686b79;
+        --text-disabled: #a3a5ae;
+        --border-subtle: #e5e6eb;
+        --border: #d6d8df;
+        --border-strong: #b4b7c3;
+        --hover: rgb(20 24 40 / 0.05);
+        --pressed: rgb(20 24 40 / 0.09);
+        --accent: var(--indigo-700);
+        --accent-hover: var(--indigo-800);
+        --accent-pressed: var(--indigo-800);
+        --accent-subtle: rgb(68 86 224 / 0.09);
+        --accent-border: rgb(68 86 224 / 0.45);
+        --on-accent: #ffffff;
+        --focus-ring: var(--indigo-700);
+        --selection: var(--indigo-700);
+        --status-error-fg: var(--red-700);
+        --status-error-bg: #fdecea;
+        --status-error-border: #f2b8b4;
+        --status-warning-fg: var(--amber-800);
+        --status-warning-bg: #fff3df;
+        --status-warning-border: #ecc78a;
+        --status-success-fg: var(--green-700);
+        --status-success-bg: #e6f6ed;
+        --status-success-border: #a9dcc0;
+        --status-info-fg: var(--blue-700);
+        --status-info-bg: #e8f1fd;
+        --status-info-border: #b2cff2;
+        --kind-photo: var(--orchid-700);
+        --kind-text: var(--lime-700);
+        --kind-image: var(--violet-700);
+        --kind-shape: var(--slate-700);
+        --kind-group: #5f6371;
+        --overlay-safe: var(--ov-teal);
+        --overlay-trim: var(--ov-orange);
+        --overlay-flag: var(--ov-red);
+        --overlay-cut: var(--ov-white);
+        --overlay-guide: var(--ov-pink);
+        --overlay-halo: rgb(0 0 0 / 0.7);
+        --shadow-1: 0 1px 2px rgb(20 24 40 / 0.08);
+        --shadow-2: 0 10px 28px rgb(20 24 40 / 0.14), 0 0 0 1px rgb(20 24 40 / 0.08);
+        --shadow-3: 0 28px 70px rgb(20 24 40 / 0.22), 0 0 0 1px rgb(20 24 40 / 0.08);
+        --artboard-shadow: 0 0 0 1px rgb(20 24 40 / 0.06), 0 6px 24px rgb(20 24 40 / 0.16);
+        --scrim: rgb(24 26 36 / 0.38);
+      }
+      .app *,
+      .app *::before,
+      .app *::after {
+        box-sizing: border-box;
+      }
+      :where(.app) button {
+        font: inherit;
+        color: inherit;
+        background: none;
+        border: 0;
+        padding: 0;
+        margin: 0;
+        cursor: default;
+      }
+      .app .ic {
+        width: 16px;
+        height: 16px;
+        flex: none;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.75;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .app .ic.s14 {
+        width: 14px;
+        height: 14px;
+      }
+      .app .ic.s20 {
+        width: 20px;
+        height: 20px;
+      }
+      .app .ic.dash circle {
+        stroke-dasharray: 3 2.4;
+      }
+      .grow {
+        flex: 1;
+        min-width: 0;
+      }
+      .tnum {
+        font-variant-numeric: tabular-nums;
+      }
+      .muted {
+        color: var(--text-muted);
+      }
+      .sec-t {
+        color: var(--text-secondary);
+      }
+
+      /* --- buttons & basic controls --- */
+      .btn {
+        height: 28px;
+        padding: 0 12px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        font-weight: 500;
+        white-space: nowrap;
+        flex: none;
+      }
+      .btn.pri {
+        background: var(--accent);
+        color: var(--on-accent);
+        font-weight: 600;
+      }
+      .btn.pri.hov {
+        background: var(--accent-hover);
+      }
+      .btn.sec {
+        background: var(--surface-raised);
+        box-shadow: inset 0 0 0 1px var(--border);
+        color: var(--text-primary);
+      }
+      .t-light .btn.sec {
+        box-shadow:
+          inset 0 0 0 1px var(--border),
+          var(--shadow-1);
+      }
+      .btn.ghost {
+        color: var(--text-secondary);
+      }
+      .btn.ghost.hov,
+      .btn.sec.hov {
+        background: var(--hover);
+        color: var(--text-primary);
+      }
+      .btn.danger {
+        color: var(--status-error-fg);
+        box-shadow: inset 0 0 0 1px var(--status-error-border);
+      }
+      .btn.dis {
+        opacity: 0.42;
+      }
+      .btn.lg {
+        height: 40px;
+        padding: 0 18px;
+        font-size: 14px;
+      }
+      .btn.sm {
+        height: 24px;
+        padding: 0 8px;
+        font-size: 12px;
+      }
+      .btn.focus,
+      .ib.focus,
+      .in.focus,
+      .ri.focus,
+      .focusable.focus {
+        outline: 2px solid var(--focus-ring);
+        outline-offset: 2px;
+      }
+      .ib {
+        width: 28px;
+        height: 28px;
+        display: inline-grid;
+        place-items: center;
+        border-radius: 6px;
+        color: var(--text-secondary);
+        flex: none;
+      }
+      .ib.sm {
+        width: 24px;
+        height: 24px;
+      }
+      .ib.hov {
+        background: var(--hover);
+        color: var(--text-primary);
+      }
+      .ib.dis {
+        opacity: 0.4;
+      }
+      .vsep {
+        width: 1px;
+        height: 20px;
+        background: var(--border-subtle);
+        flex: none;
+      }
+      .count {
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        border-radius: 9px;
+        font-size: 11px;
+        font-weight: 700;
+        display: inline-grid;
+        place-items: center;
+        font-variant-numeric: tabular-nums;
+      }
+      .kbd {
+        font: 500 11px var(--ui);
+        color: var(--text-muted);
+        padding: 1px 5px;
+        border-radius: 4px;
+        box-shadow: inset 0 0 0 1px var(--border);
+      }
+      .in {
+        height: 28px;
+        border-radius: 5px;
+        background: var(--surface-input);
+        box-shadow: inset 0 0 0 1px var(--border);
+        display: flex;
+        align-items: center;
+        padding: 0 8px;
+        gap: 6px;
+        font-size: 13px;
+        min-width: 0;
+        color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+      }
+      .in .u {
+        margin-left: auto;
+        color: var(--text-muted);
+        font-size: 12px;
+      }
+      .in .chev {
+        margin-left: auto;
+        color: var(--text-muted);
+      }
+      .in.lock {
+        color: var(--text-secondary);
+      }
+      .in.err {
+        box-shadow: inset 0 0 0 1px var(--status-error-fg);
+      }
+      .in.ta {
+        height: 52px;
+        align-items: flex-start;
+        padding: 6px 8px;
+        white-space: normal;
+      }
+      .in.lg {
+        height: 32px;
+      }
+      .sw {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.25);
+        flex: none;
+      }
+      .sw.lg {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+      }
+      .seg {
+        display: inline-flex;
+        background: var(--surface-input);
+        border-radius: 6px;
+        padding: 2px;
+        box-shadow: inset 0 0 0 1px var(--border);
+        flex: none;
+      }
+      .seg > span {
+        height: 24px;
+        padding: 0 10px;
+        border-radius: 4px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        white-space: nowrap;
+      }
+      .seg > span.on {
+        background: var(--surface-raised);
+        color: var(--text-primary);
+        box-shadow:
+          inset 0 0 0 1px var(--border-strong),
+          var(--shadow-1);
+      }
+      .t-light .seg > span.on {
+        background: var(--n-0);
+      }
+      .seg.full {
+        display: flex;
+      }
+      .seg.full > span {
+        flex: 1;
+      }
+      .tog {
+        width: 30px;
+        height: 18px;
+        border-radius: 9px;
+        background: var(--border-strong);
+        position: relative;
+        flex: none;
+      }
+      .tog::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #fff;
+        box-shadow: 0 1px 2px rgb(0 0 0 / 0.3);
+      }
+      .tog.on {
+        background: var(--accent);
+      }
+      .tog.on::after {
+        left: 14px;
+      }
+      .cb {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        box-shadow: inset 0 0 0 1.5px var(--border-strong);
+        display: inline-grid;
+        place-items: center;
+        flex: none;
+        color: var(--on-accent);
+      }
+      .cb.on {
+        background: var(--accent);
+        box-shadow: none;
+      }
+      .cb .ic {
+        width: 12px;
+        height: 12px;
+        stroke-width: 3;
+      }
+      .rb {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        box-shadow: inset 0 0 0 1.5px var(--border-strong);
+        flex: none;
+        display: inline-grid;
+        place-items: center;
+      }
+      .rb.on {
+        box-shadow: inset 0 0 0 5px var(--accent);
+      }
+      .lbl-caps {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+      .help {
+        font-size: 12px;
+        color: var(--text-muted);
+        line-height: 1.4;
+      }
+      .lnk {
+        color: var(--accent);
+        font-weight: 500;
+      }
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        height: 18px;
+        padding: 0 6px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        background: var(--pressed);
+        color: var(--text-secondary);
+        white-space: nowrap;
+      }
+      .tag.acc {
+        background: var(--accent-subtle);
+        color: var(--accent);
+      }
+      .tag.future {
+        background: none;
+        box-shadow: inset 0 0 0 1px var(--border-strong);
+        color: var(--text-muted);
+        border-radius: 4px;
+      }
+
+      /* --- status badges (icon + word + tone) & evidence tiers --- */
+      .sev {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .sev.err {
+        color: var(--status-error-fg);
+      }
+      .sev.warn {
+        color: var(--status-warning-fg);
+      }
+      .sev.info {
+        color: var(--status-info-fg);
+      }
+      .sev.ok {
+        color: var(--status-success-fg);
+      }
+      .tier {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        height: 22px;
+        padding: 0 8px 0 6px;
+        border-radius: 5px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+        flex: none;
+      }
+      .tier .ic {
+        width: 14px;
+        height: 14px;
+        stroke-width: 2;
+      }
+      .tier.verified {
+        background: var(--status-success-bg);
+        color: var(--status-success-fg);
+        box-shadow: inset 0 0 0 1px var(--status-success-border);
+      }
+      .tier.observed {
+        background: var(--status-info-bg);
+        color: var(--status-info-fg);
+      }
+      .tier.estimated {
+        color: var(--status-warning-fg);
+        box-shadow: inset 0 0 0 1.5px var(--status-warning-border);
+      }
+      .tier.reference {
+        background: var(--pressed);
+        color: var(--text-secondary);
+      }
+      .tier.unknown {
+        color: var(--text-muted);
+        box-shadow: inset 0 0 0 1px var(--border-strong);
+        background-image: none;
+        outline: 1px dashed var(--border-strong);
+        outline-offset: -1px;
+      }
+      .kc {
+        width: 22px;
+        height: 22px;
+        border-radius: 5px;
+        display: inline-grid;
+        place-items: center;
+        flex: none;
+        color: var(--k);
+        background: color-mix(in srgb, var(--k) 17%, transparent);
+      }
+      .kc .ic {
+        width: 14px;
+        height: 14px;
+        stroke-width: 2;
+      }
+      .kc.sm {
+        width: 20px;
+        height: 20px;
+      }
+      .k-photo {
+        --k: var(--kind-photo);
+      }
+      .k-text {
+        --k: var(--kind-text);
+      }
+      .k-image {
+        --k: var(--kind-image);
+      }
+      .k-shape {
+        --k: var(--kind-shape);
+      }
+      .k-group {
+        --k: var(--kind-group);
+      }
+      .k-project {
+        --k: var(--text-secondary);
+      }
+      .num {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 1px 5px;
+        border-radius: 4px;
+        color: var(--kind-photo);
+        background: color-mix(in srgb, var(--kind-photo) 16%, transparent);
+        font-variant-numeric: tabular-nums;
+        flex: none;
+      }
+
+      /* --- top bar --- */
+      .tb {
+        height: 44px;
+        flex: none;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 10px 0 12px;
+        background: var(--surface-app);
+        border-bottom: 1px solid var(--border-subtle);
+      }
+      .tb-l,
+      .tb-r {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex: 1;
+        min-width: 0;
+      }
+      .tb-r {
+        justify-content: flex-end;
+      }
+      .mark {
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        background: var(--text-primary);
+        position: relative;
+        flex: none;
+        margin-right: 6px;
+        opacity: 0.9;
+      }
+      .mark::after {
+        content: '';
+        position: absolute;
+        left: 7px;
+        top: 4px;
+        width: 8px;
+        height: 14px;
+        border-radius: 2px;
+        background: var(--surface-app);
+      }
+      .menus {
+        display: flex;
+      }
+      .menu {
+        height: 28px;
+        padding: 0 9px;
+        border-radius: 5px;
+        display: inline-flex;
+        align-items: center;
+        color: var(--text-secondary);
+      }
+      .menu u {
+        text-decoration-thickness: 1px;
+        text-underline-offset: 2px;
+      }
+      .menu.open {
+        background: var(--pressed);
+        color: var(--text-primary);
+      }
+      .tb-c {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex: none;
+      }
+      .doc {
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .docstate {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+      .docstate .ic {
+        width: 13px;
+        height: 13px;
+        stroke-width: 2.2;
+      }
+      .docstate .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--text-secondary);
+      }
+      .docstate.mod {
+        color: var(--text-secondary);
+      }
+      .checks .ic {
+        color: var(--status-warning-fg);
+      }
+      .checks .count {
+        background: var(--status-warning-bg);
+        color: var(--status-warning-fg);
+      }
+      .checks.err .ic {
+        color: var(--status-error-fg);
+      }
+      .checks.err .count {
+        background: var(--status-error-bg);
+        color: var(--status-error-fg);
+      }
+      .checks.open {
+        background: var(--pressed);
+        color: var(--text-primary);
+      }
+      .count.e {
+        background: var(--status-error-bg);
+        color: var(--status-error-fg);
+      }
+      .count.w {
+        background: var(--status-warning-bg);
+        color: var(--status-warning-fg);
+      }
+
+      /* --- editor body --- */
+      .ed {
+        flex: 1;
+        display: flex;
+        min-height: 0;
+        position: relative;
+      }
+      .rail {
+        width: 72px;
+        flex: none;
+        background: var(--surface-app);
+        border-right: 1px solid var(--border-subtle);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 8px 0;
+        gap: 4px;
+      }
+      .ri {
+        width: 60px;
+        height: 56px;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        color: var(--text-secondary);
+        font-size: 11px;
+        font-weight: 500;
+        position: relative;
+      }
+      .ri .ic {
+        width: 22px;
+        height: 22px;
+        stroke-width: 1.6;
+      }
+      .ri.hov {
+        background: var(--hover);
+        color: var(--text-primary);
+      }
+      .ri.on {
+        color: var(--text-primary);
+        background: var(--accent-subtle);
+      }
+      .ri.on .ic {
+        color: var(--accent);
+      }
+      .ri.on::before {
+        content: '';
+        position: absolute;
+        left: -6px;
+        top: 14px;
+        bottom: 14px;
+        width: 3px;
+        border-radius: 0 3px 3px 0;
+        background: var(--accent);
+      }
+      .drawer {
+        width: 264px;
+        flex: none;
+        background: var(--surface-panel);
+        border-right: 1px solid var(--border-subtle);
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      .drawer.w320 {
+        width: 340px;
+      }
+      .drawer.float {
+        position: absolute;
+        left: 80px;
+        top: 44px;
+        bottom: 10px;
+        z-index: 30;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        box-shadow: var(--shadow-2);
+        background: var(--surface-overlay);
+      }
+      .dh {
+        height: 44px;
+        flex: none;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 0 8px 0 14px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .dh .t {
+        flex: 1;
+      }
+      .db {
+        padding: 2px 14px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        overflow: hidden;
+        min-height: 0;
+      }
+      .search {
+        height: 32px;
+        border-radius: 6px;
+        background: var(--surface-input);
+        box-shadow: inset 0 0 0 1px var(--border);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 10px;
+        color: var(--text-muted);
+      }
+      .bigadd {
+        min-height: 44px;
+        border-radius: 8px;
+        background: var(--surface-raised);
+        box-shadow: inset 0 0 0 1px var(--border);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+      .t-light .bigadd {
+        background: var(--n-25);
+      }
+      .bigadd .sub {
+        display: block;
+        font-weight: 400;
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+      .bigadd.pri {
+        background: var(--accent);
+        color: var(--on-accent);
+        box-shadow: none;
+      }
+      .tiles {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+      .tile {
+        height: 72px;
+        border-radius: 8px;
+        background: var(--surface-raised);
+        box-shadow: inset 0 0 0 1px var(--border-subtle);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--text-secondary);
+      }
+      .t-light .tile {
+        background: var(--n-25);
+      }
+      .tile .shp {
+        width: 28px;
+        height: 22px;
+        border: 2px solid var(--text-secondary);
+        border-radius: 2px;
+      }
+      .tile .shp.c {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+      }
+      .tile .shp.l {
+        width: 30px;
+        height: 0;
+        border-width: 2px 0 0;
+        transform: rotate(-30deg);
+        margin: 10px 0;
+      }
+      .preset {
+        border-radius: 8px;
+        background: var(--surface-raised);
+        box-shadow: inset 0 0 0 1px var(--border-subtle);
+        padding: 10px 12px;
+        color: var(--text-primary);
+      }
+      .t-light .preset {
+        background: var(--n-25);
+      }
+      .rowi {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 28px;
+        font-size: 13px;
+      }
+      .rowi .r {
+        margin-left: auto;
+        color: var(--text-muted);
+        font-size: 12px;
+      }
+
+      /* --- canvas column --- */
+      .cv {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+      }
+      .vb {
+        height: 40px;
+        flex: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 12px;
+        background: var(--surface-app);
+        border-bottom: 1px solid var(--border-subtle);
+      }
+      .pill {
+        height: 26px;
+        padding: 0 9px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--text-secondary);
+        box-shadow: inset 0 0 0 1px var(--border);
+        white-space: nowrap;
+        flex: none;
+      }
+      .pill b {
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+      .pill .ld {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        box-shadow: inset 0 0 0 1.5px var(--text-muted);
+      }
+      .pill.on {
+        background: var(--accent-subtle);
+        box-shadow: inset 0 0 0 1px var(--accent-border);
+      }
+      .pill.on .ld {
+        background: var(--accent);
+        box-shadow: none;
+      }
+      .pill.open {
+        box-shadow:
+          inset 0 0 0 1px var(--accent),
+          0 0 0 3px var(--accent-subtle);
+      }
+      .stage {
+        flex: 1;
+        min-height: 0;
+        background: var(--surface-canvas);
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .banner {
+        position: absolute;
+        top: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 15;
+        height: 36px;
+        border-radius: 8px;
+        padding: 0 6px 0 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--surface-overlay);
+        box-shadow: var(--shadow-2);
+        white-space: nowrap;
+        font-size: 13px;
+      }
+      .banner .ic {
+        color: var(--accent);
+      }
+      .seltb {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 12;
+        height: 38px;
+        padding: 0 4px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        background: var(--surface-overlay);
+        box-shadow: var(--shadow-2);
+        white-space: nowrap;
+        font-size: 13px;
+        color: var(--text-primary);
+      }
+      .seltb .b {
+        height: 30px;
+        padding: 0 8px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .seltb .b.hov {
+        background: var(--hover);
+      }
+      .seltb .b .chev {
+        color: var(--text-muted);
+      }
+      .seltb .sep {
+        width: 1px;
+        height: 20px;
+        background: var(--border);
+        margin: 0 3px;
+      }
+      .seltb .fbox {
+        height: 26px;
+        border-radius: 5px;
+        box-shadow: inset 0 0 0 1px var(--border);
+        padding: 0 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .floatmenu {
+        position: absolute;
+        z-index: 40;
+        background: var(--surface-overlay);
+        border-radius: 10px;
+        box-shadow: var(--shadow-2);
+        padding: 6px;
+        font-size: 13px;
+      }
+      .mi {
+        min-height: 30px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 10px;
+        border-radius: 6px;
+        white-space: nowrap;
+      }
+      .mi.hov {
+        background: var(--hover);
+      }
+      .mi .r {
+        margin-left: auto;
+        color: var(--text-muted);
+        font-size: 12px;
+        padding-left: 18px;
+      }
+      .msep {
+        height: 1px;
+        background: var(--border-subtle);
+        margin: 5px 4px;
+      }
+      .tip {
+        position: absolute;
+        z-index: 60;
+        background: var(--surface-overlay);
+        box-shadow: var(--shadow-2);
+        border-radius: 6px;
+        padding: 6px 9px;
+        font-size: 12px;
+        white-space: nowrap;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      /* --- artboard (the user's design; never themed) --- */
+      .ab {
+        position: relative;
+        flex: none;
+        box-shadow: var(--artboard-shadow);
+      }
+      .strip {
+        position: relative;
+        aspect-ratio: 1 / 3;
+        container-type: inline-size;
+        background:
+          radial-gradient(120% 60% at 50% 0%, rgb(255 255 255 / 0.55), transparent 60%),
+          linear-gradient(180deg, #f7f1e8, #f1e8db);
+        overflow: visible;
+      }
+      .sheet {
+        display: flex;
+        aspect-ratio: 2 / 3;
+        position: relative;
+      }
+      .sheet > .strip {
+        width: 50%;
+        height: auto;
+      }
+      .el {
+        position: absolute;
+      }
+      .tx {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+        color: #3a332c;
+        line-height: 1;
+      }
+      .f-eyebrow {
+        font:
+          600 3.4cqw 'Cormorant Garamond',
+          Georgia,
+          serif;
+        letter-spacing: 0.32em;
+        color: #7a6a58;
+      }
+      .f-names {
+        font:
+          400 17cqw 'Allura',
+          'Snell Roundhand',
+          cursive;
+        color: #a9844f;
+      }
+      .f-hash {
+        font:
+          500 5cqw 'Cormorant Garamond',
+          Georgia,
+          serif;
+        color: #5e5247;
+        letter-spacing: 0.04em;
+      }
+      .f-date {
+        font:
+          600 4.2cqw 'Cormorant Garamond',
+          Georgia,
+          serif;
+        letter-spacing: 0.3em;
+        color: #3d352e;
+      }
+      .divl {
+        height: 0.25cqw;
+        background: #b8915a;
+      }
+      .slot {
+        overflow: hidden;
+        background: #d9d2c7;
+      }
+      .slot.frame {
+        box-shadow: 0 0 0 1cqw #ffffff;
+      }
+      .ph1 {
+        background:
+          radial-gradient(9% 12% at 38% 40%, #e9c7ab 96%, transparent 100%),
+          radial-gradient(22% 32% at 37% 98%, #5c4434 96%, transparent 100%),
+          radial-gradient(8.5% 11.5% at 60% 37%, #d7a789 96%, transparent 100%),
+          radial-gradient(21% 34% at 60% 99%, #283246 96%, transparent 100%),
+          radial-gradient(10% 13% at 38% 33%, #4a3426 96%, transparent 100%),
+          linear-gradient(165deg, #c9d3cc 0%, #9fb1a6 55%, #7f9488 100%);
+      }
+      .ph2 {
+        background:
+          radial-gradient(8% 11% at 30% 42%, #f0cdb2 96%, transparent 100%),
+          radial-gradient(19% 30% at 30% 98%, #e8e1d6 96%, transparent 100%),
+          radial-gradient(8% 11% at 52% 38%, #c99a7a 96%, transparent 100%),
+          radial-gradient(19% 32% at 52% 99%, #3a3a44 96%, transparent 100%),
+          radial-gradient(7.5% 10.5% at 73% 44%, #e5b896 96%, transparent 100%),
+          radial-gradient(17% 28% at 73% 99%, #8a5a62 96%, transparent 100%),
+          linear-gradient(170deg, #e8d5bf 0%, #cfb08f 60%, #a98a6c 100%);
+      }
+      .ph3 {
+        background:
+          radial-gradient(10% 13.5% at 45% 40%, #e4b998 96%, transparent 100%),
+          radial-gradient(10.5% 14% at 45% 33%, #2c2420 96%, transparent 100%),
+          radial-gradient(24% 34% at 45% 98%, #f3efe8 96%, transparent 100%),
+          radial-gradient(9% 12% at 64% 45%, #cf9f80 96%, transparent 100%),
+          radial-gradient(20% 30% at 66% 99%, #1f2a3a 96%, transparent 100%),
+          linear-gradient(160deg, #b9c4d6 0%, #8796b0 60%, #66738c 100%);
+      }
+      .slot.empty {
+        background: color-mix(in srgb, var(--kind-photo) 9%, #efe9df);
+        outline: 1.5px dashed var(--kind-photo);
+        outline-offset: -1.5px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        color: color-mix(in srgb, var(--kind-photo) 70%, #3a332c);
+        font: 600 11px var(--ui);
+      }
+      .slot.empty b {
+        font: 700 13cqw var(--ui);
+        line-height: 1;
+      }
+      .stag {
+        position: absolute;
+        left: 4px;
+        top: 4px;
+        font: 600 10px/1 var(--ui);
+        color: #fff;
+        background: rgb(20 20 24 / 0.62);
+        padding: 3px 5px;
+        border-radius: 3px;
+        white-space: nowrap;
+      }
+      .selbox {
+        position: absolute;
+        outline: 1.5px solid var(--selection);
+        z-index: 10;
+      }
+      .selbox .h {
+        position: absolute;
+        width: 9px;
+        height: 9px;
+        background: #fff;
+        border: 1.5px solid var(--selection);
+        border-radius: 2px;
+        transform: translate(-50%, -50%);
+      }
+      .selbox .rot {
+        position: absolute;
+        left: 50%;
+        top: -22px;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #fff;
+        border: 1.5px solid var(--selection);
+        transform: translateX(-50%);
+      }
+      .selbox .rot::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 9px;
+        height: 11px;
+        border-left: 1.5px solid var(--selection);
+      }
+      .hoverbox {
+        position: absolute;
+        outline: 1px solid color-mix(in srgb, var(--selection) 70%, transparent);
+        z-index: 9;
+      }
+      .ov {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 8;
+      }
+      .ov .trim {
+        position: absolute;
+        background: repeating-linear-gradient(
+          -45deg,
+          color-mix(in srgb, var(--overlay-trim) 70%, transparent) 0 1.4px,
+          transparent 1.4px 5px
+        );
+      }
+      .ov .keep {
+        position: absolute;
+        border: 1.25px dashed var(--overlay-safe);
+        filter: drop-shadow(0 0 0.6px var(--overlay-halo));
+      }
+      .flagbox {
+        position: absolute;
+        outline: 1.5px dashed var(--overlay-flag);
+        outline-offset: 2px;
+        z-index: 9;
+        filter: drop-shadow(0 0 0.6px var(--overlay-halo));
+      }
+      .flagbox i {
+        position: absolute;
+        right: -10px;
+        top: -12px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--overlay-flag);
+        color: #fff;
+        font: 700 12px/18px var(--ui);
+        text-align: center;
+        font-style: normal;
+      }
+      .cutline {
+        position: absolute;
+        top: -14px;
+        bottom: -14px;
+        left: 50%;
+        border-left: 1.5px dashed var(--overlay-cut);
+        filter: drop-shadow(0 0 1px #000) drop-shadow(0 0 1px #000);
+        z-index: 11;
+      }
+      .cutlbl {
+        position: absolute;
+        top: -34px;
+        left: 50%;
+        transform: translateX(-50%);
+        font: 600 11px var(--ui);
+        color: var(--text-secondary);
+        white-space: nowrap;
+      }
+
+      /* --- right column: properties & layers --- */
+      .rc {
+        width: 340px;
+        flex: none;
+        background: var(--surface-panel);
+        border-left: 1px solid var(--border-subtle);
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      .rc.w300 {
+        width: 300px;
+      }
+      .pnl {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        position: relative;
+      }
+      .ph {
+        height: 34px;
+        flex: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0 6px 0 12px;
+      }
+      .ph .t {
+        flex: 1;
+      }
+      .tabs {
+        display: flex;
+        gap: 18px;
+        padding: 0 12px;
+        height: 40px;
+        flex: none;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+      .tab {
+        height: 100%;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        box-shadow: inset 0 -2px 0 transparent;
+      }
+      .tab.on {
+        color: var(--text-primary);
+        box-shadow: inset 0 -2px 0 var(--accent);
+      }
+      .tab .count {
+        background: var(--pressed);
+        color: var(--text-secondary);
+      }
+      .lh {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 6px 8px 12px;
+        border-bottom: 1px solid var(--border-subtle);
+        flex: none;
+        background: var(--surface-panel);
+      }
+      .lh .nm {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        line-height: 1.2;
+      }
+      .lh .nm b {
+        font-size: 13px;
+        font-weight: 600;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .lh .nm span {
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+      .ess {
+        padding: 10px 12px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+      .fr {
+        display: grid;
+        grid-template-columns: 70px minmax(0, 1fr);
+        align-items: center;
+        gap: 8px;
+      }
+      .fr > .l {
+        font-size: 12px;
+        color: var(--text-label);
+      }
+      .fr.top {
+        align-items: start;
+      }
+      .fr.top > .l {
+        padding-top: 6px;
+      }
+      .r2 {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 8px;
+      }
+      .r3 {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+      .sect {
+        border-bottom: 1px solid var(--border-subtle);
+      }
+      .sh {
+        height: 34px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0 12px 0 8px;
+        font-size: 12.5px;
+        font-weight: 600;
+      }
+      .sh .chev {
+        color: var(--text-muted);
+      }
+      .sh .sum {
+        margin-left: auto;
+        font-weight: 400;
+        color: var(--text-muted);
+        font-size: 12px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 62%;
+        font-variant-numeric: tabular-nums;
+      }
+      .sh.hov {
+        background: var(--hover);
+      }
+      .sbody {
+        padding: 0 12px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .pvbox {
+        margin: 10px 12px 12px;
+        border: 1px dashed var(--border-strong);
+        border-radius: 8px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .pvbox .hd {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-secondary);
+      }
+      .inl {
+        border-radius: 6px;
+        padding: 8px 10px;
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+        font-size: 12px;
+        line-height: 1.4;
+      }
+      .inl.warn {
+        background: var(--status-warning-bg);
+        color: var(--text-primary);
+      }
+      .inl.warn > .ic {
+        color: var(--status-warning-fg);
+      }
+      .inl.info {
+        background: var(--status-info-bg);
+      }
+      .inl.info > .ic {
+        color: var(--status-info-fg);
+      }
+      .inl.ok {
+        background: var(--status-success-bg);
+      }
+      .inl.ok > .ic {
+        color: var(--status-success-fg);
+      }
+      .scrollfade {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 28px;
+        pointer-events: none;
+      }
+      .scrollfade.b {
+        bottom: 0;
+        background: linear-gradient(to top, var(--surface-panel), transparent);
+      }
+      .scrollbar {
+        position: absolute;
+        right: 2px;
+        width: 6px;
+        border-radius: 3px;
+        background: var(--border-strong);
+        opacity: 0.8;
+      }
+      .lrs {
+        display: flex;
+        flex-direction: column;
+        padding: 2px 0 6px;
+      }
+      .lr {
+        height: 30px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 8px 0 12px;
+        font-size: 13px;
+        color: var(--text-secondary);
+        flex: none;
+      }
+      .lr .n {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+      }
+      .lr.on {
+        background: var(--accent-subtle);
+        color: var(--text-primary);
+        box-shadow: inset 2px 0 0 var(--accent);
+      }
+      .lr.hov {
+        background: var(--hover);
+        color: var(--text-primary);
+      }
+      .lr.ind {
+        padding-left: 32px;
+      }
+      .lr .va {
+        margin-left: auto;
+        display: flex;
+        gap: 0;
+        align-items: center;
+        color: var(--text-muted);
+      }
+      .lr .va .ib {
+        width: 24px;
+        height: 24px;
+      }
+      .lr .va .ib.ghosted {
+        opacity: 0;
+      }
+      .lr.on .va .ib.ghosted,
+      .lr.hov .va .ib.ghosted {
+        opacity: 1;
+      }
+      .lr .wm {
+        color: var(--status-warning-fg);
+        display: inline-flex;
+      }
+      .lr .role {
+        font-size: 11px;
+        color: var(--text-muted);
+        padding: 0 5px;
+        border-radius: 4px;
+        box-shadow: inset 0 0 0 1px var(--border);
+        flex: none;
+      }
+      .lr .gchev {
+        color: var(--text-muted);
+        margin-left: -6px;
+      }
+
+      /* --- status bar --- */
+      .sb {
+        height: 28px;
+        flex: none;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 8px 0 12px;
+        background: var(--surface-app);
+        border-top: 1px solid var(--border-subtle);
+        font-size: 12px;
+        color: var(--text-muted);
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+      .chip {
+        height: 22px;
+        padding: 0 7px;
+        border-radius: 5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: var(--text-secondary);
+        flex: none;
+      }
+      .chip.hov {
+        background: var(--hover);
+      }
+      .chip .ic {
+        width: 14px;
+        height: 14px;
+      }
+      .chip.warn .ic {
+        color: var(--status-warning-fg);
+      }
+      .zoom {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+      }
+      .zoom .ib {
+        width: 22px;
+        height: 22px;
+      }
+      .zoom .ic {
+        width: 14px;
+        height: 14px;
+      }
+      .zoom .v {
+        width: 48px;
+        height: 22px;
+        border-radius: 4px;
+        box-shadow: inset 0 0 0 1px var(--border-subtle);
+        display: inline-grid;
+        place-items: center;
+        color: var(--text-secondary);
+      }
+
+      /* --- dialogs (contract v2) --- */
+      .scrim {
+        position: absolute;
+        inset: 0;
+        background: var(--scrim);
+        display: grid;
+        place-items: center;
+        z-index: 70;
+      }
+      .dlg {
+        width: 720px;
+        max-height: calc(100% - 48px);
+        background: var(--surface-raised);
+        border-radius: 10px;
+        box-shadow: var(--shadow-3);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        position: relative;
+      }
+      .dlg.m {
+        width: 560px;
+      }
+      .dlg-h {
+        padding: 16px 12px 12px 20px;
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        flex: none;
+      }
+      .dlg-h .t {
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 1.3;
+      }
+      .dlg-h .d {
+        font-size: 13px;
+        color: var(--text-secondary);
+        margin-top: 2px;
+      }
+      .dlg-sum {
+        flex: none;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        background: var(--surface-panel);
+        border-top: 1px solid var(--border-subtle);
+        border-bottom: 1px solid var(--border-subtle);
+        font-size: 13px;
+      }
+      .t-dark .dlg-sum {
+        background: color-mix(in srgb, var(--surface-panel) 60%, var(--surface-raised));
+      }
+      .dlg-b {
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+        padding: 16px 20px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .dlg-b .fade {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 36px;
+        background: linear-gradient(to top, var(--surface-raised), transparent);
+        pointer-events: none;
+      }
+      .dlg-f {
+        flex: none;
+        padding: 12px 20px;
+        border-top: 1px solid var(--border-subtle);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--surface-raised);
+      }
+      .grp {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .opt {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        box-shadow: inset 0 0 0 1px var(--border);
+      }
+      .opt.on {
+        box-shadow: inset 0 0 0 1.5px var(--accent);
+        background: var(--accent-subtle);
+      }
+      .opt .tt {
+        font-weight: 600;
+      }
+      .opt .dd {
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+      .opt .fn {
+        margin-left: auto;
+        font-size: 12px;
+        color: var(--text-muted);
+        white-space: nowrap;
+      }
+      .card {
+        border-radius: 8px;
+        box-shadow: inset 0 0 0 1px var(--border);
+        padding: 12px 14px;
+      }
+      .disc {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        height: 36px;
+        padding: 0 12px;
+        border-radius: 8px;
+        box-shadow: inset 0 0 0 1px var(--border);
+        font-weight: 600;
+      }
+      .disc .r {
+        margin-left: auto;
+        font-weight: 400;
+        color: var(--text-muted);
+        font-size: 12px;
+      }
+
+      /* --- checks --- */
+      .ckgrp {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 14px 6px;
+      }
+      .ckgrp .sev {
+        font-size: 12px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .ck {
+        margin: 0 10px 8px;
+        border-radius: 8px;
+        box-shadow: inset 0 0 0 1px var(--border-subtle);
+        background: var(--surface-raised);
+        padding: 10px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        position: relative;
+      }
+      .t-light .ck {
+        background: var(--n-0);
+        box-shadow: inset 0 0 0 1px var(--border);
+      }
+      .ck::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 10px;
+        bottom: 10px;
+        width: 3px;
+        border-radius: 0 3px 3px 0;
+        background: var(--tone);
+      }
+      .ck.err {
+        --tone: var(--status-error-fg);
+      }
+      .ck.warn {
+        --tone: var(--status-warning-fg);
+      }
+      .ck.info {
+        --tone: var(--status-info-fg);
+      }
+      .ck .top {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11.5px;
+        color: var(--text-muted);
+      }
+      .ck .hl {
+        font-weight: 600;
+        font-size: 13px;
+        line-height: 1.35;
+      }
+      .ck .ex {
+        font-size: 12.5px;
+        color: var(--text-secondary);
+        line-height: 1.4;
+      }
+      .ck .acts {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        margin-top: 4px;
+      }
+      .ck .det {
+        margin-top: 4px;
+        padding: 8px 10px;
+        border-radius: 6px;
+        background: var(--surface-input);
+        font-size: 12px;
+        color: var(--text-secondary);
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 3px 12px;
+      }
+      .ck .det dt {
+        color: var(--text-muted);
+      }
+      .ck .det dd {
+        margin: 0;
+      }
+      .ck .sub {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12.5px;
+        padding: 3px 0;
+        color: var(--text-secondary);
+      }
+
+      /* --- start screen --- */
+      .start {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        background: var(--surface-app);
+      }
+      .start-top {
+        height: 48px;
+        flex: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 16px;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+      .start-main {
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+        padding: 28px 48px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+        max-width: 1180px;
+        width: 100%;
+        margin: 0 auto;
+      }
+      .disp {
+        font-size: 28px;
+        font-weight: 600;
+        letter-spacing: -0.015em;
+        line-height: 1.2;
+      }
+      .cards3 {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+      .ccard {
+        border-radius: 10px;
+        background: var(--surface-panel);
+        box-shadow: inset 0 0 0 1px var(--border);
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        position: relative;
+      }
+      .ccard.hov {
+        box-shadow:
+          inset 0 0 0 1px var(--accent-border),
+          var(--shadow-2);
+      }
+      .ccard .art {
+        height: 112px;
+        border-radius: 7px;
+        background: var(--surface-canvas);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        position: relative;
+        overflow: hidden;
+      }
+      .ccard .ct {
+        font-size: 16px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .ccard .cd {
+        font-size: 13px;
+        color: var(--text-secondary);
+        line-height: 1.45;
+      }
+      .ccard.future {
+        opacity: 0.92;
+      }
+      .rec {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 14px;
+      }
+      .rcard {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .rcard .th {
+        height: 132px;
+        border-radius: 8px;
+        background: var(--surface-canvas);
+        box-shadow: inset 0 0 0 1px var(--border-subtle);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+      .rcard .rn {
+        font-weight: 600;
+        font-size: 13px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .rcard .rm {
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+      .rcard.missing .th {
+        opacity: 0.5;
+      }
+      .mini {
+        position: relative;
+        box-shadow: 0 2px 8px rgb(0 0 0 / 0.35);
+      }
+      .mini i {
+        position: absolute;
+        left: 8%;
+        right: 8%;
+        border-radius: 1px;
+      }
+      .mini b {
+        position: absolute;
+        left: 25%;
+        right: 25%;
+        height: 2px;
+        border-radius: 1px;
+      }
+      .sbanner {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px 10px 14px;
+        border-radius: 8px;
+        background: var(--status-warning-bg);
+        box-shadow: inset 0 0 0 1px var(--status-warning-border);
+        font-size: 13px;
+      }
+      .sbanner > .ic {
+        color: var(--status-warning-fg);
+      }
+
+      /* --- settings --- */
+      .setg {
+        display: grid;
+        grid-template-columns: 176px minmax(0, 1fr);
+        min-height: 0;
+        flex: 1;
+      }
+      .setnav {
+        padding: 8px;
+        border-right: 1px solid var(--border-subtle);
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .setnav .mi.on {
+        background: var(--accent-subtle);
+        color: var(--text-primary);
+        font-weight: 600;
+      }
+      .themecard {
+        border-radius: 8px;
+        box-shadow: inset 0 0 0 1px var(--border);
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .themecard.on {
+        box-shadow: inset 0 0 0 2px var(--accent);
+      }
+      .themecard .pv {
+        height: 64px;
+        border-radius: 5px;
+        display: grid;
+        grid-template-columns: 14px 1fr 30px;
+        overflow: hidden;
+      }
+      .setrow {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+      .setrow:last-child {
+        border-bottom: 0;
+      }
+      .setrow .tx2 {
+        flex: 1;
+        min-width: 0;
+      }
+      .setrow .tx2 b {
+        display: block;
+        font-weight: 500;
+      }
+
+      /* --- popover: colours --- */
+      .cpop {
+        position: absolute;
+        z-index: 45;
+        width: 272px;
+        background: var(--surface-overlay);
+        border-radius: 10px;
+        box-shadow: var(--shadow-2);
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .palrow {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 6px;
+        border-radius: 6px;
+        font-size: 13px;
+      }
+      .palrow.on {
+        background: var(--accent-subtle);
+      }
+      .palrow .hex {
+        margin-left: auto;
+        color: var(--text-muted);
+        font-size: 12px;
+        font-variant-numeric: tabular-nums;
+      }
+      .swgrid {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .swgrid .sw {
+        width: 24px;
+        height: 24px;
+        border-radius: 5px;
+      }
+      .swgrid .sw.on {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      /* --- schematic diagrams (responsive notes) --- */
+      .schem {
+        display: grid;
+        gap: 3px;
+        background: #2a2c33;
+        border-radius: 6px;
+        padding: 3px;
+        font: 600 11px var(--font);
+        color: #d6d8e0;
+      }
+      .schem > div {
+        background: #1c1d22;
+        border-radius: 3px;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        padding: 4px;
+      }
+      .schem .cvz {
+        background: #0e0f12;
+        position: relative;
+      }
+      .schem .flt {
+        position: absolute;
+        left: 6px;
+        top: 6px;
+        bottom: 6px;
+        width: 34%;
+        background: #2b2d35;
+        border-radius: 4px;
+        box-shadow: 0 6px 18px rgb(0 0 0 / 0.5);
+        display: grid;
+        place-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <nav class="toc" aria-label="Sections">
+        <b>Package</b>
+        <a href="#overview"><span></span>Overview</a>
+        <a href="#system"><span></span>Design system</a>
+        <b>Mockups</b>
+        <a href="#m1"><span>1</span>Start screen</a>
+        <a href="#m2"><span>2</span>Editor, default</a>
+        <a href="#m3"><span>3</span>Text selected</a>
+        <a href="#m4"><span>4</span>Photo slot selected</a>
+        <a href="#m5"><span>5</span>Short Windows screen</a>
+        <a href="#m6"><span>6</span>Print Preview + safe areas</a>
+        <a href="#m7"><span>7</span>Checks panel</a>
+        <a href="#m8"><span>8</span>Export</a>
+        <a href="#m9"><span>9</span>Printer profile</a>
+        <a href="#m10"><span>10</span>dslrBooth import</a>
+        <a href="#m11"><span>11</span>Light theme</a>
+        <a href="#m12"><span>12</span>Settings</a>
+        <b>Notes</b>
+        <a href="#responsive"><span></span>Responsive behaviour</a>
+        <a href="#themes"><span></span>Theme notes</a>
+        <a href="#conventions"><span></span>Windows, Mac, access</a>
+        <a href="#decisions"><span></span>Open design decisions</a>
+        <a href="#checklist"><span></span>Owner checklist</a>
+      </nav>
+
+      <main>
+        <header class="top" id="overview">
+          <div class="eyebrow">WalkOne Template Studio · Phase 7B · B1 mockup checkpoint</div>
+          <h1>Editor refresh mockups for owner review</h1>
+          <p class="lede">
+            Static mockups of the refreshed Template Studio shell, built on the Phase 7A UX
+            architecture. They are pictures of the proposed app, drawn at real pixel sizes. Nothing
+            here is wired to the app, the project format or any app behaviour. Approve or amend the
+            visual direction; implementation (B2 onward) starts only after your sign-off.
+          </p>
+          <ul class="facts">
+            <li>Based on <code>docs/PHASE_7A_UX_ARCHITECTURE.md</code> (HEAD 710c6bb)</li>
+            <li>Review notes: <code>docs/PHASE_7B_B1_MOCKUP_REVIEW.md</code></li>
+            <li>Targets: 1920 × 1000 (roomy) and 1426 × 779 (Windows 125 %)</li>
+            <li>Dark default · Light shown</li>
+            <li>Sample content is fictional</li>
+          </ul>
+          <div class="controls" role="toolbar" aria-label="View options">
+            <button type="button" id="btn-fit" aria-pressed="true">Fit to page</button>
+            <button type="button" id="btn-actual" aria-pressed="false">Actual pixels (1:1)</button>
+            <button type="button" id="btn-ann" aria-pressed="true">Annotations</button>
+            <span class="hint">Use 1:1 on a real 1920 × 1080 screen to judge density.</span>
+          </div>
+        </header>
+
+        <section class="s" aria-labelledby="h-ov">
+          <h2 id="h-ov">Visual direction</h2>
+          <div class="notes">
+            <div>
+              <h4>Feel</h4>
+              <ul>
+                <li>A professional creative tool: Canva-easy to start, Figma-precise to finish.</li>
+                <li>Quiet, cool-neutral chrome so the artwork is the brightest thing on screen.</li>
+                <li>
+                  One accent (indigo) for selection, focus and the primary action. Status colours
+                  mean status only.
+                </li>
+                <li>Words before icons: rail labels, view-bar state words, toolbar verbs.</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Principles shown</h4>
+              <ul>
+                <li>
+                  Most-used controls first; secondary sections collapse with a one-line summary.
+                </li>
+                <li>Every state uses an icon and a word as well as colour.</li>
+                <li>No primary action below a fold: footers stick, summaries pin.</li>
+                <li>The artboard is never themed. Overlays keep their hue in both themes.</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Screen sizes</h4>
+              <ul>
+                <li><b>Roomy</b>: 1920 × 1000 CSS px (1920×1080 at 100 %, window maximised).</li>
+                <li>
+                  <b>Compact</b>: 1426 × 779 CSS px (the Windows laptop at 125 %), also stands in
+                  for 1536 × 800.
+                </li>
+                <li>
+                  Tiers switch on width and height separately (7A §30). The canvas never drops below
+                  520 × 400.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="s" id="system" aria-labelledby="h-sys">
+          <h2 id="h-sys">Design system</h2>
+          <p class="meta">
+            Three token layers (primitives → semantic → components). The sheet shows the semantic
+            layer and the main components in both themes.
+          </p>
+          <div class="fw" data-render="sheet" data-theme="dark" data-w="1440" data-h="900"></div>
+          <div style="height: 16px"></div>
+          <div class="fw" data-render="sheet" data-theme="light" data-w="1440" data-h="900"></div>
+          <div class="notes">
+            <div>
+              <h4>Typography</h4>
+              <ul>
+                <li>
+                  Inter for the interface (bundled, so Mac and Windows look the same), tabular
+                  numbers in every numeric field.
+                </li>
+                <li>
+                  Scale: 11 caps labels · 12 labels, helper, badges · 13 body, values, controls · 14
+                  document title, drawer titles · 16 dialog titles · 20 section headings · 28 Start
+                  display.
+                </li>
+                <li>
+                  Weights: 400 text, 500 controls, 600 titles and values that matter, 700 counts.
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4>Spacing and density</h4>
+              <ul>
+                <li>4-pt scale: 2 · 4 · 6 · 8 · 12 · 16 · 20 · 24 · 32 · 40.</li>
+                <li>
+                  Control heights: 28 in panels, 32 in dialogs, 40 on Start; hit targets ≥ 24 px.
+                </li>
+                <li>
+                  Panel header 34 · section header 34 · layer row 30 · status bar 28 · top bar 44 ·
+                  view bar 40.
+                </li>
+                <li>
+                  Radii: 4–6 controls, 8 cards, 10 dialogs, drawers and popovers. Pills are kept for
+                  nothing but toggles.
+                </li>
+              </ul>
+            </div>
+            <div class="q">
+              <h4>Decide</h4>
+              <ul>
+                <li>
+                  <b>Interface font:</b> bundled Inter (shown) or the system font (Segoe UI / SF) as
+                  7A §31 proposed.
+                </li>
+                <li>
+                  <b>Element-kind colours (D8):</b> photo slot orchid · text lime · image violet ·
+                  shape slate · group grey. Used in chips and icons only, never for selection.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="s" id="m1" aria-labelledby="h-m1">
+          <h2 id="h-m1">1 · Start screen</h2>
+          <p class="meta">1426 × 779 · Dark · first screen after launch, no project open</p>
+          <div class="fw" data-render="start" data-theme="dark" data-w="1426" data-h="779"></div>
+          <ul class="anns" aria-label="Annotations for mockup 1">
+            <li><i>1</i>Guided design, tagged Phase 7C. Hidden in the 7B build.</li>
+            <li><i>2</i>Recovered-work banner, shown only after "Decide later".</li>
+            <li><i>3</i>Three ways in. Blank design shown in its hover state.</li>
+            <li><i>4</i>A recent project whose file has moved: still listed, with Locate.</li>
+          </ul>
+          <div class="notes">
+            <div>
+              <h4>Solves</h4>
+              <ul>
+                <li>
+                  Today's Welcome screen is plain and has no place for the Guide or for recovered
+                  work.
+                </li>
+                <li>
+                  Three ways in, sized by intent; Open and Recent for people returning to a job.
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4>Look at</h4>
+              <ul>
+                <li>
+                  Guided design is drawn and tagged <i>Phase 7C</i>. In the 7B build the row shows
+                  only Blank and Import.
+                </li>
+                <li>
+                  The recovery banner only appears after "Decide later" in the recovery dialog.
+                </li>
+                <li>
+                  Recent shows thumbnails, format and age; a missing file stays visible with Locate
+                  and Remove.
+                </li>
+              </ul>
+            </div>
+            <div class="q">
+              <h4>Decide</h4>
+              <ul>
+                <li>
+                  Is a 7C-tagged Guided card acceptable in 7B, or hidden until it works (7A default:
+                  hidden)?
+                </li>
+                <li>Learn row: keep it (links to short help pages, P2) or drop it?</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="s" id="m2" aria-labelledby="h-m2">
+          <h2 id="h-m2">2 · Full Editor, default state</h2>
+          <p class="meta">
+            1920 × 1000 · Dark · nothing selected · Elements drawer docked · Properties shows the
+            project
+          </p>
+          <div
+            class="fw"
+            data-render="editorDefault"
+            data-theme="dark"
+            data-w="1920"
+            data-h="1000"
+          ></div>
+          <ul class="anns" aria-label="Annotations for mockup 2">
+            <li>
+              <i>1</i>Menus File · Edit · Arrange · View · Help. Arrange replaces Align; Help is
+              new.
+            </li>
+            <li><i>2</i>Project name with its state in words: Saved or Modified.</li>
+            <li>
+              <i>3</i>Checks with a count, then Save (secondary, greyed out while saved) and Export
+              (primary, D1).
+            </li>
+            <li><i>4</i>Labelled rail. Active item gets the accent tint and an edge bar.</li>
+            <li>
+              <i>5</i>View bar: what the canvas is showing, in words. Never saved, never printed.
+            </li>
+            <li><i>6</i>Nothing selected: Properties shows the project, format and printer.</li>
+            <li>
+              <i>7</i>Layers stacked below Properties on tall screens, with a resizable split.
+            </li>
+            <li>
+              <i>8</i>Status bar keeps facts only: format, recovery, Checks, printer, snap, zoom.
+            </li>
+          </ul>
+          <div class="notes">
+            <div>
+              <h4>Solves</h4>
+              <ul>
+                <li>
+                  Hidden modes: Sample photos, Safe areas and Overflow move from status-bar icons to
+                  labelled toggles above the artboard.
+                </li>
+                <li>
+                  Save was primary and Export looked secondary; Export is now the completion action.
+                </li>
+                <li>The Design drawer mixed purposes; it splits into Elements, Text and Colors.</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Look at</h4>
+              <ul>
+                <li>Canvas width at 1920: 1244 px with the drawer docked.</li>
+                <li>
+                  The checks count is amber (needs attention) because two layers have warnings.
+                </li>
+                <li>Bottom bar: nothing a user must act on lives only there.</li>
+              </ul>
+            </div>
+            <div class="q">
+              <h4>Decide</h4>
+              <ul>
+                <li>
+                  Top-bar order: Checks · Save · Export (shown). Undo and Redo stay as icons with
+                  tooltips.
+                </li>
+                <li>Drawer width 264 px (today 224).</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="s" id="m3" aria-labelledby="h-m3">
+          <h2 id="h-m3">3 · Text selected</h2>
+          <p class="meta">
+            1920 × 1000 · Dark · "Names" text selected · Text drawer · project modified
+          </p>
+          <div
+            class="fw"
+            data-render="editorText"
+            data-theme="dark"
+            data-w="1920"
+            data-h="1000"
+          ></div>
+          <ul class="anns" aria-label="Annotations for mockup 3">
+            <li>
+              <i>1</i>Selection toolbar: Edit text · font · size · colour · Arrange · Duplicate ·
+              More.
+            </li>
+            <li>
+              <i>2</i>Selection outline and handles use the one accent; kind colour never replaces
+              them.
+            </li>
+            <li><i>3</i>Pinned header: kind chip, layer name, kind, hide, lock, more.</li>
+            <li>
+              <i>4</i>Essentials: content, font, weight, size, colour, align. No header, always
+              open.
+            </li>
+            <li><i>5</i>Collapsed sections show a one-line summary of their values.</li>
+            <li><i>6</i>ADR-052 control drawn for discussion only. It is not part of 7B.</li>
+            <li><i>7</i>Text drawer: presets drawn in their own style, fonts in this project.</li>
+          </ul>
+          <div class="notes">
+            <div>
+              <h4>Solves</h4>
+              <ul>
+                <li>
+                  Today: up to eight equal-weight sections in one long scroll. Now: six essentials,
+                  then three summaries.
+                </li>
+                <li>Style presets move out of Properties into the Text drawer.</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Look at</h4>
+              <ul>
+                <li>
+                  The colour field says <i>Gold</i> with a link icon: it follows the Event Palette.
+                </li>
+                <li>
+                  Spacing &amp; box is open, to show an expanded section next to collapsed ones.
+                </li>
+                <li>Kind colour (lime for text) appears in the chip and the Layers row only.</li>
+              </ul>
+            </div>
+            <div class="q">
+              <h4>Decide</h4>
+              <ul>
+                <li>
+                  Toolbar verbs: Duplicate inline and Delete under More (shown), or both inline?
+                </li>
+                <li>Does the toolbar repeat font, size and colour (shown) or only offer verbs?</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="s" id="m4" aria-labelledby="h-m4">
+          <h2 id="h-m4">4 · Photo slot selected</h2>
+          <p class="meta">
+            1920 × 1000 · Dark · Photo 2 selected · sample photos on · Photos drawer
+          </p>
+          <div
+            class="fw"
+            data-render="editorPhoto"
+            data-theme="dark"
+            data-w="1920"
+            data-h="1000"
+          ></div>
+          <ul class="anns" aria-label="Annotations for mockup 4">
+            <li><i>1</i>Toolbar: Photo #2 · Reposition · Frame · Arrange · Duplicate · More.</li>
+            <li><i>2</i>Corner handles only: photo slots keep their shape.</li>
+            <li><i>3</i>"Sample · #2" tag: the picture is a preview, the slot is the template.</li>
+            <li><i>4</i>Essentials: photo number, fit, frame.</li>
+            <li><i>5</i>Preview-only box with a dashed edge: not saved, not exported.</li>
+            <li><i>6</i>Photos drawer: slot summary and the sample-photo controls in one place.</li>
+          </ul>
+          <div class="notes">
+            <div>
+              <h4>Solves</h4>
+              <ul>
+                <li>
+                  Photo slot and sample photo were easy to confuse. The slot is part of the
+                  template; the sample is only a preview.
+                </li>
+                <li>Sample controls were split between the status bar and Properties.</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Look at</h4>
+              <ul>
+                <li>
+                  Photo 3 is drawn with samples off to show the empty-slot look (dashed orchid
+                  outline, big number).
+                </li>
+                <li>No image-layer controls (role, replace) appear for a photo slot.</li>
+                <li>
+                  Position &amp; size says "shape locked"; the reason sits in the field tooltip.
+                </li>
+              </ul>
+            </div>
+            <div class="q">
+              <h4>Decide</h4>
+              <ul>
+                <li>
+                  Show the mixed state (one slot without a sample) in the real app, or keep samples
+                  all-on/all-off?
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="s" id="m5" aria-labelledby="h-m5">
+          <h2 id="h-m5">5 · Short-height Windows editor</h2>
+          <p class="meta">
+            1426 × 779 · Dark · Windows (Alt pressed, Ctrl shortcuts) · Uploads drawer floating ·
+            Properties | Layers tabs
+          </p>
+          <div
+            class="fw"
+            data-render="editorShort"
+            data-theme="dark"
+            data-w="1426"
+            data-h="779"
+          ></div>
+          <ul class="anns" aria-label="Annotations for mockup 5">
+            <li><i>1</i>Alt underlines the menu access keys; F10 focuses the menu bar.</li>
+            <li><i>2</i>Tooltips show Ctrl shortcuts on Windows (Ctrl+Y redo), ⌘ only on Mac.</li>
+            <li><i>3</i>Export stays in the top bar at every size.</li>
+            <li>
+              <i>4</i>Below 1600 px wide the drawer floats over the canvas. Pin keeps it open.
+            </li>
+            <li><i>5</i>View bar keeps labels; it still fits at 1054 px.</li>
+            <li><i>6</i>Below 860 px tall: Properties | Layers become tabs.</li>
+            <li>
+              <i>7</i>Secondary sections start collapsed; a fade and scrollbar show there is more.
+            </li>
+            <li>
+              <i>8</i>Status bar drops the pixel size and selection; Checks and zoom never drop.
+            </li>
+          </ul>
+          <div class="notes">
+            <div>
+              <h4>Solves</h4>
+              <ul>
+                <li>
+                  Windows check at 1920×1080 / 125 %: Properties ran under the status bar and Layers
+                  squeezed it.
+                </li>
+                <li>Ctrl shortcut labels and menu keyboard access (Alt, F10) were missing.</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Look at</h4>
+              <ul>
+                <li>
+                  Canvas area: 1054 × 671 px (at least 520 × 400). The artboard is still 16 % zoom
+                  and fully visible.
+                </li>
+                <li>
+                  Essentials stay visible without scrolling; everything else is one click away.
+                </li>
+              </ul>
+            </div>
+            <div class="q">
+              <h4>Decide</h4>
+              <ul>
+                <li>
+                  Does the floating drawer close after adding something (shown as 7A proposes),
+                  unless pinned?
+                </li>
+                <li>Right column 300 px at this size: enough?</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="s" id="m6" aria-labelledby="h-m6">
+          <h2 id="h-m6">6 · Print Preview with safe areas</h2>
+          <p class="meta">
+            1920 × 1000 · Dark · 4×6 sheet with both strip copies and the centre cut · Safe areas
+            menu open
+          </p>
+          <div
+            class="fw"
+            data-render="editorPrint"
+            data-theme="dark"
+            data-w="1920"
+            data-h="1000"
+          ></div>
+          <ul class="anns" aria-label="Annotations for mockup 6">
+            <li><i>1</i>Read-only banner with a way back: Edit in Design.</li>
+            <li>
+              <i>2</i>Both copies, drawn from the one strip; the cut is a labelled long-dash line.
+            </li>
+            <li>
+              <i>3</i>Hatched band = may be trimmed (estimated). Dashed teal = keep important
+              content inside.
+            </li>
+            <li>
+              <i>4</i>The date sits 2.5 mm from the bottom edge: red dashed outline on both copies.
+            </li>
+            <li>
+              <i>5</i>The legend lives in the Safe areas menu, with the printer name and how sure we
+              are.
+            </li>
+            <li><i>6</i>Layers marks the flagged layer with a warning icon.</li>
+          </ul>
+          <div class="notes">
+            <div>
+              <h4>Solves</h4>
+              <ul>
+                <li>
+                  The legend chip under the artboard competed with the artwork; it moves into the
+                  menu, plus a one-time hint.
+                </li>
+                <li>
+                  The Safe areas tooltip finding: the toggle has a label, and the menu says the
+                  guide is never printed.
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4>Look at</h4>
+              <ul>
+                <li>
+                  Overlays are thin and get a dark halo, so they read on light and dark artwork
+                  without overpowering it.
+                </li>
+                <li>The sheet is 2400 × 3600 px at 600 DPI in the status bar.</li>
+              </ul>
+            </div>
+            <div class="q">
+              <h4>Decide</h4>
+              <ul>
+                <li>Trim hatch colour: orange (shown) or a neutral grey hatch?</li>
+                <li>Show the flag on both copies (shown) or only the left one?</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="s" id="m7" aria-labelledby="h-m7">
+          <h2 id="h-m7">7 · Checks panel</h2>
+          <p class="meta">
+            1920 × 1000 · Dark · opened from the top-bar Checks button · "Select" on the date issue
+            has selected that layer
+          </p>
+          <div
+            class="fw"
+            data-render="editorChecks"
+            data-theme="dark"
+            data-w="1920"
+            data-h="1000"
+          ></div>
+          <ul class="anns" aria-label="Annotations for mockup 7">
+            <li><i>1</i>Summary first: counts by severity, then filters.</li>
+            <li>
+              <i>2</i>Severity groups (Error, Needs attention, Good to know), then topic on each
+              item.
+            </li>
+            <li>
+              <i>3</i>Repeats merge: one item for 3 texts with the same missing font, with Select
+              all.
+            </li>
+            <li><i>4</i>Details opens the technical facts. Codes never show by default.</li>
+            <li>
+              <i>5</i>Fix buttons are a later idea (B28), drawn greyed out and tagged "Later".
+            </li>
+            <li><i>6</i>Good to know sits last; the rest folds under "2 more".</li>
+          </ul>
+          <div class="notes">
+            <div>
+              <h4>Solves</h4>
+              <ul>
+                <li>
+                  Checks lived in four places (export list, safe-area status, import notes, font
+                  cards) with four styles.
+                </li>
+                <li>
+                  Vendor terms (ZIndex, unit flags, driver page) were mixed into the main message.
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4>Look at</h4>
+              <ul>
+                <li>
+                  The panel opens where drawers open, so Properties stays visible for fixing the
+                  selected layer.
+                </li>
+                <li>
+                  The items are invented to show every severity; this project would not have them
+                  all.
+                </li>
+              </ul>
+            </div>
+            <div class="q">
+              <h4>Decide</h4>
+              <ul>
+                <li>
+                  Checks panel on the left in the drawer slot (shown), or on the right over
+                  Properties?
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="s" id="m8" aria-labelledby="h-m8">
+          <h2 id="h-m8">8 · Export dialog</h2>
+          <p class="meta">
+            1426 × 779 · Dark · the size where Export used to push the printer row and Export button
+            out of sight
+          </p>
+          <div
+            class="fw"
+            data-render="exportDlg"
+            data-theme="dark"
+            data-w="1426"
+            data-h="779"
+          ></div>
+          <ul class="anns" aria-label="Annotations for mockup 8">
+            <li>
+              <i>1</i>Pinned summary: files, checks, printer, in one line. It never scrolls away.
+            </li>
+            <li><i>2</i>Deliverables grouped by where they go, each with its file name.</li>
+            <li><i>3</i>Checks collapsed to one row; any error would open this automatically.</li>
+            <li>
+              <i>4</i>Sticky footer: folder, Cancel, Export. Visible at 779 px without scrolling.
+            </li>
+          </ul>
+          <div class="notes">
+            <div>
+              <h4>Solves</h4>
+              <ul>
+                <li>
+                  Windows check: the Output Profile row and printer checks were below the fold at
+                  125 %.
+                </li>
+                <li>The dialog listed every check inline; now it gives a count and a way in.</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Look at</h4>
+              <ul>
+                <li>Primary button names the outcome: "Export 3 files".</li>
+                <li>The client proof says "Not for printing" where you choose it.</li>
+                <li>The semantic layer package is not in this dialog (7A retired it from here).</li>
+              </ul>
+            </div>
+            <div class="q">
+              <h4>Decide</h4>
+              <ul>
+                <li>
+                  Presets ("For dslrBooth", "Print files", "Client proof") above the list are P2.
+                  Wanted earlier?
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="s" id="m9" aria-labelledby="h-m9">
+          <h2 id="h-m9">9 · Printer profile dialog</h2>
+          <p class="meta">
+            1426 × 779 · Dark · DNP DS-RX1 · plain-language summary first, evidence by tier below
+          </p>
+          <div
+            class="fw"
+            data-render="profileDlg"
+            data-theme="dark"
+            data-w="1426"
+            data-h="779"
+          ></div>
+          <ul class="anns" aria-label="Annotations for mockup 9">
+            <li><i>1</i>Profile name with overall confidence, shown as a tier badge.</li>
+            <li><i>2</i>What to do in your design, in three lines with their evidence.</li>
+            <li>
+              <i>3</i>Latest test print summarised in user words. No exact trim figures claimed.
+            </li>
+            <li>
+              <i>4</i>Output guidance (what this app shows) kept apart from printer setup (done on
+              the booth PC).
+            </li>
+            <li>
+              <i>5</i>Evidence grouped Verified · Observed · Estimated · Reference · Unknown: icon,
+              word and tone.
+            </li>
+            <li><i>6</i>This project's checks are a link, not repeated here.</li>
+          </ul>
+          <div class="notes">
+            <div>
+              <h4>Solves</h4>
+              <ul>
+                <li>
+                  Windows check: evidence badges were too alike, a developer note showed, and the
+                  provisional sentence was awkward.
+                </li>
+                <li>A long flat list became a summary card, setup steps and grouped details.</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Look at</h4>
+              <ul>
+                <li>No file paths and no notes for developers.</li>
+                <li>
+                  3 mm stays the guidance. The visual pass is shown as Observed, not Verified.
+                </li>
+              </ul>
+            </div>
+            <div class="q">
+              <h4>Decide</h4>
+              <ul>
+                <li>
+                  Record the visual print pass in the profile data as Observed? That is a data-only
+                  change and needs your approval.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="s" id="m10" aria-labelledby="h-m10">
+          <h2 id="h-m10">10 · dslrBooth import</h2>
+          <p class="meta">
+            1426 × 779 · Dark · a two-up 4×6 template detected · technical notes folded away
+          </p>
+          <div
+            class="fw"
+            data-render="importDlg"
+            data-theme="dark"
+            data-w="1426"
+            data-h="779"
+          ></div>
+          <ul class="anns" aria-label="Annotations for mockup 10">
+            <li><i>1</i>What was found, in one sentence, next to the preview.</li>
+            <li><i>2</i>The choice drawn as pictures, with Recommended on the usual answer.</li>
+            <li><i>3</i>"For you": only what changes your work.</li>
+            <li>
+              <i>4</i>Compatibility details: stacking ties, auto size, unit flags. Closed by
+              default.
+            </li>
+          </ul>
+          <div class="notes">
+            <div>
+              <h4>Solves</h4>
+              <ul>
+                <li>"What to know" mixed beginner notes with vendor internals.</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Look at</h4>
+              <ul>
+                <li>The missing-font note uses the same wording as Checks and Properties.</li>
+                <li>After import, a one-time banner points to Checks › dslrBooth.</li>
+              </ul>
+            </div>
+            <div class="q">
+              <h4>Decide</h4>
+              <ul>
+                <li>Default choice for a two-up sheet stays "One strip, printed two per sheet"?</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="s" id="m11" aria-labelledby="h-m11">
+          <h2 id="h-m11">11 · Light theme</h2>
+          <p class="meta">
+            1920 × 1000 · Light · text selected · Colors drawer with the Event Palette · colour
+            popover open · safe areas on
+          </p>
+          <div
+            class="fw"
+            data-render="editorLight"
+            data-theme="light"
+            data-w="1920"
+            data-h="1000"
+          ></div>
+          <ul class="anns" aria-label="Annotations for mockup 11">
+            <li><i>1</i>Colors drawer: Event Palette rows with name, hex and "Used by".</li>
+            <li>
+              <i>2</i>Colour popover: Event Palette first, then colours in this design, then custom.
+            </li>
+            <li><i>3</i>The artboard looks exactly as in Dark. Only the room around it changes.</li>
+            <li><i>4</i>Safe-area hues are the same as in Dark; the halo keeps them visible.</li>
+          </ul>
+          <div class="notes">
+            <div>
+              <h4>Approach</h4>
+              <ul>
+                <li>
+                  Not an inversion: white panels, a soft grey canvas surround so the artboard still
+                  floats, darker accent and status hues for contrast.
+                </li>
+                <li>Shadows replace some borders on raised surfaces.</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Look at</h4>
+              <ul>
+                <li>Warnings, kind chips and the selected Layers row keep their meaning.</li>
+                <li>
+                  Selecting a palette colour links it (chain icon); "Use fixed colour" unlinks.
+                </li>
+              </ul>
+            </div>
+            <div class="q">
+              <h4>Decide</h4>
+              <ul>
+                <li>Is Light good enough to ship in 7B alongside Dark (B12), or later?</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="s" id="m12" aria-labelledby="h-m12">
+          <h2 id="h-m12">12 · Settings</h2>
+          <p class="meta">
+            1426 × 779 · Appearance (Dark) and Printing + Editor (Light) · settings for this
+            computer, never stored in a project
+          </p>
+          <div
+            class="fw"
+            data-render="settingsA"
+            data-theme="dark"
+            data-w="1426"
+            data-h="779"
+          ></div>
+          <div style="height: 16px"></div>
+          <div
+            class="fw"
+            data-render="settingsB"
+            data-theme="light"
+            data-w="1426"
+            data-h="779"
+          ></div>
+          <div class="notes">
+            <div>
+              <h4>Solves</h4>
+              <ul>
+                <li>Appearance, the default printer and editor preferences had no home.</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Look at</h4>
+              <ul>
+                <li>Three sections only; Company appears later, once Company Profile exists.</li>
+                <li>UI scale (90–125 %) is separate from canvas zoom.</li>
+                <li>
+                  The status-bar printer chip stays the quick switch; Settings sets the default.
+                </li>
+              </ul>
+            </div>
+            <div class="q">
+              <h4>Decide</h4>
+              <ul>
+                <li>Settings items: anything missing, or anything that should not be here?</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="s" id="responsive" aria-labelledby="h-resp">
+          <h2 id="h-resp">Responsive behaviour</h2>
+          <p class="meta">
+            Width and height are judged separately. The same rules apply on Mac and Windows.
+          </p>
+          <div class="two">
+            <div>
+              <h3>Roomy · width ≥ 1600, height ≥ 860</h3>
+              <div
+                class="schem"
+                style="
+                  grid-template-columns: 30px 90px 1fr 120px;
+                  grid-template-rows: 18px 210px 14px;
+                "
+              >
+                <div style="grid-column: 1 / 5">Top bar · Checks · Save · Export</div>
+                <div>Rail</div>
+                <div>Drawer<br />docked</div>
+                <div class="cvz">Canvas</div>
+                <div
+                  style="
+                    display: grid;
+                    grid-template-rows: 1.4fr 1fr;
+                    gap: 3px;
+                    background: none;
+                    padding: 0;
+                  "
+                >
+                  <div
+                    style="
+                      background: #1c1d22;
+                      border-radius: 3px;
+                      display: grid;
+                      place-items: center;
+                    "
+                  >
+                    Properties
+                  </div>
+                  <div
+                    style="
+                      background: #1c1d22;
+                      border-radius: 3px;
+                      display: grid;
+                      place-items: center;
+                    "
+                  >
+                    Layers
+                  </div>
+                </div>
+                <div style="grid-column: 1 / 5">Status bar</div>
+              </div>
+            </div>
+            <div>
+              <h3>Compact · width &lt; 1600 or height &lt; 860</h3>
+              <div
+                class="schem"
+                style="grid-template-columns: 30px 1fr 110px; grid-template-rows: 18px 210px 14px"
+              >
+                <div style="grid-column: 1 / 4">Top bar (unchanged)</div>
+                <div>Rail</div>
+                <div class="cvz"><span class="flt">Drawer floats</span>Canvas</div>
+                <div>Properties | Layers<br />tabs</div>
+                <div style="grid-column: 1 / 4">Status bar (condensed)</div>
+              </div>
+            </div>
+          </div>
+          <div class="tbl" style="margin-top: 16px">
+            <table>
+              <thead>
+                <tr>
+                  <th>Condition</th>
+                  <th>Behaviour</th>
+                  <th>Shown in</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Width ≥ 1600</td>
+                  <td>Drawer docks and pushes the canvas; right column 340 px</td>
+                  <td>2, 3, 4, 6, 7, 11</td>
+                </tr>
+                <tr>
+                  <td>1280 – 1599</td>
+                  <td>Drawer floats over the canvas (pin to keep open); right column 300 px</td>
+                  <td>5</td>
+                </tr>
+                <tr>
+                  <td>Width &lt; 1280</td>
+                  <td>
+                    Right column 280 px; view-bar toggles shorten to icon + short word; status bar
+                    condensed
+                  </td>
+                  <td>(rule only)</td>
+                </tr>
+                <tr>
+                  <td>Height ≥ 860</td>
+                  <td>Properties above Layers, resizable split</td>
+                  <td>2, 3, 4, 6, 7, 11</td>
+                </tr>
+                <tr>
+                  <td>Height &lt; 860</td>
+                  <td>Properties | Layers tabs; secondary sections start collapsed</td>
+                  <td>5</td>
+                </tr>
+                <tr>
+                  <td>Height &lt; 720</td>
+                  <td>
+                    Selection toolbar compact (icons with tooltips); dialogs use the full height
+                    minus 24 px
+                  </td>
+                  <td>(rule only)</td>
+                </tr>
+                <tr>
+                  <td>Any size</td>
+                  <td>
+                    Canvas ≥ 520 × 400; dialog footers and summaries always visible; Export always
+                    in the top bar
+                  </td>
+                  <td>5, 8, 9, 10, 12</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="s" id="themes" aria-labelledby="h-th">
+          <h2 id="h-th">Theme notes</h2>
+          <div class="two">
+            <div class="prose">
+              <h3>Dark (default, D3)</h3>
+              <p>
+                Canvas surround darkest, then app chrome, then panels, then raised surfaces
+                (dialogs, popovers). Cool neutrals with a slight indigo bias, so the indigo accent
+                belongs. Text on panels reaches at least 4.5:1; labels stay readable rather than
+                faint.
+              </p>
+              <p>Matches today's values closely, so B2 (tokens) changes structure, not the look.</p>
+            </div>
+            <div class="prose">
+              <h3>Light, and Match system</h3>
+              <p>
+                White panels on a near-white app frame, with a grey canvas surround (#e6e7ec) so a
+                white or cream artboard still stands out. The accent darkens to keep 4.5:1 on white.
+                Status hues use darker foregrounds on tinted fills.
+              </p>
+              <p>
+                Match system follows the OS setting live. The artboard and the canvas overlays
+                (safe, trim, cut, flag) never change with the theme.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="s" id="conventions" aria-labelledby="h-cv">
+          <h2 id="h-cv">Windows, Mac and accessibility</h2>
+          <div class="tbl">
+            <table>
+              <thead>
+                <tr>
+                  <th>Topic</th>
+                  <th>Windows</th>
+                  <th>macOS</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Shortcut labels</td>
+                  <td>Ctrl+S, Ctrl+E, Ctrl+Z, <b>Ctrl+Y</b> and Ctrl+Shift+Z for redo</td>
+                  <td>⌘S, ⌘E, ⌘Z, ⇧⌘Z</td>
+                </tr>
+                <tr>
+                  <td>Menus</td>
+                  <td>In-app menu bar; Alt shows underlines; Alt+F/E/A/V/H opens; F10 focuses</td>
+                  <td>Native app menu plus the in-app bar (ADR-035)</td>
+                </tr>
+                <tr>
+                  <td>Title bar</td>
+                  <td>Native, with snap layouts</td>
+                  <td>Native, traffic lights</td>
+                </tr>
+                <tr>
+                  <td>Dialog buttons</td>
+                  <td colspan="2">
+                    Same in-app order on both: primary on the right, Cancel to its left (D13)
+                  </td>
+                </tr>
+                <tr>
+                  <td>Reveal files</td>
+                  <td>Show in Explorer</td>
+                  <td>Show in Finder</td>
+                </tr>
+                <tr>
+                  <td>Scrollbars</td>
+                  <td>Thin, token-coloured, visible track</td>
+                  <td>System overlay scrollbars</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="notes">
+            <div>
+              <h4>F6 region order</h4>
+              <ol style="margin: 0; padding-left: 18px">
+                <li>Top bar (menus, then document actions)</li>
+                <li>Rail</li>
+                <li>Open drawer or Checks panel</li>
+                <li>View bar</li>
+                <li>Canvas</li>
+                <li>Properties | Layers (each tab, or each stacked panel)</li>
+                <li>Status bar</li>
+              </ol>
+            </div>
+            <div>
+              <h4>Visible in the mockups</h4>
+              <ul>
+                <li>
+                  A 2 px focus ring on keyboard focus (component sheet; Settings theme cards).
+                </li>
+                <li>Hit targets 24 px or more; toolbar and rail targets 28 px or more.</li>
+                <li>
+                  Every state has a word or icon as well as a colour: Saved/Modified, severity,
+                  evidence tier, toggle state.
+                </li>
+                <li>
+                  No interface text below 11 px; 11 px is only used for uppercase labels and counts.
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4>Escape order</h4>
+              <ul>
+                <li>Popover → drawer → mode (text edit, reposition) → selection.</li>
+                <li>Screen-reader support is planned for B24, not in these mockups.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="s" id="decisions" aria-labelledby="h-dec">
+          <h2 id="h-dec">Open design decisions</h2>
+          <p class="meta">
+            Decisions already approved for this pass (D1–D14 working answers) are applied. These are
+            the new questions the mockups raise.
+          </p>
+          <div class="tbl">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Question</th>
+                  <th>Shown / recommended</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>V1</td>
+                  <td>Interface font</td>
+                  <td>
+                    Bundled Inter (same look on Mac and Windows, strong numerals). Alternative:
+                    system UI font
+                  </td>
+                </tr>
+                <tr>
+                  <td>V2</td>
+                  <td>Kind colours (D8 hues)</td>
+                  <td>Photo orchid · Text lime · Image violet · Shape slate · Group grey</td>
+                </tr>
+                <tr>
+                  <td>V3</td>
+                  <td>Guided design card before 7C</td>
+                  <td>
+                    Hidden in the 7B build (7A rule); drawn here with a 7C tag only for review
+                  </td>
+                </tr>
+                <tr>
+                  <td>V4</td>
+                  <td>Selection toolbar content</td>
+                  <td>Verb + the three most-used values; Delete under More</td>
+                </tr>
+                <tr>
+                  <td>V5</td>
+                  <td>Where the Checks panel opens</td>
+                  <td>Left, in the drawer slot, so Properties stays visible</td>
+                </tr>
+                <tr>
+                  <td>V6</td>
+                  <td>Trim hatch colour</td>
+                  <td>Orange hatch; alternative neutral grey</td>
+                </tr>
+                <tr>
+                  <td>V7</td>
+                  <td>Floating drawer closes after an add</td>
+                  <td>Yes, unless pinned</td>
+                </tr>
+                <tr>
+                  <td>V8</td>
+                  <td>Record the visual DNP print pass in the profile data</td>
+                  <td>As Observed (data-only change, separate approval)</td>
+                </tr>
+                <tr>
+                  <td>V9</td>
+                  <td>Learn row on Start</td>
+                  <td>Keep, filled when help pages exist (P2)</td>
+                </tr>
+                <tr>
+                  <td>V10</td>
+                  <td>Drawer width</td>
+                  <td>264 px docked (today 224) to fit previews and palette rows</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="s" id="checklist" aria-labelledby="h-ck">
+          <h2 id="h-ck">Owner review checklist</h2>
+          <p class="meta">
+            For each item: approve, or amend with a note. This approves the visual direction only,
+            not implementation.
+          </p>
+          <ol class="checklist">
+            <li>Start screen structure <span>· mockup 1</span></li>
+            <li>Top-bar hierarchy <span>· 2</span></li>
+            <li>Rail structure <span>· 2–5</span></li>
+            <li>Canvas-state bar <span>· 2, 6</span></li>
+            <li>Properties hierarchy <span>· 3, 4</span></li>
+            <li>Properties | Layers short-screen tabs <span>· 5</span></li>
+            <li>Selection toolbar <span>· 3, 4</span></li>
+            <li>Checks panel <span>· 7</span></li>
+            <li>Export dialog <span>· 8</span></li>
+            <li>Output Profile dialog <span>· 9</span></li>
+            <li>dslrBooth Import simplification <span>· 10</span></li>
+            <li>Settings architecture <span>· 12</span></li>
+            <li>Dark-theme direction <span>· all</span></li>
+            <li>Light-theme direction <span>· 11, 12</span></li>
+            <li>Spacing and density <span>· view at 1:1</span></li>
+            <li>Typography <span>· system</span></li>
+            <li>Element-kind colours <span>· system, 3, 4</span></li>
+            <li>Responsive behaviour <span>· 5, notes</span></li>
+          </ol>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      /* Design-only mockup renderer. Builds static pictures of the proposed UI from small template
+     functions. No app code, no project data, no network. Sample content is fictional. */
+      ;(function () {
+        'use strict'
+
+        // ---------- icons (24×24 stroke paths) ----------
+        const I = {
+          undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>',
+          redo: '<path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/>',
+          alert:
+            '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+          error: '<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/>',
+          info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>',
+          okc: '<circle cx="12" cy="12" r="10"/><path d="m8.5 12 2.5 2.5 4.5-5"/>',
+          check: '<path d="M20 6 9 17l-5-5"/>',
+          eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+          lock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+          unlock:
+            '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.6-1.8"/>',
+          more: '<circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/>',
+          plus: '<path d="M12 5v14M5 12h14"/>',
+          minus: '<path d="M5 12h14"/>',
+          type: '<path d="M4 7V4h16v3M9 20h6M12 4v16"/>',
+          image:
+            '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/>',
+          shapes:
+            '<path d="M8.3 10a.7.7 0 0 1-.6-1.1l3.7-6a.7.7 0 0 1 1.2 0l3.7 6a.7.7 0 0 1-.6 1.1z"/><rect x="3" y="14" width="7" height="7" rx="1"/><circle cx="17.5" cy="17.5" r="3.5"/>',
+          camera:
+            '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/>',
+          upload:
+            '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/>',
+          exportI: '<path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>',
+          palette:
+            '<circle cx="13.5" cy="6.5" r=".6"/><circle cx="17.5" cy="10.5" r=".6"/><circle cx="8.5" cy="7.5" r=".6"/><circle cx="6.5" cy="12.5" r=".6"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.6-.7 1.6-1.7 0-.4-.2-.8-.4-1.1-.3-.3-.4-.7-.4-1.1a1.6 1.6 0 0 1 1.6-1.7h2c3.1 0 5.6-2.5 5.6-5.6C22 6 17.5 2 12 2z"/>',
+          cd: '<path d="m6 9 6 6 6-6"/>',
+          cr: '<path d="m9 18 6-6-6-6"/>',
+          search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+          x: '<path d="M18 6 6 18M6 6l12 12"/>',
+          folder:
+            '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.7-.9l-.8-1.2A2 2 0 0 0 7.9 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2z"/>',
+          sliders:
+            '<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>',
+          help: '<circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/>',
+          unknown:
+            '<circle cx="12" cy="12" r="9.5"/><path d="M9.3 9.2a2.8 2.8 0 0 1 5.4.9c0 1.8-2.7 2.6-2.7 2.6M12 16.6h.01"/>',
+          shuffle:
+            '<path d="m18 14 4 4-4 4M18 2l4 4-4 4"/><path d="M2 18h1.4a4 4 0 0 0 3.3-1.7l6.6-9.6A4 4 0 0 1 16.6 5H22M2 6h1.4a4 4 0 0 1 3.4 1.8M22 18h-5.4a4 4 0 0 1-3.3-1.7l-.4-.6"/>',
+          move: '<path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M2 12h20M12 2v20"/>',
+          copy: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2"/>',
+          trash:
+            '<path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+          layers: '<path d="m12 2 10 5-10 5L2 7z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/>',
+          ruler:
+            '<path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.4 2.4 0 0 1 0-3.4l2.6-2.6a2.4 2.4 0 0 1 3.4 0z"/><path d="m14.5 12.5 2-2M11.5 9.5l2-2M8.5 6.5l2-2M17.5 15.5l2-2"/>',
+          approx:
+            '<path d="M4 9.5c2.2-2.4 4.4-2.4 6.6 0s4.4 2.4 6.6 0c1-1 1.9-1.5 2.8-1.5"/><path d="M4 15.5c2.2-2.4 4.4-2.4 6.6 0s4.4 2.4 6.6 0c1-1 1.9-1.5 2.8-1.5"/>',
+          link: '<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>',
+          pin: '<path d="M12 17v5"/><path d="M9 10.8a2 2 0 0 1-1.1 1.8l-1.8.9A2 2 0 0 0 5 15.2V17h14v-1.8a2 2 0 0 0-1.1-1.8l-1.8-.9A2 2 0 0 1 15 10.8V7h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1z"/>',
+          grid: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>',
+          file: '<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5z"/><path d="M14 2v6h6"/>',
+          zip: '<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5z"/><path d="M14 2v6h6M10 6h1M10 9h1M10 12h1M10 15h1"/>',
+          sparkle:
+            '<path d="M9.9 15.5A2 2 0 0 0 8.5 14l-6.1-1.6a.5.5 0 0 1 0-1L8.5 9.9A2 2 0 0 0 10 8.5l1.6-6.1a.5.5 0 0 1 1 0L14 8.5A2 2 0 0 0 15.5 10l6.1 1.6a.5.5 0 0 1 0 1L15.5 14a2 2 0 0 0-1.4 1.4l-1.6 6.1a.5.5 0 0 1-1 0z"/>',
+          square: '<rect x="4" y="4" width="16" height="16" rx="1.5"/>',
+          group:
+            '<rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="3 3"/><rect x="7" y="7" width="10" height="10" rx="1"/>',
+          line: '<path d="M5 19 19 5"/>',
+          al: '<path d="M21 6H3M15 12H3M17 18H3"/>',
+          ac: '<path d="M21 6H3M17 12H7M19 18H5"/>',
+          ar: '<path d="M21 6H3M21 12H9M21 18H7"/>',
+          clock: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+          printer:
+            '<path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>',
+          frameI:
+            '<rect x="3" y="3" width="18" height="18" rx="1"/><rect x="7" y="7" width="10" height="10"/>',
+          arrange:
+            '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 4H5a1 1 0 0 0-1 1v11"/>',
+          edit: '<path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/>',
+          sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+          moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/>',
+          monitor: '<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>',
+          keyboard:
+            '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M7 16h10"/>',
+          book: '<path d="M2 4h7a3 3 0 0 1 3 3v14a2 2 0 0 0-2-2H2zM22 4h-7a3 3 0 0 0-3 3v14a2 2 0 0 1 2-2h8z"/>',
+          reset: '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
+          scan: '<path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>'
+        }
+        const ic = (n, c = '') =>
+          `<svg class="ic ${c}" viewBox="0 0 24 24" aria-hidden="true">${I[n] || ''}</svg>`
+        const chev = () => `<span class="chev">${ic('cd', 's14')}</span>`
+        const ann = (n, x, y) => `<span class="ann" style="left:${x}px;top:${y}px">${n}</span>`
+        const kindIcon = {
+          photo: 'camera',
+          text: 'type',
+          image: 'image',
+          shape: 'square',
+          group: 'group',
+          project: 'file'
+        }
+        const kc = (k, sm) => `<span class="kc ${sm ? 'sm' : ''} k-${k}">${ic(kindIcon[k])}</span>`
+        const tierIcon = {
+          verified: 'okc',
+          observed: 'eye',
+          estimated: 'approx',
+          reference: 'ruler',
+          unknown: 'unknown'
+        }
+        const tier = (t, word) =>
+          `<span class="tier ${t}">${ic(tierIcon[t], t === 'unknown' ? 'dash' : '')}${word}</span>`
+        const sev = (s, word) => {
+          const m = { err: 'error', warn: 'alert', info: 'info', ok: 'okc' }
+          return `<span class="sev ${s}">${ic(m[s], 's14')}${word}</span>`
+        }
+
+        // ---------- shared data ----------
+        const PAL = [
+          { n: 'Cream', h: '#F6F0E7', used: 'Background' },
+          { n: 'Gold', h: '#B8915A', used: '3 layers' },
+          { n: 'Ink', h: '#3D352E', used: '2 layers' },
+          { n: 'Sage', h: '#8FA58C', used: 'Not used' },
+          { n: 'Blush', h: '#E9C9C1', used: 'Not used' }
+        ]
+        const LAYERS = [
+          { k: 'text', n: 'Date', warn: true },
+          { k: 'text', n: 'Hashtag' },
+          { k: 'group', n: 'Title block', open: true },
+          { k: 'text', n: 'Names', ind: true },
+          { k: 'shape', n: 'Divider', ind: true },
+          { k: 'text', n: 'Eyebrow', ind: true },
+          { k: 'photo', n: 'Photo 3', num: 3 },
+          { k: 'photo', n: 'Photo 2', num: 2 },
+          { k: 'photo', n: 'Photo 1', num: 1 },
+          { k: 'image', n: 'Paper texture', role: 'Background', warn: true }
+        ]
+
+        // ---------- top bar ----------
+        function topbar(o = {}) {
+          const m = ['File', 'Edit', 'Arrange', 'View', 'Help']
+            .map((x) => `<span class="menu">${o.alt ? `<u>${x[0]}</u>${x.slice(1)}` : x}</span>`)
+            .join('')
+          const st =
+            o.state === 'modified'
+              ? `<span class="docstate mod"><span class="dot"></span>Modified</span>`
+              : `<span class="docstate">${ic('check')}Saved</span>`
+          const ck = o.checks || { w: 2 }
+          const counts =
+            (ck.e ? `<b class="count e">${ck.e}</b>` : '') +
+            (ck.w ? `<b class="count w">${ck.w}</b>` : '')
+          const ckIcon = ck.e ? 'error' : 'alert'
+          return `<header class="tb">
+        <div class="tb-l"><span class="mark" title="Template Studio"></span><nav class="menus">${m}</nav></div>
+        <div class="tb-c"><span class="doc">${o.title || 'Ava &amp; Theo Wedding'}</span>${st}</div>
+        <div class="tb-r">
+          <button class="ib ${o.undoHover ? 'hov' : ''}" title="Undo">${ic('undo')}</button>
+          <button class="ib" title="Redo">${ic('redo')}</button>
+          <span class="vsep"></span>
+          <button class="btn ghost checks ${ck.e ? 'err' : ''} ${o.checksOpen ? 'open' : ''}">${ic(ckIcon)}Checks ${counts}</button>
+          <button class="btn sec ${o.state === 'modified' ? '' : 'dis'}">Save</button>
+          <button class="btn pri">${ic('exportI')}Export</button>
+        </div>
+      </header>`
+        }
+
+        // ---------- rail ----------
+        function rail(active, o = {}) {
+          const items = [
+            ['elements', 'shapes', 'Elements'],
+            ['text', 'type', 'Text'],
+            ['photos', 'camera', 'Photos'],
+            ['uploads', 'upload', 'Uploads'],
+            ['colors', 'palette', 'Colors']
+          ]
+          return `<nav class="rail">${items
+            .map(
+              ([id, icon, label]) =>
+                `<button class="ri ${active === id ? 'on' : ''} ${o.hover === id ? 'hov' : ''}">${ic(icon)}${label}</button>`
+            )
+            .join('')}</nav>`
+        }
+
+        // ---------- drawers ----------
+        function drawer(title, body, o = {}) {
+          return `<aside class="drawer ${o.float ? 'float' : ''} ${o.wide ? 'w320' : ''}" style="${o.style || ''}">
+        <div class="dh"><span class="t">${title}</span>${
+          o.float ? `<button class="ib sm" title="Keep open">${ic('pin', 's14')}</button>` : ''
+        }<button class="ib sm" title="Close">${ic('x', 's14')}</button></div>
+        <div class="db">${body}</div></aside>`
+        }
+        const dElements = () =>
+          drawer(
+            'Elements',
+            `<div class="search">${ic('search', 's14')}Search elements</div>
+        <div class="bigadd">${kc('photo')}<span>Photo slot<span class="sub">Where the booth puts a guest photo</span></span></div>
+        <div class="bigadd">${kc('text')}<span>Text<span class="sub">Names, date, hashtag</span></span></div>
+        <div class="lbl-caps">Shapes</div>
+        <div class="tiles"><div class="tile"><span class="shp"></span>Rectangle</div><div class="tile"><span class="shp c"></span>Ellipse</div><div class="tile"><span class="shp l"></span>Line</div></div>
+        <div class="lbl-caps">Graphics</div>
+        <div class="help">Frames, badges and overlays will appear here when the asset library exists. Use Uploads for your own art.</div>`
+          )
+        const dText = () =>
+          drawer(
+            'Text',
+            `<button class="btn pri" style="height:36px">${ic('plus')}Add text</button>
+        <div class="lbl-caps">Styles</div>
+        <div class="preset" style="font:600 22px 'Cormorant Garamond',serif">Add a heading</div>
+        <div class="preset" style="font:500 16px 'Cormorant Garamond',serif;letter-spacing:.12em">ADD A SUBHEADING</div>
+        <div class="preset" style="font:400 13px var(--ui)">Add body text</div>
+        <div class="preset" style="font:400 26px 'Allura',cursive;color:var(--text-primary)">Add a script line</div>
+        <div class="lbl-caps">Fonts in this project</div>
+        <div class="rowi"><span style="font-family:'Allura',cursive;font-size:18px">Allura</span><span class="r">1 layer</span></div>
+        <div class="rowi"><span style="font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600">Cormorant Garamond</span><span class="r">3 layers</span></div>`
+          )
+        const dPhotos = () =>
+          drawer(
+            'Photos',
+            `<div class="bigadd">${kc('photo')}<span>Add photo slot<span class="sub">Keeps the shape of the selected slot</span></span></div>
+        <div class="card" style="display:flex;flex-direction:column;gap:6px">
+          <div class="rowi" style="font-weight:600">3 photo slots<span class="r">Booth takes 3 shots</span></div>
+          <div style="display:flex;gap:6px"><span class="num">#1</span><span class="num">#2</span><span class="num">#3</span></div>
+        </div>
+        <div class="lbl-caps">Sample photos · preview only</div>
+        <div class="rowi">Show sample photos<span class="tog on" style="margin-left:auto"></span></div>
+        <div class="r2"><button class="btn sec">${ic('shuffle', 's14')}Shuffle</button><button class="btn sec">${ic('reset', 's14')}Reset</button></div>
+        <button class="btn sec">${ic('image', 's14')}Choose sample photo…</button>
+        <div class="help">Samples help you judge the layout. They are never saved in the project or exported.</div>
+        <div class="lbl-caps">Layouts</div>
+        <div class="help">1, 2, 3 and 4-photo layouts arrive with the Design Guide (7C).</div>`
+          )
+        const dUploads = (o = {}) =>
+          drawer(
+            'Uploads',
+            `<button class="btn pri" style="height:36px">${ic('upload')}Upload images…</button>
+        <div class="help">Or drag files onto the canvas. PNG, JPG, WebP.</div>
+        <div class="lbl-caps">This project</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          ${upl('Paper texture', '1800 × 5400 · used by 1', 'linear-gradient(180deg,#f7f1e8,#efe4d4)', true)}
+          ${upl('Monogram gold', '900 × 900 · not used', 'radial-gradient(circle,#d8b77d 0 30%,transparent 31%),repeating-conic-gradient(#ffffff10 0 25%,#ffffff22 0 50%) 0 0/12px 12px')}
+          ${upl('Florals top', '2400 × 900 · not used', 'radial-gradient(30% 50% at 30% 60%,#c98f8f 96%,transparent),radial-gradient(25% 45% at 70% 50%,#9fb39b 96%,transparent),repeating-conic-gradient(#ffffff10 0 25%,#ffffff22 0 50%) 0 0/12px 12px')}
+          ${upl('Gold foil', '1200 × 1200 · not used', 'linear-gradient(135deg,#a8803f,#e7cf94,#b08a4c)')}
+        </div>`,
+            o
+          )
+        function upl(n, m, bg, warn) {
+          return `<div style="display:flex;flex-direction:column;gap:4px"><div style="height:84px;border-radius:6px;background:${bg};box-shadow:inset 0 0 0 1px var(--border-subtle);position:relative">${
+            warn
+              ? `<span style="position:absolute;right:4px;top:4px;color:var(--status-warning-fg)">${ic('alert', 's14')}</span>`
+              : ''
+          }</div><div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${n}</div><div class="help">${m}</div></div>`
+        }
+        const dColors = () =>
+          drawer(
+            'Colors',
+            `<div class="lbl-caps" style="display:flex">Event palette<span style="margin-left:auto;text-transform:none;letter-spacing:0;font-weight:500" class="lnk">+ Add</span></div>
+        <div style="display:flex;flex-direction:column;gap:2px">${PAL.map(
+          (p, i) =>
+            `<div class="palrow ${i === 1 ? 'on' : ''}"><span class="sw lg" style="background:${p.h}"></span><span style="display:flex;flex-direction:column;line-height:1.25"><b style="font-weight:600">${p.n}</b><span class="help">${p.used}</span></span><span class="hex">${p.h}</span></div>`
+        ).join('')}</div>
+        <div class="help">Change a palette colour to recolour every layer linked to it.</div>
+        <div class="lbl-caps">Background</div>
+        <div class="rowi"><span class="sw" style="background:#F6F0E7"></span>Cream<span class="r">${ic('link', 's14')}</span></div>
+        <div class="rowi">${kc('image', true)}Paper texture<span class="r">Image</span></div>`
+          )
+
+        // ---------- view bar ----------
+        function viewbar(o = {}) {
+          const p = (on, label, word, extra = '') =>
+            `<span class="pill ${on ? 'on' : ''} ${extra}"><span class="ld"></span>${label}: <b>${word}</b></span>`
+          return `<div class="vb">
+        <span class="seg"><span class="${o.mode === 'print' ? '' : 'on'}">Design</span><span class="${o.mode === 'print' ? 'on' : ''}">Print Preview</span></span>
+        <span class="vsep" style="margin:0 4px"></span>
+        ${p(o.samples !== false, 'Sample photos', o.samples === false ? 'Off' : 'On')}
+        ${p(!!o.safe, 'Safe areas', o.safe ? 'On' : 'Off', o.safeOpen ? 'open' : '')}${o.safeOpen || o.safeMenuChev ? '' : ''}
+        ${p(false, 'Overflow', 'Show')}
+        <span class="grow"></span>
+        ${o.right || ''}
+      </div>`
+        }
+
+        // ---------- artboard ----------
+        const SLOTS = [
+          { n: 1, t: 3.06, c: 'ph1' },
+          { n: 2, t: 25.97, c: 'ph2' },
+          { n: 3, t: 48.89, c: 'ph3' }
+        ]
+        const BOX = {
+          names: { l: 10, t: 75, w: 80, h: 7.5 },
+          date: { l: 20, t: 96.39, w: 60, h: 2 },
+          photo2: { l: 7.5, t: 25.97, w: 85, h: 21.25 },
+          photo1: { l: 7.5, t: 3.06, w: 85, h: 21.25 }
+        }
+        const pos = (b) => `left:${b.l}%;top:${b.t}%;width:${b.w}%;height:${b.h}%`
+        function safeOv() {
+          return `<div class="ov">
+        <div class="trim" style="left:0;right:0;top:0;height:1.18%"></div>
+        <div class="trim" style="left:0;right:0;bottom:0;height:1.18%"></div>
+        <div class="trim" style="left:0;top:0;bottom:0;width:3.15%"></div>
+        <div class="trim" style="right:0;top:0;bottom:0;width:3.15%"></div>
+        <div class="keep" style="left:5.91%;right:5.91%;top:1.97%;bottom:1.97%"></div></div>`
+        }
+        function stripInner(o = {}) {
+          let h = ''
+          SLOTS.forEach((s) => {
+            const empty = o.samples === false || (o.samples === 'mixed' && s.n === 3)
+            h += empty
+              ? `<div class="el slot empty" style="left:7.5%;top:${s.t}%;width:85%;height:21.25%"><b>${s.n}</b>Photo slot</div>`
+              : `<div class="el slot frame ${s.c}" style="left:7.5%;top:${s.t}%;width:85%;height:21.25%">${
+                  o.tags ? `<span class="stag">Sample · #${s.n}</span>` : ''
+                }</div>`
+          })
+          h += `<div class="el tx f-eyebrow" style="left:0;top:72.78%;width:100%;height:1.94%">THE WEDDING OF</div>`
+          h += `<div class="el tx f-names" style="${pos(BOX.names)}">${o.editing ? 'Ava &amp; Theo<span style="display:inline-block;width:1.5px;height:60%;background:#2b2b2b;margin-left:2px"></span>' : 'Ava &amp; Theo'}</div>`
+          h += `<div class="el divl" style="left:37.5%;top:84.44%;width:25%"></div>`
+          h += `<div class="el tx f-hash" style="left:15%;top:86.94%;width:70%;height:2.5%">#AvaAndTheo</div>`
+          h += `<div class="el tx f-date" style="${pos(BOX.date)}">JUNE 14 · 2027</div>`
+          if (o.safe) h += safeOv()
+          if (o.flag) h += `<div class="flagbox" style="${pos(BOX.date)}"><i>!</i></div>`
+          if (o.hover) h += `<div class="hoverbox" style="${pos(BOX[o.hover])}"></div>`
+          if (o.sel) {
+            const b = BOX[o.sel]
+            const corners = [
+              [0, 0],
+              [100, 0],
+              [0, 100],
+              [100, 100]
+            ]
+            const sides = [
+              [50, 0],
+              [50, 100],
+              [0, 50],
+              [100, 50]
+            ]
+            const hs = (o.sel.startsWith('photo') ? corners : corners.concat(sides))
+              .map(([x, y]) => `<span class="h" style="left:${x}%;top:${y}%"></span>`)
+              .join('')
+            h += `<div class="selbox" style="${pos(b)}">${hs}<span class="rot"></span></div>`
+            if (o.toolbar)
+              h += `<div class="seltb" style="bottom:calc(${100 - b.t}% + 38px)">${o.toolbar}</div>`
+          }
+          return h
+        }
+        function artboard(o) {
+          if (o.mode === 'print') {
+            return `<div class="ab sheet" style="height:${o.H}px;width:${(o.H * 2) / 3}px">
+          <div class="strip">${stripInner(o)}</div><div class="strip">${stripInner(o)}</div>
+          <div class="cutline"></div><span class="cutlbl">Cut · 2-inch</span></div>`
+          }
+          return `<div class="ab strip" style="height:${o.H}px;width:${o.H / 3}px">${stripInner(o)}</div>`
+        }
+        const tbText = (o = {}) =>
+          `<span class="b ${o.hov ? 'hov' : ''}">${ic('edit', 's14')}Edit text</span><span class="sep"></span>
+      <span class="b"><span class="fbox" style="font-family:'Allura',cursive;font-size:16px">Allura ${chev()}</span></span>
+      <span class="b"><span class="fbox tnum">200</span></span>
+      <span class="b"><span class="sw" style="background:#B8915A"></span>Gold</span><span class="sep"></span>
+      <span class="b">${ic('arrange', 's14')}Arrange ${chev()}</span>
+      ${o.compact ? '' : `<span class="b">${ic('copy', 's14')}Duplicate</span>`}
+      <span class="b" title="More actions">${ic('more')}</span>`
+        const tbPhoto = () =>
+          `<span class="b"><span class="num">#2</span>Photo 2 ${chev()}</span><span class="sep"></span>
+      <span class="b">${ic('move', 's14')}Reposition</span>
+      <span class="b">${ic('frameI', 's14')}Frame ${chev()}</span><span class="sep"></span>
+      <span class="b">${ic('arrange', 's14')}Arrange ${chev()}</span>
+      <span class="b">${ic('copy', 's14')}Duplicate</span>
+      <span class="b" title="More actions">${ic('more')}</span>`
+
+        // ---------- properties ----------
+        function pHeader(k, name, sub) {
+          return `<div class="lh">${kc(k)}<div class="nm"><b>${name}</b><span>${sub}</span></div>
+        <button class="ib sm" title="Hide">${ic('eye', 's14')}</button><button class="ib sm" title="Lock">${ic('unlock', 's14')}</button><button class="ib sm" title="More">${ic('more', 's14')}</button></div>`
+        }
+        const fr = (l, c, top) =>
+          `<div class="fr ${top ? 'top' : ''}"><span class="l">${l}</span><div>${c}</div></div>`
+        const sect = (title, sum, open, body) =>
+          `<div class="sect"><div class="sh"><span class="chev">${ic(open ? 'cd' : 'cr', 's14')}</span>${title}<span class="sum">${sum}</span></div>${
+            open ? `<div class="sbody">${body}</div>` : ''
+          }</div>`
+        const colorField = (name, hex, linked) =>
+          `<div class="in"><span class="sw" style="background:${hex}"></span>${name}${linked ? `<span class="muted" style="display:inline-flex">${ic('link', 's14')}</span>` : ''}<span class="chev">${ic('cd', 's14')}</span></div>`
+        function propsText(o = {}) {
+          return (
+            pHeader('text', 'Names', 'Text · in Title block') +
+            `<div class="ess">
+          ${fr('Content', `<div class="in ta">Ava &amp; Theo</div>`, true)}
+          ${fr('Font', `<div class="in" style="font-family:'Allura',cursive;font-size:17px">Allura${chev()}</div>`)}
+          ${fr('Style', `<div class="r2"><div class="in">Regular${chev()}</div><div class="in tnum">200<span class="u">px</span></div></div>`)}
+          ${fr('Color', `<div class="${o.colorFocus ? 'focusable focus' : ''}" style="border-radius:5px">${colorField('Gold', '#B8915A', true)}</div>`)}
+          ${fr('Align', `<span class="seg"><span>${ic('al', 's14')}</span><span class="on">${ic('ac', 's14')}</span><span>${ic('ar', 's14')}</span></span>`)}
+        </div>
+        ${sect('Position &amp; size', 'X 120 · Y 2700 · 960 × 270', false)}
+        ${sect(
+          'Spacing &amp; box',
+          o.compact ? 'Line 1.1 · Letter 0 · Wrap' : '',
+          !o.compact,
+          `<div class="r2">${fr('Line', `<div class="in tnum">1.1<span class="u">×</span></div>`)}${fr('Letter', `<div class="in tnum">0<span class="u">px</span></div>`)}</div>
+           <div style="display:flex;flex-direction:column;gap:6px"><span class="l" style="font-size:12px;color:var(--text-label);display:flex;align-items:center;gap:6px">When text is longer than its box <span class="tag future">ADR-052 · not in 7B</span></span>
+           <div class="in">Wrap to new lines${chev()}</div>
+           <span class="help">Other options under discussion: Grow box · Shrink to fit · One line, clip at box edge.</span></div>
+           <button class="btn sec sm" style="align-self:flex-start">Fit height to content</button>`
+        )}
+        ${sect('Appearance', 'Opacity 100 % · no effects', false)}`
+          )
+        }
+        function propsPhoto() {
+          return (
+            pHeader('photo', 'Photo 2', 'Photo slot #2') +
+            `<div class="ess">
+          ${fr('Photo', `<div style="display:flex;align-items:center;gap:8px"><div class="in tnum" style="width:92px"><button class="ib sm" style="width:20px;height:20px">${ic('minus', 's14')}</button><b style="flex:1;text-align:center">2</b><button class="ib sm" style="width:20px;height:20px">${ic('plus', 's14')}</button></div><span class="help">Shot 2 of the session</span></div>`)}
+          ${fr('Fit', `<span class="seg full"><span class="on">Cover</span><span>Contain</span></span>`)}
+          ${fr('Frame', `<div class="r2"><span class="seg full"><span>None</span><span class="on">Solid</span></span>${colorField('White', '#FFFFFF')}</div>`)}
+        </div>
+        ${sect('Position &amp; size', 'X 90 · Y 935 · 1020 × 765 · 0° · shape locked', false)}
+        ${sect('Frame details', '12 px · corners 0 px', false)}
+        ${sect('Appearance', 'Opacity 100 %', false)}
+        <div class="pvbox"><div class="hd">${ic('eye', 's14')}Preview only · not saved, not exported</div>
+          <div class="rowi">Sample photo<span class="r">sample-02.jpg</span></div>
+          <div class="r2"><button class="btn sec sm">${ic('move', 's14')}Reposition</button><button class="btn sec sm">${ic('shuffle', 's14')}Shuffle</button></div>
+          <div class="r2"><button class="btn ghost sm">Choose photo…</button><button class="btn ghost sm">Reset</button></div>
+          <div class="help">The booth fills this slot with each guest photo using Cover.</div></div>`
+          )
+        }
+        function propsProject() {
+          return `<div class="lh">${kc('project')}<div class="nm"><b>Project</b><span>Nothing selected</span></div></div>
+        <div class="ess">
+          ${fr('Name', `<div class="in">Ava &amp; Theo Wedding</div>`)}
+          ${fr(
+            'Format',
+            `<div class="card" style="display:flex;gap:10px;align-items:center;padding:8px 10px"><span style="width:14px;height:40px;border-radius:2px;background:var(--text-secondary);opacity:.6;flex:none"></span><span style="line-height:1.35"><b>2×6 strip</b> · 600 DPI<br><span class="help">1200 × 3600 px · prints two per 4×6 sheet</span></span></div>`,
+            true
+          )}
+          ${fr('Background', `<div class="r2">${colorField('Cream', '#F6F0E7', true)}<div class="in">${ic('image', 's14')}Paper…</div></div>`)}
+          ${fr('Printer', `<div class="in"><span>DNP DS-RX1</span>${tier('estimated', 'Provisional')}<span class="chev">${ic('cd', 's14')}</span></div>`)}
+        </div>
+        ${sect('Event palette', '5 colours · Gold, Ink, Cream…', false)}
+        ${sect('Printing notes', 'Two per sheet · keep 3 mm from edges', false)}`
+        }
+        function propsDate() {
+          return (
+            pHeader('text', 'Date', 'Text') +
+            `<div class="ess">
+          <div class="inl warn">${ic('alert', 's14')}<span><b>2.5 mm from the bottom edge.</b> Keep it at least 3 mm in. <span class="lnk">Open in Checks</span></span></div>
+          ${fr('Content', `<div class="in ta">JUNE 14 · 2027</div>`, true)}
+          ${fr('Font', `<div class="in" style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:14px">Cormorant Garamond${chev()}</div>`)}
+          ${fr('Style', `<div class="r2"><div class="in">SemiBold${chev()}</div><div class="in tnum">50<span class="u">px</span></div></div>`)}
+          ${fr('Color', colorField('Ink', '#3D352E', true))}
+          ${fr('Align', `<span class="seg"><span>${ic('al', 's14')}</span><span class="on">${ic('ac', 's14')}</span><span>${ic('ar', 's14')}</span></span>`)}
+        </div>
+        ${sect('Position &amp; size', 'X 240 · Y 3470 · 720 × 72', false)}
+        ${sect('Spacing &amp; box', 'Line 1 · Letter 30 · Wrap', false)}
+        ${sect('Appearance', 'Opacity 100 %', false)}`
+          )
+        }
+
+        // ---------- layers ----------
+        function layers(sel, o = {}) {
+          return `<div class="lrs">${LAYERS.map((l) => {
+            const on = l.n === sel
+            return `<div class="lr ${l.ind ? 'ind' : ''} ${on ? 'on' : ''} ${o.hover === l.n ? 'hov' : ''}">
+          ${l.k === 'group' ? `<span class="gchev">${ic('cd', 's14')}</span>` : ''}${kc(l.k, true)}<span class="n">${l.n}</span>
+          ${l.num ? `<span class="num">#${l.num}</span>` : ''}${l.role ? `<span class="role">${l.role}</span>` : ''}
+          <span class="va">${l.warn ? `<span class="wm" title="Needs attention">${ic('alert', 's14')}</span>` : ''}
+          <button class="ib ghosted">${ic('eye', 's14')}</button><button class="ib ghosted">${ic('unlock', 's14')}</button></span></div>`
+          }).join('')}</div>`
+        }
+
+        // ---------- right column ----------
+        function rightCol(o) {
+          if (o.tabs) {
+            return `<aside class="rc w300">
+          <div class="tabs"><span class="tab on">Properties</span><span class="tab">Layers <b class="count">10</b></span></div>
+          <div class="pnl" style="flex:1;overflow:hidden">${o.props}<div class="scrollfade b"></div><span class="scrollbar" style="top:6px;height:68%"></span></div>
+        </aside>`
+          }
+          return `<aside class="rc">
+        <div class="pnl" style="flex:1.45;overflow:hidden"><div class="ph"><span class="lbl-caps t">Properties</span></div>${o.props}</div>
+        <div style="height:5px;border-top:1px solid var(--border-subtle);cursor:row-resize;flex:none"></div>
+        <div class="pnl" style="flex:1;overflow:hidden"><div class="ph"><span class="lbl-caps t">Layers <span class="muted" style="font-weight:500">10</span></span><button class="ib sm">${ic('plus', 's14')}</button><button class="ib sm">${ic('cd', 's14')}</button></div>${layers(o.sel, o)}</div>
+      </aside>`
+        }
+
+        // ---------- status bar ----------
+        function statusbar(o = {}) {
+          const z = o.zoom || '22%'
+          const fmt =
+            o.mode === 'print'
+              ? '4×6 sheet · 2 copies · 600 DPI · 2400 × 3600 px'
+              : '2×6 strip · 600 DPI · 1200 × 3600 px'
+          return `<footer class="sb">
+        <span>${o.compact ? (o.mode === 'print' ? '4×6 sheet · 600 DPI' : '2×6 strip · 600 DPI') : fmt}</span>
+        ${o.compact ? '' : `<span>${ic('clock', 's14')} Recovery copy 12:04</span>`}
+        <span class="grow"></span>
+        ${o.compact ? '' : `<span>${o.selInfo || 'No selection'}</span>`}
+        <span class="chip warn ${o.checksHover ? 'hov' : ''}">${ic('alert')}${o.checksLabel || '2 need attention'}</span>
+        <span class="chip">${ic('printer')}DNP DS-RX1 · ≈ Provisional ${ic('cd', 's14')}</span>
+        <span class="chip">${ic('grid')}Snap</span>
+        <span class="zoom"><button class="ib">${ic('minus')}</button><span class="v">${z}</span><button class="ib">${ic('plus')}</button><button class="btn ghost sm">Fit</button></span>
+      </footer>`
+        }
+
+        // ---------- editor composition ----------
+        function editor(o) {
+          const compact = !!o.compact
+          const H = o.H || (compact ? 560 : 780)
+          const drawers = {
+            elements: dElements,
+            text: dText,
+            photos: dPhotos,
+            uploads: dUploads,
+            colors: dColors
+          }
+          let left = ''
+          if (o.checksPanel) left = o.checksPanel
+          else if (o.drawer && !o.drawerFloat) left = drawers[o.drawer]()
+          const floatD = o.drawer && o.drawerFloat ? drawers[o.drawer]({ float: true }) : ''
+          const ab = artboard({ ...o, H })
+          return `${topbar(o.top || {})}
+      <div class="ed">
+        ${rail(o.checksPanel ? null : o.drawer, o.rail || {})}
+        ${left}
+        <div class="cv">
+          ${viewbar(o.vb || {})}
+          <div class="stage">${o.banner || ''}${ab}${o.stageExtra || ''}</div>
+          ${o.cvExtra || ''}
+        </div>
+        ${rightCol({ props: o.props, sel: o.sel, tabs: compact, hover: o.layerHover })}
+        ${floatD}
+        ${o.edExtra || ''}
+      </div>
+      ${statusbar({ ...o, compact, zoom: o.zoom || (compact ? '16%' : '22%') })}
+      ${o.overlay || ''}${o.anns || ''}`
+        }
+
+        // ---------- screens ----------
+        const R = {}
+
+        R.editorDefault = () =>
+          editor({
+            drawer: 'elements',
+            props: propsProject(),
+            sel: null,
+            hover: 'photo1',
+            tags: true,
+            layerHover: 'Photo 1',
+            rail: { hover: 'text' },
+            anns:
+              ann(1, 70, 8) +
+              ann(2, 1040, 8) +
+              ann(3, 1660, 8) +
+              ann(4, 40, 70) +
+              ann(5, 900, 52) +
+              ann(6, 1600, 100) +
+              ann(7, 1600, 560) +
+              ann(8, 1120, 970)
+          })
+
+        R.editorText = () =>
+          editor({
+            drawer: 'text',
+            top: { state: 'modified' },
+            props: propsText(),
+            sel: 'names',
+            toolbar: tbText(),
+            tags: true,
+            selInfo: 'Names · 960 × 270 px',
+            anns:
+              ann(1, 860, 600) +
+              ann(2, 1060, 760) +
+              ann(3, 1890, 96) +
+              ann(4, 1550, 150) +
+              ann(5, 1890, 375) +
+              ann(6, 1890, 470) +
+              ann(7, 330, 150)
+          })
+
+        R.editorPhoto = () =>
+          editor({
+            drawer: 'photos',
+            props: propsPhoto(),
+            sel: 'photo2',
+            toolbar: tbPhoto(),
+            tags: true,
+            samples: 'mixed',
+            selInfo: 'Photo 2 · 1020 × 765 px',
+            anns:
+              ann(1, 640, 268) +
+              ann(2, 1100, 500) +
+              ann(3, 820, 340) +
+              ann(4, 1550, 150) +
+              ann(5, 1890, 420) +
+              ann(6, 330, 150)
+          })
+
+        R.editorShort = () =>
+          editor({
+            compact: true,
+            drawer: 'uploads',
+            drawerFloat: true,
+            top: { alt: true, state: 'modified', undoHover: true },
+            props: propsText({ compact: true }),
+            sel: 'names',
+            toolbar: tbText({ compact: true }),
+            tags: true,
+            edExtra: `<div class="tip" style="right:330px;top:4px">Undo<span class="kbd">Ctrl+Z</span><span class="muted">·</span>Redo<span class="kbd">Ctrl+Y</span></div>`,
+            anns:
+              ann(1, 292, 8) +
+              ann(2, 858, 48) +
+              ann(3, 1395, 48) +
+              ann(4, 360, 100) +
+              ann(5, 676, 50) +
+              ann(6, 1110, 160) +
+              ann(7, 1390, 660) +
+              ann(8, 800, 750)
+          })
+
+        function safeMenu() {
+          return `<div class="floatmenu" style="left:332px;top:38px;width:330px;padding:12px;display:flex;flex-direction:column;gap:10px">
+        <div class="rowi" style="font-weight:600">Safe areas<span class="tog on" style="margin-left:auto"></span></div>
+        <div class="rowi">${ic('printer', 's14')}DNP DS-RX1<span style="margin-left:auto">${tier('estimated', 'Provisional')}</span></div>
+        <div style="display:flex;flex-direction:column;gap:7px;padding:8px 0;border-top:1px solid var(--border-subtle);border-bottom:1px solid var(--border-subtle)">
+          <div class="rowi"><span style="width:26px;height:12px;background:repeating-linear-gradient(-45deg,var(--overlay-trim) 0 1.4px,transparent 1.4px 5px);flex:none"></span>May be trimmed (estimated)</div>
+          <div class="rowi"><span style="width:26px;border-top:1.5px dashed var(--overlay-safe);flex:none"></span>Keep important content inside</div>
+          <div class="rowi"><span style="width:26px;height:12px;outline:1.5px dashed var(--overlay-flag);outline-offset:-2px;flex:none"></span>Needs attention</div>
+          <div class="rowi"><span style="width:26px;border-top:1.5px dashed var(--overlay-cut);flex:none;filter:drop-shadow(0 0 1px #000)"></span>Cut between the two strips</div>
+        </div>
+        <div class="help">Editor-only guide. Never printed or exported.</div>
+        <div style="display:flex;gap:6px"><button class="btn sec sm">Printer details…</button><button class="btn ghost sm">Change printer…</button></div>
+      </div>`
+        }
+        R.editorPrint = () =>
+          editor({
+            mode: 'print',
+            H: 760,
+            drawer: null,
+            props: propsProject(),
+            sel: null,
+            safe: true,
+            flag: true,
+            vb: { mode: 'print', safe: true, safeOpen: true },
+            banner: `<div class="banner" style="left:auto;right:24px;transform:none">${ic('eye')}Print Preview · read only<button class="btn sec sm">Edit in Design</button></div>`,
+            cvExtra: safeMenu(),
+            zoom: '21%',
+            selInfo: 'Two copies of one strip',
+            anns:
+              ann(1, 1232, 102) +
+              ann(2, 840, 925) +
+              ann(3, 790, 150) +
+              ann(4, 730, 935) +
+              ann(5, 745, 95) +
+              ann(6, 1890, 572)
+          })
+
+        function checksPanel() {
+          return `<aside class="drawer w320" style="overflow:hidden;position:relative">
+        <div class="dh"><span class="t">Checks</span><button class="ib sm">${ic('x', 's14')}</button></div>
+        <div style="padding:0 14px 10px;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid var(--border-subtle)">
+          <div style="display:flex;gap:12px;flex-wrap:wrap">${sev('err', '1 error')}${sev('warn', '3 need attention')}${sev('info', '3 good to know')}</div>
+          <div class="r2"><div class="in">Show: Everything${chev()}</div><div class="in">Topic: All${chev()}</div></div>
+        </div>
+        <div class="ckgrp">${sev('err', 'Error')}</div>
+        <div class="ck err"><div class="top">Images · blocks export of image files</div>
+          <div class="hl">An image file is missing</div>
+          <div class="ex">"Foil accent" uses gold-foil.png, which can't be found. Replace it or remove the layer.</div>
+          <div class="acts"><button class="btn sec sm">Select</button><button class="btn sec sm">Replace…</button><span class="grow"></span><span class="btn ghost sm">Details ${ic('cr', 's14')}</span></div></div>
+        <div class="ckgrp">${sev('warn', 'Needs attention')}</div>
+        <div class="ck warn"><div class="top">Printer &amp; cut</div>
+          <div class="hl">"Date" is 2.5 mm from the bottom edge</div>
+          <div class="ex">About 1.8 mm may be trimmed there. Keep it at least 3 mm in.</div>
+          <div class="acts"><button class="btn sec sm" style="box-shadow:inset 0 0 0 1px var(--accent);color:var(--accent)">${ic('check', 's14')}Selected</button><button class="btn sec sm dis" title="Later (B28)">Move inside</button><span class="tag future">Later</span><span class="grow"></span><span class="btn ghost sm">Details ${ic('cd', 's14')}</span></div>
+          <dl class="det"><dt>Distance</dt><dd>2.5 mm from the bottom edge</dd><dt>Keep-safe</dt><dd>3 mm · ${'Estimated'}</dd><dt>Expected trim</dt><dd>1.8 mm · Estimated</dd><dt>Printer</dt><dd>DNP DS-RX1 profile</dd><dt>Rule</dt><dd>safe-area · edge</dd></dl></div>
+        <div class="ck warn"><div class="top">Text &amp; fonts</div>
+          <div class="hl">3 texts use a font that isn't installed</div>
+          <div class="ex">Cormorant Garamond is missing on this computer, so these show in a fallback font.</div>
+          <div class="sub">Used by<span class="lnk">Eyebrow</span><span class="lnk">Hashtag</span><span class="lnk">Date</span></div>
+          <div class="acts"><button class="btn sec sm">Select all 3</button><button class="btn sec sm">Replace font…</button><span class="grow"></span><span class="btn ghost sm">Details ${ic('cr', 's14')}</span></div></div>
+        <div class="ck warn"><div class="top">Images</div>
+          <div class="hl">"Paper texture" prints at 212 DPI</div>
+          <div class="acts"><button class="btn sec sm">Select</button><button class="btn sec sm">Replace…</button><span class="grow"></span><span class="btn ghost sm">Details ${ic('cr', 's14')}</span></div></div>
+        <div class="ckgrp">${sev('info', 'Good to know')}<span class="grow"></span><span class="muted" style="font-size:12px">3 · starts collapsed</span></div>
+        <div class="ck info"><div class="top">dslrBooth</div>
+          <div class="hl">4 texts export as part of the picture</div>
+          <div class="ex">They print exactly as designed but can't be edited inside dslrBooth.</div></div>
+        <div class="disc" style="margin:0 10px;height:32px;font-weight:500">${ic('cr', 's14')}2 more<span class="r">Safe areas are provisional · 1 hidden layer</span></div>
+        <div class="scrollfade b" style="background:linear-gradient(to top,var(--surface-panel),transparent)"></div>
+      </aside>`
+        }
+        R.editorChecks = () =>
+          editor({
+            checksPanel: checksPanel(),
+            top: { checks: { e: 1, w: 3 }, checksOpen: true },
+            props: propsDate(),
+            sel: 'date',
+            tags: true,
+            safe: true,
+            flag: true,
+            vb: { safe: true },
+            checksLabel: '1 error · 3 need attention',
+            selInfo: 'Date · 720 × 72 px',
+            anns:
+              ann(1, 300, 60) +
+              ann(2, 60, 140) +
+              ann(3, 393, 690) +
+              ann(4, 392, 500) +
+              ann(5, 318, 452) +
+              ann(6, 60, 860)
+          })
+
+        function dialog(o) {
+          return `<div class="scrim"><div class="dlg ${o.size || ''}" style="${o.style || ''}">
+        <div class="dlg-h"><div class="grow"><div class="t">${o.title}</div>${o.desc ? `<div class="d">${o.desc}</div>` : ''}</div>${o.headRight || ''}<button class="ib">${ic('x')}</button></div>
+        ${o.summary ? `<div class="dlg-sum">${o.summary}</div>` : ''}
+        <div class="dlg-b" style="${o.bodyStyle || ''}">${o.body}${o.fade ? '<div class="fade"></div><span class="scrollbar" style="top:10px;height:55%;right:4px"></span>' : ''}</div>
+        <div class="dlg-f">${o.footer}</div></div></div>`
+        }
+        const back = (extra = {}) =>
+          editor({
+            compact: true,
+            drawer: null,
+            props: propsText({ compact: true }),
+            sel: null,
+            tags: true,
+            ...extra
+          })
+
+        R.exportDlg = () =>
+          back({
+            overlay: dialog({
+              title: 'Export',
+              desc: 'Ava &amp; Theo Wedding · 2×6 strip',
+              summary: `<b>3 files</b><span class="muted">·</span>${sev('warn', '1 needs attention')}<span class="muted">·</span><span class="sec-t">Printer:</span><span class="chip" style="box-shadow:inset 0 0 0 1px var(--border)">DNP DS-RX1 ${tier('estimated', 'Provisional')}${ic('cd', 's14')}</span>`,
+              body: `<div class="grp"><div class="lbl-caps">For dslrBooth</div>
+              <div class="opt on"><span class="cb on">${ic('check')}</span><span><div class="tt">dslrBooth template · 2×6 strip</div><div class="dd">Native strip; dslrBooth prints it two per sheet</div></span><span class="fn">Ava &amp; Theo Wedding.zip</span></div>
+              <div class="opt"><span class="cb"></span><span><div class="tt">dslrBooth template · 4×6 sheet</div><div class="dd">Both copies on one sheet, for setups that need a 4×6 template</div></span><span class="fn">Ava &amp; Theo Wedding 4x6.zip</span></div></div>
+            <div class="grp"><div class="lbl-caps">Images</div>
+              <div class="opt on"><span class="cb on">${ic('check')}</span><span><div class="tt">Print sheet PNG</div><div class="dd">4×6 · both strips · 2400 × 3600 px</div></span><span class="fn">… print.png</span></div>
+              <div class="opt on"><span class="cb on">${ic('check')}</span><span><div class="tt">Design PNG</div><div class="dd">One strip · 1200 × 3600 px</div></span><span class="fn">… design.png</span></div></div>
+            <div class="grp"><div class="lbl-caps">For the client</div>
+              <div class="opt"><span class="cb"></span><span><div class="tt">Client proof</div><div class="dd">Sample photos and a "Proof" mark · not for printing</div></span><span class="fn">… proof.png</span></div></div>
+            <div class="disc">${ic('cr', 's14')}Checks<span class="sev warn" style="margin-left:6px">${ic('alert', 's14')}1 needs attention</span><span class="sev info">${ic('info', 's14')}2 good to know</span><span class="r">Errors open here automatically</span></div>`,
+              footer: `${ic('folder')}<span class="sec-t" style="white-space:nowrap">Exports › Ava &amp; Theo Wedding</span><button class="btn ghost sm">Change…</button><span class="grow"></span><button class="btn sec">Cancel</button><button class="btn pri">Export 3 files</button>`
+            }),
+            anns: ann(1, 322, 152) + ann(2, 322, 198) + ann(3, 322, 606) + ann(4, 1080, 694)
+          })
+
+        R.profileDlg = () =>
+          back({
+            overlay: dialog({
+              title: 'Printer profile · DNP DS-RX1',
+              desc: '6×4 paper · two 2×6 strips per sheet · 2-inch cut · borderless',
+              headRight: tier('estimated', 'Provisional'),
+              fade: true,
+              body: `<div class="card" style="display:flex;flex-direction:column;gap:10px">
+              <div class="lbl-caps">What this means for your design</div>
+              <div class="rowi" style="align-items:flex-start;gap:10px"><span style="flex:1">Keep important content at least <b>3 mm</b> from the strip edges and from the cut.</span>${tier('estimated', 'Estimated')}</div>
+              <div class="rowi" style="align-items:flex-start;gap:10px"><span style="flex:1">About <b>1.6–1.8 mm</b> may be trimmed at the outer edges.</span>${tier('estimated', 'Estimated')}</div>
+              <div class="rowi" style="align-items:flex-start;gap:10px"><span style="flex:1">How much the cut itself trims is <b>not measured yet</b>.</span>${tier('unknown', 'Not measured yet')}</div>
+              <div class="help">How sure are we? 0 verified · 4 observed · 2 estimated · 2 reference · 2 not measured yet</div></div>
+            <div class="inl ok" style="font-size:13px">${ic('okc')}<span><b>Latest test print looked right.</b> Both strips matched, the cut was clean and there was no white gap. Exact trim distances haven't been measured, so the 3 mm guidance stays.</span></div>
+            <div class="two" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div class="card"><div class="lbl-caps" style="margin-bottom:6px">Output guidance · in Template Studio</div><div class="help" style="font-size:12.5px;color:var(--text-secondary)">Safe-area lines, trim hatching and the checks that warn you. Shown in the editor only; never printed.</div></div>
+              <div class="card"><div class="lbl-caps" style="margin-bottom:6px">Printer setup · on the booth PC</div><div class="help" style="font-size:12.5px;color:var(--text-secondary)">Cut and margins are set in the printer driver and dslrBooth. Template Studio never changes them.</div></div>
+            </div>
+            <div class="grp"><div class="lbl-caps">Set up the booth PC</div>
+              <div class="rowi" style="align-items:flex-start"><b class="tnum" style="width:16px">1</b><span>In dslrBooth, use the 2×6 template exported from Template Studio, with "Print 2 per page" on.</span></div>
+              <div class="rowi" style="align-items:flex-start"><b class="tnum" style="width:16px">2</b><span>In the DNP DS-RX1 printer settings, choose the 2-inch cut and turn the print margin off (borderless).</span></div>
+              <div class="rowi" style="align-items:flex-start"><b class="tnum" style="width:16px">3</b><span>Load 6×4 (PC) media.</span></div></div>
+            <div class="grp"><div class="lbl-caps" style="display:flex;align-items:center;gap:6px">${ic('cd', 's14')}Evidence</div>
+              <div class="rowi">${tier('verified', 'Verified')}<span class="muted">Nothing verified on the booth PC yet</span></div>
+              <div class="rowi" style="align-items:flex-start">${tier('observed', 'Observed')}<span>Driver page 156.1 × 105.0 mm · borderless on · 2-inch cut set in the driver (test printer) · test print visually matched</span></div>
+              <div class="rowi" style="align-items:flex-start">${tier('estimated', 'Estimated')}<span>Trim 1.8 mm top and bottom, 1.6 mm sides · keep-safe 3 mm</span></div>
+              <div class="rowi">${tier('reference', 'Reference')}<span>Paper 152.4 × 101.6 mm · strip 2 × 6 in</span></div>
+              <div class="rowi">${tier('unknown', 'Not measured yet')}<span>Trim at the cut · booth PC driver version</span></div></div>`,
+              footer: `<span class="sec-t">This project: ${sev('warn', '1 item near an edge')}</span><button class="btn ghost sm">Open Checks</button><span class="grow"></span><button class="btn ghost">Change printer…</button><button class="btn pri">Done</button>`
+            }),
+            anns:
+              ann(1, 893, 36) +
+              ann(2, 322, 116) +
+              ann(3, 322, 305) +
+              ann(4, 322, 380) +
+              ann(5, 322, 598) +
+              ann(6, 322, 712)
+          })
+
+        function sheetMini(sel) {
+          const st = (o) =>
+            `<div style="flex:1;min-width:0;position:relative;background:#14243a;display:flex;flex-direction:column;gap:5%;padding:8% 9%">
+          ${[0, 1, 2].map(() => `<div style="flex:1;background:linear-gradient(160deg,#5b6d86,#33445e);box-shadow:0 0 0 2px #c9d3e0"></div>`).join('')}
+          <div style="height:11%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px"><span style="font:600 9px 'Cormorant Garamond',serif;color:#d9e2ee;letter-spacing:.08em">NORTHFIELD</span><span style="font:400 6px var(--ui);color:#9fb0c6;letter-spacing:.12em">HOLIDAY 2027</span></div>${o || ''}</div>`
+          return `<div style="width:${sel ? 176 : 64}px;aspect-ratio:2/3;display:flex;gap:0;overflow:hidden;box-shadow:0 4px 16px rgb(0 0 0/.4);position:relative">${st()}${st()}<span style="position:absolute;left:50%;top:-6px;bottom:-6px;border-left:1.5px dashed #ddd"></span></div>`
+        }
+        R.importDlg = () =>
+          back({
+            drawer: null,
+            overlay: dialog({
+              title: 'Import dslrBooth template',
+              desc: 'northfield-holiday.zip',
+              bodyStyle: 'flex-direction:row;gap:20px',
+              body: `<div style="flex:none;width:220px;min-width:0;overflow:hidden;display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px 0;background:var(--surface-canvas);border-radius:8px">${sheetMini(true)}<span class="help">As found in the file</span></div>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:14px">
+              <div class="inl info" style="font-size:13px">${ic('info')}<span><b>A 4×6 sheet with two identical 2×6 strips.</b> 9 layers: 3 photo slots, 4 editable texts, 2 images.</span></div>
+              <div class="grp"><div class="lbl-caps">Open it as</div>
+                <div class="opt on"><span class="rb on"></span><span style="display:flex;gap:8px;width:18px;height:40px;flex:none"><span style="flex:1;border-radius:2px;background:var(--accent)"></span></span><span><div class="tt">One 2×6 strip, printed two per sheet <span class="tag acc">Recommended</span></div><div class="dd">Edit one strip; the second copy follows it.</div></span></div>
+                <div class="opt"><span class="rb"></span><span style="display:flex;gap:3px;width:28px;height:40px;flex:none"><span style="flex:1;border-radius:2px;background:var(--text-muted)"></span><span style="flex:1;border-radius:2px;background:var(--text-muted)"></span></span><span><div class="tt">The whole 4×6 sheet as it is</div><div class="dd">Both strips become separate layers you edit one by one.</div></span></div></div>
+              <div class="grp"><div class="lbl-caps">For you</div>
+                <div class="inl warn">${ic('alert', 's14')}<span><b>1 font isn't installed: Brittany Signature.</b> The text keeps its font name. Install the font, or replace it later from Checks.</span></div>
+                <div class="inl ok">${ic('okc', 's14')}<span>Text from dslrBooth stays editable.</span></div></div>
+              <div class="disc">${ic('cr', 's14')}Compatibility details<span class="r">6 technical notes</span></div>
+            </div>`,
+              footer: `<button class="btn ghost">Choose another file…</button><span class="grow"></span><button class="btn sec">Cancel</button><button class="btn pri">Import</button>`
+            }),
+            anns: ann(1, 322, 214) + ann(2, 322, 290) + ann(3, 322, 440) + ann(4, 322, 565)
+          })
+
+        function colorPop() {
+          return `<div class="cpop" style="right:350px;top:250px">
+        <div class="lbl-caps">Event palette</div>
+        <div class="swgrid">${PAL.map((p, i) => `<span class="sw ${i === 1 ? 'on' : ''}" title="${p.n}" style="background:${p.h}"></span>`).join('')}</div>
+        <div class="rowi" style="min-height:22px;font-size:12px">${ic('link', 's14')}<span>Linked to <b>Gold</b></span><span class="lnk" style="margin-left:auto">Use fixed colour</span></div>
+        <div class="lbl-caps">In this design</div>
+        <div class="swgrid"><span class="sw" style="background:#7A6A58"></span><span class="sw" style="background:#5E5247"></span><span class="sw" style="background:#FFFFFF"></span></div>
+        <div class="lbl-caps">Custom</div>
+        <div class="r2"><div class="in tnum"># B8915A</div><button class="btn sec">Pick on screen…</button></div>
+      </div>`
+        }
+        R.editorLight = () =>
+          editor({
+            drawer: 'colors',
+            top: { state: 'modified' },
+            props: propsText({ colorFocus: true }),
+            sel: 'names',
+            toolbar: tbText(),
+            tags: true,
+            safe: true,
+            flag: true,
+            vb: { safe: true },
+            edExtra: colorPop(),
+            selInfo: 'Names · 960 × 270 px',
+            anns: ann(1, 330, 120) + ann(2, 1300, 236) + ann(3, 1030, 700) + ann(4, 860, 940)
+          })
+
+        function settings(section) {
+          const nav = ['Appearance', 'Printing', 'Editor']
+            .map(
+              (n) =>
+                `<div class="mi ${n === section || (section === 'PE' && n === 'Printing') ? 'on' : ''}">${ic({ Appearance: 'sun', Printing: 'printer', Editor: 'sliders' }[n], 's14')}${n}</div>`
+            )
+            .join('')
+          const theme = (id, label, icon, on, pv) =>
+            `<div class="themecard ${on ? 'on' : ''} ${id === 'dark' ? 'focusable focus' : ''}"><div class="pv">${pv}</div><div class="rowi"><span class="rb ${on ? 'on' : ''}"></span>${ic(icon, 's14')}${label}</div></div>`
+          const pvD =
+            '<span style="background:#17181c"></span><span style="background:#0e0f12;display:grid;place-items:center"><i style="width:14px;height:36px;background:#f6f0e7;display:block"></i></span><span style="background:#1c1d22"></span>'
+          const pvL =
+            '<span style="background:#f6f6f9"></span><span style="background:#e6e7ec;display:grid;place-items:center"><i style="width:14px;height:36px;background:#f6f0e7;display:block;box-shadow:0 1px 3px #0002"></i></span><span style="background:#fff"></span>'
+          const pvS =
+            '<span style="background:linear-gradient(180deg,#17181c 50%,#f6f6f9 50%)"></span><span style="background:linear-gradient(180deg,#0e0f12 50%,#e6e7ec 50%);display:grid;place-items:center"><i style="width:14px;height:36px;background:#f6f0e7;display:block"></i></span><span style="background:linear-gradient(180deg,#1c1d22 50%,#fff 50%)"></span>'
+          const row = (t, d, ctl) =>
+            `<div class="setrow"><div class="tx2"><b>${t}</b>${d ? `<span class="help">${d}</span>` : ''}</div>${ctl}</div>`
+          let content
+          if (section === 'Appearance') {
+            content = `<div class="lbl-caps">Theme</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">${theme('dark', 'Dark', 'moon', true, pvD)}${theme('light', 'Light', 'sun', false, pvL)}${theme('sys', 'Match system', 'monitor', false, pvS)}</div>
+          <div class="help">Your designs look the same in every theme. Only the space around them changes.</div>
+          <div class="lbl-caps" style="margin-top:6px">Interface size</div>
+          <span class="seg" style="align-self:flex-start"><span>90 %</span><span class="on">100 %</span><span>110 %</span><span>125 %</span></span>
+          <div class="help">Makes panels and text larger or smaller. Canvas zoom is separate. Windows display scaling still applies.</div>
+          <div class="card" style="display:flex;gap:14px;align-items:center"><span style="font-size:13px">Preview: <b>Properties</b> · Font size <span class="in tnum" style="display:inline-flex;width:70px;height:24px">200<span class="u">px</span></span></span></div>`
+          } else {
+            content = `<div class="lbl-caps">Printing</div>
+          ${row('Default printer profile', 'Used for safe areas and printer checks in every project on this computer.', `<div class="in lg" style="width:250px">DNP DS-RX1 ${tier('estimated', 'Provisional')}${chev()}</div>`)}
+          ${row('Show safe areas when a printer is chosen', 'You can still hide them per session from the view bar.', '<span class="tog on"></span>')}
+          ${row('Printer details', '', '<button class="btn sec">Open…</button>')}
+          <div class="lbl-caps" style="margin-top:10px">Editor</div>
+          ${row('Selection toolbar', 'Quick actions above the selected layer.', '<span class="tog on"></span>')}
+          ${row('Snap to objects and guides', 'Hold Alt while dragging to ignore snapping.', '<span class="tog on"></span>')}
+          ${row('Sample photos in new projects', '', '<span class="tog on"></span>')}
+          ${row('Show technical details in Checks', 'For experienced users. Opens every Details section.', '<span class="tog"></span>')}
+          ${row('Units for safe areas and checks', '', '<span class="seg"><span class="on">mm</span><span>in</span></span>')}
+          ${row('Panel layout', 'Drawer, panel sizes and collapsed sections.', '<button class="btn sec">Reset</button>')}`
+          }
+          return dialog({
+            title: 'Settings',
+            desc: 'Settings for this computer. They are never stored in a project.',
+            bodyStyle: 'padding:0',
+            body: `<div class="setg"><nav class="setnav">${nav}<div class="msep"></div><div class="mi" style="color:var(--text-disabled)">${ic('book', 's14')}Company · later</div></nav><div style="padding:16px 20px;display:flex;flex-direction:column;gap:10px;overflow:hidden;min-width:0">${content}</div></div>`,
+            footer: `<span class="help">Changes apply right away.</span><span class="grow"></span><button class="btn pri">Done</button>`
+          })
+        }
+        R.settingsA = () => back({ overlay: settings('Appearance') })
+        R.settingsB = () => back({ overlay: settings('PE') })
+
+        // ---------- start screen ----------
+        function miniStrip(bg, slot, line, w = 34) {
+          return `<div class="mini" style="width:${w}px;height:${w * 3}px;background:${bg}">
+        <i style="top:4%;height:21%;background:${slot}"></i><i style="top:27%;height:21%;background:${slot}"></i><i style="top:50%;height:21%;background:${slot}"></i>
+        <b style="top:78%;background:${line}"></b><b style="top:84%;left:32%;right:32%;background:${line};opacity:.6"></b></div>`
+        }
+        function miniSheet(bg, slot, line) {
+          return `<div style="display:flex;gap:0;box-shadow:0 2px 8px rgb(0 0 0/.35)">${miniStrip(bg, slot, line, 34)}${miniStrip(bg, slot, line, 34)}</div>`
+        }
+        function mini46(bg, slot, line) {
+          return `<div class="mini" style="width:74px;height:111px;background:${bg}"><i style="top:6%;height:40%;left:6%;right:52%;background:${slot}"></i><i style="top:6%;height:40%;left:52%;right:6%;background:${slot}"></i><i style="top:50%;height:30%;background:${slot}"></i><b style="top:86%;background:${line}"></b></div>`
+        }
+        R.start = () => {
+          const card = (icon, title, desc, art, o = {}) =>
+            `<div class="ccard ${o.hov ? 'hov' : ''} ${o.future ? 'future' : ''}"><div class="art">${art}</div>
+          <div class="ct">${ic(icon, 's20')}${title}${o.tag || ''}</div><div class="cd">${desc}</div></div>`
+          const steps = `<div style="display:flex;flex-direction:column;gap:6px">${[
+            'Format',
+            'Event',
+            'Style',
+            'Colors',
+            '…',
+            'Review'
+          ]
+            .map(
+              (s, i) =>
+                `<span style="display:flex;align-items:center;gap:6px;font-size:11px;color:${i < 2 ? 'var(--text-primary)' : 'var(--text-muted)'}"><span style="width:8px;height:8px;border-radius:50%;background:${i < 2 ? 'var(--accent)' : 'var(--border-strong)'}"></span>${s}</span>`
+            )
+            .slice(0, 5)
+            .join('')}</div>${miniStrip('#f6f0e7', '#c9b7a0', '#b8915a', 30)}`
+          const blank = `<div style="display:flex;gap:14px;align-items:flex-end">${[
+            '2×6',
+            '4×6',
+            '6×4'
+          ]
+            .map(
+              (f, i) =>
+                `<div style="display:flex;flex-direction:column;align-items:center;gap:6px"><span style="display:block;border:1.5px ${i === 0 ? 'solid var(--accent)' : 'dashed var(--border-strong)'};border-radius:2px;width:${[24, 46, 66][i]}px;height:${[72, 66, 44][i]}px;${i === 0 ? 'background:var(--accent-subtle)' : ''}"></span><span style="font-size:11px;color:var(--text-secondary)">${f}</span></div>`
+            )
+            .join('')}</div>`
+          const imp = `<div style="display:flex;align-items:center;gap:14px"><span style="color:var(--text-secondary)">${ic('zip', 's20')}</span><span style="color:var(--text-muted)">${ic('cr')}</span>${miniStrip('#14243a', '#5b6d86', '#d9e2ee', 28)}</div>`
+          const rc = (name, meta, th, o = {}) =>
+            `<div class="rcard ${o.missing ? 'missing' : ''}"><div class="th">${th}</div><div class="rn">${name}</div><div class="rm">${meta}</div>${
+              o.missing
+                ? `<div style="display:flex;gap:6px"><span class="sev warn">${ic('alert', 's14')}File not found</span><span class="grow"></span><span class="lnk" style="font-size:12px">Locate…</span></div>`
+                : ''
+            }</div>`
+          return `<div class="start">
+        <div class="start-top"><span class="mark"></span><b style="font-size:14px">Template Studio</b><span class="grow"></span>
+          <button class="btn ghost">${ic('sliders', 's14')}Settings</button><button class="btn ghost">${ic('help', 's14')}Help</button></div>
+        <div class="start-main">
+          <div style="display:flex;align-items:flex-end;gap:16px"><div class="grow"><div class="disp">Start a template</div><div class="sec-t" style="margin-top:4px;font-size:14px">Design a print template for dslrBooth, or pick up where you left off.</div></div>
+            <button class="btn sec lg">${ic('folder')}Open project…<span class="kbd">Ctrl+O</span></button></div>
+          <div class="sbanner">${ic('clock')}<span class="grow"><b>Unsaved changes to "Lena's 40th" were kept</b> from yesterday at 6:12 PM.</span><button class="btn sec sm">Review</button><button class="btn ghost sm">Not now</button></div>
+          <div class="cards3">
+            ${card('sparkle', 'Guided design', 'Answer a few questions about the event and get a finished template you can still edit.', steps, { future: true, tag: '<span class="tag future" style="margin-left:auto">Phase 7C</span>' })}
+            ${card('plus', 'Blank design', 'Choose a print size and design it your way in the full editor.', blank, { hov: true })}
+            ${card('upload', 'Import dslrBooth', 'Turn a dslrBooth template (.zip) into a project you can edit.', imp)}
+          </div>
+          <div style="display:flex;align-items:center;gap:12px"><div style="font-size:20px;font-weight:600">Recent</div><span class="grow"></span><div class="search" style="width:240px;height:30px">${ic('search', 's14')}Search recent</div></div>
+          <div class="rec">
+            ${rc('Ava &amp; Theo Wedding', '2×6 strip · edited 2 h ago', miniSheet('#f6f0e7', '#c9b7a0', '#b8915a'))}
+            ${rc('Northfield Holiday Party', '2×6 strip · yesterday', miniSheet('#14243a', '#5b6d86', '#d9e2ee'))}
+            ${rc("Lena's 40th", '4×6 portrait · yesterday', mini46('#f3dcd6', '#c99d93', '#7d4b45'))}
+            ${rc('Class of 2027 Prom', '2×6 strip · 12 Nov', miniSheet('#111', '#5a5a5a', '#d4b36a'))}
+            ${rc('Spring Gala', '4×6 portrait · 3 Nov', mini46('#e8efe6', '#9fb39b', '#3f5a3c'), { missing: true })}
+          </div>
+          <div style="display:flex;gap:18px;font-size:13px;color:var(--text-muted);align-items:center">${ic('book', 's14')}<span class="lnk">What is a photo slot?</span><span class="lnk">Why strips print two per sheet</span><span class="lnk">What safe areas are</span></div>
+        </div></div>${ann(1, 470, 300) + ann(2, 880, 130) + ann(3, 120, 395) + ann(4, 1280, 640)}`
+        }
+
+        // ---------- component sheet ----------
+        R.sheet = () => {
+          const sw = (v, l) =>
+            `<div style="display:flex;align-items:center;gap:8px;font-size:12px"><span class="sw lg" style="background:var(${v});box-shadow:inset 0 0 0 1px var(--border)"></span><span><b style="font-weight:600">${l}</b><br><span class="muted">${v}</span></span></div>`
+          const col = (t, b) =>
+            `<div style="display:flex;flex-direction:column;gap:12px;min-width:0"><div class="lbl-caps">${t}</div>${b}</div>`
+          const kinds = ['photo', 'text', 'image', 'shape', 'group']
+            .map(
+              (k) =>
+                `<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px">${kc(k)}${{ photo: 'Photo slot', text: 'Text', image: 'Image', shape: 'Shape', group: 'Group' }[k]}</span>`
+            )
+            .join('')
+          const ovs = [
+            ['--overlay-safe', 'Keep-safe', 'border-top:2px dashed'],
+            ['--overlay-trim', 'Trim (hatched)', ''],
+            ['--overlay-flag', 'Flag', 'border-top:2px dashed'],
+            ['--overlay-cut', 'Cut', 'border-top:2px dashed'],
+            ['--overlay-guide', 'Snap guide', 'border-top:1.5px solid']
+          ]
+            .map(
+              ([v, l, b]) =>
+                `<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px"><span style="width:28px;height:10px;${b ? `${b} var(${v});height:0` : `background:repeating-linear-gradient(-45deg,var(${v}) 0 1.4px,transparent 1.4px 5px)`};filter:drop-shadow(0 0 1px #000)"></span>${l}</span>`
+            )
+            .join('')
+          return `<div style="padding:24px 28px;display:grid;grid-template-columns:1fr 1fr 1.25fr 1.25fr;gap:28px;height:100%;overflow:hidden;background:var(--surface-panel)">
+        ${col(
+          'Surfaces',
+          [
+            ['--surface-canvas', 'Canvas surround'],
+            ['--surface-app', 'App chrome'],
+            ['--surface-panel', 'Panel'],
+            ['--surface-raised', 'Raised / dialog'],
+            ['--surface-overlay', 'Menu / popover'],
+            ['--surface-input', 'Input']
+          ]
+            .map(([v, l]) => sw(v, l))
+            .join('') +
+            `<div class="lbl-caps" style="margin-top:8px">Lines</div>${sw('--border-subtle', 'Divider')}${sw('--border', 'Border')}${sw('--border-strong', 'Strong border')}`
+        )}
+        ${col(
+          'Text and accent',
+          `<div style="display:flex;flex-direction:column;gap:6px;font-size:13px"><span>Primary text</span><span class="sec-t">Secondary text</span><span style="color:var(--text-label)">Field label</span><span class="muted">Muted / helper</span><span style="color:var(--text-disabled)">Disabled</span></div>` +
+            sw('--accent', 'Accent · selection · primary') +
+            sw('--accent-subtle', 'Accent subtle · active rows') +
+            sw('--focus-ring', 'Focus ring') +
+            `<div class="lbl-caps" style="margin-top:8px">Type scale</div>
+            <div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:28px;font-weight:600;letter-spacing:-.015em;line-height:1.1">Start 28</span><span style="font-size:20px;font-weight:600">Section 20</span><span style="font-size:16px;font-weight:600">Dialog title 16</span><span style="font-size:14px;font-weight:600">Document 14</span><span style="font-size:13px">Body and values 13 · <span class="tnum">1200 × 3600</span></span><span style="font-size:12px;color:var(--text-label)">Label 12 · helper 12</span><span class="lbl-caps">Caps label 11</span></div>`
+        )}
+        ${col(
+          'Status, evidence, kinds, overlays',
+          `<div style="display:flex;flex-wrap:wrap;gap:12px">${sev('err', 'Error')}${sev('warn', 'Needs attention')}${sev('info', 'Good to know')}${sev('ok', 'Ready')}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">${tier('verified', 'Verified')}${tier('observed', 'Observed')}${tier('estimated', 'Estimated')}${tier('reference', 'Reference')}${tier('unknown', 'Not measured yet')}</div>
+          <div class="help">Evidence tiers: icon + word + tone. Verified is filled, Observed tinted, Estimated outlined, Reference neutral, Unknown dashed.</div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px 14px">${kinds}</div>
+          <div class="help">Kind colours: chips, icons and Layers only. Never selection, never status.</div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px 14px;padding:10px;border-radius:6px;background:#f1e8db">${ovs.replace(/font-size:12px/g, 'font-size:12px;color:#3a332c')}</div>
+          <div class="help">Overlay hues are the same in both themes and carry a dark halo.</div>
+          <div class="lbl-caps" style="margin-top:4px">Banners</div>
+          <div class="inl warn">${ic('alert', 's14')}<span><b>Font not installed.</b> "Names" shows in a fallback font. <span class="lnk">Replace…</span></span></div>
+          <div class="card" style="display:flex;align-items:center;gap:10px;padding:6px 6px 6px 12px;font-size:13px;background:var(--surface-overlay)">${ic('edit', 's14')}<span class="grow">Editing text · Esc to finish</span><button class="btn pri sm">Done</button></div>
+          <div class="card" style="display:flex;align-items:center;gap:10px;padding:6px 6px 6px 12px;font-size:13px;background:var(--surface-overlay)">${ic('move', 's14')}<span class="grow">Repositioning the sample photo. The booth places each guest photo with Cover.</span><button class="btn ghost sm">Reset</button><button class="btn pri sm">Done</button></div>`
+        )}
+        ${col(
+          'Controls and states',
+          `<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><button class="btn pri">Export</button><button class="btn pri hov">Hover</button><button class="btn pri focus">Focus</button><button class="btn pri dis">Disabled</button></div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><button class="btn sec">Save</button><button class="btn sec hov">Hover</button><button class="btn ghost">Ghost</button><button class="btn danger">Delete…</button></div>
+          <div class="r2"><div class="in tnum">200<span class="u">px</span></div><div class="in focus tnum">960<span class="u">px</span></div></div>
+          <div class="r2"><div style="display:flex;flex-direction:column;gap:3px"><div class="in err tnum">13</div><span style="font-size:12px;color:var(--status-error-fg)">Use 1–12</span></div><div class="in lock">${ic('lock', 's14')}765<span class="u">px</span></div></div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="seg"><span class="on">Cover</span><span>Contain</span></span><span class="tog on"></span><span class="tog"></span><span class="cb on">${ic('check')}</span><span class="cb"></span><span class="rb on"></span></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="pill on"><span class="ld"></span>Safe areas: <b>On</b></span><span class="pill"><span class="ld"></span>Overflow: <b>Show</b></span></div>
+          <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><span class="docstate">${ic('check')}Saved</span><span class="docstate mod"><span class="dot"></span>Modified</span><span class="sev warn">${ic('alert', 's14')}Autosave paused</span></div>
+          <div style="border-radius:8px;box-shadow:inset 0 0 0 1px var(--border-subtle);overflow:hidden">
+            <div class="sect"><div class="sh"><span class="chev">${ic('cr', 's14')}</span>Collapsed section<span class="sum">X 120 · Y 2700 · 960 × 270</span></div></div>
+            <div class="sect"><div class="sh hov"><span class="chev">${ic('cd', 's14')}</span>Expanded (hover)<span class="sum"></span></div><div class="sbody"><div class="help">Section content…</div></div></div>
+            <div class="lr">${kc('text', true)}<span class="n">Layer row</span></div>
+            <div class="lr hov">${kc('photo', true)}<span class="n">Hover</span><span class="num">#1</span><span class="va"><button class="ib ghosted">${ic('eye', 's14')}</button><button class="ib ghosted">${ic('unlock', 's14')}</button></span></div>
+            <div class="lr on">${kc('text', true)}<span class="n">Selected</span><span class="va"><button class="ib ghosted">${ic('eye', 's14')}</button><button class="ib ghosted">${ic('unlock', 's14')}</button></span></div>
+            <div class="lr">${kc('image', true)}<span class="n">With warning</span><span class="role">Background</span><span class="va"><span class="wm">${ic('alert', 's14')}</span></span></div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center"><span class="tip" style="position:static">Undo<span class="kbd">Ctrl+Z</span></span><span class="tip" style="position:static">Undo<span class="kbd">⌘Z</span></span><span class="help">Windows · Mac</span></div>`
+        )}
+      </div>`
+        }
+
+        // ---------- mount + scaling ----------
+        const shot = new URLSearchParams(location.search).get('shot')
+        const frames = []
+        document.querySelectorAll('.fw').forEach((fw) => {
+          const w = +fw.dataset.w
+          const h = +fw.dataset.h
+          const key = fw.dataset.render
+          const theme = fw.dataset.theme
+          fw.id = fw.id || `fw-${key}-${theme}`
+          const f = document.createElement('div')
+          f.className = 'frame'
+          f.style.width = w + 'px'
+          f.style.height = h + 'px'
+          f.innerHTML = `<div class="app t-${theme}" role="img" aria-label="Mockup: ${key} (${theme})">${R[key]()}</div>`
+          fw.appendChild(f)
+          frames.push({ fw, f, w, h })
+        })
+        if (shot) {
+          const hit = frames.find((x) => x.fw.id === shot)
+          if (hit) {
+            document.body.innerHTML = ''
+            document.body.style.padding = '0'
+            document.body.style.margin = '0'
+            hit.f.style.position = 'relative'
+            hit.f.style.transform = 'none'
+            document.body.appendChild(hit.f)
+            return
+          }
+        }
+        function fit() {
+          const actual = document.body.classList.contains('actual')
+          frames.forEach(({ fw, f, w, h }) => {
+            if (actual) {
+              fw.style.height = ''
+              f.style.transform = ''
+              return
+            }
+            const s = Math.min(1, fw.clientWidth / w)
+            f.style.transform = `scale(${s})`
+            fw.style.height = Math.round(h * s) + 'px'
+          })
+        }
+        const setMode = (actual) => {
+          document.body.classList.toggle('actual', actual)
+          document.getElementById('btn-fit').setAttribute('aria-pressed', String(!actual))
+          document.getElementById('btn-actual').setAttribute('aria-pressed', String(actual))
+          fit()
+        }
+        document.getElementById('btn-fit').addEventListener('click', () => setMode(false))
+        document.getElementById('btn-actual').addEventListener('click', () => setMode(true))
+        document.getElementById('btn-ann').addEventListener('click', (e) => {
+          const off = document.body.classList.toggle('no-ann')
+          e.currentTarget.setAttribute('aria-pressed', String(!off))
+        })
+        if ('ResizeObserver' in window)
+          new ResizeObserver(fit).observe(document.querySelector('main'))
+        window.addEventListener('resize', fit)
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit)
+        fit()
+      })()
+    </script>
+  </body>
+</html>
