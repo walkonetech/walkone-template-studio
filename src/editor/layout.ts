@@ -12,7 +12,9 @@ export const LAYERS_SPLIT_DEFAULT = 0.4
 /** Window width below which the tool drawer starts collapsed so the canvas keeps its room. */
 export const DRAWER_AUTO_COLLAPSE_BELOW = 1360
 export const DRAWER_WIDTH = 224
-export const RAIL_WIDTH = 64
+/** The tool rail at the default Comfortable density (B2; Compact is 64). The larger value keeps the canvas checks safe. */
+export const RAIL_WIDTH = 80
+export const RAIL_WIDTH_COMPACT = 64
 /** Never let the side panels take more than this share of the window, whatever the stored size. */
 export const MAX_PANEL_SHARE = 0.45
 

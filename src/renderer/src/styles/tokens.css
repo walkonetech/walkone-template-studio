@@ -1,92 +1,364 @@
 /*
- * Design tokens. The editor ships ONE theme (dark neutral); every colour, size and radius used by components comes
- * from here, so a second theme means redefining these variables, nothing else. Canvas overlay colours that Konva
- * needs as JS values live in `editor/canvasTheme.ts` and mirror --accent / --guide.
+ * Design tokens (Phase 7B B2, ADR-055). Three layers:
+ *   1. Primitives (--p-*): raw ramps. Components never use them directly.
+ *   2. Semantic tokens (--c-*, --shadow-*): what a colour is FOR. Redefined per theme on the root element:
+ *      Light is the default; `data-theme="dark"` switches. "Match system" is resolved in JS, so CSS only ever sees
+ *      `light` or `dark`. Older names (--c-app, --c-text-2, ...) are kept as aliases of the semantic names so existing
+ *      component CSS keeps working while it migrates.
+ *   3. Components (ui.css, shell.css, panels.css) consume semantic tokens only.
+ * Density (`data-density`) and the interface scale (`--ui-scale`) change sizes, never the structure.
+ * Artwork on the artboard is never themed. Canvas overlays keep the same hues in every theme; Konva reads them from
+ * `editor/canvasTheme.ts`, which mirrors the --p-ov-* primitives (checked by a unit test).
  */
+
+/* ---- Layer 1: primitives -------------------------------------------------------------------------------------- */
 :root {
+  /* Neutral ramp (cool, slightly indigo-biased) */
+  --p-n-0: #ffffff;
+  --p-n-25: #f6f6f9;
+  --p-n-50: #eeeff3;
+  --p-n-100: #e3e4ea;
+  --p-n-200: #d4d6de;
+  --p-n-300: #b4b7c3;
+  --p-n-400: #9a9dab;
+  --p-n-500: #7d808e;
+  --p-n-600: #5d606c;
+  --p-n-700: #3a3c45;
+  --p-n-750: #33353d;
+  --p-n-800: #2a2c33;
+  --p-n-850: #1e1f24;
+  --p-n-900: #17181c;
+  --p-n-950: #15161a;
+  --p-n-1000: #101114;
+
+  /* Accent: indigo */
+  --p-indigo-300: #9fb0ff;
+  --p-indigo-400: #8e9dff;
+  --p-indigo-500: #7b8cff;
+  --p-indigo-600: #6275f5;
+  --p-indigo-700: #4456e0;
+  --p-indigo-800: #3445c4;
+
+  /* Status */
+  --p-red-400: #f27d78;
+  --p-red-700: #b42a24;
+  --p-amber-400: #f2b04c;
+  --p-amber-800: #8a4f00;
+  --p-green-400: #4cc38a;
+  --p-green-700: #1a7549;
+  --p-blue-400: #7cbcff;
+  --p-blue-700: #1d62b3;
+
+  /* Element kinds (softened; never used for selection, focus, navigation, status or primary actions) */
+  --p-orchid-400: #cf9fcc;
+  --p-orchid-700: #94588e;
+  --p-lime-400: #a9c286;
+  --p-lime-700: #55702c;
+  --p-violet-400: #a99bd6;
+  --p-violet-700: #66589f;
+  --p-slate-400: #97a3ba;
+  --p-slate-700: #56627a;
+  --p-graphite-400: #c9ccd6;
+  --p-graphite-700: #5f6371;
+
+  /* Canvas overlays: identical in every theme (mirrored by editor/canvasTheme.ts) */
+  --p-ov-safe: #3ec7c0;
+  --p-ov-trim: #dca24e;
+  --p-ov-flag: #f27d78;
+  --p-ov-cut: #f4f4f4;
+  --p-ov-guide: #ff5f8f;
+  --p-ov-selection: #7b8cff;
+  --p-ov-halo: rgb(0 0 0 / 0.6);
+}
+
+/* ---- Layer 2: semantic tokens, Light (default) ---------------------------------------------------------------- */
+:root,
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --c-surface-canvas: #e6e7ec;
+  --c-surface-app: var(--p-n-25);
+  --c-surface-panel: var(--p-n-0);
+  --c-surface-raised: var(--p-n-0);
+  --c-surface-overlay: var(--p-n-0);
+  --c-surface-input: var(--p-n-0);
+  --c-surface-tooltip: #23242b;
+  --c-on-tooltip: #f2f2f5;
+  --c-on-tooltip-2: #c3c5cf;
+
+  --c-text-primary: #1b1c22;
+  --c-text-secondary: #474a56;
+  --c-text-label: #4f5260;
+  --c-text-muted: #636673;
+  --c-text-disabled: #a3a5ae;
+  --c-text-faint: #7a7d8a;
+
+  --c-border-subtle: #e5e6eb;
+  --c-border-normal: #d3d5dd;
+  --c-border-strong: var(--p-n-300);
+
+  --c-hover: rgb(20 24 40 / 0.05);
+  --c-pressed: rgb(20 24 40 / 0.09);
+  --c-control: var(--p-n-0);
+  --c-control-hover: var(--p-n-50);
+  --c-selection: var(--p-indigo-700);
+  --c-selection-bg: rgb(68 86 224 / 0.12);
+  --c-selection-bg-hover: rgb(68 86 224 / 0.17);
+  --c-selection-bg-strong: rgb(68 86 224 / 0.22);
+  --c-focus: var(--p-indigo-700);
+  --c-disabled-bg: var(--p-n-50);
+
+  --c-accent: var(--p-indigo-700);
+  --c-accent-hover: var(--p-indigo-800);
+  --c-accent-pressed: var(--p-indigo-800);
+  --c-accent-subtle: rgb(68 86 224 / 0.09);
+  --c-accent-border: rgb(68 86 224 / 0.45);
+  --c-on-accent: #ffffff;
+
+  --c-status-error-fg: var(--p-red-700);
+  --c-status-error-bg: #fdecea;
+  --c-status-error-border: #f0b4b0;
+  --c-status-attention-fg: var(--p-amber-800);
+  --c-status-attention-bg: #fff3df;
+  --c-status-attention-border: #e8c27f;
+  --c-status-info-fg: var(--p-blue-700);
+  --c-status-info-bg: #e8f1fd;
+  --c-status-info-border: #b2cff2;
+  --c-status-ready-fg: var(--p-green-700);
+  --c-status-ready-bg: #e6f6ed;
+  --c-status-ready-border: #a9dcc0;
+
+  --c-kind-photo: var(--p-orchid-700);
+  --c-kind-text: var(--p-lime-700);
+  --c-kind-image: var(--p-violet-700);
+  --c-kind-shape: var(--p-slate-700);
+  --c-kind-group: var(--p-graphite-700);
+
+  --c-swatch-ring: rgb(20 24 40 / 0.28);
+  --c-edge-shadow: rgb(20 24 40 / 0.16);
+  --c-welcome-glow: var(--p-n-0);
+
+  --shadow-1: 0 1px 2px rgb(20 24 40 / 0.08);
+  --shadow-2: 0 10px 28px rgb(20 24 40 / 0.14), 0 0 0 1px rgb(20 24 40 / 0.08);
+  --shadow-3: 0 28px 70px rgb(20 24 40 / 0.22), 0 0 0 1px rgb(20 24 40 / 0.08);
+  --shadow-artboard: 0 0 0 1px rgb(20 24 40 / 0.06), 0 6px 24px rgb(20 24 40 / 0.16);
+  --c-scrim: rgb(24 26 36 / 0.38);
+}
+
+/* ---- Layer 2: semantic tokens, Dark ----------------------------------------------------------------------------- */
+:root[data-theme='dark'] {
   color-scheme: dark;
 
-  /* Surfaces (darkest → lightest) */
-  --c-canvas-surround: #101114; /* behind the artboard */
-  --c-app: #17181c; /* top bar, status bar, rail */
-  --c-panel: #1e1f24; /* side panels */
-  --c-elevated: #2a2c33; /* menus, popovers, dialogs, inputs on panels */
-  --c-input: #15161a;
+  --c-surface-canvas: var(--p-n-1000);
+  --c-surface-app: var(--p-n-900);
+  --c-surface-panel: var(--p-n-850);
+  --c-surface-raised: var(--p-n-800);
+  --c-surface-overlay: var(--p-n-800);
+  --c-surface-input: var(--p-n-950);
+  --c-surface-tooltip: #0a0b0d;
+  --c-on-tooltip: #ededf1;
+  --c-on-tooltip-2: #b3b5c0;
 
-  /* Text (AA on every surface) */
-  --c-text: #ededf1;
-  --c-text-2: #b3b5c0;
-  --c-text-label: #aaadba; /* field labels, X/Y/W/H tags, metadata: subordinate but clearly readable */
-  --c-text-3: #9a9dab;
+  --c-text-primary: #ededf1;
+  --c-text-secondary: #b3b5c0;
+  --c-text-label: #aaadba;
+  --c-text-muted: #9a9dab;
   --c-text-disabled: #5d606c;
-  --c-text-faint: #7f8392; /* planned (disabled) tools: present, unmistakably inactive */
+  --c-text-faint: #7f8392;
 
-  /* Lines */
-  --c-divider: #2a2b32;
-  --c-border: #3a3c45;
+  --c-border-subtle: #2a2b32;
+  --c-border-normal: var(--p-n-700);
   --c-border-strong: #50535f;
 
-  /* Accent and states */
-  --c-accent: #7b8cff;
-  --c-accent-strong: #6275f5;
-  --c-on-accent: #0b0e24;
   --c-hover: rgb(255 255 255 / 0.06);
   --c-pressed: rgb(255 255 255 / 0.1);
-  --c-selected: rgb(123 140 255 / 0.2);
-  --c-selected-edge: rgb(123 140 255 / 0.9);
-  --c-focus: #9fb0ff;
-  --c-guide: #ff5f8f; /* snapping guides on the canvas */
-  --c-safe: #3ec7c0; /* safe-area keep-safe line (editor-only) */
+  --c-control: var(--p-n-800);
+  --c-control-hover: var(--p-n-750);
+  --c-selection: var(--p-indigo-500);
+  --c-selection-bg: rgb(123 140 255 / 0.2);
+  --c-selection-bg-hover: rgb(123 140 255 / 0.26);
+  --c-selection-bg-strong: rgb(123 140 255 / 0.32);
+  --c-focus: var(--p-indigo-300);
+  --c-disabled-bg: var(--p-n-800);
 
-  --c-warning: #f2b04c;
-  --c-error: #f27d78;
-  --c-success: #4cc38a;
-  --c-warning-bg: rgb(242 176 76 / 0.14);
-  --c-error-bg: rgb(242 125 120 / 0.14);
+  --c-accent: var(--p-indigo-500);
+  --c-accent-hover: var(--p-indigo-400);
+  --c-accent-pressed: var(--p-indigo-600);
+  --c-accent-subtle: rgb(123 140 255 / 0.15);
+  --c-accent-border: rgb(123 140 255 / 0.55);
+  --c-on-accent: #0b0e24;
 
-  /* Typography */
-  --font-ui: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --c-status-error-fg: var(--p-red-400);
+  --c-status-error-bg: rgb(242 125 120 / 0.14);
+  --c-status-error-border: rgb(242 125 120 / 0.45);
+  --c-status-attention-fg: var(--p-amber-400);
+  --c-status-attention-bg: rgb(242 176 76 / 0.14);
+  --c-status-attention-border: rgb(242 176 76 / 0.4);
+  --c-status-info-fg: var(--p-blue-400);
+  --c-status-info-bg: rgb(124 188 255 / 0.12);
+  --c-status-info-border: rgb(124 188 255 / 0.45);
+  --c-status-ready-fg: var(--p-green-400);
+  --c-status-ready-bg: rgb(76 195 138 / 0.14);
+  --c-status-ready-border: rgb(76 195 138 / 0.45);
+
+  --c-kind-photo: var(--p-orchid-400);
+  --c-kind-text: var(--p-lime-400);
+  --c-kind-image: var(--p-violet-400);
+  --c-kind-shape: var(--p-slate-400);
+  --c-kind-group: var(--p-graphite-400);
+
+  --c-swatch-ring: rgb(255 255 255 / 0.25);
+  --c-edge-shadow: rgb(0 0 0 / 0.45);
+  --c-welcome-glow: #1b1d27;
+
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.35);
+  --shadow-2: 0 8px 24px rgb(0 0 0 / 0.45), 0 0 0 1px rgb(255 255 255 / 0.06);
+  --shadow-3: 0 24px 64px rgb(0 0 0 / 0.55), 0 0 0 1px rgb(255 255 255 / 0.07);
+  --shadow-artboard: 0 0 0 1px rgb(255 255 255 / 0.04), 0 8px 30px rgb(0 0 0 / 0.55);
+  --c-scrim: rgb(6 7 9 / 0.62);
+}
+
+/* ---- Theme-independent semantic tokens ------------------------------------------------------------------------- */
+:root {
+  /* Canvas overlays (editor-only guides, never printed): the same in Light and Dark */
+  --c-overlay-safe: var(--p-ov-safe);
+  --c-overlay-trim: var(--p-ov-trim);
+  --c-overlay-flag: var(--p-ov-flag);
+  --c-overlay-cut: var(--p-ov-cut);
+  --c-overlay-guide: var(--p-ov-guide);
+  --c-overlay-selection: var(--p-ov-selection);
+  --c-overlay-halo: var(--p-ov-halo);
+
+  /* Legacy aliases (existing component CSS); new code uses the semantic names above */
+  --c-canvas-surround: var(--c-surface-canvas);
+  --c-app: var(--c-surface-app);
+  --c-panel: var(--c-surface-panel);
+  --c-elevated: var(--c-surface-raised);
+  --c-input: var(--c-surface-input);
+  --c-text: var(--c-text-primary);
+  --c-text-2: var(--c-text-secondary);
+  --c-text-3: var(--c-text-muted);
+  --c-divider: var(--c-border-subtle);
+  --c-border: var(--c-border-normal);
+  --c-accent-strong: var(--c-accent-pressed);
+  --c-selected: var(--c-selection-bg);
+  --c-selected-edge: var(--c-selection);
+  --c-guide: var(--c-overlay-guide);
+  --c-safe: var(--c-overlay-safe);
+  --c-warning: var(--c-status-attention-fg);
+  --c-warning-bg: var(--c-status-attention-bg);
+  --c-error: var(--c-status-error-fg);
+  --c-error-bg: var(--c-status-error-bg);
+  --c-success: var(--c-status-ready-fg);
+  --shadow-popover: var(--shadow-2);
+  --shadow-dialog: var(--shadow-3);
+
+  /* Typography: Inter is bundled with the app (no network); the system stack is only a fallback */
+  --font-ui:
+    'Inter Variable', system-ui, -apple-system, 'Segoe UI Variable', 'Segoe UI', Roboto,
+    'Helvetica Neue', sans-serif;
   --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-  --fs-app-title: 13px; /* application name */
-  --fs-project-title: 14px; /* project name in the top bar */
-  --fs-panel-heading: 12px; /* "LAYERS", "PROPERTIES" */
-  --fs-section-heading: 12px;
-  --fs-body: 13px;
-  --fs-label: 12px;
-  --fs-input: 13px;
-  --fs-meta: 12px;
-  --fs-status: 12px;
-  --fs-tooltip: 12px;
-  --fs-display: 26px; /* welcome screen title */
   --lh-tight: 1.25;
   --lh-body: 1.45;
-
-  /* Spacing scale */
-  --sp-1: 4px;
-  --sp-2: 6px;
-  --sp-3: 8px;
-  --sp-4: 12px;
-  --sp-5: 16px;
-  --sp-6: 20px;
-  --sp-7: 24px;
 
   /* Radii */
   --r-sm: 4px;
   --r-md: 6px;
   --r-lg: 10px;
 
-  /* Elevation (floating UI only; flat panels have none) */
-  --shadow-popover: 0 8px 24px rgb(0 0 0 / 0.45), 0 0 0 1px rgb(255 255 255 / 0.06);
-  --shadow-dialog: 0 24px 64px rgb(0 0 0 / 0.55), 0 0 0 1px rgb(255 255 255 / 0.07);
+  /* Focus ring */
+  --focus-width: 2px;
+  --focus-offset: 1px;
 
-  /* Sizes */
-  --h-control: 28px;
-  --h-control-sm: 24px;
-  --h-topbar: 44px;
-  --h-statusbar: 28px;
-  --w-rail: 64px;
-  --w-drawer: 224px;
-
-  /* Motion (hover/popover only) */
+  /* Motion (hover/popover only; off under prefers-reduced-motion) */
   --t-fast: 110ms ease;
+
+  /* Interface scale (90–125 %), set from the app preference. Scales token-driven sizes only. */
+  --ui-scale: 1;
+}
+
+/* ---- Density: Comfortable (default) ---------------------------------------------------------------------------- */
+:root,
+:root[data-density='comfortable'] {
+  --d-control: 34px;
+  --d-control-sm: 28px;
+  --d-control-lg: 38px;
+  --d-row: 36px;
+  --d-menuitem: 32px;
+  --d-rail: 80px;
+  --d-topbar: 52px;
+  --d-viewbar: 48px;
+  --d-section: 40px;
+  --d-panel-header: 40px;
+  --d-statusbar: 30px;
+  --d-fs-body: 14px;
+  --d-fs-label: 13px;
+  --d-fs-input: 14px;
+  --d-fs-meta: 12px;
+  --d-fs-heading: 12px;
+  --d-fs-title: 15px;
+  --d-fs-rail: 12px;
+  --d-icon: 18px;
+}
+
+/* ---- Density: Compact (the pre-7B sizes) ------------------------------------------------------------------------ */
+:root[data-density='compact'] {
+  --d-control: 28px;
+  --d-control-sm: 24px;
+  --d-control-lg: 32px;
+  --d-row: 30px;
+  --d-menuitem: 28px;
+  --d-rail: 64px;
+  --d-topbar: 44px;
+  --d-viewbar: 40px;
+  --d-section: 32px;
+  --d-panel-header: 36px;
+  --d-statusbar: 28px;
+  --d-fs-body: 13px;
+  --d-fs-label: 12px;
+  --d-fs-input: 13px;
+  --d-fs-meta: 12px;
+  --d-fs-heading: 12px;
+  --d-fs-title: 14px;
+  --d-fs-rail: 11px;
+  --d-icon: 17px;
+}
+
+/* ---- Sizes the components use: density × interface scale -------------------------------------------------------- */
+:root {
+  --h-control: calc(var(--d-control) * var(--ui-scale));
+  --h-control-sm: calc(var(--d-control-sm) * var(--ui-scale));
+  --h-control-lg: calc(var(--d-control-lg) * var(--ui-scale));
+  --h-row: calc(var(--d-row) * var(--ui-scale));
+  --h-menuitem: calc(var(--d-menuitem) * var(--ui-scale));
+  --w-rail: calc(var(--d-rail) * var(--ui-scale));
+  --w-drawer: calc(224px * var(--ui-scale));
+  --h-topbar: calc(var(--d-topbar) * var(--ui-scale));
+  --h-viewbar: calc(var(--d-viewbar) * var(--ui-scale));
+  --h-section: calc(var(--d-section) * var(--ui-scale));
+  --h-panel-header: calc(var(--d-panel-header) * var(--ui-scale));
+  --h-statusbar: calc(var(--d-statusbar) * var(--ui-scale));
+  --sz-icon: calc(var(--d-icon) * var(--ui-scale));
+
+  --fs-app-title: calc(13px * var(--ui-scale));
+  --fs-project-title: calc(var(--d-fs-title) * var(--ui-scale));
+  --fs-panel-heading: calc(var(--d-fs-heading) * var(--ui-scale));
+  --fs-section-heading: calc(var(--d-fs-heading) * var(--ui-scale));
+  --fs-body: calc(var(--d-fs-body) * var(--ui-scale));
+  --fs-label: calc(var(--d-fs-label) * var(--ui-scale));
+  --fs-input: calc(var(--d-fs-input) * var(--ui-scale));
+  --fs-meta: calc(var(--d-fs-meta) * var(--ui-scale));
+  --fs-status: calc(var(--d-fs-meta) * var(--ui-scale));
+  --fs-tooltip: calc(var(--d-fs-meta) * var(--ui-scale));
+  --fs-rail: calc(var(--d-fs-rail) * var(--ui-scale));
+  --fs-display: calc(26px * var(--ui-scale));
+
+  /* Spacing scale */
+  --sp-1: calc(4px * var(--ui-scale));
+  --sp-2: calc(6px * var(--ui-scale));
+  --sp-3: calc(8px * var(--ui-scale));
+  --sp-4: calc(12px * var(--ui-scale));
+  --sp-5: calc(16px * var(--ui-scale));
+  --sp-6: calc(20px * var(--ui-scale));
+  --sp-7: calc(24px * var(--ui-scale));
 }

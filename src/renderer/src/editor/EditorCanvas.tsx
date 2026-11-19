@@ -1,5 +1,6 @@
 import { SafeAreaShapes, safeAreaLegend, useSafeAreaOverlay } from './SafeAreaOverlay'
 import { CANVAS_THEME } from './canvasTheme'
+import { useAppearance, resolvedTheme } from '../appearance/appearanceStore'
 import { useEffect, useLayoutEffect, useRef, type ComponentType } from 'react'
 import {
   Ellipse,
@@ -380,7 +381,11 @@ function LayerView({
 }
 
 function PrintAreaMask({ width, height }: { width: number; height: number }): React.JSX.Element {
-  // Editor-only dimming of everything outside the print area, so off-canvas content is visibly "outside".
+  // Editor-only veil over everything outside the print area, so off-canvas content is visibly "outside". It fades
+  // toward the theme's canvas surround (an empty surround keeps the token colour in Light and Dark); never rendered
+  // into any output.
+  const theme = useAppearance((s) => resolvedTheme(s))
+  const veil = surroundColour(theme)
   return (
     <Shape
       listening={false}
@@ -389,11 +394,20 @@ function PrintAreaMask({ width, height }: { width: number; height: number }): Re
         c.beginPath()
         c.rect(-1e6, -1e6, 2e6, 2e6)
         c.rect(0, 0, width, height)
-        c.fillStyle = 'rgba(40,40,40,0.28)'
+        c.save()
+        c.globalAlpha = 0.6
+        c.fillStyle = veil
         c.fill('evenodd')
+        c.restore()
       }}
     />
   )
+}
+
+/** The current --c-surface-canvas (the theme attribute is applied before React re-renders on a theme change). */
+function surroundColour(theme: 'light' | 'dark'): string {
+  const v = getComputedStyle(document.documentElement).getPropertyValue('--c-surface-canvas').trim()
+  return v || (theme === 'dark' ? '#101114' : '#e6e7ec')
 }
 
 export function EditorCanvas(): React.JSX.Element | null {

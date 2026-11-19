@@ -8,6 +8,9 @@ import {
 
 const api: RendererApi = {
   ping: () => ipcRenderer.invoke(IpcChannel.AppPing),
+  appearance: {
+    setNativeTheme: (req) => ipcRenderer.invoke(IpcChannel.AppSetNativeTheme, req)
+  },
   project: {
     create: (req) => ipcRenderer.invoke(IpcChannel.ProjectNew, req),
     newSample: () => ipcRenderer.invoke(IpcChannel.ProjectNewSample),

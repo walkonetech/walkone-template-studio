@@ -351,8 +351,8 @@
     "name": "Layers/Properties splitter drags (mouse)",
     "ok": true,
     "detail": {
-      "split0": 319.6015625,
-      "split1": 399.5
+      "split0": 315.6015625,
+      "split1": 395.5
     }
   },
   {
@@ -458,7 +458,7 @@
     "name": "1100×680: canvas workspace ≥ 500 px wide, sidebar fully on screen",
     "ok": true,
     "detail": {
-      "ws": 715,
+      "ws": 699,
       "drawer": false
     }
   },
@@ -466,8 +466,8 @@
     "name": "1100×680: Layers and Properties each ≥ 150 px tall",
     "ok": true,
     "detail": {
-      "layers": 232,
-      "props": 347
+      "layers": 228,
+      "props": 341
     }
   },
   {
@@ -488,7 +488,7 @@
     "name": "1280×800: canvas workspace ≥ 500 px wide, sidebar fully on screen",
     "ok": true,
     "detail": {
-      "ws": 895,
+      "ws": 879,
       "drawer": false
     }
   },
@@ -496,8 +496,8 @@
     "name": "1280×800: Layers and Properties each ≥ 150 px tall",
     "ok": true,
     "detail": {
-      "layers": 280,
-      "props": 419
+      "layers": 276,
+      "props": 413
     }
   },
   {
@@ -518,7 +518,7 @@
     "name": "1440×900: canvas workspace ≥ 500 px wide, sidebar fully on screen",
     "ok": true,
     "detail": {
-      "ws": 831,
+      "ws": 815,
       "drawer": true
     }
   },
@@ -526,8 +526,8 @@
     "name": "1440×900: Layers and Properties each ≥ 150 px tall",
     "ok": true,
     "detail": {
-      "layers": 320,
-      "props": 479
+      "layers": 316,
+      "props": 473
     }
   },
   {
@@ -548,7 +548,7 @@
     "name": "1920×1080: canvas workspace ≥ 500 px wide, sidebar fully on screen",
     "ok": true,
     "detail": {
-      "ws": 1119,
+      "ws": 1103,
       "drawer": true
     }
   },
@@ -556,8 +556,8 @@
     "name": "1920×1080: Layers and Properties each ≥ 150 px tall",
     "ok": true,
     "detail": {
-      "layers": 372,
-      "props": 559
+      "layers": 368,
+      "props": 553
     }
   },
   {

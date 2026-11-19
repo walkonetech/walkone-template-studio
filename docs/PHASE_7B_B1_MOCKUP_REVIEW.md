@@ -1,11 +1,34 @@
 # Phase 7B · B1 — Editor refresh mockup review
 
-_Status: **round 2 delivered, awaiting owner review** (2026-11-19). Round 1 was reviewed by the owner; their feedback and answers are applied in §0. Design-only. No production code, schema, `.boothproject`, renderer, export, import, Output Profile, Safe Area, preflight, autosave, recovery, keyboard or test change._
+_Status: **approved by the owner with minor implementation amendments** (2026-11-19, §0a). No third mockup round. Implementation has started with B2 (design-system foundation, ADR-055); the mockups themselves stay design-only and are not wired into the app._
 
 **Mockups:** [`design/phase-7b-b1/index.html`](../design/phase-7b-b1/index.html). It is a standalone page: open it in any browser. It has no app imports or app state and is not wired into the app. Rendered PNGs of every mockup are in [`design/phase-7b-b1/png/`](../design/phase-7b-b1/png/).
 **Architecture source:** [PHASE_7A_UX_ARCHITECTURE.md](PHASE_7A_UX_ARCHITECTURE.md). B1 shows that architecture and does not restate it. Section references (§) below point to it.
 
 All sample content is fictional: Ava & Theo Wedding, Northfield Holiday Party and the other names. Sample photos are abstract drawings.
+
+## 0a. Owner sign-off (2026-11-19)
+
+B1 round 2 is **approved with minor implementation amendments**. Approved direction: Light default with Dark and Match system; Comfortable default with Compact; bundled Inter; labelled left rail; restrained element-kind colours; canvas-state bar; contextual selection toolbar; Properties Essentials + collapsed sections; Properties / Layers tabs on short screens; Checks panel on the left; visual Export cards; plain-language Printer & cutting; simplified dslrBooth Import; first-run tips; picture tooltips; the Settings architecture; the responsive shell strategy.
+
+**Answers to R1–R4:**
+
+| # | Answer |
+|---|---|
+| R1 Comfortable sizes | Keep **exactly as shown** (the round 2 values are the approved starting point). Compact stays the denser option. |
+| R2 Export defaults | First use: **For the booth on**, Print files off, Client proof off. Later the app may remember the operator's last selection on that computer (not built in B2). |
+| R3 First-run tips | Show on **each new blank project** until the user chooses **Hide these tips** (an app-level preference). Settings gets **Show getting-started tips on new blank projects** (default On). B2 adds the preference (`showGettingStartedTips`); the tips themselves come later. |
+| R4 "See how it prints" | Approved as the friendly action label. The mode stays **Print Preview** internally; on narrow windows the label may shorten to **Preview** with the eye icon, never icon-only while it fits. |
+
+**Implementation amendments (carry forward):**
+- **Checks panel:** no disabled placeholders for actions that do not exist yet (no "Move inside", disabled "Fix" or "Later"). Ship only working actions (Select, Select all, Replace…, Details); Fix actions (B28) appear when they work.
+- **Good to know** items start collapsed and never look like problems: with no errors or warnings the headline reads like "Ready · 8 notes".
+- **Print Preview:** a safe-area flag appears on **both** derived strip copies when the source problem affects both (Design view shows the source once).
+- **dslrBooth import:** for recognised duplicated two-strip sheets, "One strip, printed two per sheet" stays Recommended and selected by default.
+- **Selection toolbar:** keep Duplicate. Text: Edit text · Event Palette colours · Arrange · Duplicate · More. Photo slot: Reposition · Frame · Arrange · Duplicate · More.
+- **Canvas-state bar rule:** if a control changes how the canvas is *viewed*, it may belong in the bar; if it changes the *design*, it does not. The bar must not become a second toolbar.
+- **Printer confidence:** the friendly meter (Estimated · Tested on a print · Measured) never collapses the evidence model; "Measured" does not mean "Verified on production booth".
+- **DS-RX1** may read "ready to use" / "tested on a print" while trim stays estimated, the 3 mm guidance stays, and production-booth verification stays unset.
 
 ## 0. Round 2 (owner feedback, 2026-11-19)
 

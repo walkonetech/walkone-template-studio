@@ -7,12 +7,12 @@
   {
     "name": "fit zoom grows smoothly with the window (no jumps backwards)",
     "ok": true,
-    "detail": [16, 16, 17, 17, 18, 18, 19, 19, 20, 20, 21, 22, 22, 23, 23, 24, 24, 25, 25, 26, 26]
+    "detail": [15, 16, 16, 17, 17, 18, 19, 19, 20, 20, 21, 21, 22, 22, 23, 23, 24, 25, 25, 26, 26]
   },
   {
     "name": "minimum width with the drawer opened by the user still leaves a usable canvas (≥ 440 px)",
     "ok": true,
-    "detail": 491
+    "detail": 475
   },
   {
     "name": "sidebar growth is capped (≤ 45% of the window) so the canvas cannot be squeezed out",
@@ -23,17 +23,24 @@
     "name": "disabled rail tools are dimmer than enabled ones but not near-invisible, cursor and aria-disabled kept",
     "ok": true,
     "detail": {
-      "railDisabled": "rgb(127, 131, 146)",
+      "railDisabled": "rgb(122, 125, 138)",
       "railCursor": "default",
       "railAria": "true",
-      "xTag": "rgb(170, 173, 186)",
+      "xTag": "rgb(79, 82, 96)",
+      "labelToken": "rgb(79, 82, 96)",
+      "disabledToken": "rgb(163, 165, 174)",
+      "mutedToken": "rgb(99, 102, 115)",
       "rangeHeight": "18px",
-      "addColor": "rgb(123, 140, 255)"
+      "addColor": "rgb(68, 86, 224)"
     }
   },
   {
     "name": "transform tags use the label color (not the muted one)",
     "ok": true,
-    "detail": "rgb(170, 173, 186)"
+    "detail": {
+      "xTag": "rgb(79, 82, 96)",
+      "label": "rgb(79, 82, 96)",
+      "muted": "rgb(99, 102, 115)"
+    }
   }
 ]

@@ -1,32 +1,70 @@
-import { useEffect, useId, useRef } from 'react'
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 const FOCUSABLE =
   'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])'
 
+/** Dialog widths (CSS px before the interface scale); the dialog never exceeds the window. */
+export const DIALOG_SIZES = { sm: 420, md: 560, lg: 720, xl: 880 } as const
+export type DialogSize = keyof typeof DIALOG_SIZES
+
 /**
- * Modal dialog shell for renderer-controlled dialogs (new project, recovery). role=dialog + aria-modal, labelled by
- * its title, focus moves in on open (first [data-autofocus] or first control), Tab is trapped, Escape calls
- * `onEscape`, and focus returns to where it was. Native OS prompts (unsaved changes) intentionally do NOT use this.
+ * Modal dialog shell (the B1 dialog contract, Phase 7B B2). role=dialog + aria-modal, labelled by its title.
+ *  - Header (title, description) and footer stay visible; an optional `summary` is pinned under the header; only the
+ *    BODY scrolls, with a visible edge shadow while more content is above/below (so Export never loses its button
+ *    at Windows 125 % or on short windows).
+ *  - Max height follows the viewport (nearly full height on very short windows).
+ *  - Footer order is the same on macOS and Windows: secondary actions on the left, Cancel, then the primary action
+ *    on the right (see `DialogActions`).
+ *  - Focus moves in on open (first [data-autofocus], else the first control), Tab is trapped, Escape calls
+ *    `onEscape`, and focus returns to where it was.
+ * Native OS prompts (unsaved changes) intentionally do NOT use this.
  */
 export function Dialog({
   title,
   description,
   onEscape,
   footer,
+  summary,
   children,
-  width
+  size,
+  width,
+  testId
 }: {
   title: string
   description?: React.ReactNode
   onEscape?: () => void
   footer?: React.ReactNode
+  /** Pinned region between the header and the scrolling body (e.g. what Export will create). */
+  summary?: React.ReactNode
   children?: React.ReactNode
+  size?: DialogSize
+  /** Explicit width in px (older dialogs); prefer `size`. */
   width?: number
+  testId?: string
 }): React.JSX.Element {
   const titleId = useId()
   const descId = useId()
   const box = useRef<HTMLDivElement>(null)
+  const body = useRef<HTMLDivElement>(null)
+  const [scroll, setScroll] = useState({ above: false, below: false })
+  const measure = useCallback(() => {
+    const el = body.current
+    if (!el) return
+    const above = el.scrollTop > 1
+    const below = el.scrollTop + el.clientHeight < el.scrollHeight - 1
+    setScroll((s) => (s.above === above && s.below === below ? s : { above, below }))
+  }, [])
+  useLayoutEffect(() => {
+    measure()
+    const el = body.current
+    if (!el || typeof ResizeObserver === 'undefined') return
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    for (const child of el.children) ro.observe(child)
+    return () => ro.disconnect()
+  })
+  const px = width ?? (size ? DIALOG_SIZES[size] : undefined)
 
   useEffect(() => {
     const previous = document.activeElement as HTMLElement | null
@@ -80,12 +118,13 @@ export function Dialog({
     <div className="ui-overlay">
       <div
         ref={box}
-        className="ui-dialog"
+        className={`ui-dialog${size ? ` size-${size}` : ''}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
         {...(description ? { 'aria-describedby': descId } : {})}
-        style={width ? { width: `min(${width}px, 100%)` } : undefined}
+        {...(testId ? { 'data-testid': testId } : {})}
+        style={px ? { width: `min(calc(${px}px * var(--ui-scale)), 100%)` } : undefined}
         onKeyDown={onKeyDown}
       >
         <header>
@@ -96,10 +135,44 @@ export function Dialog({
             </p>
           )}
         </header>
-        {children && <div className="body">{children}</div>}
+        {summary && <div className="summary">{summary}</div>}
+        {children && (
+          <div
+            ref={body}
+            className="body"
+            data-scroll-above={scroll.above || undefined}
+            data-scroll-below={scroll.below || undefined}
+            onScroll={measure}
+          >
+            {children}
+          </div>
+        )}
         {footer && <footer>{footer}</footer>}
       </div>
     </div>,
     document.body
+  )
+}
+
+/**
+ * The standard footer layout: optional secondary actions on the left, then Cancel, then the primary action on the
+ * right. Same order on every platform (in-app dialogs, B1 D13).
+ */
+export function DialogActions({
+  start,
+  cancel,
+  primary
+}: {
+  /** Secondary actions or a short note, pushed to the left. */
+  start?: React.ReactNode
+  cancel?: React.ReactNode
+  primary?: React.ReactNode
+}): React.JSX.Element {
+  return (
+    <>
+      {start && <div className="footer-start">{start}</div>}
+      {cancel}
+      {primary}
+    </>
   )
 }

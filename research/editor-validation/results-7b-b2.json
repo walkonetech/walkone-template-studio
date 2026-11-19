@@ -1,0 +1,349 @@
+{
+  "when": "2026-11-19T13:41:15.527Z",
+  "pass": 25,
+  "total": 25,
+  "results": [
+    {
+      "name": "1 a fresh install starts in the Light theme at Comfortable density and 100 % scale",
+      "ok": true,
+      "detail": {
+        "theme": "light",
+        "pref": "light",
+        "density": "comfortable",
+        "scale": "1",
+        "wtier": "medium",
+        "htier": "tall",
+        "bg": "rgb(246, 246, 249)",
+        "color": "rgb(27, 28, 34)",
+        "font": "\"Inter Variable\", system-ui, -apple-system, \"Segoe UI Variable\", \"Segoe UI\", Roboto, \"Helvetica Neue\", sans-serif",
+        "fontSize": "14px",
+        "topbar": 52,
+        "status": 30,
+        "rail": null,
+        "control": 34,
+        "row": null,
+        "stored": null
+      }
+    },
+    {
+      "name": "1b Light chrome: near-white app background, dark text",
+      "ok": true,
+      "detail": {
+        "bg": "rgb(246, 246, 249)",
+        "color": "rgb(27, 28, 34)"
+      }
+    },
+    {
+      "name": "2 Inter Variable is loaded for the interface and the body uses it first",
+      "ok": true,
+      "detail": {
+        "check": true,
+        "loaded": 1,
+        "faces": 7,
+        "rendered": "\"Inter Variable\", system-ui, -apple-system, \"Segoe UI Variable\", \"Segoe UI\", Roboto, \"Helvetica Neue\", sans-serif"
+      }
+    },
+    {
+      "name": "2b the font files come from the app bundle (file://), and nothing is requested from the network",
+      "ok": true,
+      "detail": {
+        "fonts": ["inter-latin-wght-normal-Dx4kXJAl.woff2"],
+        "remote": []
+      }
+    },
+    {
+      "name": "3 Comfortable sizes in the editor: top bar 52, status bar 30, rail 80, controls 34, layer rows 36, body 14 px",
+      "ok": true,
+      "detail": {
+        "theme": "light",
+        "pref": "light",
+        "density": "comfortable",
+        "scale": "1",
+        "wtier": "medium",
+        "htier": "tall",
+        "bg": "rgb(246, 246, 249)",
+        "color": "rgb(27, 28, 34)",
+        "font": "\"Inter Variable\", system-ui, -apple-system, \"Segoe UI Variable\", \"Segoe UI\", Roboto, \"Helvetica Neue\", sans-serif",
+        "fontSize": "14px",
+        "topbar": 52,
+        "status": 30,
+        "rail": 80,
+        "control": 34,
+        "row": 36,
+        "stored": null
+      }
+    },
+    {
+      "name": "3b the saved project reads \"Saved\"",
+      "ok": true,
+      "detail": "Saved"
+    },
+    {
+      "name": "4 View menu: Light/Dark/Match system and Comfortable/Compact are checkable items; Light and Comfortable are checked",
+      "ok": true,
+      "detail": [
+        [
+          "Light theme",
+          {
+            "found": true,
+            "disabled": false,
+            "checked": "true",
+            "role": "menuitemcheckbox",
+            "kbd": ""
+          }
+        ],
+        [
+          "Dark theme",
+          {
+            "found": true,
+            "disabled": false,
+            "checked": "false",
+            "role": "menuitemcheckbox",
+            "kbd": ""
+          }
+        ],
+        [
+          "Match system theme",
+          {
+            "found": true,
+            "disabled": false,
+            "checked": "false",
+            "role": "menuitemcheckbox",
+            "kbd": ""
+          }
+        ],
+        [
+          "Comfortable size",
+          {
+            "found": true,
+            "disabled": false,
+            "checked": "true",
+            "role": "menuitemcheckbox",
+            "kbd": ""
+          }
+        ],
+        [
+          "Compact size",
+          {
+            "found": true,
+            "disabled": false,
+            "checked": "false",
+            "role": "menuitemcheckbox",
+            "kbd": ""
+          }
+        ]
+      ]
+    },
+    {
+      "name": "5 export under Light / Comfortable finishes",
+      "ok": true,
+      "detail": ["B2 Strip 4x6.zip", "B2 Strip-design.png", "B2 Strip-print.png", "B2 Strip.zip"]
+    },
+    {
+      "name": "6 View › Dark theme switches live: dark chrome, light text",
+      "ok": true,
+      "detail": {
+        "theme": "dark",
+        "pref": "dark",
+        "density": "comfortable",
+        "scale": "1",
+        "wtier": "medium",
+        "htier": "tall",
+        "bg": "rgb(23, 24, 28)",
+        "color": "rgb(237, 237, 241)",
+        "font": "\"Inter Variable\", system-ui, -apple-system, \"Segoe UI Variable\", \"Segoe UI\", Roboto, \"Helvetica Neue\", sans-serif",
+        "fontSize": "14px",
+        "topbar": 52,
+        "status": 30,
+        "rail": 80,
+        "control": 34,
+        "row": 36,
+        "stored": "{\"theme\":\"dark\",\"density\":\"comfortable\",\"uiScale\":1,\"showGettingStartedTips\":true}"
+      }
+    },
+    {
+      "name": "6b switching the theme leaves the project Saved, unchanged, and adds nothing to undo history",
+      "ok": true,
+      "detail": {
+        "state": "Saved",
+        "past": [3, 3]
+      }
+    },
+    {
+      "name": "6c the canvas view, the design geometry and the rendered design and print sheet are the same in Dark",
+      "ok": true,
+      "detail": {
+        "stage0": {
+          "w": 815,
+          "h": 790,
+          "scale": 0.2061111111111111,
+          "x": 283.83333333333337,
+          "y": 24
+        },
+        "stage1": {
+          "w": 815,
+          "h": 790,
+          "scale": 0.2061111111111111,
+          "x": 283.83333333333337,
+          "y": 24
+        },
+        "renders": {
+          "design": {
+            "identical": true,
+            "differing": 0,
+            "maxDelta": 0
+          },
+          "sheet": {
+            "identical": true,
+            "differing": 0,
+            "maxDelta": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "6d exported files under Dark are identical to Light (print/design PNG bytes; ZIP entries byte-identical except template.xml export time; preview.png pixels)",
+      "ok": true,
+      "detail": {
+        "same": true,
+        "files": ["B2 Strip 4x6.zip", "B2 Strip-design.png", "B2 Strip-print.png", "B2 Strip.zip"],
+        "diffs": [],
+        "tolerated": [],
+        "masked": ["template.xml: LastSavedDate"]
+      }
+    },
+    {
+      "name": "7 Match system theme follows the operating system live (dark → light without a restart)",
+      "ok": true,
+      "detail": {
+        "m1": ["system", "dark"],
+        "m2": ["system", "light"]
+      }
+    },
+    {
+      "name": "8 View › Compact size: top bar 44, status bar 28, rail 64, controls 28, layer rows 30, body 13 px",
+      "ok": true,
+      "detail": {
+        "theme": "light",
+        "pref": "light",
+        "density": "compact",
+        "scale": "1",
+        "wtier": "medium",
+        "htier": "tall",
+        "bg": "rgb(246, 246, 249)",
+        "color": "rgb(27, 28, 34)",
+        "font": "\"Inter Variable\", system-ui, -apple-system, \"Segoe UI Variable\", \"Segoe UI\", Roboto, \"Helvetica Neue\", sans-serif",
+        "fontSize": "13px",
+        "topbar": 44,
+        "status": 28,
+        "rail": 64,
+        "control": 28,
+        "row": 30,
+        "stored": "{\"theme\":\"light\",\"density\":\"compact\",\"uiScale\":1,\"showGettingStartedTips\":true}"
+      }
+    },
+    {
+      "name": "8b the shell keeps the same regions; the project stays Saved and unchanged; design geometry identical",
+      "ok": true,
+      "detail": {
+        "structure": [true, true, true, true, true, true, true],
+        "state": "Saved"
+      }
+    },
+    {
+      "name": "8c the rendered design and print sheet are the same in Compact",
+      "ok": true,
+      "detail": {
+        "design": {
+          "identical": true,
+          "differing": 0,
+          "maxDelta": 0
+        },
+        "sheet": {
+          "identical": true,
+          "differing": 0,
+          "maxDelta": 0
+        }
+      }
+    },
+    {
+      "name": "8d exported files under Light / Compact are identical to Light / Comfortable (same rule)",
+      "ok": true,
+      "detail": {
+        "same": true,
+        "files": ["B2 Strip 4x6.zip", "B2 Strip-design.png", "B2 Strip-print.png", "B2 Strip.zip"],
+        "diffs": [],
+        "tolerated": [],
+        "masked": ["template.xml: LastSavedDate"]
+      }
+    },
+    {
+      "name": "9 dialog: role=dialog, modal, labelled; Cancel then the primary action on the right; focus starts inside",
+      "ok": true,
+      "detail": {
+        "role": "dialog",
+        "modal": "true",
+        "labelled": true,
+        "order": ["Cancel", "Create"],
+        "lastPrimary": true,
+        "focusInside": true,
+        "width": 560
+      }
+    },
+    {
+      "name": "9b Tab stays trapped inside the dialog, with a visible focus ring",
+      "ok": true,
+      "detail": {
+        "style": "solid",
+        "width": "2px",
+        "color": "rgb(68, 86, 224)"
+      }
+    },
+    {
+      "name": "9c Escape closes the dialog",
+      "ok": true
+    },
+    {
+      "name": "10 at 1100×640 (very short) the Export dialog fits: header and the Export button stay visible, the body scrolls with an edge cue",
+      "ok": true,
+      "detail": {
+        "ih": 640,
+        "htier": "very-short",
+        "wtier": "narrow",
+        "dlgBottom": 628,
+        "headerTop": 12,
+        "footerBottom": 628,
+        "goBottom": 612,
+        "scrolls": true,
+        "below": true,
+        "overflowY": "auto"
+      }
+    },
+    {
+      "name": "11 shortcut labels follow the platform (⌘)",
+      "ok": true,
+      "detail": {
+        "undo": "⌘Z",
+        "redo": "⇧⌘Z"
+      }
+    },
+    {
+      "name": "12 the preference is stored on this computer, and the saved .boothproject has no appearance data",
+      "ok": true,
+      "detail": "{\"theme\":\"dark\",\"density\":\"compact\",\"uiScale\":1,\"showGettingStartedTips\":true}"
+    },
+    {
+      "name": "12b after a restart the app opens in Dark at Compact density",
+      "ok": true,
+      "detail": {
+        "theme": "dark",
+        "density": "compact"
+      }
+    },
+    {
+      "name": "13 no console errors or uncaught exceptions during the run",
+      "ok": true,
+      "detail": []
+    }
+  ]
+}

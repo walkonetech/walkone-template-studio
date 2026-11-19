@@ -143,7 +143,7 @@
           [255, 255, 255, 255]
         ],
         "photo": {
-          "id": "e5f152c4-068f-42c5-9e99-94e8e93af193",
+          "id": "8db4ca3c-ba87-407a-9dcc-8339d65da731",
           "type": "photo",
           "name": "Photo 1",
           "x": 100,
@@ -155,7 +155,7 @@
             "thickness": 40,
             "color": {
               "kind": "palette",
-              "paletteColorId": "05dec15e-b597-458a-8989-8c0ba6e28952"
+              "paletteColorId": "fff9f44b-cb59-40ca-be5a-38c9b589ce50"
             }
           },
           "locked": false
@@ -212,7 +212,7 @@
       "name": "17 \"Add color\" creates a custom palette entry with a stable id",
       "ok": true,
       "detail": {
-        "id": "db8bd979-dafe-44ee-b6fa-41fdeb33c523",
+        "id": "0d43c2e2-ec63-4d2d-ba7b-356beac539c4",
         "role": "custom",
         "name": "Color 1",
         "value": "#b76e79"

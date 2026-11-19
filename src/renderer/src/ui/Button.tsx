@@ -1,5 +1,11 @@
 import type { LucideIcon } from 'lucide-react'
 
+/**
+ * Button hierarchy (B2): `primary` = the one high-emphasis completion action (Export, Import, Done); `secondary` =
+ * a visible alternative; `ghost` = low priority; `danger` = destructive (`solid` for the confirming button).
+ * Disabled stays readable and is never used to advertise a feature that does not exist yet.
+ */
+
 export function Button({
   children,
   variant = 'secondary',
@@ -8,8 +14,8 @@ export function Button({
   className,
   ...rest
 }: {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger'
-  size?: 'sm' | 'md'
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'danger-solid'
+  size?: 'sm' | 'md' | 'lg'
   icon?: LucideIcon
 } & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'className'> & {
     /** Extra layout class from the caller (e.g. pushing a button to the start of a footer). */
@@ -21,8 +27,8 @@ export function Button({
       {...rest}
       className={[
         'ui-btn',
-        variant === 'secondary' ? '' : variant,
-        size === 'sm' ? 'sm' : '',
+        variant === 'secondary' ? '' : variant === 'danger-solid' ? 'danger solid' : variant,
+        size === 'md' ? '' : size,
         className ?? ''
       ]
         .filter(Boolean)

@@ -91,14 +91,24 @@ describe('drawer auto-collapse', () => {
 })
 
 describe('command model', () => {
-  it('only New, Open and Import dslrBooth template work without a project', () => {
+  it('only New, Open, Import dslrBooth template and the app appearance choices work without a project', () => {
     const enabled = (Object.keys(COMMANDS) as CommandId[]).filter((id) =>
       isCommandEnabled(
         id,
         ctx({ hasProject: false, canUndo: true, canRedo: true, selectionCount: 3 })
       )
     )
-    expect(enabled.sort()).toEqual(['file.importDslr', 'file.new', 'file.open'])
+    expect(enabled.sort()).toEqual([
+      'file.importDslr',
+      'file.new',
+      'file.open',
+      // Appearance is a setting of this computer (B2, ADR-055), not of a project.
+      'view.densityComfortable',
+      'view.densityCompact',
+      'view.themeDark',
+      'view.themeLight',
+      'view.themeSystem'
+    ])
   })
 
   it('selection commands need a selection; undo/redo follow history', () => {

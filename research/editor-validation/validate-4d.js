@@ -106,17 +106,22 @@ const check = (name, ok, detail) => {
       railCursor: cs(".toolrail-btn[aria-disabled=true]","cursor"),
       railAria: document.querySelector(".toolrail-btn[aria-disabled=true]").getAttribute("aria-disabled"),
       xTag: cs(".compact-num label","color"),
+      labelToken: (()=>{const p=document.createElement('span'); p.style.color='var(--c-text-label)'; document.body.appendChild(p); const v=getComputedStyle(p).color; p.remove(); return v})(),
+      disabledToken: (()=>{const p=document.createElement('span'); p.style.color='var(--c-text-disabled)'; document.body.appendChild(p); const v=getComputedStyle(p).color; p.remove(); return v})(),
+      mutedToken: (()=>{const p=document.createElement('span'); p.style.color='var(--c-text-3)'; document.body.appendChild(p); const v=getComputedStyle(p).color; p.remove(); return v})(),
       rangeHeight: cs(".ui-range","height"),
       addColor: cs(".panel-actions .add-btn","color")}})()`)
     check(
       'disabled rail tools are dimmer than enabled ones but not near-invisible, cursor and aria-disabled kept',
-      f.railAria === 'true' && f.railCursor === 'default' && f.railDisabled !== 'rgb(93, 96, 108)',
+      // "not near-invisible": not the theme's disabled-text colour (B2: read from the token, was the dark literal).
+      f.railAria === 'true' && f.railCursor === 'default' && f.railDisabled !== f.disabledToken,
       f
     )
     check(
       'transform tags use the label color (not the muted one)',
-      f.xTag === 'rgb(170, 173, 186)',
-      f.xTag
+      // B2: compared with the live theme's label token (was the dark theme's literal rgb(170, 173, 186)).
+      f.xTag === f.labelToken && f.xTag !== f.mutedToken,
+      { xTag: f.xTag, label: f.labelToken, muted: f.mutedToken }
     )
     await sleep(100)
   } finally {

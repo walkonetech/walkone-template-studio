@@ -6,7 +6,7 @@ import { chooseDslrTemplate } from './dslrImportActions'
 import { editorStore } from './editorStore'
 import { layoutStore, useLayout } from './layoutStore'
 import { Button } from '../ui/Button'
-import { Dialog } from '../ui/Dialog'
+import { Dialog, DialogActions } from '../ui/Dialog'
 
 const ICONS = { error: CircleX, warning: TriangleAlert, info: Info } as const
 
@@ -89,25 +89,32 @@ function ImportForm({ p }: { p: DslrImportPreview }): React.JSX.Element {
           project. The ZIP itself is not changed.
         </>
       }
-      width={720}
+      size="lg"
+      testId="dslr-import-dialog"
       onEscape={() => !busy && close()}
       footer={
-        <>
-          <Button variant="ghost" onClick={close} disabled={busy}>
-            Cancel
-          </Button>
-          <Button
-            className="footer-start"
-            variant="ghost"
-            disabled={busy}
-            onClick={() => void chooseDslrTemplate()}
-          >
-            Choose another…
-          </Button>
-          <Button variant="primary" data-autofocus onClick={() => void doImport()} disabled={busy}>
-            {busy ? 'Importing…' : 'Import'}
-          </Button>
-        </>
+        <DialogActions
+          start={
+            <Button variant="ghost" disabled={busy} onClick={() => void chooseDslrTemplate()}>
+              Choose another…
+            </Button>
+          }
+          cancel={
+            <Button variant="ghost" onClick={close} disabled={busy}>
+              Cancel
+            </Button>
+          }
+          primary={
+            <Button
+              variant="primary"
+              data-autofocus
+              onClick={() => void doImport()}
+              disabled={busy}
+            >
+              {busy ? 'Importing…' : 'Import'}
+            </Button>
+          }
+        />
       }
     >
       <div className="dslr-import">

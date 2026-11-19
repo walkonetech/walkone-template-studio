@@ -30,6 +30,11 @@ export type CommandId =
   | 'view.printPreview'
   | 'view.safeAreas'
   | 'view.outputProfile'
+  | 'view.themeLight'
+  | 'view.themeDark'
+  | 'view.themeSystem'
+  | 'view.densityComfortable'
+  | 'view.densityCompact'
   | 'arrange.alignLeft'
   | 'arrange.alignCenter'
   | 'arrange.alignRight'
@@ -64,6 +69,9 @@ export interface CommandContext {
   /** An Output Profile is selected (safe areas exist only then). */
   hasOutputProfile: boolean
   showSafeAreas: boolean
+  /** App appearance (B2, ADR-055): a per-computer preference, not project state. */
+  theme?: 'light' | 'dark' | 'system'
+  density?: 'comfortable' | 'compact'
 }
 
 interface CommandDef {
@@ -269,6 +277,32 @@ export const COMMANDS: Readonly<Record<CommandId, CommandDef>> = {
     hint: 'Show sample photos inside photo placeholders',
     needsProject: true,
     checked: (c) => c.previewPhotos
+  },
+  // Appearance (B2): interim home until Settings › Appearance (B5). Settings of this computer, never the project.
+  'view.themeLight': {
+    label: 'Light theme',
+    hint: 'Use the light interface (the default). Your designs are never recoloured.',
+    checked: (c) => c.theme === 'light'
+  },
+  'view.themeDark': {
+    label: 'Dark theme',
+    hint: 'Use the dark interface. Your designs are never recoloured.',
+    checked: (c) => c.theme === 'dark'
+  },
+  'view.themeSystem': {
+    label: 'Match system theme',
+    hint: 'Follow the light or dark setting of this computer',
+    checked: (c) => c.theme === 'system'
+  },
+  'view.densityComfortable': {
+    label: 'Comfortable size',
+    hint: 'Larger controls and text (the default)',
+    checked: (c) => c.density === 'comfortable'
+  },
+  'view.densityCompact': {
+    label: 'Compact size',
+    hint: 'Smaller controls: more room for the canvas and panels',
+    checked: (c) => c.density === 'compact'
   }
 }
 
@@ -370,7 +404,14 @@ export const MENUS: readonly { id: string; label: string; items: readonly (Comma
         'view.outputProfile',
         '-',
         'view.previewPhotos',
-        'view.shufflePhotos'
+        'view.shufflePhotos',
+        '-',
+        'view.themeLight',
+        'view.themeDark',
+        'view.themeSystem',
+        '-',
+        'view.densityComfortable',
+        'view.densityCompact'
       ]
     }
   ]

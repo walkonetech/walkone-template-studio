@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-19T11:48:02.194Z",
+  "when": "2026-11-19T13:46:06.457Z",
   "pass": 23,
   "total": 23,
   "results": [
@@ -189,8 +189,8 @@
           }
         ],
         "chipText": "Output: DNP DS-RX1 · 2×6 · Observed on test laptop · 2 safe-area warnings",
-        "textId": "f96e5288-6a90-4726-b690-68b59480541e",
-        "edgePhoto": "32bef8d9-5900-4db0-af62-5d704b230bd1"
+        "textId": "14a802d8-5453-499d-b959-5ff9d97bc990",
+        "edgePhoto": "afa44dd6-b08c-4b82-a78d-c87022244cdf"
       }
     },
     {

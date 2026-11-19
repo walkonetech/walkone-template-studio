@@ -3,6 +3,7 @@ import type { OpResult } from '@editor/store'
 import type { CommandId } from '@editor/commands'
 import { editorStore } from './editorStore'
 import { layoutStore } from './layoutStore'
+import { appearanceStore } from '../appearance/appearanceStore'
 import { chooseDslrTemplate } from './dslrImportActions'
 
 const st = editorStore.getState
@@ -122,6 +123,21 @@ export function runCommand(id: CommandId): void {
       return
     case 'view.previewPhotos':
       s.setPhotoDisplay(s.photoDisplay === 'preview' ? 'placeholder' : 'preview')
+      return
+    case 'view.themeLight':
+      appearanceStore.getState().setTheme('light')
+      return
+    case 'view.themeDark':
+      appearanceStore.getState().setTheme('dark')
+      return
+    case 'view.themeSystem':
+      appearanceStore.getState().setTheme('system')
+      return
+    case 'view.densityComfortable':
+      appearanceStore.getState().setDensity('comfortable')
+      return
+    case 'view.densityCompact':
+      appearanceStore.getState().setDensity('compact')
       return
   }
 }

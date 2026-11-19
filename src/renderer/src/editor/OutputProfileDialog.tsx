@@ -4,7 +4,6 @@ import {
   EVIDENCE_HINTS,
   EVIDENCE_LABELS,
   formatMm,
-  isVerifiedEvidence,
   profileDesignSize,
   profileStatusLabel,
   type Evidence,
@@ -18,21 +17,13 @@ import { PreflightRow, checkSummary } from './CheckList'
 import { useSafeAreaReport } from './SafeAreaOverlay'
 import { Button } from '../ui/Button'
 import { Dialog } from '../ui/Dialog'
+import { EvidenceBadge } from '../ui/Badge'
 
 /**
  * View › Output profile… (ADR-053): choose the profile used for safe areas and checks, and read what each of its
  * values rests on. The choice is a setting of this computer, not of the project: it never marks the project Modified
  * and is never exported.
  */
-
-function EvidenceBadge({ e }: { e: Evidence }): React.JSX.Element {
-  const tone = isVerifiedEvidence(e) ? 'ok' : e === 'unknown' ? 'muted' : 'warn'
-  return (
-    <span className={`ui-badge evidence ${tone}`} title={EVIDENCE_HINTS[e]} data-evidence={e}>
-      {EVIDENCE_LABELS[e]}
-    </span>
-  )
-}
 
 const mm = (v: number | null): string => (v === null ? 'Unknown' : formatMm(v))
 
@@ -51,7 +42,7 @@ function Row({
     <>
       <dt>{label}</dt>
       <dd>
-        {value} {evidence && <EvidenceBadge e={evidence} />}
+        {value} {evidence && <EvidenceBadge evidence={evidence} />}
         {note && <span className="profile-note">{note}</span>}
       </dd>
     </>

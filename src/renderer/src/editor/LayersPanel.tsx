@@ -571,7 +571,7 @@ function ShortcutsDialog({ onClose }: { onClose: () => void }): React.JSX.Elemen
       title="Layer panel shortcuts"
       description="The top of the list is the front of the artwork."
       onEscape={onClose}
-      width={440}
+      size="sm"
       footer={
         <Button variant="primary" data-autofocus onClick={onClose}>
           Done

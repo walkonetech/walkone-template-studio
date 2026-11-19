@@ -1,6 +1,15 @@
-import { app, BrowserWindow, ipcMain, session, shell, type IpcMainInvokeEvent } from 'electron'
+import {
+  app,
+  BrowserWindow,
+  ipcMain,
+  nativeTheme,
+  session,
+  shell,
+  type IpcMainInvokeEvent
+} from 'electron'
 import { join } from 'node:path'
-import { IpcChannel, type PingResult } from '../shared/ipc'
+import { IpcChannel, type NativeThemeSource, type PingResult } from '../shared/ipc'
+import { WINDOW_BACKGROUND } from '../shared/appearance'
 import { registerProjectIpc } from './projectIpc'
 import { registerExportIpc } from './exportIpc'
 import type { ProjectService } from '../projects/service'
@@ -42,6 +51,17 @@ function registerIpc(): ProjectService {
       electronVersion: process.versions.electron
     }
   })
+  // Appearance (ADR-055): native chrome follows the app's theme. Validated: anything else is ignored.
+  ipcMain.handle(IpcChannel.AppSetNativeTheme, (event, req: unknown): 'light' | 'dark' => {
+    if (!isTrustedSender(event)) throw new Error('Untrusted IPC sender')
+    const source = (req as { source?: unknown } | null)?.source
+    if (source === 'light' || source === 'dark' || source === 'system')
+      nativeTheme.themeSource = source satisfies NativeThemeSource
+    const resolved = nativeTheme.shouldUseDarkColors ? 'dark' : 'light'
+    for (const win of BrowserWindow.getAllWindows())
+      win.setBackgroundColor(WINDOW_BACKGROUND[resolved])
+    return resolved
+  })
   registerExportIpc(isTrustedSender)
   return registerProjectIpc(isTrustedSender)
 }
@@ -55,7 +75,8 @@ function createWindow(attach: (win: BrowserWindow) => void): void {
     // Below this the canvas (with the side panels) stops being usable; see docs/UX_SPEC.md.
     minWidth: 1100,
     minHeight: 680,
-    backgroundColor: '#17181c', // matches --c-app so there is no white flash before the renderer paints
+    // Light is the default theme (B1/B2); the window stays hidden until the renderer has painted its stored theme.
+    backgroundColor: WINDOW_BACKGROUND.light,
     show: false,
     title: 'WalkOne Template Studio',
     webPreferences: {

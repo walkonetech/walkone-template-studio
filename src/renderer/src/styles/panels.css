@@ -9,18 +9,30 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--sp-2);
-  min-height: 36px;
-  padding: 0 var(--sp-3) 0 var(--sp-4);
+  gap: var(--sp-1);
+  min-height: var(--h-panel-header);
+  padding: 0 var(--sp-2) 0 var(--sp-3);
 }
 .panel-actions {
   display: flex;
   align-items: center;
   gap: 1px;
 }
+/* The Layers header holds a full row of icon actions in the narrowest (320 px) right column: they stay compact
+   (26 px, never under the 24 px minimum hit target) while rows and fields carry the larger Comfortable sizes.
+   B3 redesigns this header (actions move to the selection toolbar / More). */
+.panel-actions .ui-iconbtn {
+  width: max(24px, calc(var(--h-control-sm) - 2px));
+  height: max(24px, calc(var(--h-control-sm) - 2px));
+}
 .panel-actions .ui-divider {
   height: 14px;
-  margin: 0 var(--sp-2);
+  margin: 0 var(--sp-1);
+}
+/* Inter's capitals run wider than the old system font: keep the Layers heading compact so the header fits 320 px. */
+.panel-header .panel-heading {
+  gap: var(--sp-1);
+  letter-spacing: 0.02em;
 }
 .panel-actions .add-btn {
   color: var(--c-accent);
@@ -70,7 +82,7 @@
   display: flex;
   align-items: center;
   gap: var(--sp-2);
-  height: 30px;
+  height: var(--h-row);
   padding-right: var(--sp-1);
   border-radius: var(--r-sm);
   border-top: 2px solid transparent;
@@ -82,7 +94,7 @@
   background: var(--c-hover);
 }
 .layer-row:hover.selected {
-  background: rgb(123 140 255 / 0.26);
+  background: var(--c-selection-bg-hover);
 }
 .layer-row.selected {
   background: var(--c-selected);
@@ -235,7 +247,7 @@
   align-items: center;
   gap: var(--sp-2);
   flex: 1;
-  height: 32px;
+  height: var(--h-section);
   padding: 0;
   border: 0;
   background: transparent;
@@ -347,7 +359,7 @@
   width: 22px;
   height: 22px;
   border-radius: var(--r-sm);
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.25);
+  box-shadow: inset 0 0 0 1px var(--c-swatch-ring);
 }
 .swatch.lg {
   width: 28px;

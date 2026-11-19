@@ -4,6 +4,11 @@ import type { IpcResult, SafeError } from './persistence'
 
 export const IpcChannel = {
   AppPing: 'app:ping',
+  /**
+   * Appearance (B2, ADR-055): tells main the chosen theme so native chrome (Windows title bar, macOS menus and dialogs)
+   * follows it. A per-computer preference; nothing about the project crosses.
+   */
+  AppSetNativeTheme: 'app:setNativeTheme',
   ProjectNew: 'project:new',
   /** Development diagnostic: a new project containing one tiny sample asset. */
   ProjectNewSample: 'project:newSample',
@@ -280,8 +285,14 @@ export interface WorkingCopyResult {
 }
 
 /** The only API the renderer can reach; exposed on `window.api` by the preload script. */
+export type NativeThemeSource = 'light' | 'dark' | 'system'
+
 export interface RendererApi {
   ping(): Promise<PingResult>
+  appearance: {
+    /** Native chrome follows the app theme; resolves to the theme the OS chrome now uses. */
+    setNativeTheme(req: { source: NativeThemeSource }): Promise<'light' | 'dark'>
+  }
   project: {
     create(req: NewProjectRequest): Promise<IpcResult<OpenProjectInfo>>
     newSample(): Promise<IpcResult<OpenProjectInfo>>

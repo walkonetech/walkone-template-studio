@@ -2,14 +2,17 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 /**
- * Hover/focus tooltip for icon-only controls. It only ever repeats what the control's accessible name already says
- * (plus the shortcut), so nothing essential lives in it. Portalled and fixed so panels with overflow never clip it.
+ * Hover/focus tooltip for icon-only controls: the shared tooltip (HTML `title` is only a fallback during migration).
+ * It only ever repeats what the control's accessible name already says (plus the shortcut and a one-line hint), so
+ * nothing essential lives in it. Portalled and fixed so panels with overflow never clip it. `media` makes it a
+ * picture tooltip (a small drawing above the text, B1); the picture is decorative and hidden from screen readers.
  */
 export function Tooltip({
   label,
   hint,
   shortcut,
   placement = 'bottom',
+  media,
   children
 }: {
   label: string
@@ -17,6 +20,8 @@ export function Tooltip({
   hint?: string
   shortcut?: string
   placement?: 'bottom' | 'right' | 'top'
+  /** A small illustration shown above the text (picture tooltip). */
+  media?: React.ReactNode
   children: React.ReactNode
 }): React.JSX.Element {
   const ref = useRef<HTMLSpanElement>(null)
@@ -62,7 +67,16 @@ export function Tooltip({
       {children}
       {pos &&
         createPortal(
-          <div role="tooltip" className="ui-tip" style={{ left: pos.x, top: pos.y, transform }}>
+          <div
+            role="tooltip"
+            className={`ui-tip${media ? ' rich' : ''}`}
+            style={{ left: pos.x, top: pos.y, transform }}
+          >
+            {media && (
+              <span className="ui-tip-media" aria-hidden="true">
+                {media}
+              </span>
+            )}
             <span className="ui-tip-title">
               {label}
               {shortcut && <kbd>{shortcut}</kbd>}

@@ -10,7 +10,7 @@ import {
 import { editorStore } from './editorStore'
 import { layoutStore, useLayout } from './layoutStore'
 import { Button } from '../ui/Button'
-import { Dialog } from '../ui/Dialog'
+import { Dialog, DialogActions } from '../ui/Dialog'
 
 function Form(): React.JSX.Element {
   const nameId = useId()
@@ -31,16 +31,22 @@ function Form(): React.JSX.Element {
   return (
     <Dialog
       title="New project"
+      size="md"
+      testId="new-project-dialog"
       onEscape={close}
       footer={
-        <>
-          <Button variant="ghost" onClick={close}>
-            Cancel
-          </Button>
-          <Button variant="primary" onClick={() => void create()}>
-            Create
-          </Button>
-        </>
+        <DialogActions
+          cancel={
+            <Button variant="ghost" onClick={close}>
+              Cancel
+            </Button>
+          }
+          primary={
+            <Button variant="primary" onClick={() => void create()}>
+              Create
+            </Button>
+          }
+        />
       }
     >
       <form

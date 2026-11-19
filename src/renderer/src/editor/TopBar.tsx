@@ -14,6 +14,7 @@ import { runCommand } from './commandRunner'
 import { commandTipProps } from './tips'
 import { editorStore, useEditor } from './editorStore'
 import { isMac } from './platform'
+import { useAppearance } from '../appearance/appearanceStore'
 import { Button } from '../ui/Button'
 import { IconButton } from '../ui/IconButton'
 import { MenuBar, type MenuEntry } from '../ui/Menu'
@@ -32,6 +33,8 @@ export function useCommandContext(): CommandContext {
   const showOverflow = useEditor((s) => s.showOverflow)
   const hasOutputProfile = useEditor((s) => s.outputProfileId !== null)
   const showSafeAreas = useEditor((s) => s.showSafeAreas)
+  const theme = useAppearance((s) => s.theme)
+  const density = useAppearance((s) => s.density)
   return {
     hasProject,
     canUndo,
@@ -43,7 +46,9 @@ export function useCommandContext(): CommandContext {
     showOverflow,
     viewMode,
     hasOutputProfile,
-    showSafeAreas
+    showSafeAreas,
+    theme,
+    density
   }
 }
 

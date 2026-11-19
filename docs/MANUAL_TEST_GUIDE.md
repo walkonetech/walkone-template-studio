@@ -124,6 +124,16 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] Quit and reopen: the profile is still selected. Choose **No profile**: everything printer-specific disappears.
 - [ ] (Optional, with the printer) print the strip and compare where the trim and cut fall with the overlay.
 
+### H0. Appearance (Phase 7B B2)
+- [ ] A fresh install opens in the **Light** theme at **Comfortable** size, interface text in Inter.
+- [ ] View › **Dark theme** switches at once (no restart); the design on the artboard looks exactly the same; the title still says **Saved**; Undo stays as it was.
+- [ ] View › **Match system theme**, then change the OS appearance (macOS: System Settings › Appearance; Windows: Settings › Personalisation › Colours › Choose your mode): the app follows within a second. On Windows the title bar follows too.
+- [ ] View › **Compact size** makes controls smaller; every panel, button and menu is still in the same place. **Comfortable size** restores the larger sizes.
+- [ ] Quit and reopen: the last theme and size are kept. Open a saved project: nothing in it changed (no Modified).
+- [ ] Export the same project in Light and in Dark: the PNGs look identical.
+- [ ] Safe areas (G5): the trim hatch is a muted amber, the keep-safe line teal, the same in both themes.
+- [ ] Windows at 125 % display scaling: text is crisp, and the Export dialog's Export button stays visible on a short window.
+
 ### H. UI, accessibility, polish
 - [ ] Tooltips on icon-only controls, with shortcut hints.
 - [ ] Everything reachable by keyboard; visible focus ring; labels on fields.
@@ -136,7 +146,7 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] No client data appears in `git status`.
 
 ### J. Not built yet (expect absent)
-Design Guide and the Canva-style redesign, one-click fixes and custom output profiles (the safe-area check itself exists, G5), event themes, bundled font library, company profile, asset library, client approval, Light/Dark appearance, installer, Windows installer/packaging, font embedding, image palette extraction, badge builder, templates/recipes.
+Design Guide and the Canva-style redesign, one-click fixes and custom output profiles (the safe-area check itself exists, G5), event themes, bundled font library, company profile, asset library, client approval, Settings › Appearance (theme and size are in the View menu for now), the 7B screen redesigns (labelled rail, view bar, selection toolbar, Checks panel, new Export/Printer & cutting/Import dialogs, first-run tips), installer, Windows installer/packaging, font embedding, image palette extraction, badge builder, templates/recipes.
 
 ## 3. Automated suites (optional cross-check)
 
