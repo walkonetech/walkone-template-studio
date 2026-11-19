@@ -12,6 +12,7 @@
     "exactOptionalPropertyTypes": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
+    "resolveJsonModule": true,
     "skipLibCheck": true,
     "noEmit": true,
     "paths": {
@@ -20,7 +21,9 @@
       "@domain": ["./src/domain/index.ts"],
       "@canvas/*": ["./src/canvas/*"],
       "@editor/*": ["./src/editor/*"],
-      "@export/*": ["./src/export/*"]
+      "@export/*": ["./src/export/*"],
+      "@output/*": ["./src/output/*"],
+      "@output": ["./src/output/index.ts"]
     }
   }
 }

@@ -11,6 +11,7 @@
     "src/preload/**/*",
     "src/shared/**/*",
     "src/export/**/*",
+    "src/output/**/*",
     "src/import/**/*",
     "src/domain/**/*",
     "vitest.config.ts"

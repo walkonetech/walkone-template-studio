@@ -28,6 +28,8 @@ export type CommandId =
   | 'view.shufflePhotos'
   | 'view.design'
   | 'view.printPreview'
+  | 'view.safeAreas'
+  | 'view.outputProfile'
   | 'arrange.alignLeft'
   | 'arrange.alignCenter'
   | 'arrange.alignRight'
@@ -59,6 +61,9 @@ export interface CommandContext {
   /** Artwork beyond the artboard is shown (not the clipped view). */
   showOverflow: boolean
   viewMode: 'design' | 'preview'
+  /** An Output Profile is selected (safe areas exist only then). */
+  hasOutputProfile: boolean
+  showSafeAreas: boolean
 }
 
 interface CommandDef {
@@ -189,6 +194,17 @@ export const COMMANDS: Readonly<Record<CommandId, CommandDef>> = {
     needsProject: true,
     checked: (c) => c.viewMode === 'preview'
   },
+  'view.safeAreas': {
+    label: 'Safe areas',
+    hint: 'Show the output profile’s expected trim, keep-safe lines and cut (guides only, never printed)',
+    needsProject: true,
+    checked: (c) => c.hasOutputProfile && c.showSafeAreas
+  },
+  'view.outputProfile': {
+    label: 'Output profile…',
+    hint: 'Choose the printer and media profile used for safe areas and checks (not saved in the project)',
+    needsProject: true
+  },
   'arrange.alignLeft': {
     label: 'Align left',
     hint: 'Align the selected objects to the left edge',
@@ -271,6 +287,7 @@ export function isCommandEnabled(id: CommandId, ctx: CommandContext): boolean {
       : ctx.selectionCount >= 1
   }
   if (id === 'view.shufflePhotos') return ctx.previewPhotos
+  if (id === 'view.safeAreas') return ctx.hasOutputProfile
   return true
 }
 
@@ -348,6 +365,9 @@ export const MENUS: readonly { id: string; label: string; items: readonly (Comma
         '-',
         'view.snap',
         'view.showOverflow',
+        '-',
+        'view.safeAreas',
+        'view.outputProfile',
         '-',
         'view.previewPhotos',
         'view.shufflePhotos'

@@ -1,13 +1,9 @@
-import { CircleCheck, CircleX, FolderOpen, Info, TriangleAlert } from 'lucide-react'
+import { CircleCheck, CircleX, FolderOpen } from 'lucide-react'
 import { useEffect, useId, useMemo, useState } from 'react'
 import type { TemplateProject } from '@domain'
 import type { ExportFile, ExportWriteResult } from '@shared/ipc'
 import { describeSize } from '@editor/exportPlan'
-import {
-  runExportPreflight,
-  type ExportPreflight,
-  type PreflightSeverity
-} from '@editor/exportPreflight'
+import { runExportPreflight, type ExportPreflight } from '@editor/exportPreflight'
 import { isDslrKind } from '@export/dslrbooth/outputs'
 import { runDslrPreflight } from '@export/dslrbooth/preflight'
 import type { ExportKind } from '@export/naming'
@@ -23,6 +19,9 @@ import { layoutStore, useLayout } from './layoutStore'
 import { isMac } from './platform'
 import { Button } from '../ui/Button'
 import { Dialog } from '../ui/Dialog'
+import { PreflightRow, SEVERITY_ORDER, checkSummary, type CheckItem } from './CheckList'
+import { profileStatusLabel } from '@output'
+import { useSafeAreaReport } from './SafeAreaOverlay'
 
 type Phase =
   | { kind: 'setup' }
@@ -46,43 +45,6 @@ const formatBytes = (n: number): string =>
     ? `${(n / (1024 * 1024)).toFixed(1)} MB`
     : `${Math.max(1, Math.round(n / 1024))} KB`
 
-const ICONS = { error: CircleX, warning: TriangleAlert, info: Info } as const
-const SEVERITY_ORDER: Record<PreflightSeverity, number> = { error: 0, warning: 1, info: 2 }
-
-interface CheckItem {
-  code: string
-  severity: PreflightSeverity
-  message: string
-  /** Shown as a small tag: the check only applies to the dslrBooth template. */
-  dslr?: boolean
-}
-
-function PreflightRow({ item }: { item: CheckItem }): React.JSX.Element {
-  const Icon = ICONS[item.severity]
-  return (
-    <li className={`preflight-item ${item.severity}`} data-code={item.code}>
-      <Icon size={14} aria-hidden="true" />
-      <span>
-        <span className="sr-only">{item.severity}: </span>
-        {item.dslr && <span className="preflight-tag">dslrBooth</span>}
-        {item.message}
-      </span>
-    </li>
-  )
-}
-
-function summary(items: readonly CheckItem[]): string {
-  if (items.length === 0) return 'No problems found.'
-  const count = (s: PreflightSeverity): number => items.filter((i) => i.severity === s).length
-  const [e, w, n] = [count('error'), count('warning'), count('info')]
-  const parts = [
-    e ? `${e} ${e === 1 ? 'error' : 'errors'}` : '',
-    w ? `${w} ${w === 1 ? 'warning' : 'warnings'}` : '',
-    n ? `${n} ${n === 1 ? 'note' : 'notes'}` : ''
-  ].filter(Boolean)
-  return parts.join(' · ')
-}
-
 function ExportForm({
   project,
   sessionId
@@ -98,6 +60,9 @@ function ExportForm({
   const [preflight, setPreflight] = useState<ExportPreflight | null>(null)
   const [phase, setPhase] = useState<Phase>({ kind: 'setup' })
   const listId = useId()
+  // Output Profile (ADR-053): its safe-area checks join the list as warnings/notes; they never block the export, and
+  // nothing from the profile is written into any exported file.
+  const safeReport = useSafeAreaReport()
   const close = (): void => layoutStore.getState().setExportOpen(false)
 
   // Each phase swaps the dialog's controls; put focus back on its primary action so keyboard users are never left on
@@ -183,8 +148,12 @@ function ExportForm({
     preflight === null
       ? []
       : [
-          ...(dslrSelected ? dslrCheck.items.map((i) => ({ ...i, dslr: true })) : []),
-          ...preflight.items
+          ...(dslrSelected ? dslrCheck.items.map((i) => ({ ...i, tag: 'dslrBooth' })) : []),
+          ...preflight.items,
+          // "No profile selected" is already said by the Output profile row; it is not a finding about the design.
+          ...(safeReport?.items ?? [])
+            .filter((i) => i.code !== 'output-profile-none')
+            .map((i) => ({ ...i, tag: 'Output' }))
         ].sort((a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity])
   const blocked =
     preflight !== null && (!preflight.canExport || (dslrSelected && !dslrCheck.canExport))
@@ -318,6 +287,7 @@ function ExportForm({
             )
           })}
         </fieldset>
+        <OutputProfileRow report={safeReport} />
         <section className="export-checks" aria-labelledby={`${listId}-checks`}>
           <h3 id={`${listId}-checks`}>Checks</h3>
           {preflight === null ? (
@@ -325,13 +295,13 @@ function ExportForm({
           ) : (
             <>
               <p id="preflight-summary" className={blocked ? 'blocked' : ''}>
-                {summary(checks)}
+                {checkSummary(checks)}
                 {blocked && ' Fix the errors before exporting.'}
               </p>
               {checks.length > 0 && (
                 <ul className="preflight-list">
-                  {checks.map((item) => (
-                    <PreflightRow key={item.code} item={item} />
+                  {checks.map((item, i) => (
+                    <PreflightRow key={`${item.code}-${i}`} item={item} />
                   ))}
                 </ul>
               )}
@@ -379,6 +349,42 @@ function ExportForm({
     >
       {body}
     </Dialog>
+  )
+}
+
+/** The selected Output Profile and what its safe-area check found, with a way to change it. */
+function OutputProfileRow({
+  report
+}: {
+  report: ReturnType<typeof useSafeAreaReport>
+}): React.JSX.Element | null {
+  if (!report) return null
+  const r = report.resolution
+  const profile = r.status === 'none' ? null : r.profile
+  let status: string
+  if (r.status === 'none') status = 'Printer safe areas are not checked.'
+  else if (r.status === 'mismatch') status = 'Does not match this project: safe areas not checked.'
+  else if (report.flagged.length > 0)
+    status = `${report.flagged.length} critical ${report.flagged.length === 1 ? 'item is' : 'items are'} outside the safe area.`
+  else status = 'Critical content is inside the safe area.'
+  return (
+    <div className="export-profile" data-testid="export-output-profile">
+      <div>
+        <div className="export-profile-label">Output profile</div>
+        <strong id="export-profile-name">{profile ? profileStatusLabel(profile) : 'None'}</strong>
+        <span className="muted"> · {status}</span>
+        <p className="muted">
+          Used for checks only; printer settings are never written into the exported files.
+        </p>
+      </div>
+      <Button
+        size="sm"
+        variant="ghost"
+        onClick={() => layoutStore.getState().setOutputProfileOpen(true)}
+      >
+        {profile ? 'Change…' : 'Choose…'}
+      </Button>
+    </div>
   )
 }
 

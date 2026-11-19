@@ -7,6 +7,7 @@ import { resolveColor } from '@canvas/rendering/color'
 import { finalizeTextNode } from '@canvas/rendering/finalize'
 import { specFor, type NodeClass, type RenderEnv } from '@canvas/rendering/nodeSpec'
 import { CANVAS_THEME } from './canvasTheme'
+import { SafeAreaShapes, safeAreaLegend, useSafeAreaOverlay } from './SafeAreaOverlay'
 import { registerCanvasDebug } from './debugHooks'
 import { editorStore, useEditor, useViewTransform } from './editorStore'
 import { useProjectImages } from './useProjectImages'
@@ -64,6 +65,7 @@ export function PrintPreviewCanvas(): React.JSX.Element | null {
   const hostRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<Konva.Stage>(null)
   const pan = useSpacePan(hostRef)
+  const safe = useSafeAreaOverlay()
 
   useLayoutEffect(() => {
     const host = hostRef.current
@@ -184,6 +186,14 @@ export function PrintPreviewCanvas(): React.JSX.Element | null {
           ))}
         </KLayer>
         <KLayer name="editor-overlay" listening={false}>
+          {safe && (
+            <SafeAreaShapes
+              zones={safe.sheet}
+              flagged={safe.report.flagged}
+              offsets={safe.copies}
+              scale={view.scale}
+            />
+          )}
           {lines.map((l) => (
             <Line
               key={`${l.axis}-${l.at}`}
@@ -222,6 +232,18 @@ export function PrintPreviewCanvas(): React.JSX.Element | null {
               ✂ {label}
             </span>
           ))}
+        {safe && (
+          <span
+            className="preview-chip safe"
+            data-testid="safe-area-legend"
+            style={{
+              ...toScreen(plan.width / 2, plan.height),
+              transform: 'translate(-50%, 34px)'
+            }}
+          >
+            {safeAreaLegend(safe.report)}
+          </span>
+        )}
       </div>
     </div>
   )

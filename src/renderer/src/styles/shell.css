@@ -299,6 +299,29 @@
 .status-item {
   white-space: nowrap;
 }
+/* Output Profile status (ADR-053) */
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  height: 22px;
+  padding: 0 var(--sp-3);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--c-text-2);
+  font: inherit;
+  font-size: var(--fs-meta);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.status-chip:hover {
+  background: var(--c-hover);
+}
+.status-chip.warn {
+  color: var(--c-warning);
+  border-color: rgb(242 176 76 / 0.4);
+}
 .muted {
   color: var(--c-text-3);
 }
@@ -579,6 +602,77 @@
 }
 .export-output-wrap + .export-output-wrap .export-group + .export-output {
   border-top: 0;
+}
+/* Output profile dialog (ADR-053) */
+.profile-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) 0;
+  color: var(--c-text-2);
+}
+.profile-toggle input {
+  accent-color: var(--c-accent);
+}
+.profile-details {
+  border-top: 1px solid var(--c-divider);
+  padding-top: var(--sp-2);
+}
+.profile-details h4 {
+  margin: var(--sp-3) 0 var(--sp-1);
+  font-size: var(--fs-meta);
+  color: var(--c-text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.profile-facts {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: var(--sp-1) var(--sp-3);
+  margin: var(--sp-2) 0 0;
+}
+.profile-facts dt {
+  color: var(--c-text-label);
+}
+.profile-facts dd {
+  margin: 0;
+}
+.profile-note {
+  display: block;
+  font-size: var(--fs-meta);
+  color: var(--c-text-3);
+}
+.profile-list {
+  margin: 0;
+  padding-left: 1.2em;
+}
+.ui-badge.evidence.ok {
+  background: rgb(76 195 138 / 0.14);
+  color: var(--c-success);
+}
+.ui-badge.evidence.muted {
+  color: var(--c-text-3);
+}
+/* Output Profile row in the Export dialog (ADR-053) */
+.export-profile {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-2) 0 var(--sp-3);
+  border-top: 1px solid var(--c-divider);
+}
+.export-profile-label {
+  font-size: var(--fs-meta);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--c-text-3);
+  padding-bottom: var(--sp-1);
+}
+.export-profile p {
+  margin: var(--sp-1) 0 0;
+  font-size: var(--fs-meta);
 }
 .preflight-tag {
   display: inline-block;

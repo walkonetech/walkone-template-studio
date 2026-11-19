@@ -71,7 +71,7 @@ packages/
   template-editor        editor state, commands, canvas/editor UI (today: src/editor, src/canvas, renderer editor)
   template-renderer      proof/production rendering (today: src/canvas/rendering, export render paths)
   template-export        native format, dslrBooth adapter (today: src/export, src/import)
-  output-profiles        printer/media/safe-area profiles (future)
+  output-profiles        printer/media/safe-area profiles (v1 exists as src/output/, ADR-053)
   shared-ui              design system components (today: renderer ui/, styles/)
   shared-contracts       IPC/service contracts shared by both shells (today: src/shared)
 ```
@@ -108,8 +108,9 @@ Template Studio will offer two ways to create, producing the same `TemplateProje
 ## 11. Company Profile (future, shared)
 One company profile used by standalone Template Studio and WalkOne Booth. Possible fields: company name, logo(s) (light/dark), brand colours, preferred fonts, contact information (website, booking number), default SMS/email branding, default export settings, default output profiles, default event/template branding assets. **Company-level configuration stays separate from template source documents; these fields are not added to `TemplateProject`.** A template may *reference* company elements (e.g. "company logo"), resolved from the profile.
 
-## 12. Output Profiles and safe areas (future, shared)
+## 12. Output Profiles and safe areas (shared; v1 built in Template Studio, ADR-053)
 **Template design ≠ printer finishing.** `TemplateProject` stays vendor-neutral; no DNP- or driver-specific fields are added to it. A future Output Profile system may define: profile name, physical media, safe margins, cut positions (e.g. the 2-inch cut), overscan observations, borderless behaviour and setup guidance. Standalone and integrated Template Studio use the same profiles; the automatic safe-area check (owner requirement) reads the active profile. Phase 6C measurements on the DNP printer are the first input. **First observation (6C Stage 1, DNP DS-RX1 on the test laptop):** dslrBooth sends the two-up sheet as one borderless page; the 2-inch cut is a driver setting (`CUT_2INCH`); predicted trim about 1.6–1.8 mm per outer edge, so keep critical content at least 3 mm from strip edges and the cut until the measurement print is read ([../research/PHASE_6C_RESULTS.md](../research/PHASE_6C_RESULTS.md)).
+**v1 (2026-11-18, ADR-053):** the vendor-neutral profile format and the safe-area geometry/checks exist as the pure module `src/output/` (no Electron/React), ready for WalkOne Booth to reuse for Event Readiness and print setup. The bundled DS-RX1 profile is provisional (inferred trim, provisional 3 mm). Selection is a per-computer preference in Template Studio; where WalkOne Booth stores shared profiles is still open (§ open questions).
 
 ## 13. Sharing and SMS (WalkOne Booth only, future)
 A dedicated **SMS module** in WalkOne Booth's Sharing Service. The operator connects an SMS-capable number they **own or control** through a supported provider (never sender spoofing).

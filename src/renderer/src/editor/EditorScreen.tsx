@@ -18,6 +18,7 @@ import { LayersPanel } from './LayersPanel'
 import { NewProjectDialog } from './NewProjectDialog'
 import { ExportDialog } from './ExportDialog'
 import { DslrImportDialog } from './DslrImportDialog'
+import { OutputProfileDialog } from './OutputProfileDialog'
 import { PropertiesInspector } from './PropertiesInspector'
 import { RecoveryDialog } from './RecoveryDialog'
 import { StatusBar } from './StatusBar'
@@ -163,6 +164,7 @@ export function EditorScreen(): React.JSX.Element {
       <NewProjectDialog />
       <ExportDialog />
       <DslrImportDialog />
+      <OutputProfileDialog />
       <TopBar />
       <div className="editor-body">
         {project && <ToolRail />}

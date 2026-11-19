@@ -1,6 +1,19 @@
-import { Crop, ImageIcon, Magnet, Maximize2, Minus, Plus, Shuffle } from 'lucide-react'
+import {
+  Crop,
+  ImageIcon,
+  Magnet,
+  Maximize2,
+  Minus,
+  Plus,
+  Printer,
+  Shuffle,
+  SquareDashed
+} from 'lucide-react'
 import { describeWorkspace } from '@editor/describe'
-import { selectViewMode, selectViewTransform } from '@editor/store'
+import { selectOutputProfile, selectViewMode, selectViewTransform } from '@editor/store'
+import { profileStatusLabel } from '@output'
+import { layoutStore } from './layoutStore'
+import { useSafeAreaReport } from './SafeAreaOverlay'
 import { runCommand } from './commandRunner'
 import { editorStore, useEditor } from './editorStore'
 import { Button } from '../ui/Button'
@@ -21,6 +34,8 @@ export function StatusBar(): React.JSX.Element {
   const message = useEditor((s) => s.lastMessage)
   const autosave = useEditor((s) => s.autosave)
   const dirty = useEditor((s) => s.project !== null && s.project !== s.savedProject)
+  const profile = useEditor(selectOutputProfile)
+  const showSafeAreas = useEditor((s) => s.showSafeAreas)
   // Healthy autosave is quiet: the recovery-copy time only appears while there is unsaved work it protects.
   const recoveryNote =
     dirty && autosave.state === 'saved' && autosave.lastSavedAt
@@ -45,6 +60,7 @@ export function StatusBar(): React.JSX.Element {
         </span>
       )}
       <span className="spacer" />
+      {project && <OutputStatus />}
       <span id="autosave-info" className="status-item muted">
         {recoveryNote}
       </span>
@@ -66,6 +82,16 @@ export function StatusBar(): React.JSX.Element {
             {...commandTipProps('view.showOverflow')}
             pressed={showOverflow}
             onClick={() => runCommand('view.showOverflow')}
+            placement="top"
+          />
+          <IconButton
+            size="sm"
+            icon={SquareDashed}
+            label="Safe areas"
+            {...commandTipProps('view.safeAreas')}
+            pressed={profile !== null && showSafeAreas}
+            disabled={profile === null}
+            onClick={() => runCommand('view.safeAreas')}
             placement="top"
           />
           <IconButton
@@ -121,5 +147,39 @@ export function StatusBar(): React.JSX.Element {
         </div>
       )}
     </footer>
+  )
+}
+
+/**
+ * Compact Output Profile status (ADR-053), e.g. "Output: DNP DS-RX1 · 2×6 · Provisional · 2 safe-area warnings".
+ * Opens View › Output profile…. Never part of the project.
+ */
+function OutputStatus(): React.JSX.Element {
+  const report = useSafeAreaReport()
+  const profile = useEditor(selectOutputProfile)
+  const r = report?.resolution
+  const flagged = report?.flagged.length ?? 0
+  let extra = ''
+  let tone = ''
+  if (r?.status === 'mismatch') {
+    extra = ' · does not match this project'
+    tone = ' warn'
+  } else if (flagged > 0) {
+    extra = ` · ${flagged} safe-area ${flagged === 1 ? 'warning' : 'warnings'}`
+    tone = ' warn'
+  }
+  return (
+    <Tooltip label="Output profile" {...commandTipProps('view.outputProfile')} placement="top">
+      <button
+        type="button"
+        id="output-status"
+        className={`status-chip${tone}`}
+        onClick={() => layoutStore.getState().setOutputProfileOpen(true)}
+      >
+        <Printer size={13} aria-hidden="true" />
+        Output: {profile ? profileStatusLabel(profile) : 'none'}
+        {extra}
+      </button>
+    </Tooltip>
   )
 }

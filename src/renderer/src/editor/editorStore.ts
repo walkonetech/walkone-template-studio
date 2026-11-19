@@ -49,6 +49,38 @@ editorStore.subscribe((s, prev) => {
     previewCache.clear('user-')
   }
 })
+
+/**
+ * The selected Output Profile and the Safe areas toggle are a per-computer preference (ADR-053): remembered in this
+ * app's browser storage, never in the project. Storage can be unavailable or cleared; the editor then simply starts
+ * with no profile selected.
+ */
+const OUTPUT_PREFS_KEY = 'walkone.outputProfile.v1'
+try {
+  const saved = JSON.parse(window.localStorage.getItem(OUTPUT_PREFS_KEY) ?? 'null') as {
+    profileId?: unknown
+    showSafeAreas?: unknown
+  } | null
+  if (saved && typeof saved === 'object') {
+    const s = editorStore.getState()
+    if (typeof saved.profileId === 'string') s.setOutputProfile(saved.profileId)
+    if (typeof saved.showSafeAreas === 'boolean') s.setShowSafeAreas(saved.showSafeAreas)
+  }
+} catch {
+  // unreadable or unavailable storage: keep the defaults
+}
+editorStore.subscribe((s, prev) => {
+  if (s.outputProfileId === prev.outputProfileId && s.showSafeAreas === prev.showSafeAreas) return
+  try {
+    window.localStorage.setItem(
+      OUTPUT_PREFS_KEY,
+      JSON.stringify({ profileId: s.outputProfileId, showSafeAreas: s.showSafeAreas })
+    )
+  } catch {
+    // storage unavailable: the choice lasts for this run only
+  }
+})
+
 export const imageCache = new ImageCache(loadProjectImage)
 
 export function useEditor<T>(selector: (state: EditorState & EditorActions) => T): T {

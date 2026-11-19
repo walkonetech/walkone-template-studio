@@ -76,7 +76,7 @@ The model is plain data produced by schemas: no functions, DOM/canvas/Electron o
 ## 11. What stays out of `TemplateProject` (ADR-049, ADR-043)
 The template source document describes the design only. These belong to other, future stores and must **not** be added as `TemplateProject` fields:
 - **Company Profile** (company name, logos, brand colours, preferred fonts, contacts, default sharing branding, default export settings and output profiles). A template may later *reference* a company element (e.g. "company logo"), resolved from the profile.
-- **Output Profiles / printer finishing**: printer model, driver or PrintTicket settings, media, cut positions (e.g. the 2-inch cut), safe margins, overscan, borderless behaviour. The safe-area check reads the active profile; the template stays vendor-neutral.
+- **Output Profiles / printer finishing**: printer model, driver or PrintTicket settings, media, cut positions (e.g. the 2-inch cut), safe margins, overscan, borderless behaviour. The safe-area check reads the active profile; the template stays vendor-neutral. **v1 exists (ADR-053):** `walkone.output-profile` v1 in `src/output/` (bundled JSON profiles; no PrintTicket data); the selected profile is an app preference, not a project field; no schema change.
 - **Sharing / SMS / email settings and provider credentials** (WalkOne Booth only; credentials in OS-backed secure storage, never in project files, event packages, plain JSON or logs).
 - **Event-runtime state** (sessions, captures, print and share queues) and **approved event revisions** as records (the approval workflow is future; a revision snapshots a template, it is not a template field).
 

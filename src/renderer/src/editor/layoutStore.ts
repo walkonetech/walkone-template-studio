@@ -28,6 +28,8 @@ interface LayoutState {
   collapsedSections: string[]
   newProjectOpen: boolean
   exportOpen: boolean
+  /** View › Output profile… (choose the profile and read its evidence). */
+  outputProfileOpen: boolean
   /** The dslrBooth import dialog: an analysed ZIP, or why it cannot be imported (null = closed). */
   dslrImport: DslrImportState | null
   setSidebarWidth(px: number): void
@@ -36,6 +38,7 @@ interface LayoutState {
   toggleSection(id: string): void
   setNewProjectOpen(open: boolean): void
   setExportOpen(open: boolean): void
+  setOutputProfileOpen(open: boolean): void
   setDslrImport(state: DslrImportState | null): void
 }
 
@@ -47,6 +50,7 @@ export const layoutStore = createStore<LayoutState>((set, get) => ({
   collapsedSections: [],
   newProjectOpen: false,
   exportOpen: false,
+  outputProfileOpen: false,
   dslrImport: null,
   setSidebarWidth: (px) => set({ sidebarWidth: clampSidebarWidth(px, window.innerWidth) }),
   setLayersSplit: (f) => set({ layersSplit: clampLayersSplit(f) }),
@@ -62,6 +66,7 @@ export const layoutStore = createStore<LayoutState>((set, get) => ({
     })),
   setNewProjectOpen: (newProjectOpen) => set({ newProjectOpen }),
   setExportOpen: (exportOpen) => set({ exportOpen }),
+  setOutputProfileOpen: (outputProfileOpen) => set({ outputProfileOpen }),
   setDslrImport: (dslrImport) => set({ dslrImport })
 }))
 

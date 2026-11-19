@@ -16,7 +16,8 @@ export default defineConfig({
         '@domain': resolve('src/domain'),
         '@canvas': resolve('src/canvas'),
         '@editor': resolve('src/editor'),
-        '@export': resolve('src/export')
+        '@export': resolve('src/export'),
+        '@output': resolve('src/output')
       }
     },
     plugins: [react()]

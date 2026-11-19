@@ -36,7 +36,9 @@
 - **Main client** — the event client who approves the template proof before the event; clients never use the app.
 - **WalkOne Booth** — (future, ADR-049) the all-in-one local photo booth platform (events, capture, printing, sharing, media) that will replace dslrBooth and contain Template Studio as a module.
 - **Template Studio core** — (future packaging) the one shared implementation of the domain, editor, rendering and export used by both the standalone app and WalkOne Booth.
-- **Output Profile** — (future) printer/media settings outside the template: media, safe margins, cut positions, borderless behaviour, setup guidance; read by the safe-area check.
+- **Output Profile** — printer/media/finishing description outside the template (ADR-053, `src/output/`): sheet, cut positions, expected trim per edge, keep-safe margins, finishing results, setup guidance; every value carries its evidence. Read by the safe-area overlay and checks; chosen per computer, never saved in a project.
+- **Evidence level** — how far an Output Profile value can be trusted: Unknown, Nominal, Inferred, Provisional, Observed on test laptop, Owner-measured, Verified on production booth.
+- **Expected trim** — the strip of the print expected to be lost at an edge (overscan/trim); **keep-safe margin** — the distance critical content should keep from an edge or cut.
 - **Event Readiness** — (future, WalkOne Booth) the pre-launch check of camera, printer, template, sharing and storage.
 - **Booth Health** — (future, WalkOne Booth) the event-day status dashboard (camera, printer, queues, storage, errors).
 - **Approved event revision** — (future) the immutable version of a template the client approved for an event.

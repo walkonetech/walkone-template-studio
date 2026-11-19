@@ -1,0 +1,115 @@
+{
+  "format": "walkone.output-profile",
+  "formatVersion": 1,
+  "id": "dnp-ds-rx1-6x4-2inch-cut",
+  "name": "DNP DS-RX1 · 6×4 PC · 2-inch cut · borderless",
+  "shortName": "DNP DS-RX1",
+  "description": "Two 2×6 strips printed side by side on one 6×4 sheet and cut apart by the printer's 2-inch cut, borderless. First profile, from the Phase 6C observations on the Windows research laptop.",
+  "confidence": "provisional",
+  "device": {
+    "manufacturer": "DNP",
+    "model": "DS-RX1",
+    "driverVersion": {
+      "value": "1.1.1.0",
+      "evidence": "observed-test-laptop",
+      "note": "Driver installed on the research laptop; the production booth PC's driver is not yet recorded."
+    }
+  },
+  "media": {
+    "name": "6×4 (PC)",
+    "nominalMm": { "width": 152.4, "height": 101.6 },
+    "driverPageMm": {
+      "value": { "width": 156.1, "height": 105.0 },
+      "evidence": "observed-test-laptop",
+      "note": "Page size of the one borderless page dslrBooth sent for the _2x sheet; larger than the paper, so the excess is expected to be lost at the edges."
+    }
+  },
+  "sheet": { "widthIn": 4, "heightIn": 6 },
+  "composition": { "mode": "copies", "columns": 2, "rows": 1 },
+  "borderless": {
+    "value": true,
+    "evidence": "observed-test-laptop",
+    "note": "dslrBooth sent the _2x sheet as one borderless page; the saved print settings had the print margin off."
+  },
+  "cuts": [
+    {
+      "id": "centre",
+      "label": "2-inch centre cut",
+      "axis": "x",
+      "positionIn": 2,
+      "evidence": "observed-test-laptop",
+      "note": "CUT_2INCH in the printer settings dslrBooth saved: a printer-driver setting, not a template or dslrBooth option. Where the cut falls on the paper is not yet measured."
+    }
+  ],
+  "trimMm": {
+    "top": {
+      "value": 1.8,
+      "evidence": "inferred",
+      "note": "Predicted from the driver page size against the paper; awaiting the owner's measurement-print readout."
+    },
+    "bottom": {
+      "value": 1.8,
+      "evidence": "inferred",
+      "note": "Predicted from the driver page size against the paper; awaiting the owner's measurement-print readout."
+    },
+    "left": {
+      "value": 1.6,
+      "evidence": "inferred",
+      "note": "Outer long edge. Predicted from the driver page size against the paper; awaiting the owner's measurement-print readout."
+    },
+    "right": {
+      "value": 1.6,
+      "evidence": "inferred",
+      "note": "Outer long edge. Predicted from the driver page size against the paper; awaiting the owner's measurement-print readout."
+    },
+    "cut": {
+      "value": null,
+      "evidence": "unknown",
+      "note": "Loss or drift at the cut is awaiting the measurement-print readout."
+    }
+  },
+  "safeMarginMm": {
+    "edge": {
+      "value": 3,
+      "evidence": "provisional",
+      "note": "Interim guidance from Phase 6C: keep critical content at least 3 mm from the strip edges until the measurement print is read."
+    },
+    "cut": {
+      "value": 3,
+      "evidence": "provisional",
+      "note": "Interim guidance from Phase 6C: keep critical content at least 3 mm from the centre cut until the measurement print is read."
+    }
+  },
+  "finishing": {
+    "autoCut": {
+      "value": null,
+      "evidence": "unknown",
+      "note": "Whether the printer cut the sheet as configured: awaiting the measurement-print readout."
+    },
+    "cutOnSeam": {
+      "value": null,
+      "evidence": "unknown",
+      "note": "Whether the cut lands on the seam between the two strips: awaiting the measurement-print readout."
+    },
+    "gutter": {
+      "value": null,
+      "evidence": "unknown",
+      "note": "Whether a gap or sliver appears at the cut: awaiting the measurement-print readout."
+    }
+  },
+  "setup": [
+    "In dslrBooth, use the native 2×6 template from Template Studio's export (\"Print 2 per page\" on).",
+    "In the DNP DS-RX1 printer settings, choose the 2-inch cut and turn the print margin off (borderless).",
+    "Load 6×4 (PC) media.",
+    "Keep critical content at least 3 mm from the strip edges and the centre cut until the measurement print has been read."
+  ],
+  "observedEnvironment": "Windows 11 research laptop with dslrBooth 7.48 and the DNP DS-RX1 (Phase 6C Stage 1); not the production booth PC.",
+  "observedDate": "2026-11-17",
+  "verifiedEnvironment": null,
+  "verifiedDate": null,
+  "notes": [
+    "Template Studio shows this sheet upright: 4 in wide × 6 in tall with the two strips side by side. The driver page is the same sheet in landscape (156.1 × 105.0 mm).",
+    "Source: research/PHASE_6C_RESULTS.md (observed findings only). When the measurement-print readout arrives, update the trim, cut and finishing values and the confidence in this file; no code change is needed.",
+    "The printer's cut and margins are configured in the printer driver, never in the template."
+  ]
+}

@@ -51,6 +51,7 @@ Hardware results hold for this laptop. **The production booth PC's printer setti
 - Real templates made in dslrBooth's own editor can contain **live `<Text>` elements**. None of the five fixtures in this repository has one.
 
 ## Printer observation (first Output Profile input; DS-RX1, this laptop)
+_Used by the bundled DS-RX1 Output Profile (ADR-053, `src/output/profiles/dnp-ds-rx1-6x4-2inch-cut.json`): the observed values are labelled "observed on test laptop", the trim estimates "inferred", the 3 mm guidance "provisional"; the cut trim and finishing results stay "unknown" until item 1 below is read._
 - dslrBooth sends the `_2x` sheet as **one borderless page**, 156.1 × 105.0 mm.
 - The **2-inch cut is a printer-driver setting** (`CUT_2INCH` in the print settings dslrBooth saved), not a template or dslrBooth option. Other saved settings: print margin off, 300 × 300 dpi, luster finish.
 - Predicted trim: about 1.8 mm at the top and bottom and 1.6 mm at the outer long edge. **Interim guidance: keep critical content at least 3 mm from strip edges and the centre cut** until the measurement print is read.
@@ -61,7 +62,7 @@ Observed at runtime: dslrBooth's built-in web server listens on the local networ
 ## Defects and Template Studio fixes
 | Id | Issue | Status (2026-11-17) |
 |---|---|---|
-| C1 | dslrBooth live `<Text>` dropped on import, lost on round trip; the import note wrongly said text was "already flattened" | **Implemented — pending Windows revalidation.** Editable import (ADR-051) validated on Windows at `5f7c26a` as **partial** (no text lost; three follow-ups); the follow-ups were addressed in the stabilization pass (2026-11-18, below): two-strip regression fixed, ZIndex ties reported by name (rule unchanged), over-long lines warned specifically (clipping proposed, ADR-052 OPEN) |
+| C1 | dslrBooth live `<Text>` dropped on import, lost on round trip; the import note wrongly said text was "already flattened" | **Validated — closed** (owner brief, 2026-11-18: the Windows revalidation of the stabilization commit confirmed the strip choice for owner template D and no text lost in the round trip). Editable import (ADR-051) validated on Windows at `5f7c26a` as **partial** (no text lost; three follow-ups); the follow-ups were addressed in the stabilization pass (2026-11-18, below): two-strip regression fixed, ZIndex ties reported by name (rule unchanged), over-long lines warned specifically (clipping proposed, ADR-052 OPEN) |
 | C2 | `Dimensions` 1 (inches) came back as 0 (pixels) | **Fixed**: the imported unit is kept on export |
 | C3 | Re-import always creates a copy | Workflow documented (USER_WORKFLOWS) |
 | C4 | No `preview.png` gives a blank thumbnail | No change: Template Studio always writes one |
@@ -79,7 +80,7 @@ Observed at runtime: dslrBooth's built-in web server listens on the local networ
 2. The one manual `/print` check (Test 18).
 3. The production booth PC's own print settings (this run was on the research laptop).
 4. ~~One real dslrBooth template with made-up live text~~: supplied 2026-11-18 (below).
-5. Craft Anything: re-test the C1 stabilization commit on Windows (owner template D's strip choice, A's tie note, the fixture's overflow note; narrow steps in SESSION_STARTER / the final report).
+5. ~~Craft Anything: re-test the C1 stabilization commit on Windows~~: done; C1 validated and closed (owner brief, 2026-11-18).
 6. Owner: approve or decline ADR-052 (clip over-long imported text to its box; needs a schema change).
 
 ## Windows re-test of `cfcc9cf` (2026-11-17)

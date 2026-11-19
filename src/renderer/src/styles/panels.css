@@ -523,6 +523,9 @@
 .preview-chip.cut {
   color: var(--c-guide);
 }
+.preview-chip.safe {
+  color: var(--c-safe);
+}
 /* Design / Print Preview switch */
 .workspace-mode {
   position: absolute;

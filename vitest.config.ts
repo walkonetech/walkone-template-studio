@@ -8,7 +8,8 @@ export default defineConfig({
       '@shared': resolve('src/shared'),
       '@canvas': resolve('src/canvas'),
       '@editor': resolve('src/editor'),
-      '@export': resolve('src/export')
+      '@export': resolve('src/export'),
+      '@output': resolve('src/output')
     }
   },
   test: { environment: 'node', include: ['src/**/*.test.ts'] }

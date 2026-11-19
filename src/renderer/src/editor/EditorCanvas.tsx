@@ -1,3 +1,4 @@
+import { SafeAreaShapes, safeAreaLegend, useSafeAreaOverlay } from './SafeAreaOverlay'
 import { CANVAS_THEME } from './canvasTheme'
 import { useEffect, useLayoutEffect, useRef, type ComponentType } from 'react'
 import {
@@ -410,6 +411,7 @@ export function EditorCanvas(): React.JSX.Element | null {
   const photoPreview = usePreviewPhotos(project?.layers)
   const showOverflow = useEditor((s) => s.showOverflow)
   const cropSession = useEditor((s) => s.cropSession)
+  const safe = useSafeAreaOverlay()
 
   const hostRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<Konva.Stage>(null)
@@ -621,6 +623,14 @@ export function EditorCanvas(): React.JSX.Element | null {
         </KLayer>
         <KLayer name="editor-overlay">
           {showOverflow && <PrintAreaMask width={design.width} height={design.height} />}
+          {safe && view && (
+            <SafeAreaShapes
+              zones={safe.design}
+              flagged={safe.report.flagged}
+              offsets={DESIGN_ORIGIN}
+              scale={view.scale}
+            />
+          )}
           {guidesVisible &&
             guides.map((g) => (
               <Line
@@ -654,11 +664,28 @@ export function EditorCanvas(): React.JSX.Element | null {
           />
         </KLayer>
       </Stage>
+      {safe && view && (
+        <div className="preview-labels" aria-hidden="true">
+          <span
+            className="preview-chip safe"
+            data-testid="safe-area-legend"
+            style={{
+              left: view.offsetX + (design.width / 2) * view.scale,
+              top: view.offsetY + design.height * view.scale,
+              transform: 'translate(-50%, 8px)'
+            }}
+          >
+            {safeAreaLegend(safe.report)}
+          </span>
+        </div>
+      )}
       <TextEditOverlay />
       {cropSession && <CropOverlay />}
     </div>
   )
 }
+
+const DESIGN_ORIGIN = [{ x: 0, y: 0 }] as const
 
 function Layers({ project, env }: { project: TemplateProject; env: RenderEnv }): React.JSX.Element {
   // Back-to-front by zIndex with array order as the tie-breaker (domain `sortedSiblings`), never by insertion order.

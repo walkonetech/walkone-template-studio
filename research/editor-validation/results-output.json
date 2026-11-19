@@ -1,0 +1,309 @@
+{
+  "when": "2026-11-19T00:50:10.678Z",
+  "pass": 23,
+  "total": 23,
+  "results": [
+    {
+      "name": "1 a new 2×6 @600 project starts with no output profile",
+      "ok": true,
+      "detail": "Output: none"
+    },
+    {
+      "name": "1b without a profile: Safe areas toggle and View › Safe areas are disabled; no overlay is drawn",
+      "ok": true,
+      "detail": {
+        "safeBtn": {
+          "disabled": true,
+          "pressed": "false"
+        },
+        "m0": {
+          "found": true,
+          "disabled": true,
+          "checked": "false"
+        },
+        "o": {
+          "stages": 1,
+          "groups": 0,
+          "lines": [],
+          "flags": [],
+          "trim": 0,
+          "legend": null
+        }
+      }
+    },
+    {
+      "name": "2 Output profile dialog lists \"No profile\" (selected) and the DS-RX1 profile",
+      "ok": true,
+      "detail": [
+        {
+          "id": "none",
+          "title": "No profile",
+          "checked": true
+        },
+        {
+          "id": "dnp-ds-rx1-6x4-2inch-cut",
+          "title": "DNP DS-RX1 · 6×4 PC · 2-inch cut · borderless",
+          "checked": false
+        }
+      ]
+    },
+    {
+      "name": "2b details: status Provisional; driver 1.1.1.0 observed on test laptop; driver page 156.1 × 105 mm; cut 2 in",
+      "ok": true,
+      "detail": [
+        ["Status", "Provisional Interim guidance until a measurement replaces it."],
+        ["Printer", "DNP DS-RX1 "],
+        [
+          "Driver",
+          "1.1.1.0 Observed on test laptopDriver installed on the research laptop; the production booth PC's driver is not yet recorded."
+        ],
+        ["Media", "6×4 (PC): 152.4 × 101.6 mm Nominal"],
+        [
+          "Driver page",
+          "156.1 × 105 mm Observed on test laptopPage size of the one borderless page dslrBooth sent for the _2x sheet; larger than the paper, so the excess is expected to be lost at the edges."
+        ],
+        ["Layout", "2 copies of one 2×6 design on a 4×6 in sheet "],
+        [
+          "Borderless",
+          "Yes Observed on test laptopdslrBooth sent the _2x sheet as one borderless page; the saved print settings had the print margin off."
+        ],
+        [
+          "Cut",
+          "2-inch centre cut: 2 in from the left edge Observed on test laptopCUT_2INCH in the printer settings dslrBooth saved: a printer-driver setting, not a template or dslrBooth option. Where the cut falls on the paper is not yet measured."
+        ],
+        [
+          "Trim, top edge",
+          "1.8 mm InferredPredicted from the driver page size against the paper; awaiting the owner's measurement-print readout."
+        ]
+      ]
+    },
+    {
+      "name": "2c trim is Inferred (1.8 / 1.6 mm), the cut trim and finishing are Unknown, keep-safe 3 mm is Provisional, not verified",
+      "ok": true,
+      "detail": [
+        [
+          "Trim, top edge",
+          "1.8 mm InferredPredicted from the driver page size against the paper; awaiting the owner's measurement-print readout."
+        ],
+        ["Trim, bottom edge", "1.8 mm Inferred"],
+        ["Trim, left edge", "1.6 mm Inferred"],
+        ["Trim, right edge", "1.6 mm Inferred"],
+        [
+          "Trim at the cut",
+          "Unknown UnknownLoss or drift at the cut is awaiting the measurement-print readout."
+        ],
+        [
+          "Keep-safe, edges",
+          "3 mm ProvisionalInterim guidance from Phase 6C: keep critical content at least 3 mm from the strip edges until the measurement print is read."
+        ],
+        ["Keep-safe, cut", "3 mm Provisional"],
+        ["Cut on seam", "Awaiting readout Unknown"],
+        ["Verified", "Not yet verified on a production booth "]
+      ]
+    },
+    {
+      "name": "2d choosing a profile leaves the project untouched: same content, same Modified state, no history entry",
+      "ok": true,
+      "detail": {
+        "profile": "dnp-ds-rx1-6x4-2inch-cut",
+        "dirty": true,
+        "past": 0
+      }
+    },
+    {
+      "name": "2e status bar shows \"Output: DNP DS-RX1 · 2×6 · Provisional\"",
+      "ok": true,
+      "detail": "Output: DNP DS-RX1 · 2×6 · Provisional"
+    },
+    {
+      "name": "3 Design view: one keep-safe rectangle inset 3 mm (70.87 px at 600 DPI) on every side of the 1200×3600 strip, plus trim bands",
+      "ok": true,
+      "detail": {
+        "stages": 1,
+        "groups": 1,
+        "lines": [
+          {
+            "x": 70.86614173228347,
+            "y": 70.86614173228347,
+            "w": 1058.267716535433,
+            "h": 3458.2677165354335
+          }
+        ],
+        "flags": [],
+        "trim": 1,
+        "legend": "Safe areas · DNP DS-RX1 · Provisional · keep-safe 3 mm · trim ~1.6–1.8 mm (inferred)"
+      }
+    },
+    {
+      "name": "3b legend under the artboard names the profile and its evidence",
+      "ok": true,
+      "detail": "Safe areas · DNP DS-RX1 · Provisional · keep-safe 3 mm · trim ~1.6–1.8 mm (inferred)"
+    },
+    {
+      "name": "4 the status-bar Safe areas button hides the overlay (stage pixels change; project untouched)",
+      "ok": true,
+      "detail": {
+        "changed": true,
+        "groups": 0,
+        "show": false
+      }
+    },
+    {
+      "name": "4b the overlay is editor-only: the design and sheet renders (what export draws) are identical with it on or off",
+      "ok": true
+    },
+    {
+      "name": "4c View › Safe areas is enabled, unchecked while hidden, and turns the overlay back on",
+      "ok": true,
+      "detail": {
+        "m1": {
+          "found": true,
+          "disabled": false,
+          "checked": "false"
+        },
+        "groups": 1
+      }
+    },
+    {
+      "name": "5 text 0.8 mm from the side and a photo slot 1.7 mm from the side are flagged (red outlines); the full-bleed shape and the inset photo are not",
+      "ok": true,
+      "detail": {
+        "flags": [
+          {
+            "x": 20,
+            "y": 3000,
+            "w": 484.765625,
+            "h": 96
+          },
+          {
+            "x": 40,
+            "y": 1000,
+            "w": 1120,
+            "h": 700
+          }
+        ],
+        "chipText": "Output: DNP DS-RX1 · 2×6 · Provisional · 2 safe-area warnings",
+        "textId": "14d7e351-ba7a-49fd-8cdb-5dbcb483b733",
+        "edgePhoto": "af867c35-80ca-40cb-bf50-e9c4755318a2"
+      }
+    },
+    {
+      "name": "6 Print Preview: two keep-safe rectangles, one per copy, each 3 mm from the outer edge and from the 2-inch cut at x = 1200",
+      "ok": true,
+      "detail": {
+        "lines": [
+          {
+            "x": 70.86614173228347,
+            "y": 70.86614173228347,
+            "w": 1058.267716535433,
+            "h": 3458.2677165354335
+          },
+          {
+            "x": 1270.8661417322835,
+            "y": 70.86614173228347,
+            "w": 1058.2677165354332,
+            "h": 3458.2677165354335
+          }
+        ],
+        "cutChip": "✂ 2-inch cut"
+      }
+    },
+    {
+      "name": "6b the derived right-hand copy shows the same flagged content as the source strip (2 outlines per copy)",
+      "ok": true,
+      "detail": [
+        {
+          "x": 20,
+          "y": 3000,
+          "w": 484.765625,
+          "h": 96
+        },
+        {
+          "x": 40,
+          "y": 1000,
+          "w": 1120,
+          "h": 700
+        },
+        {
+          "x": 1220,
+          "y": 3000,
+          "w": 484.765625,
+          "h": 96
+        },
+        {
+          "x": 1240,
+          "y": 1000,
+          "w": 1120,
+          "h": 700
+        }
+      ]
+    },
+    {
+      "name": "6c Print Preview stays read-only (not Modified by the overlay)",
+      "ok": true
+    },
+    {
+      "name": "7 Export dialog shows the profile (\"DNP DS-RX1 · 2×6 · Provisional\", 2 items outside) and its checks tagged Output",
+      "ok": true,
+      "detail": {
+        "row": "Output profileDNP DS-RX1 · 2×6 · Provisional · 2 critical items are outside the safe area.Used for checks only; printer settings are never written into the exported files.Change…",
+        "codesOut": ["safe-area-trim", "safe-area-margin", "output-profile-provisional"]
+      }
+    },
+    {
+      "name": "7b the text warning gives the distance in mm and the edge; safe-area warnings never block the export",
+      "ok": true,
+      "detail": {
+        "text": "warning: OutputText “Sarah & John” enters the expected trim at the 2-inch centre cut and outer edge (left side): it is 0.8 mm from the edge, and about 1.6 mm there may be cut off (inferred). Keep it at least 3 mm away. On a two-up sheet this side is the cut on one copy and the outer edge on the other.",
+        "disabled": false
+      }
+    },
+    {
+      "name": "7c the dslrBooth template exports as before and carries no printer/profile data (no DS-RX1, CUT_2INCH, trim, safe area)",
+      "ok": true,
+      "detail": {
+        "done": true,
+        "files": ["Output Strip-design.png", "Output Strip-print.png", "Output Strip.zip"]
+      }
+    },
+    {
+      "name": "8 a new 2×6 @300 project keeps the profile; keep-safe is 35.43 px (the same 3 mm) on the 600×1800 strip",
+      "ok": true,
+      "detail": [
+        {
+          "x": 35.43307086614173,
+          "y": 35.43307086614173,
+          "w": 529.1338582677165,
+          "h": 1729.1338582677167
+        }
+      ]
+    },
+    {
+      "name": "9 a 6×4 landscape design does not match the profile: no overlay; the status bar says so",
+      "ok": true,
+      "detail": {
+        "groups": 0,
+        "chip": "Output: DNP DS-RX1 · 2×6 · Provisional · does not match this project"
+      }
+    },
+    {
+      "name": "10 after a restart the DS-RX1 profile is still selected and Safe areas are on",
+      "ok": true,
+      "detail": {
+        "chip": "Output: DNP DS-RX1 · 2×6 · Provisional",
+        "groups": 1
+      }
+    },
+    {
+      "name": "11 \"No profile\": no overlay, status \"Output: none\", one info note in the profile dialog; the Export dialog row says safe areas are not checked (no extra check item)",
+      "ok": true,
+      "detail": {
+        "noneNote": "output-profile-none",
+        "expNone": {
+          "row": "Output profileNone · Printer safe areas are not checked.Used for checks only; printer settings are never written into the exported files.Choose…",
+          "codes": ["dslr-no-photo-slots", "no-photo-slots", "dslr-two-up"]
+        }
+      }
+    }
+  ]
+}

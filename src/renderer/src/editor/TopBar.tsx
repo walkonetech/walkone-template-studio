@@ -30,6 +30,8 @@ export function useCommandContext(): CommandContext {
   const hasPrintPreview = useEditor((s) => s.project !== null && hasDerivedCopies(s.project))
   const viewMode = useEditor(selectViewMode)
   const showOverflow = useEditor((s) => s.showOverflow)
+  const hasOutputProfile = useEditor((s) => s.outputProfileId !== null)
+  const showSafeAreas = useEditor((s) => s.showSafeAreas)
   return {
     hasProject,
     canUndo,
@@ -39,7 +41,9 @@ export function useCommandContext(): CommandContext {
     previewPhotos,
     hasPrintPreview,
     showOverflow,
-    viewMode
+    viewMode,
+    hasOutputProfile,
+    showSafeAreas
   }
 }
 

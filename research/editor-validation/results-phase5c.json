@@ -8,7 +8,7 @@
       "ok": true,
       "detail": {
         "overlay": {
-          "id": "eb9f2d73-7ab8-49b3-a422-3939cb27bfbd",
+          "id": "a33fb8a8-1947-483f-9387-5c1ca3ccfcb9",
           "type": "image",
           "name": "petals",
           "x": 900,
@@ -363,11 +363,11 @@
       "ok": true,
       "detail": {
         "crop": {
-          "layerId": "7e713668-51b9-4974-a3ba-e2c7f91a876d",
+          "layerId": "ccf77276-aefd-4839-b7c3-f47d01d97438",
           "original": null
         },
         "interaction": "cropping",
-        "selected": ["7e713668-51b9-4974-a3ba-e2c7f91a876d"],
+        "selected": ["ccf77276-aefd-4839-b7c3-f47d01d97438"],
         "mode": "design"
       }
     },
@@ -401,7 +401,7 @@
       "name": "20b Enter commits: the crop is kept, the mode is left",
       "ok": true,
       "detail": {
-        "7e713668-51b9-4974-a3ba-e2c7f91a876d": {
+        "ccf77276-aefd-4839-b7c3-f47d01d97438": {
           "zoom": 1.25,
           "x": -0.004743833017077814,
           "y": 0
@@ -473,7 +473,7 @@
       "name": "25 save → reopen: negative X, rotation and oversized extent are preserved exactly",
       "ok": true,
       "detail": {
-        "id": "eb9f2d73-7ab8-49b3-a422-3939cb27bfbd",
+        "id": "a33fb8a8-1947-483f-9387-5c1ca3ccfcb9",
         "type": "image",
         "name": "petals",
         "x": -120,
@@ -495,7 +495,7 @@
       "name": "26 crash recovery restores the off-artboard asset geometry (x −300) and its image",
       "ok": true,
       "detail": {
-        "id": "eb9f2d73-7ab8-49b3-a422-3939cb27bfbd",
+        "id": "a33fb8a8-1947-483f-9387-5c1ca3ccfcb9",
         "type": "image",
         "name": "petals",
         "x": -300,

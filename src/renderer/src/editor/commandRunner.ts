@@ -111,6 +111,12 @@ export function runCommand(id: CommandId): void {
     case 'view.showOverflow':
       s.setShowOverflow(!s.showOverflow)
       return
+    case 'view.safeAreas':
+      s.setShowSafeAreas(!s.showSafeAreas)
+      return
+    case 'view.outputProfile':
+      layoutStore.getState().setOutputProfileOpen(true)
+      return
     case 'view.shufflePhotos':
       s.shufflePhotos()
       return

@@ -36,6 +36,7 @@
   --c-selected-edge: rgb(123 140 255 / 0.9);
   --c-focus: #9fb0ff;
   --c-guide: #ff5f8f; /* snapping guides on the canvas */
+  --c-safe: #3ec7c0; /* safe-area keep-safe line (editor-only) */
 
   --c-warning: #f2b04c;
   --c-error: #f27d78;

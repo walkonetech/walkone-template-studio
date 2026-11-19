@@ -797,7 +797,8 @@ function ProjectSummary({ project }: { project: TemplateProject }): React.JSX.El
             Prints as {copies} identical {printSizeName(project.canvas.print)} copies on one{' '}
             {printSizeName(project.output.print)} sheet. Design one strip; Template Studio places
             the copies. Printer finishing: configure DSLR Booth and your printer for the 2-inch
-            center cut.
+            center cut. To see where the printer trims and cuts, choose Output profile… in the View
+            menu.
           </p>
         )}
       </Section>

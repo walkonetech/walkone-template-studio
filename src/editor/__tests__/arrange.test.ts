@@ -309,6 +309,8 @@ describe('status text, new-project choices and commands', () => {
       previewPhotos: false,
       hasPrintPreview: true,
       showOverflow: true,
+      hasOutputProfile: false,
+      showSafeAreas: true,
       viewMode: 'design',
       ...o
     })

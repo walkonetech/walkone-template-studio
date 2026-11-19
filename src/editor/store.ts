@@ -81,6 +81,7 @@ import {
   type DistributeAxis
 } from './arrange'
 import { hasDerivedCopies } from '@canvas/rendering/composition'
+import { findOutputProfile, type OutputProfile } from '@output'
 import { fitTextHeight, replaceFontFamily } from './typographyMutations'
 import {
   PaletteInUseError,
@@ -137,6 +138,13 @@ export interface EditorState {
    * printable area. Editor presentation only: never project data, history or dirty state, and it never changes output.
    */
   showOverflow: boolean
+  /**
+   * The Output Profile used for safe areas and the safe-area preflight (ADR-053): a built-in profile id or null. An
+   * app preference, never part of the project, history or Modified state; kept when another project opens.
+   */
+  outputProfileId: string | null
+  /** View › Safe areas: draw the active profile's trim, keep-safe lines and cuts (editor-only, never printed). */
+  showSafeAreas: boolean
   /** Preview-photo assignment (editor/session state, ADR-038). */
   previewPhotos: PreviewPhotoState
   /** Sample pictures the user picked from disk this session (bytes live in the renderer only). */
@@ -266,6 +274,9 @@ export interface EditorActions {
   // ---- workspace mode (never in history, never dirty)
   setViewMode(mode: ViewMode): void
   setShowOverflow(show: boolean): void
+  /** Selects an Output Profile by id (null = none). An unknown id selects none. Never touches the project. */
+  setOutputProfile(id: string | null): void
+  setShowSafeAreas(show: boolean): void
   // ---- preview photos and crop: editor/session state, never in the project, history or dirty state
   shufflePhotos(): void
   resetSamples(): void
@@ -363,6 +374,8 @@ const initialState = (): EditorState => ({
   sizeMarks: [],
   photoDisplay: 'placeholder',
   showOverflow: true,
+  outputProfileId: null,
+  showSafeAreas: true,
   previewPhotos: initialPreviewPhotos(),
   userSamples: [],
   photoCrops: {},
@@ -408,6 +421,9 @@ export function selectViewTransform(s: EditorState): ViewTransform | null {
     : null
 }
 export const PREVIEW_PADDING = 56
+/** The selected Output Profile (null when none is selected). */
+export const selectOutputProfile = (s: EditorState): OutputProfile | null =>
+  findOutputProfile(s.outputProfileId)
 /** Selecting something else ends Reposition mode (the crop made so far is kept). */
 const LEAVE_CROP = (s: EditorState): Partial<EditorState> =>
   s.cropSession ? { cropSession: null, interaction: 'idle' } : {}
@@ -838,6 +854,8 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
         return get().commit((p, c) => distributeLayers(p, selectedIds, axis, c))
       },
       setShowOverflow: (showOverflow) => set({ showOverflow }),
+      setOutputProfile: (id) => set({ outputProfileId: findOutputProfile(id)?.id ?? null }),
+      setShowSafeAreas: (showSafeAreas) => set({ showSafeAreas }),
       shufflePhotos: () => set((s) => ({ previewPhotos: shufflePreviewPhotos(s.previewPhotos) })),
       resetSamples: () => set({ previewPhotos: resetPreviewPhotos() }),
       setSampleFor: (photoNumber, sampleId) =>
@@ -1240,6 +1258,8 @@ function initialStateKeepingUi(s: EditorState): EditorState {
     guidesVisible: s.guidesVisible,
     photoDisplay: s.photoDisplay,
     showOverflow: s.showOverflow,
+    outputProfileId: s.outputProfileId,
+    showSafeAreas: s.showSafeAreas,
     viewport: s.viewport,
     recovery: s.recovery
   }

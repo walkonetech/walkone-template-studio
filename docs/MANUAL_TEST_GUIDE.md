@@ -13,7 +13,7 @@ All commands run from `/Users/walkone/Projects/Apps/walkone-template-studio`.
 | Dev mode (hot reload) | `npm run dev` |
 | Throwaway profile (clean recents/recovery; real data untouched) | `npm run build && npx electron out/main/index.js --user-data-dir=$HOME/wts-test` |
 | Reset the throwaway profile | `rm -rf $HOME/wts-test` |
-| Quality gate | `npm run typecheck && npm run lint && npm run format:check && npm run build && npm test` (expect **911** tests; 899 + 2 skipped without the private fixtures) |
+| Quality gate | `npm run typecheck && npm run lint && npm run format:check && npm run build && npm test` (expect **963** tests; 951 + 2 skipped files without the private fixtures) |
 
 Tips
 - Use the throwaway profile for destructive tests (crash recovery, quit prompts) so your real autosave sessions stay safe.
@@ -112,6 +112,18 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] Pick a ZIP that is not a template: a clear "could not be imported" message with Choose another….
 - [ ] Export the imported project for dslrBooth; **on the booth PC (6C)** import that ZIP into dslrBooth and compare.
 
+### G5. Output profile and safe areas (ADR-053)
+- [ ] New 2×6 strip: the status bar shows **Output: none**; the Safe areas button is greyed out; nothing extra is drawn.
+- [ ] Click the chip (or View › Output profile…), pick **DNP DS-RX1 · 6×4 PC · 2-inch cut · borderless**, Done. The title still shows the same Saved/Modified state as before (choosing a profile never changes the project).
+- [ ] The dialog shows each value with a badge: driver/driver page/cut **Observed on test laptop**, trim **Inferred**, 3 mm **Provisional**, cut trim and finishing **Unknown**, Verified "Not yet verified".
+- [ ] The strip shows an amber hatched edge band, a teal dashed line 3 mm inside every edge and a legend under the artboard. Toggle View › Safe areas (or the dashed-square button): it hides and shows.
+- [ ] Put a text near the left edge and a photo slot nearly touching the right edge: both get red dashed outlines and the chip says "2 safe-area warnings". A full-bleed background shows no outline.
+- [ ] Print Preview: two copies, the dashed 2-inch cut in the middle, a teal line 3 mm each side of it and from the outer edges; both copies show the same red outlines.
+- [ ] Export: an "Output profile" row names the profile; the Checks list has the warnings tagged **Output**; Export is still allowed. The exported files look exactly as before (no guides).
+- [ ] 2×6 at 300 DPI shows the same physical margin; a 6×4 landscape project says "does not match this project" and draws nothing.
+- [ ] Quit and reopen: the profile is still selected. Choose **No profile**: everything printer-specific disappears.
+- [ ] (Optional, with the printer) print the strip and compare where the trim and cut fall with the overlay.
+
 ### H. UI, accessibility, polish
 - [ ] Tooltips on icon-only controls, with shortcut hints.
 - [ ] Everything reachable by keyboard; visible focus ring; labels on fields.
@@ -124,7 +136,7 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] No client data appears in `git status`.
 
 ### J. Not built yet (expect absent)
-Design Guide and the Canva-style redesign, safe-area / 2-inch-cut check, event themes, bundled font library, company profile, asset library, client approval, Light/Dark appearance, installer, Windows installer/packaging, font embedding, image palette extraction, badge builder, templates/recipes.
+Design Guide and the Canva-style redesign, one-click fixes and custom output profiles (the safe-area check itself exists, G5), event themes, bundled font library, company profile, asset library, client approval, Light/Dark appearance, installer, Windows installer/packaging, font embedding, image palette extraction, badge builder, templates/recipes.
 
 ## 3. Automated suites (optional cross-check)
 
