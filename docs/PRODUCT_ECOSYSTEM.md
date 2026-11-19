@@ -104,6 +104,7 @@ The long-term runtime contract should allow: Template Studio source project → 
 Template Studio will offer two ways to create, producing the same `TemplateProject`:
 - **Design Guide** for first-time or occasional users, heavily guided, steps conditional on earlier answers: Print Size → Event Type → Style → Colors → Photos → Logo → Wording → Company Branding → Layout → Review (detail: [PRODUCT_SPEC.md](PRODUCT_SPEC.md) §0, [UX_SPEC.md](UX_SPEC.md) §0).
 - **Full Editor**: the existing Canva-style professional canvas editor for power users.
+- **UX architecture (Phase 7A, ADR-054):** [PHASE_7A_UX_ARCHITECTURE.md](PHASE_7A_UX_ARCHITECTURE.md). Template Studio and WalkOne Booth share tokens, `ui/` primitives, evidence tiers and accessibility rules, but not their information architecture (its §39): Template Studio is a creative workspace, WalkOne Booth an operations app.
 
 ## 11. Company Profile (future, shared)
 One company profile used by standalone Template Studio and WalkOne Booth. Possible fields: company name, logo(s) (light/dark), brand colours, preferred fonts, contact information (website, booking number), default SMS/email branding, default export settings, default output profiles, default event/template branding assets. **Company-level configuration stays separate from template source documents; these fields are not added to `TemplateProject`.** A template may *reference* company elements (e.g. "company logo"), resolved from the profile.

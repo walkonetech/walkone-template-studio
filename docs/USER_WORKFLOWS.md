@@ -130,6 +130,7 @@ DSLR Booth packages (workflow K) are Phase 6B; workflow L (layer package) was bu
 **Updating a template already in dslrBooth (observed in 6C):** dslrBooth never replaces a template on Import; importing a newer export always adds a copy ("… Copy1") with its own Id. Select the new copy for the event, then delete the old one in dslrBooth if it is no longer needed.
 
 ## X. Design Guide (planned; owner direction, mockups first)
+Architecture defined in Phase 7A ([PHASE_7A_UX_ARCHITECTURE.md](PHASE_7A_UX_ARCHITECTURE.md) §38, Appendix B flows A–E; ADR-054): the project is created at the format step and each step is one undoable change to the same project; build is Phase 7C.
 Print size → event type → style → colours/background → photos (count, orientation, size) → logo/monogram → words → company branding → layout → done (export, client proof, open in the editor). Conditional steps per event type; automatic safe-area / 2-inch-cut check; "Save as event theme" for the next similar event. Clients never use it; the main client approves the proof.
 
 ## Y. Edit an event's template inside WalkOne Booth (future, ADR-049; not approved to build)
