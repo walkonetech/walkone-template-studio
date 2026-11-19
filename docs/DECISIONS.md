@@ -295,6 +295,8 @@ The template defines how many photos a session takes: the booth stops at the num
 7. **Never exported:** exported templates and PNGs stay printer-neutral; the overlay is editor-only.
 **Not decided here:** custom/duplicated profiles and a profile editor, printer discovery, driver-ticket capture, certification history, a per-project profile reference (schema), output-profile storage shared with WalkOne Booth (ADR-012 / PRODUCT_ECOSYSTEM §12 open question), and fixes offered from the warnings ("move inside the safe area").
 
+**Update (2026-11-19, owner, B1 V8):** the owner's test print on the research printer looked right (both strips matched, clean automatic cut, no white gutter). Recorded in the DS-RX1 profile as *observed* evidence; the profile's status is now "Observed on test laptop" and the owner rules it ready for production use. Trim values stay *inferred*, keep-safe 3 mm stays *provisional*, nothing is marked measured or production-verified. A full printer-profile scope (a list of booth printers, or detecting the printer) is future work.
+
 ## ADR-054 — Template Studio uses a dual-entry UX: Design Guide and Full Editor over one shared project/editor model — Accepted (owner brief, Phase 7A, 2026-11-19)
 **Context:** the owner chose "two ways in, one project" in GUI round 1 (2026-11-16): a heavily guided **Design Guide** for first-time and occasional users and a Canva-style **Full Editor** for experienced users, switchable at any time (PRODUCT_SPEC §0, ROADMAP "GUI mockup rounds"). ADR-049 requires one editor implementation shared with the future WalkOne Booth. Phase 7A turned this into a UX architecture ([PHASE_7A_UX_ARCHITECTURE.md](PHASE_7A_UX_ARCHITECTURE.md)).
 **Decision:**

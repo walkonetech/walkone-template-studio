@@ -4,8 +4,8 @@
   "id": "dnp-ds-rx1-6x4-2inch-cut",
   "name": "DNP DS-RX1 · 6×4 PC · 2-inch cut · borderless",
   "shortName": "DNP DS-RX1",
-  "description": "Two 2×6 strips printed side by side on one 6×4 sheet and cut apart by the printer's 2-inch cut, borderless. First profile, from the Phase 6C observations on the Windows research laptop.",
-  "confidence": "provisional",
+  "description": "Two 2×6 strips printed side by side on one 6×4 sheet and cut apart by the printer's 2-inch cut, borderless. From the Phase 6C observations on the Windows research laptop and the owner's test print on the same printer (2026-11-19).",
+  "confidence": "observed-test-laptop",
   "device": {
     "manufacturer": "DNP",
     "model": "DS-RX1",
@@ -17,15 +17,28 @@
   },
   "media": {
     "name": "6×4 (PC)",
-    "nominalMm": { "width": 152.4, "height": 101.6 },
+    "nominalMm": {
+      "width": 152.4,
+      "height": 101.6
+    },
     "driverPageMm": {
-      "value": { "width": 156.1, "height": 105.0 },
+      "value": {
+        "width": 156.1,
+        "height": 105.0
+      },
       "evidence": "observed-test-laptop",
       "note": "Page size of the one borderless page dslrBooth sent for the _2x sheet; larger than the paper, so the excess is expected to be lost at the edges."
     }
   },
-  "sheet": { "widthIn": 4, "heightIn": 6 },
-  "composition": { "mode": "copies", "columns": 2, "rows": 1 },
+  "sheet": {
+    "widthIn": 4,
+    "heightIn": 6
+  },
+  "composition": {
+    "mode": "copies",
+    "columns": 2,
+    "rows": 1
+  },
   "borderless": {
     "value": true,
     "evidence": "observed-test-laptop",
@@ -45,71 +58,71 @@
     "top": {
       "value": 1.8,
       "evidence": "inferred",
-      "note": "Predicted from the driver page size against the paper; awaiting the owner's measurement-print readout."
+      "note": "Estimated from the driver page size against the paper; not measured. The owner's test print (2026-11-19) showed no visible trim problem."
     },
     "bottom": {
       "value": 1.8,
       "evidence": "inferred",
-      "note": "Predicted from the driver page size against the paper; awaiting the owner's measurement-print readout."
+      "note": "Estimated from the driver page size against the paper; not measured. The owner's test print (2026-11-19) showed no visible trim problem."
     },
     "left": {
       "value": 1.6,
       "evidence": "inferred",
-      "note": "Outer long edge. Predicted from the driver page size against the paper; awaiting the owner's measurement-print readout."
+      "note": "Outer long edge. Estimated from the driver page size against the paper; not measured. The owner's test print (2026-11-19) showed no visible trim problem."
     },
     "right": {
       "value": 1.6,
       "evidence": "inferred",
-      "note": "Outer long edge. Predicted from the driver page size against the paper; awaiting the owner's measurement-print readout."
+      "note": "Outer long edge. Estimated from the driver page size against the paper; not measured. The owner's test print (2026-11-19) showed no visible trim problem."
     },
     "cut": {
       "value": null,
       "evidence": "unknown",
-      "note": "Loss or drift at the cut is awaiting the measurement-print readout."
+      "note": "Loss at the cut is not measured. The owner's test print (2026-11-19) showed no visible cut or spacing discrepancy."
     }
   },
   "safeMarginMm": {
     "edge": {
       "value": 3,
       "evidence": "provisional",
-      "note": "Interim guidance from Phase 6C: keep critical content at least 3 mm from the strip edges until the measurement print is read."
+      "note": "Keep critical content at least 3 mm from the strip edges. Kept as a conservative margin after the owner's test print (2026-11-19) showed no visible problem; trim is not measured exactly."
     },
     "cut": {
       "value": 3,
       "evidence": "provisional",
-      "note": "Interim guidance from Phase 6C: keep critical content at least 3 mm from the centre cut until the measurement print is read."
+      "note": "Keep critical content at least 3 mm from the centre cut. Kept as a conservative margin after the owner's test print (2026-11-19) showed no visible problem; trim is not measured exactly."
     }
   },
   "finishing": {
     "autoCut": {
-      "value": null,
-      "evidence": "unknown",
-      "note": "Whether the printer cut the sheet as configured: awaiting the measurement-print readout."
+      "value": "Yes: the printer cut each sheet into two strips",
+      "evidence": "observed-test-laptop",
+      "note": "Owner's test print on the research printer (2026-11-19), visual check."
     },
     "cutOnSeam": {
-      "value": null,
-      "evidence": "unknown",
-      "note": "Whether the cut lands on the seam between the two strips: awaiting the measurement-print readout."
+      "value": "Yes: no visible cut or spacing discrepancy; both strips match",
+      "evidence": "observed-test-laptop",
+      "note": "Owner's test print on the research printer (2026-11-19), visual check; not measured."
     },
     "gutter": {
-      "value": null,
-      "evidence": "unknown",
-      "note": "Whether a gap or sliver appears at the cut: awaiting the measurement-print readout."
+      "value": "None visible: no white gap at the cut",
+      "evidence": "observed-test-laptop",
+      "note": "Owner's test print on the research printer (2026-11-19), visual check."
     }
   },
   "setup": [
     "In dslrBooth, use the native 2×6 template from Template Studio's export (\"Print 2 per page\" on).",
     "In the DNP DS-RX1 printer settings, choose the 2-inch cut and turn the print margin off (borderless).",
     "Load 6×4 (PC) media.",
-    "Keep critical content at least 3 mm from the strip edges and the centre cut until the measurement print has been read."
+    "Keep critical content at least 3 mm from the strip edges and the centre cut."
   ],
-  "observedEnvironment": "Windows 11 research laptop with dslrBooth 7.48 and the DNP DS-RX1 (Phase 6C Stage 1); not the production booth PC.",
-  "observedDate": "2026-11-17",
+  "observedEnvironment": "Windows 11 research laptop with dslrBooth 7.48 and the DNP DS-RX1 (Phase 6C Stage 1 and the owner's test print); not the production booth PC.",
+  "observedDate": "2026-11-19",
   "verifiedEnvironment": null,
   "verifiedDate": null,
   "notes": [
     "Template Studio shows this sheet upright: 4 in wide × 6 in tall with the two strips side by side. The driver page is the same sheet in landscape (156.1 × 105.0 mm).",
-    "Source: research/PHASE_6C_RESULTS.md (observed findings only). When the measurement-print readout arrives, update the trim, cut and finishing values and the confidence in this file; no code change is needed.",
+    "Approved by the owner for production use (2026-11-19) after a test print looked right: both strips matched, the cut was clean and there was no white gap. Trim distances are estimates, not measurements; it has not been verified on the production booth PC.",
     "The printer's cut and margins are configured in the printer driver, never in the template."
   ]
 }

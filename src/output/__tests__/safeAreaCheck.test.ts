@@ -94,7 +94,7 @@ describe('no profile / provisional profile', () => {
     expect(codes(r)).toEqual(['output-profile-provisional', 'safe-area-clear'])
     expect(r.items.every((i) => i.severity === 'info')).toBe(true)
     expect(r.items[0]?.message).toMatch(
-      /provisional.*DNP DS-RX1.*research laptop.*not been measured/
+      /observed on test laptop.*DNP DS-RX1.*research laptop.*not been measured/
     )
     expect(r.items[1]?.message).toMatch(/All critical content \(2 items/)
   })

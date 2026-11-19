@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-19T00:50:10.678Z",
+  "when": "2026-11-19T11:48:02.194Z",
   "pass": 23,
   "total": 23,
   "results": [
@@ -48,10 +48,13 @@
       ]
     },
     {
-      "name": "2b details: status Provisional; driver 1.1.1.0 observed on test laptop; driver page 156.1 × 105 mm; cut 2 in",
+      "name": "2b details: status Observed on test laptop; driver 1.1.1.0 observed on test laptop; driver page 156.1 × 105 mm; cut 2 in",
       "ok": true,
       "detail": [
-        ["Status", "Provisional Interim guidance until a measurement replaces it."],
+        [
+          "Status",
+          "Observed on test laptop Seen at runtime on the Windows research laptop, not the production booth PC."
+        ],
         ["Printer", "DNP DS-RX1 "],
         [
           "Driver",
@@ -73,31 +76,34 @@
         ],
         [
           "Trim, top edge",
-          "1.8 mm InferredPredicted from the driver page size against the paper; awaiting the owner's measurement-print readout."
+          "1.8 mm InferredEstimated from the driver page size against the paper; not measured. The owner's test print (2026-11-19) showed no visible trim problem."
         ]
       ]
     },
     {
-      "name": "2c trim is Inferred (1.8 / 1.6 mm), the cut trim and finishing are Unknown, keep-safe 3 mm is Provisional, not verified",
+      "name": "2c trim is Inferred (1.8 / 1.6 mm), the cut trim is Unknown, finishing is Observed (test print), keep-safe 3 mm is Provisional, not verified",
       "ok": true,
       "detail": [
         [
           "Trim, top edge",
-          "1.8 mm InferredPredicted from the driver page size against the paper; awaiting the owner's measurement-print readout."
+          "1.8 mm InferredEstimated from the driver page size against the paper; not measured. The owner's test print (2026-11-19) showed no visible trim problem."
         ],
         ["Trim, bottom edge", "1.8 mm Inferred"],
         ["Trim, left edge", "1.6 mm Inferred"],
         ["Trim, right edge", "1.6 mm Inferred"],
         [
           "Trim at the cut",
-          "Unknown UnknownLoss or drift at the cut is awaiting the measurement-print readout."
+          "Unknown UnknownLoss at the cut is not measured. The owner's test print (2026-11-19) showed no visible cut or spacing discrepancy."
         ],
         [
           "Keep-safe, edges",
-          "3 mm ProvisionalInterim guidance from Phase 6C: keep critical content at least 3 mm from the strip edges until the measurement print is read."
+          "3 mm ProvisionalKeep critical content at least 3 mm from the strip edges. Kept as a conservative margin after the owner's test print (2026-11-19) showed no visible problem; trim is not measured exactly."
         ],
         ["Keep-safe, cut", "3 mm Provisional"],
-        ["Cut on seam", "Awaiting readout Unknown"],
+        [
+          "Cut on seam",
+          "Yes: no visible cut or spacing discrepancy; both strips match Observed on test laptop"
+        ],
         ["Verified", "Not yet verified on a production booth "]
       ]
     },
@@ -111,9 +117,9 @@
       }
     },
     {
-      "name": "2e status bar shows \"Output: DNP DS-RX1 · 2×6 · Provisional\"",
+      "name": "2e status bar shows \"Output: DNP DS-RX1 · 2×6 · Observed on test laptop\"",
       "ok": true,
-      "detail": "Output: DNP DS-RX1 · 2×6 · Provisional"
+      "detail": "Output: DNP DS-RX1 · 2×6 · Observed on test laptop"
     },
     {
       "name": "3 Design view: one keep-safe rectangle inset 3 mm (70.87 px at 600 DPI) on every side of the 1200×3600 strip, plus trim bands",
@@ -131,13 +137,13 @@
         ],
         "flags": [],
         "trim": 1,
-        "legend": "Safe areas · DNP DS-RX1 · Provisional · keep-safe 3 mm · trim ~1.6–1.8 mm (inferred)"
+        "legend": "Safe areas · DNP DS-RX1 · Observed on test laptop · keep-safe 3 mm · trim ~1.6–1.8 mm (inferred)"
       }
     },
     {
       "name": "3b legend under the artboard names the profile and its evidence",
       "ok": true,
-      "detail": "Safe areas · DNP DS-RX1 · Provisional · keep-safe 3 mm · trim ~1.6–1.8 mm (inferred)"
+      "detail": "Safe areas · DNP DS-RX1 · Observed on test laptop · keep-safe 3 mm · trim ~1.6–1.8 mm (inferred)"
     },
     {
       "name": "4 the status-bar Safe areas button hides the overlay (stage pixels change; project untouched)",
@@ -182,9 +188,9 @@
             "h": 700
           }
         ],
-        "chipText": "Output: DNP DS-RX1 · 2×6 · Provisional · 2 safe-area warnings",
-        "textId": "14d7e351-ba7a-49fd-8cdb-5dbcb483b733",
-        "edgePhoto": "af867c35-80ca-40cb-bf50-e9c4755318a2"
+        "chipText": "Output: DNP DS-RX1 · 2×6 · Observed on test laptop · 2 safe-area warnings",
+        "textId": "f96e5288-6a90-4726-b690-68b59480541e",
+        "edgePhoto": "32bef8d9-5900-4db0-af62-5d704b230bd1"
       }
     },
     {
@@ -243,10 +249,10 @@
       "ok": true
     },
     {
-      "name": "7 Export dialog shows the profile (\"DNP DS-RX1 · 2×6 · Provisional\", 2 items outside) and its checks tagged Output",
+      "name": "7 Export dialog shows the profile (\"DNP DS-RX1 · 2×6 · Observed on test laptop\", 2 items outside) and its checks tagged Output",
       "ok": true,
       "detail": {
-        "row": "Output profileDNP DS-RX1 · 2×6 · Provisional · 2 critical items are outside the safe area.Used for checks only; printer settings are never written into the exported files.Change…",
+        "row": "Output profileDNP DS-RX1 · 2×6 · Observed on test laptop · 2 critical items are outside the safe area.Used for checks only; printer settings are never written into the exported files.Change…",
         "codesOut": ["safe-area-trim", "safe-area-margin", "output-profile-provisional"]
       }
     },
@@ -283,14 +289,14 @@
       "ok": true,
       "detail": {
         "groups": 0,
-        "chip": "Output: DNP DS-RX1 · 2×6 · Provisional · does not match this project"
+        "chip": "Output: DNP DS-RX1 · 2×6 · Observed on test laptop · does not match this project"
       }
     },
     {
       "name": "10 after a restart the DS-RX1 profile is still selected and Safe areas are on",
       "ok": true,
       "detail": {
-        "chip": "Output: DNP DS-RX1 · 2×6 · Provisional",
+        "chip": "Output: DNP DS-RX1 · 2×6 · Observed on test laptop",
         "groups": 1
       }
     },

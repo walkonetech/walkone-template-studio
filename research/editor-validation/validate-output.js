@@ -134,22 +134,22 @@ const stagePixelsDiffer = async (c, fn) => {
     )
     const row = (k) => (facts ? (facts.rows.find((r) => r[0] === k) || [])[1] || '' : '')
     check(
-      '2b details: status Provisional; driver 1.1.1.0 observed on test laptop; driver page 156.1 × 105 mm; cut 2 in',
+      '2b details: status Observed on test laptop; driver 1.1.1.0 observed on test laptop; driver page 156.1 × 105 mm; cut 2 in',
       facts &&
-        /^Provisional/.test(row('Status')) &&
+        /^Observed on test laptop/.test(row('Status')) &&
         /1\.1\.1\.0 Observed on test laptop/.test(row('Driver')) &&
         /156\.1 × 105 mm/.test(row('Driver page')) &&
         /2-inch centre cut: 2 in from the left edge/.test(row('Cut')),
       facts && facts.rows.slice(0, 9)
     )
     check(
-      '2c trim is Inferred (1.8 / 1.6 mm), the cut trim and finishing are Unknown, keep-safe 3 mm is Provisional, not verified',
+      '2c trim is Inferred (1.8 / 1.6 mm), the cut trim is Unknown, finishing is Observed (test print), keep-safe 3 mm is Provisional, not verified',
       /1\.8 mm Inferred/.test(row('Trim, top edge')) &&
         /1\.6 mm Inferred/.test(row('Trim, left edge')) &&
         /Unknown Unknown/.test(row('Trim at the cut')) &&
         /3 mm Provisional/.test(row('Keep-safe, edges')) &&
         /3 mm Provisional/.test(row('Keep-safe, cut')) &&
-        /Awaiting readout Unknown/.test(row('Cut on seam')) &&
+        /Observed on test laptop/.test(row('Cut on seam')) &&
         /Not yet verified/.test(row('Verified')) &&
         !facts.badges.includes('verified-production') &&
         !facts.badges.includes('owner-measured'),
@@ -171,8 +171,8 @@ const stagePixelsDiffer = async (c, fn) => {
       { profile: after.profile, dirty: after.dirty, past: after.past }
     )
     check(
-      '2e status bar shows "Output: DNP DS-RX1 · 2×6 · Provisional"',
-      (await chip(c)) === 'Output: DNP DS-RX1 · 2×6 · Provisional',
+      '2e status bar shows "Output: DNP DS-RX1 · 2×6 · Observed on test laptop"',
+      (await chip(c)) === 'Output: DNP DS-RX1 · 2×6 · Observed on test laptop',
       await chip(c)
     )
 
@@ -194,7 +194,7 @@ const stagePixelsDiffer = async (c, fn) => {
     check(
       '3b legend under the artboard names the profile and its evidence',
       o.legend ===
-        'Safe areas · DNP DS-RX1 · Provisional · keep-safe 3 mm · trim ~1.6–1.8 mm (inferred)',
+        'Safe areas · DNP DS-RX1 · Observed on test laptop · keep-safe 3 mm · trim ~1.6–1.8 mm (inferred)',
       o.legend
     )
     const designHash = await renderHash(c, false)
@@ -323,8 +323,8 @@ const stagePixelsDiffer = async (c, fn) => {
       (i) => i.code === 'safe-area-trim' && /Sarah & John/.test(i.text)
     )
     check(
-      '7 Export dialog shows the profile ("DNP DS-RX1 · 2×6 · Provisional", 2 items outside) and its checks tagged Output',
-      /DNP DS-RX1 · 2×6 · Provisional/.test(exp.row) &&
+      '7 Export dialog shows the profile ("DNP DS-RX1 · 2×6 · Observed on test laptop", 2 items outside) and its checks tagged Output',
+      /DNP DS-RX1 · 2×6 · Observed on test laptop/.test(exp.row) &&
         /2 critical items are outside the safe area/.test(exp.row) &&
         codesOut.includes('output-profile-provisional') &&
         codesOut.filter((k) => k.startsWith('safe-area-')).length === 2,
@@ -387,7 +387,7 @@ const stagePixelsDiffer = async (c, fn) => {
     const s300 = MM(3, 300)
     check(
       '8 a new 2×6 @300 project keeps the profile; keep-safe is 35.43 px (the same 3 mm) on the 600×1800 strip',
-      (await chip(c)) === 'Output: DNP DS-RX1 · 2×6 · Provisional' &&
+      (await chip(c)) === 'Output: DNP DS-RX1 · 2×6 · Observed on test laptop' &&
         o.lines.length === 1 &&
         close(o.lines[0].x, s300) &&
         close(o.lines[0].w, 600 - 2 * s300) &&
@@ -427,7 +427,7 @@ const stagePixelsDiffer = async (c, fn) => {
     o = await overlay(c)
     check(
       '10 after a restart the DS-RX1 profile is still selected and Safe areas are on',
-      (await chip(c)) === 'Output: DNP DS-RX1 · 2×6 · Provisional' && o.groups === 1,
+      (await chip(c)) === 'Output: DNP DS-RX1 · 2×6 · Observed on test laptop' && o.groups === 1,
       { chip: await chip(c), groups: o.groups }
     )
 

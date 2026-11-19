@@ -113,9 +113,10 @@ describe('DNP DS-RX1 profile: only observed Phase 6C values, estimates marked as
     expect(p.cuts[0]).toMatchObject({ axis: 'x', positionIn: 2, evidence: 'observed-test-laptop' })
   })
 
-  it('never presents trim or the safe margin as verified; unknown readout items stay unknown', () => {
+  it('never presents trim or the safe margin as verified; the test print is recorded as observed', () => {
     const p = dsrx1()
-    expect(p.confidence).toBe('provisional')
+    expect(p.confidence).toBe('observed-test-laptop')
+    expect(isVerifiedEvidence(p.confidence)).toBe(false)
     for (const edge of ['top', 'bottom', 'left', 'right'] as const) {
       expect(p.trimMm[edge].evidence).toBe('inferred')
       expect(isVerifiedEvidence(p.trimMm[edge].evidence)).toBe(false)
@@ -124,8 +125,10 @@ describe('DNP DS-RX1 profile: only observed Phase 6C values, estimates marked as
     expect(p.trimMm.cut).toMatchObject({ value: null, evidence: 'unknown' })
     expect(p.safeMarginMm.edge).toMatchObject({ value: 3, evidence: 'provisional' })
     expect(p.safeMarginMm.cut).toMatchObject({ value: 3, evidence: 'provisional' })
-    for (const k of ['autoCut', 'cutOnSeam', 'gutter'] as const)
-      expect(p.finishing[k]).toMatchObject({ value: null, evidence: 'unknown' })
+    for (const k of ['autoCut', 'cutOnSeam', 'gutter'] as const) {
+      expect(p.finishing[k].evidence).toBe('observed-test-laptop')
+      expect(p.finishing[k].value).not.toBeNull()
+    }
     expect(p.verifiedEnvironment).toBeNull()
     expect(p.verifiedDate).toBeNull()
     expect(p.observedEnvironment).toMatch(/research laptop.*not the production booth PC/)
@@ -150,8 +153,8 @@ describe('profile evidence and status display', () => {
     expect(EVIDENCE_LABELS['observed-test-laptop']).toBe('Observed on test laptop')
   })
 
-  it('shows a compact status: "DNP DS-RX1 · 2×6 · Provisional"', () => {
-    expect(profileStatusLabel(dsrx1())).toBe('DNP DS-RX1 · 2×6 · Provisional')
+  it('shows a compact status: "DNP DS-RX1 · 2×6 · Observed on test laptop"', () => {
+    expect(profileStatusLabel(dsrx1())).toBe('DNP DS-RX1 · 2×6 · Observed on test laptop')
     expect(profileDesignSize(dsrx1())).toBe('2×6')
   })
 })

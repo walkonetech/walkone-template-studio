@@ -115,7 +115,7 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 ### G5. Output profile and safe areas (ADR-053)
 - [ ] New 2×6 strip: the status bar shows **Output: none**; the Safe areas button is greyed out; nothing extra is drawn.
 - [ ] Click the chip (or View › Output profile…), pick **DNP DS-RX1 · 6×4 PC · 2-inch cut · borderless**, Done. The title still shows the same Saved/Modified state as before (choosing a profile never changes the project).
-- [ ] The dialog shows each value with a badge: driver/driver page/cut **Observed on test laptop**, trim **Inferred**, 3 mm **Provisional**, cut trim and finishing **Unknown**, Verified "Not yet verified".
+- [ ] The dialog shows each value with a badge: driver/driver page/cut **Observed on test laptop**, trim **Inferred**, 3 mm **Provisional**, cut trim **Unknown**, finishing (auto-cut, cut on seam, gutter) **Observed on test laptop** (owner's test print, 2026-11-19), Verified "Not yet verified". Status: **Observed on test laptop**.
 - [ ] The strip shows an amber hatched edge band, a teal dashed line 3 mm inside every edge and a legend under the artboard. Toggle View › Safe areas (or the dashed-square button): it hides and shows.
 - [ ] Put a text near the left edge and a photo slot nearly touching the right edge: both get red dashed outlines and the chip says "2 safe-area warnings". A full-bleed background shows no outline.
 - [ ] Print Preview: two copies, the dashed 2-inch cut in the middle, a teal line 3 mm each side of it and from the outer edges; both copies show the same red outlines.

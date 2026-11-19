@@ -94,7 +94,7 @@ export const OutputProfileSchema = z
     /** Compact name for the status bar, e.g. "DNP DS-RX1". */
     shortName: z.string().trim().min(1).max(40),
     description: Text,
-    /** The profile's overall status (the weakest evidence its safe area relies on). */
+    /** The profile's overall status: never stronger than what was actually observed, measured or verified. */
     confidence: EvidenceSchema,
     /** Printer, when the profile describes one. */
     device: z

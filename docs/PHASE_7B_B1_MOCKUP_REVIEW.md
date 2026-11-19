@@ -30,7 +30,7 @@ All sample content is fictional: Ava & Theo Wedding, Northfield Holiday Party an
 | V5 | Checks panel in the left drawer area |
 | V6 | Muted amber trim hatch |
 | V7 | The floating drawer stays open while adding several things. It closes on a canvas click or another rail item. Pinning comes later |
-| V8 | Record the DNP visual print pass. The owner rules the profile **ready for production use**; trim values stay estimates and no exact measurements are claimed. A full printer-profile scope (a list of booth printers, or detecting the printer) is future work. Done as a separate commit after round 2 |
+| V8 | Record the DNP visual print pass. The owner rules the profile **ready for production use**; trim values stay estimates and no exact measurements are claimed. A full printer-profile scope (a list of booth printers, or detecting the printer) is future work. **Done** in a separate commit: profile status "Observed on test laptop"; finishing (auto-cut, cut on seam, no gutter) observed; trim inferred; keep-safe 3 mm provisional; not production-verified |
 | V9 | Keep the Learn row, visually quiet (small grey text) |
 | V10 | Drawer 264 px by default, resizable 240–360 px |
 
