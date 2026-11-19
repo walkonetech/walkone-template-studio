@@ -451,16 +451,16 @@
         --green-700: #1c7f4e;
         --blue-400: #7cbcff;
         --blue-700: #1d68bd;
-        --orchid-400: #e58ae0;
-        --orchid-700: #a8329a;
-        --lime-400: #b5dc6a;
-        --lime-700: #557d0f;
-        --violet-400: #b69bff;
-        --violet-700: #6a46d4;
+        --orchid-400: #cf9fcc;
+        --orchid-700: #94588e;
+        --lime-400: #a9c286;
+        --lime-700: #5a7530;
+        --violet-400: #a99bd6;
+        --violet-700: #66589f;
         --slate-400: #97a3ba;
         --slate-700: #56627a;
         --ov-teal: #2fc4bc;
-        --ov-orange: #ff9447;
+        --ov-orange: #dca24e;
         --ov-red: #ff4d4d;
         --ov-white: #f4f4f4;
         --ov-pink: #ff5f8f;
@@ -999,7 +999,7 @@
         place-items: center;
         flex: none;
         color: var(--k);
-        background: color-mix(in srgb, var(--k) 17%, transparent);
+        background: color-mix(in srgb, var(--k) 11%, transparent);
       }
       .kc .ic {
         width: 14px;
@@ -2614,6 +2614,433 @@
         display: grid;
         place-items: center;
       }
+
+      /* ===== Round 2 additions ===== */
+      /* Evidence tiers: icon + word + subtle tone; no strongly different colour per tier */
+      .tier.verified,
+      .tier.observed,
+      .tier.estimated,
+      .tier.reference {
+        background: var(--pressed);
+        color: var(--text-primary);
+        box-shadow: none;
+      }
+      .tier.unknown {
+        background: none;
+        color: var(--text-secondary);
+      }
+      .tier.verified .ic {
+        color: var(--status-success-fg);
+      }
+      .tier.observed .ic {
+        color: var(--status-info-fg);
+      }
+      .tier.estimated .ic {
+        color: var(--status-warning-fg);
+      }
+      .tier.reference .ic {
+        color: var(--text-muted);
+      }
+      .tier.ready {
+        background: var(--status-success-bg);
+        color: var(--status-success-fg);
+      }
+      /* Drawer resize grip (default 264 px, resizable 240-360) */
+      .drawer.rz {
+        position: relative;
+      }
+      .drawer.rz::after {
+        content: '';
+        position: absolute;
+        right: -3px;
+        top: 50%;
+        width: 5px;
+        height: 40px;
+        margin-top: -20px;
+        border-radius: 3px;
+        background: var(--border-strong);
+      }
+      /* Quick colours in the selection toolbar */
+      .qsw {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.18);
+        flex: none;
+      }
+      .t-dark .qsw {
+        box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.3);
+      }
+      .qsw.on {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      .qrow {
+        display: inline-flex;
+        gap: 7px;
+        align-items: center;
+        padding: 0 8px;
+      }
+      /* Picture cards (Export) */
+      .pcards {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .pcard {
+        border-radius: 10px;
+        box-shadow: inset 0 0 0 1px var(--border);
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        position: relative;
+      }
+      .pcard.on {
+        box-shadow: inset 0 0 0 2px var(--accent);
+        background: var(--accent-subtle);
+      }
+      .pcard .pic {
+        height: 150px;
+        border-radius: 7px;
+        background: var(--surface-canvas);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        position: relative;
+        overflow: hidden;
+      }
+      .pcard .tt {
+        font-weight: 600;
+        font-size: 15px;
+      }
+      .pcard .dd {
+        font-size: 13px;
+        color: var(--text-secondary);
+        line-height: 1.4;
+      }
+      .pcard .ck2 {
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: var(--accent);
+        color: var(--on-accent);
+      }
+      .pcard .ck2.off {
+        background: var(--surface-raised);
+        box-shadow: inset 0 0 0 1.5px var(--border-strong);
+      }
+      .readyrow {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+      }
+      .readyrow .big {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        flex: none;
+      }
+      .readyrow .big.ok {
+        background: var(--status-success-bg);
+        color: var(--status-success-fg);
+      }
+      .readyrow .big.warn {
+        background: var(--status-warning-bg);
+        color: var(--status-warning-fg);
+      }
+      /* Confidence meter (Printer & cutting) */
+      .meter {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 4px;
+      }
+      .meter span {
+        height: 8px;
+        border-radius: 4px;
+        background: var(--border);
+      }
+      .meter span.on {
+        background: var(--status-success-fg);
+      }
+      .meterl {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 4px;
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+      .meterl b {
+        color: var(--text-primary);
+      }
+      .steptile {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: 10px 12px;
+        border-radius: 8px;
+        box-shadow: inset 0 0 0 1px var(--border);
+      }
+      .steptile .pi {
+        width: 46px;
+        height: 46px;
+        border-radius: 8px;
+        background: var(--surface-canvas);
+        display: grid;
+        place-items: center;
+        flex: none;
+        color: var(--text-secondary);
+        position: relative;
+      }
+      .steptile .pi b {
+        position: absolute;
+        left: -6px;
+        top: -6px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--accent);
+        color: var(--on-accent);
+        font-size: 11px;
+        display: grid;
+        place-items: center;
+      }
+      /* First-run tips */
+      .tipcard {
+        width: 300px;
+        border-radius: 12px;
+        background: var(--surface-overlay);
+        box-shadow: var(--shadow-2);
+        padding: 14px 16px;
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+      }
+      .tipcard .n {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--accent-subtle);
+        color: var(--accent);
+        font-weight: 700;
+        display: grid;
+        place-items: center;
+        flex: none;
+      }
+      .ptip {
+        position: absolute;
+        z-index: 60;
+        width: 300px;
+        background: var(--surface-overlay);
+        box-shadow: var(--shadow-2);
+        border-radius: 10px;
+        padding: 12px;
+        display: flex;
+        gap: 12px;
+        font-size: 13px;
+        line-height: 1.4;
+      }
+
+      .tb-r {
+        flex: 1 0 auto;
+      }
+      .tb-l {
+        flex: 0 0 auto;
+      }
+      .tb-c {
+        flex: 1 1 auto;
+        min-width: 0;
+        justify-content: center;
+      }
+
+      /* ===== Comfortable size (default for everyone; Compact is a Settings option) ===== */
+      .app.d-comfy {
+        font-size: 14px;
+      }
+      .d-comfy .tb {
+        height: 52px;
+      }
+      .d-comfy .btn {
+        height: 34px;
+        padding: 0 14px;
+        font-size: 14px;
+      }
+      .d-comfy .tb .btn.pri,
+      .d-comfy .dlg-f .btn.pri {
+        height: 38px;
+        padding: 0 18px;
+      }
+      .d-comfy .btn.sm {
+        height: 30px;
+        padding: 0 10px;
+        font-size: 13px;
+      }
+      .d-comfy .btn.lg {
+        height: 44px;
+      }
+      .d-comfy .ib {
+        width: 34px;
+        height: 34px;
+      }
+      .d-comfy .ib.sm {
+        width: 28px;
+        height: 28px;
+      }
+      .d-comfy .ic {
+        width: 18px;
+        height: 18px;
+      }
+      .d-comfy .ic.s14 {
+        width: 16px;
+        height: 16px;
+      }
+      .d-comfy .kc .ic,
+      .d-comfy .tier .ic {
+        width: 15px;
+        height: 15px;
+      }
+      .d-comfy .menu {
+        height: 34px;
+        padding: 0 10px;
+        font-size: 14px;
+      }
+      .d-comfy .doc {
+        font-size: 15px;
+      }
+      .d-comfy .rail {
+        width: 80px;
+      }
+      .d-comfy .ri {
+        width: 68px;
+        height: 64px;
+        font-size: 12px;
+      }
+      .d-comfy .ri .ic {
+        width: 24px;
+        height: 24px;
+      }
+      .d-comfy .vb {
+        height: 48px;
+      }
+      .d-comfy .pill {
+        height: 32px;
+        padding: 0 11px;
+        font-size: 13px;
+      }
+      .d-comfy .seg > span {
+        height: 30px;
+        padding: 0 12px;
+        font-size: 13px;
+      }
+      .d-comfy .in {
+        height: 34px;
+        font-size: 14px;
+      }
+      .d-comfy .in.ta {
+        height: 60px;
+      }
+      .d-comfy .fr {
+        grid-template-columns: 78px minmax(0, 1fr);
+      }
+      .d-comfy .fr > .l {
+        font-size: 13px;
+      }
+      .d-comfy .ess {
+        gap: 10px;
+        padding: 12px 14px 14px;
+      }
+      .d-comfy .sh {
+        height: 40px;
+        font-size: 13.5px;
+      }
+      .d-comfy .sh .sum {
+        font-size: 12.5px;
+      }
+      .d-comfy .lr {
+        height: 36px;
+        font-size: 14px;
+      }
+      .d-comfy .kc {
+        width: 26px;
+        height: 26px;
+      }
+      .d-comfy .kc.sm {
+        width: 24px;
+        height: 24px;
+      }
+      .d-comfy .ph {
+        height: 40px;
+      }
+      .d-comfy .tabs {
+        height: 48px;
+      }
+      .d-comfy .tab {
+        font-size: 14px;
+      }
+      .d-comfy .sb {
+        height: 30px;
+        font-size: 12.5px;
+      }
+      .d-comfy .chip {
+        height: 26px;
+      }
+      .d-comfy .seltb {
+        height: 48px;
+      }
+      .d-comfy .seltb .b {
+        height: 38px;
+        padding: 0 10px;
+        font-size: 14px;
+      }
+      .d-comfy .dh {
+        height: 52px;
+        font-size: 15px;
+      }
+      .d-comfy .bigadd {
+        min-height: 54px;
+      }
+      .d-comfy .rc {
+        width: 360px;
+      }
+      .d-comfy .rc.w300 {
+        width: 320px;
+      }
+      .d-comfy .tog {
+        width: 36px;
+        height: 22px;
+        border-radius: 11px;
+      }
+      .d-comfy .tog::after {
+        width: 18px;
+        height: 18px;
+      }
+      .d-comfy .tog.on::after {
+        left: 16px;
+      }
+      .d-comfy .cb,
+      .d-comfy .rb {
+        width: 18px;
+        height: 18px;
+      }
+      .d-comfy .help {
+        font-size: 13px;
+      }
+      .d-comfy .zoom .ib {
+        width: 26px;
+        height: 26px;
+      }
+      .d-comfy .search {
+        height: 36px;
+      }
     </style>
   </head>
   <body>
@@ -2621,10 +3048,12 @@
       <nav class="toc" aria-label="Sections">
         <b>Package</b>
         <a href="#overview"><span></span>Overview</a>
+        <a href="#round2"><span></span>Round 2 changes</a>
         <a href="#system"><span></span>Design system</a>
         <b>Mockups</b>
         <a href="#m1"><span>1</span>Start screen</a>
         <a href="#m2"><span>2</span>Editor, default</a>
+        <a href="#m2b"><span>2b</span>First run</a>
         <a href="#m3"><span>3</span>Text selected</a>
         <a href="#m4"><span>4</span>Photo slot selected</a>
         <a href="#m5"><span>5</span>Short Windows screen</a>
@@ -2633,7 +3062,7 @@
         <a href="#m8"><span>8</span>Export</a>
         <a href="#m9"><span>9</span>Printer profile</a>
         <a href="#m10"><span>10</span>dslrBooth import</a>
-        <a href="#m11"><span>11</span>Light theme</a>
+        <a href="#m11"><span>11</span>Dark and Compact</a>
         <a href="#m12"><span>12</span>Settings</a>
         <b>Notes</b>
         <a href="#responsive"><span></span>Responsive behaviour</a>
@@ -2645,7 +3074,9 @@
 
       <main>
         <header class="top" id="overview">
-          <div class="eyebrow">WalkOne Template Studio · Phase 7B · B1 mockup checkpoint</div>
+          <div class="eyebrow">
+            WalkOne Template Studio · Phase 7B · B1 mockup checkpoint · round 2
+          </div>
           <h1>Editor refresh mockups for owner review</h1>
           <p class="lede">
             Static mockups of the refreshed Template Studio shell, built on the Phase 7A UX
@@ -2657,7 +3088,8 @@
             <li>Based on <code>docs/PHASE_7A_UX_ARCHITECTURE.md</code> (HEAD 710c6bb)</li>
             <li>Review notes: <code>docs/PHASE_7B_B1_MOCKUP_REVIEW.md</code></li>
             <li>Targets: 1920 × 1000 (roomy) and 1426 × 779 (Windows 125 %)</li>
-            <li>Dark default · Light shown</li>
+            <li>Light default · Comfortable size default</li>
+            <li>Dark and Compact shown for comparison</li>
             <li>Sample content is fictional</li>
           </ul>
           <div class="controls" role="toolbar" aria-label="View options">
@@ -2679,6 +3111,10 @@
                 <li>
                   One accent (indigo) for selection, focus and the primary action. Status colours
                   mean status only.
+                </li>
+                <li>
+                  Comfortable size by default: bigger buttons and text for people new to design
+                  tools.
                 </li>
                 <li>Words before icons: rail labels, view-bar state words, toolbar verbs.</li>
               </ul>
@@ -2711,15 +3147,85 @@
           </div>
         </section>
 
+        <section class="s" id="round2" aria-labelledby="h-round2">
+          <h2 id="h-round2">Round 2 changes</h2>
+          <p class="meta">Owner feedback and decisions applied (2026-11-19)</p>
+          <div class="tbl">
+            <table>
+              <thead>
+                <tr>
+                  <th>Change</th>
+                  <th>Where</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <b>Light is the default theme</b> (D3 changed). Dark and Match system stay in
+                    Settings.
+                  </td>
+                  <td>All mockups; Dark sample in 11</td>
+                </tr>
+                <tr>
+                  <td>
+                    <b>Comfortable size</b> by default: 34–38 px buttons, 34 px fields, 14 px text,
+                    larger rail. Compact is a Settings option.
+                  </td>
+                  <td>All; Compact sample in 11</td>
+                </tr>
+                <tr>
+                  <td>
+                    <b>Export</b> keeps the pinned summary and sticky footer; the middle becomes
+                    three picture cards, a readiness line and "More options".
+                  </td>
+                  <td>8</td>
+                </tr>
+                <tr>
+                  <td>
+                    <b>Printer &amp; cutting</b> (was Printer profile): an enlarged strip-corner
+                    drawing, a 3-step "How sure are we?" meter, picture setup steps. Evidence detail
+                    behind "How do we know?".
+                  </td>
+                  <td>9</td>
+                </tr>
+                <tr>
+                  <td>
+                    <b>DS-RX1 marked "Tested · ready to use"</b> after the owner's test print. Trim
+                    stays an estimate; 3 mm stays.
+                  </td>
+                  <td>2, 6, 8, 9, 12</td>
+                </tr>
+                <tr>
+                  <td>
+                    New: first-run tips on an empty canvas, a tooltip with a picture, a
+                    <b>See how it prints</b> button, Undo and Redo with words, palette colours in
+                    the selection toolbar.
+                  </td>
+                  <td>2, 2b, 3</td>
+                </tr>
+                <tr>
+                  <td>
+                    V-decisions: Guided card hidden until 7C · quieter Learn row · softer kind
+                    colours, only in Layers and the Properties header · subtler evidence tiers ·
+                    muted amber trim · drawer 264 px default, resizable · floating drawer stays open
+                    until you click the canvas or another rail item · Inter bundled.
+                  </td>
+                  <td>1–7, system</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
         <section class="s" id="system" aria-labelledby="h-sys">
           <h2 id="h-sys">Design system</h2>
           <p class="meta">
             Three token layers (primitives → semantic → components). The sheet shows the semantic
             layer and the main components in both themes.
           </p>
-          <div class="fw" data-render="sheet" data-theme="dark" data-w="1440" data-h="900"></div>
-          <div style="height: 16px"></div>
           <div class="fw" data-render="sheet" data-theme="light" data-w="1440" data-h="900"></div>
+          <div style="height: 16px"></div>
+          <div class="fw" data-render="sheet" data-theme="dark" data-w="1440" data-h="900"></div>
           <div class="notes">
             <div>
               <h4>Typography</h4>
@@ -2743,11 +3249,12 @@
               <ul>
                 <li>4-pt scale: 2 · 4 · 6 · 8 · 12 · 16 · 20 · 24 · 32 · 40.</li>
                 <li>
-                  Control heights: 28 in panels, 32 in dialogs, 40 on Start; hit targets ≥ 24 px.
+                  Comfortable (default): 34 px buttons and fields, 38 px primary, 36 px layer rows,
+                  14 px text. Compact: 28 px, 13 px text.
                 </li>
                 <li>
-                  Panel header 34 · section header 34 · layer row 30 · status bar 28 · top bar 44 ·
-                  view bar 40.
+                  Comfortable chrome: top bar 52 · view bar 48 · section header 40 · status bar 30 ·
+                  rail 80.
                 </li>
                 <li>
                   Radii: 4–6 controls, 8 cards, 10 dialogs, drawers and popovers. Pills are kept for
@@ -2758,14 +3265,12 @@
             <div class="q">
               <h4>Decide</h4>
               <ul>
+                <li><b>Interface font:</b> Inter, bundled (V1, decided).</li>
                 <li>
-                  <b>Interface font:</b> bundled Inter (shown) or the system font (Segoe UI / SF) as
-                  7A §31 proposed.
+                  <b>Kind colours (V2):</b> softened hues, shown only on the small chip in Layers
+                  and the Properties header. Never on the rail, the canvas or selection.
                 </li>
-                <li>
-                  <b>Element-kind colours (D8):</b> photo slot orchid · text lime · image violet ·
-                  shape slate · group grey. Used in chips and icons only, never for selection.
-                </li>
+                <li>Do the Comfortable sizes feel friendly enough, or one more step up?</li>
               </ul>
             </div>
           </div>
@@ -2773,51 +3278,34 @@
 
         <section class="s" id="m1" aria-labelledby="h-m1">
           <h2 id="h-m1">1 · Start screen</h2>
-          <p class="meta">1426 × 779 · Dark · first screen after launch, no project open</p>
-          <div class="fw" data-render="start" data-theme="dark" data-w="1426" data-h="779"></div>
+          <p class="meta">1426 × 779 · Light · first screen after launch</p>
+          <div class="fw" data-render="start" data-theme="light" data-w="1426" data-h="779"></div>
           <ul class="anns" aria-label="Annotations for mockup 1">
-            <li><i>1</i>Guided design, tagged Phase 7C. Hidden in the 7B build.</li>
-            <li><i>2</i>Recovered-work banner, shown only after "Decide later".</li>
-            <li><i>3</i>Three ways in. Blank design shown in its hover state.</li>
-            <li><i>4</i>A recent project whose file has moved: still listed, with Locate.</li>
+            <li>
+              <i>1</i>Two ways in for 7B: Blank design and Import dslrBooth. Guided design joins in
+              7C (hidden until it works).
+            </li>
+            <li><i>2</i>Recovered-work banner, only after "Decide later".</li>
+            <li><i>3</i>A recent project whose file moved: still listed, with Locate.</li>
           </ul>
           <div class="notes">
             <div>
               <h4>Solves</h4>
               <ul>
-                <li>
-                  Today's Welcome screen is plain and has no place for the Guide or for recovered
-                  work.
-                </li>
-                <li>
-                  Three ways in, sized by intent; Open and Recent for people returning to a job.
-                </li>
+                <li>Plain Welcome screen with no place for recovered work.</li>
               </ul>
             </div>
             <div>
               <h4>Look at</h4>
               <ul>
-                <li>
-                  Guided design is drawn and tagged <i>Phase 7C</i>. In the 7B build the row shows
-                  only Blank and Import.
-                </li>
-                <li>
-                  The recovery banner only appears after "Decide later" in the recovery dialog.
-                </li>
-                <li>
-                  Recent shows thumbnails, format and age; a missing file stays visible with Locate
-                  and Remove.
-                </li>
+                <li>The Learn row is small grey text so it never competes with the cards.</li>
+                <li>Open project… sits top right with its shortcut.</li>
               </ul>
             </div>
             <div class="q">
               <h4>Decide</h4>
               <ul>
-                <li>
-                  Is a 7C-tagged Guided card acceptable in 7B, or hidden until it works (7A default:
-                  hidden)?
-                </li>
-                <li>Learn row: keep it (links to short help pages, P2) or drop it?</li>
+                <li>Anything else that belongs on Start (for example a template gallery later)?</li>
               </ul>
             </div>
           </div>
@@ -2826,70 +3314,88 @@
         <section class="s" id="m2" aria-labelledby="h-m2">
           <h2 id="h-m2">2 · Full Editor, default state</h2>
           <p class="meta">
-            1920 × 1000 · Dark · nothing selected · Elements drawer docked · Properties shows the
-            project
+            1920 × 1000 · Light · Comfortable · nothing selected · Elements drawer docked
           </p>
           <div
             class="fw"
             data-render="editorDefault"
-            data-theme="dark"
+            data-theme="light"
             data-w="1920"
             data-h="1000"
           ></div>
           <ul class="anns" aria-label="Annotations for mockup 2">
-            <li>
-              <i>1</i>Menus File · Edit · Arrange · View · Help. Arrange replaces Align; Help is
-              new.
-            </li>
-            <li><i>2</i>Project name with its state in words: Saved or Modified.</li>
-            <li>
-              <i>3</i>Checks with a count, then Save (secondary, greyed out while saved) and Export
-              (primary, D1).
-            </li>
-            <li><i>4</i>Labelled rail. Active item gets the accent tint and an edge bar.</li>
-            <li>
-              <i>5</i>View bar: what the canvas is showing, in words. Never saved, never printed.
-            </li>
-            <li><i>6</i>Nothing selected: Properties shows the project, format and printer.</li>
-            <li>
-              <i>7</i>Layers stacked below Properties on tall screens, with a resizable split.
-            </li>
-            <li>
-              <i>8</i>Status bar keeps facts only: format, recovery, Checks, printer, snap, zoom.
-            </li>
+            <li><i>1</i>Menus, project name and Saved/Modified in words.</li>
+            <li><i>2</i>Undo and Redo with words, not only arrows.</li>
+            <li><i>3</i>See how it prints: one click to Print Preview.</li>
+            <li><i>4</i>Checks, Save (greyed while saved) and Export (primary).</li>
+            <li><i>5</i>Labelled rail with larger targets.</li>
+            <li><i>6</i>Drawer resize grip: 264 px by default, 240–360 px.</li>
+            <li><i>7</i>View bar: what the canvas shows, in words.</li>
+            <li><i>8</i>Properties above Layers on tall screens.</li>
           </ul>
           <div class="notes">
             <div>
               <h4>Solves</h4>
               <ul>
+                <li>Hidden modes become labelled toggles; Export is the main action.</li>
                 <li>
-                  Hidden modes: Sample photos, Safe areas and Overflow move from status-bar icons to
-                  labelled toggles above the artboard.
+                  Small controls felt intimidating for non-designers; everything is a size larger.
                 </li>
-                <li>
-                  Save was primary and Export looked secondary; Export is now the completion action.
-                </li>
-                <li>The Design drawer mixed purposes; it splits into Elements, Text and Colors.</li>
               </ul>
             </div>
             <div>
               <h4>Look at</h4>
               <ul>
-                <li>Canvas width at 1920: 1244 px with the drawer docked.</li>
-                <li>
-                  The checks count is amber (needs attention) because two layers have warnings.
-                </li>
-                <li>Bottom bar: nothing a user must act on lives only there.</li>
+                <li>Kind colours only appear on the small chips in Layers.</li>
+                <li>The canvas still has 1196 px of width with the drawer open.</li>
               </ul>
             </div>
             <div class="q">
               <h4>Decide</h4>
               <ul>
-                <li>
-                  Top-bar order: Checks · Save · Export (shown). Undo and Redo stay as icons with
-                  tooltips.
-                </li>
-                <li>Drawer width 264 px (today 224).</li>
+                <li>Is "See how it prints" the right name?</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="s" id="m2b" aria-labelledby="h-m2b">
+          <h2 id="h-m2b">2b · First run (new blank strip)</h2>
+          <p class="meta">
+            1920 × 1000 · Light · empty project · tips on the canvas · picture tooltip on Safe areas
+          </p>
+          <div
+            class="fw"
+            data-render="editorFirstRun"
+            data-theme="light"
+            data-w="1920"
+            data-h="1000"
+          ></div>
+          <ul class="anns" aria-label="Annotations for mockup 2b">
+            <li><i>1</i>Picture tooltip on a term that needs explaining.</li>
+            <li><i>2</i>Three tips, one button each; "Hide these tips" turns them off.</li>
+            <li><i>3</i>Empty Layers explains itself.</li>
+          </ul>
+          <div class="notes">
+            <div>
+              <h4>Solves</h4>
+              <ul>
+                <li>A blank canvas gives no hint where to start.</li>
+                <li>Terms like "safe area" need a picture more than a sentence.</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Look at</h4>
+              <ul>
+                <li>Three tips with one button each. "Hide these tips" turns them off for good.</li>
+                <li>The tooltip uses a small drawing, the same style as the Learn pages.</li>
+                <li>Empty Layers explains what it is for.</li>
+              </ul>
+            </div>
+            <div class="q">
+              <h4>Decide</h4>
+              <ul>
+                <li>Show the tips for every new project until hidden, or only the first time?</li>
               </ul>
             </div>
           </div>
@@ -2898,63 +3404,45 @@
         <section class="s" id="m3" aria-labelledby="h-m3">
           <h2 id="h-m3">3 · Text selected</h2>
           <p class="meta">
-            1920 × 1000 · Dark · "Names" text selected · Text drawer · project modified
+            1920 × 1000 · Light · "Names" text selected · Text drawer · project modified
           </p>
           <div
             class="fw"
             data-render="editorText"
-            data-theme="dark"
+            data-theme="light"
             data-w="1920"
             data-h="1000"
           ></div>
           <ul class="anns" aria-label="Annotations for mockup 3">
             <li>
-              <i>1</i>Selection toolbar: Edit text · font · size · colour · Arrange · Duplicate ·
-              More.
+              <i>1</i>Selection toolbar: Edit text · palette colours · Arrange · Duplicate · More
+              (font, size, delete).
             </li>
-            <li>
-              <i>2</i>Selection outline and handles use the one accent; kind colour never replaces
-              them.
-            </li>
-            <li><i>3</i>Pinned header: kind chip, layer name, kind, hide, lock, more.</li>
-            <li>
-              <i>4</i>Essentials: content, font, weight, size, colour, align. No header, always
-              open.
-            </li>
-            <li><i>5</i>Collapsed sections show a one-line summary of their values.</li>
-            <li><i>6</i>ADR-052 control drawn for discussion only. It is not part of 7B.</li>
-            <li><i>7</i>Text drawer: presets drawn in their own style, fonts in this project.</li>
+            <li><i>2</i>Selection outline in the accent colour, never a kind colour.</li>
+            <li><i>3</i>Pinned header: name, hide, lock, more.</li>
+            <li><i>4</i>Essentials first: content, font, style and size, colour, align.</li>
+            <li><i>5</i>Collapsed sections show a one-line summary.</li>
+            <li><i>6</i>ADR-052 control, drawn only for discussion (not in 7B).</li>
+            <li><i>7</i>Text drawer: styles drawn as they look.</li>
           </ul>
           <div class="notes">
             <div>
               <h4>Solves</h4>
               <ul>
-                <li>
-                  Today: up to eight equal-weight sections in one long scroll. Now: six essentials,
-                  then three summaries.
-                </li>
-                <li>Style presets move out of Properties into the Text drawer.</li>
+                <li>Eight equal sections in one long scroll became essentials plus summaries.</li>
               </ul>
             </div>
             <div>
               <h4>Look at</h4>
               <ul>
-                <li>
-                  The colour field says <i>Gold</i> with a link icon: it follows the Event Palette.
-                </li>
-                <li>
-                  Spacing &amp; box is open, to show an expanded section next to collapsed ones.
-                </li>
-                <li>Kind colour (lime for text) appears in the chip and the Layers row only.</li>
+                <li>One click on a palette dot recolours the text; no colour picker needed.</li>
+                <li>Font and size stay in Properties, so the toolbar keeps to five actions.</li>
               </ul>
             </div>
             <div class="q">
               <h4>Decide</h4>
               <ul>
-                <li>
-                  Toolbar verbs: Duplicate inline and Delete under More (shown), or both inline?
-                </li>
-                <li>Does the toolbar repeat font, size and colour (shown) or only offer verbs?</li>
+                <li>Is Duplicate frequent enough to stay in the toolbar?</li>
               </ul>
             </div>
           </div>
@@ -2963,54 +3451,43 @@
         <section class="s" id="m4" aria-labelledby="h-m4">
           <h2 id="h-m4">4 · Photo slot selected</h2>
           <p class="meta">
-            1920 × 1000 · Dark · Photo 2 selected · sample photos on · Photos drawer
+            1920 × 1000 · Light · Photo 2 selected · sample photos on · Photos drawer
           </p>
           <div
             class="fw"
             data-render="editorPhoto"
-            data-theme="dark"
+            data-theme="light"
             data-w="1920"
             data-h="1000"
           ></div>
           <ul class="anns" aria-label="Annotations for mockup 4">
-            <li><i>1</i>Toolbar: Photo #2 · Reposition · Frame · Arrange · Duplicate · More.</li>
+            <li>
+              <i>1</i>Toolbar: Reposition · Frame · Arrange · Duplicate · More (photo number,
+              delete).
+            </li>
             <li><i>2</i>Corner handles only: photo slots keep their shape.</li>
-            <li><i>3</i>"Sample · #2" tag: the picture is a preview, the slot is the template.</li>
+            <li><i>3</i>"Sample · #2": the picture is a preview, the slot is the template.</li>
             <li><i>4</i>Essentials: photo number, fit, frame.</li>
-            <li><i>5</i>Preview-only box with a dashed edge: not saved, not exported.</li>
-            <li><i>6</i>Photos drawer: slot summary and the sample-photo controls in one place.</li>
+            <li><i>5</i>Dashed "Preview only" box: not saved, not exported.</li>
+            <li><i>6</i>Photos drawer: slot summary and sample-photo controls.</li>
           </ul>
           <div class="notes">
             <div>
               <h4>Solves</h4>
               <ul>
-                <li>
-                  Photo slot and sample photo were easy to confuse. The slot is part of the
-                  template; the sample is only a preview.
-                </li>
-                <li>Sample controls were split between the status bar and Properties.</li>
+                <li>Photo slot and sample photo were easy to confuse.</li>
               </ul>
             </div>
             <div>
               <h4>Look at</h4>
               <ul>
-                <li>
-                  Photo 3 is drawn with samples off to show the empty-slot look (dashed orchid
-                  outline, big number).
-                </li>
-                <li>No image-layer controls (role, replace) appear for a photo slot.</li>
-                <li>
-                  Position &amp; size says "shape locked"; the reason sits in the field tooltip.
-                </li>
+                <li>Photo 3 shows the empty-slot look (no sample).</li>
               </ul>
             </div>
             <div class="q">
               <h4>Decide</h4>
               <ul>
-                <li>
-                  Show the mixed state (one slot without a sample) in the real app, or keep samples
-                  all-on/all-off?
-                </li>
+                <li>None new.</li>
               </ul>
             </div>
           </div>
@@ -3019,63 +3496,46 @@
         <section class="s" id="m5" aria-labelledby="h-m5">
           <h2 id="h-m5">5 · Short-height Windows editor</h2>
           <p class="meta">
-            1426 × 779 · Dark · Windows (Alt pressed, Ctrl shortcuts) · Uploads drawer floating ·
-            Properties | Layers tabs
+            1426 × 779 · Light · Comfortable · Windows (Alt pressed, Ctrl shortcuts) · Uploads
+            drawer floating · Properties | Layers tabs
           </p>
           <div
             class="fw"
             data-render="editorShort"
-            data-theme="dark"
+            data-theme="light"
             data-w="1426"
             data-h="779"
           ></div>
           <ul class="anns" aria-label="Annotations for mockup 5">
-            <li><i>1</i>Alt underlines the menu access keys; F10 focuses the menu bar.</li>
-            <li><i>2</i>Tooltips show Ctrl shortcuts on Windows (Ctrl+Y redo), ⌘ only on Mac.</li>
+            <li><i>1</i>Alt underlines menu access keys; F10 focuses the menu bar.</li>
+            <li><i>2</i>Tooltips show Ctrl on Windows (Ctrl+Y redo), ⌘ on Mac.</li>
             <li><i>3</i>Export stays in the top bar at every size.</li>
             <li>
-              <i>4</i>Below 1600 px wide the drawer floats over the canvas. Pin keeps it open.
+              <i>4</i>Below 1600 px wide the drawer floats. It stays open while you add several
+              things and closes when you click the canvas or another rail item.
             </li>
-            <li><i>5</i>View bar keeps labels; it still fits at 1054 px.</li>
-            <li><i>6</i>Below 860 px tall: Properties | Layers become tabs.</li>
-            <li>
-              <i>7</i>Secondary sections start collapsed; a fade and scrollbar show there is more.
-            </li>
-            <li>
-              <i>8</i>Status bar drops the pixel size and selection; Checks and zoom never drop.
-            </li>
+            <li><i>5</i>View bar keeps its words.</li>
+            <li><i>6</i>Below 860 px tall: Properties | Layers tabs.</li>
+            <li><i>7</i>Fade and scrollbar show there is more.</li>
+            <li><i>8</i>Status bar keeps Checks and zoom.</li>
           </ul>
           <div class="notes">
             <div>
               <h4>Solves</h4>
               <ul>
-                <li>
-                  Windows check at 1920×1080 / 125 %: Properties ran under the status bar and Layers
-                  squeezed it.
-                </li>
-                <li>Ctrl shortcut labels and menu keyboard access (Alt, F10) were missing.</li>
+                <li>Properties ran under the status bar at 1920×1080 / 125 %.</li>
               </ul>
             </div>
             <div>
               <h4>Look at</h4>
               <ul>
-                <li>
-                  Canvas area: 1054 × 671 px (at least 520 × 400). The artboard is still 16 % zoom
-                  and fully visible.
-                </li>
-                <li>
-                  Essentials stay visible without scrolling; everything else is one click away.
-                </li>
+                <li>Even with larger controls the canvas keeps about 1026 × 649 px.</li>
               </ul>
             </div>
             <div class="q">
               <h4>Decide</h4>
               <ul>
-                <li>
-                  Does the floating drawer close after adding something (shown as 7A proposes),
-                  unless pinned?
-                </li>
-                <li>Right column 300 px at this size: enough?</li>
+                <li>Is the floating drawer's close behaviour right?</li>
               </ul>
             </div>
           </div>
@@ -3084,24 +3544,27 @@
         <section class="s" id="m6" aria-labelledby="h-m6">
           <h2 id="h-m6">6 · Print Preview with safe areas</h2>
           <p class="meta">
-            1920 × 1000 · Dark · 4×6 sheet with both strip copies and the centre cut · Safe areas
+            1920 × 1000 · Light · 4×6 sheet with both strip copies and the centre cut · Safe areas
             menu open
           </p>
           <div
             class="fw"
             data-render="editorPrint"
-            data-theme="dark"
+            data-theme="light"
             data-w="1920"
             data-h="1000"
           ></div>
           <ul class="anns" aria-label="Annotations for mockup 6">
-            <li><i>1</i>Read-only banner with a way back: Edit in Design.</li>
+            <li>
+              <i>1</i>Read-only banner with a way back: Edit in Design. "See how it prints" in the
+              top bar is active.
+            </li>
             <li>
               <i>2</i>Both copies, drawn from the one strip; the cut is a labelled long-dash line.
             </li>
             <li>
-              <i>3</i>Hatched band = may be trimmed (estimated). Dashed teal = keep important
-              content inside.
+              <i>3</i>Muted amber hatch = may be trimmed. Dashed teal = keep important content
+              inside.
             </li>
             <li>
               <i>4</i>The date sits 2.5 mm from the bottom edge: red dashed outline on both copies.
@@ -3139,7 +3602,6 @@
             <div class="q">
               <h4>Decide</h4>
               <ul>
-                <li>Trim hatch colour: orange (shown) or a neutral grey hatch?</li>
                 <li>Show the flag on both copies (shown) or only the left one?</li>
               </ul>
             </div>
@@ -3149,13 +3611,13 @@
         <section class="s" id="m7" aria-labelledby="h-m7">
           <h2 id="h-m7">7 · Checks panel</h2>
           <p class="meta">
-            1920 × 1000 · Dark · opened from the top-bar Checks button · "Select" on the date issue
+            1920 × 1000 · Light · opened from the top-bar Checks button · "Select" on the date issue
             has selected that layer
           </p>
           <div
             class="fw"
             data-render="editorChecks"
-            data-theme="dark"
+            data-theme="light"
             data-w="1920"
             data-h="1000"
           ></div>
@@ -3204,10 +3666,7 @@
             <div class="q">
               <h4>Decide</h4>
               <ul>
-                <li>
-                  Checks panel on the left in the drawer slot (shown), or on the right over
-                  Properties?
-                </li>
+                <li>None new (V5: left, decided).</li>
               </ul>
             </div>
           </div>
@@ -3216,102 +3675,100 @@
         <section class="s" id="m8" aria-labelledby="h-m8">
           <h2 id="h-m8">8 · Export dialog</h2>
           <p class="meta">
-            1426 × 779 · Dark · the size where Export used to push the printer row and Export button
-            out of sight
+            1426 × 779 · Light · Comfortable · the size where Export used to push the printer row
+            and button out of sight
           </p>
           <div
             class="fw"
             data-render="exportDlg"
-            data-theme="dark"
+            data-theme="light"
             data-w="1426"
             data-h="779"
           ></div>
           <ul class="anns" aria-label="Annotations for mockup 8">
-            <li>
-              <i>1</i>Pinned summary: files, checks, printer, in one line. It never scrolls away.
-            </li>
-            <li><i>2</i>Deliverables grouped by where they go, each with its file name.</li>
-            <li><i>3</i>Checks collapsed to one row; any error would open this automatically.</li>
-            <li>
-              <i>4</i>Sticky footer: folder, Cancel, Export. Visible at 779 px without scrolling.
-            </li>
+            <li><i>1</i>Pinned readiness line with Review, and the printer.</li>
+            <li><i>2</i>Picture cards: For the booth, Print files, Client proof.</li>
+            <li><i>3</i>What you get, in one line.</li>
+            <li><i>4</i>Everything else under More options.</li>
+            <li><i>5</i>Sticky footer: folder, Cancel, Export 3 files.</li>
           </ul>
           <div class="notes">
             <div>
               <h4>Solves</h4>
               <ul>
-                <li>
-                  Windows check: the Output Profile row and printer checks were below the fold at
-                  125 %.
-                </li>
-                <li>The dialog listed every check inline; now it gives a count and a way in.</li>
+                <li>Too much text for new users; the Windows fold problem.</li>
               </ul>
             </div>
             <div>
               <h4>Look at</h4>
               <ul>
-                <li>Primary button names the outcome: "Export 3 files".</li>
-                <li>The client proof says "Not for printing" where you choose it.</li>
-                <li>The semantic layer package is not in this dialog (7A retired it from here).</li>
+                <li>
+                  Pinned at the top: one readiness line ("Almost ready · 1 thing to look at") with
+                  Review, and the printer.
+                </li>
+                <li>
+                  Three picture cards: For the booth, Print files, Client proof. Most people click
+                  once: Export.
+                </li>
+                <li>
+                  "Creates 3 files" names what you get; the 4×6 dslrBooth template, single files and
+                  file names are under More options.
+                </li>
+                <li>The footer with Export stays visible without scrolling.</li>
               </ul>
             </div>
             <div class="q">
               <h4>Decide</h4>
               <ul>
-                <li>
-                  Presets ("For dslrBooth", "Print files", "Client proof") above the list are P2.
-                  Wanted earlier?
-                </li>
+                <li>Should "Print files" be on by default, or only "For the booth"?</li>
               </ul>
             </div>
           </div>
         </section>
 
         <section class="s" id="m9" aria-labelledby="h-m9">
-          <h2 id="h-m9">9 · Printer profile dialog</h2>
-          <p class="meta">
-            1426 × 779 · Dark · DNP DS-RX1 · plain-language summary first, evidence by tier below
-          </p>
+          <h2 id="h-m9">9 · Printer &amp; cutting</h2>
+          <p class="meta">1426 × 779 · Light · Comfortable · DNP DS-RX1, tested and ready to use</p>
           <div
             class="fw"
             data-render="profileDlg"
-            data-theme="dark"
+            data-theme="light"
             data-w="1426"
             data-h="779"
           ></div>
           <ul class="anns" aria-label="Annotations for mockup 9">
-            <li><i>1</i>Profile name with overall confidence, shown as a tier badge.</li>
-            <li><i>2</i>What to do in your design, in three lines with their evidence.</li>
+            <li><i>1</i>"Ready to use" badge.</li>
             <li>
-              <i>3</i>Latest test print summarised in user words. No exact trim figures claimed.
+              <i>2</i>Enlarged strip corner: striped cut-off edge and dashed safe line, with sizes.
             </li>
-            <li>
-              <i>4</i>Output guidance (what this app shows) kept apart from printer setup (done on
-              the booth PC).
-            </li>
-            <li>
-              <i>5</i>Evidence grouped Verified · Observed · Estimated · Reference · Unknown: icon,
-              word and tone.
-            </li>
-            <li><i>6</i>This project's checks are a link, not repeated here.</li>
+            <li><i>3</i>"How sure are we?" meter.</li>
+            <li><i>4</i>Setup steps as picture tiles.</li>
+            <li><i>5</i>Evidence detail behind "How do we know?".</li>
           </ul>
           <div class="notes">
             <div>
               <h4>Solves</h4>
               <ul>
-                <li>
-                  Windows check: evidence badges were too alike, a developer note showed, and the
-                  provisional sentence was awkward.
-                </li>
-                <li>A long flat list became a summary card, setup steps and grouped details.</li>
+                <li>A long list of values with badges and sentences.</li>
               </ul>
             </div>
             <div>
               <h4>Look at</h4>
               <ul>
-                <li>No file paths and no notes for developers.</li>
                 <li>
-                  3 mm stays the guidance. The visual pass is shown as Observed, not Verified.
+                  The enlarged strip corner shows the striped "may be cut off" edge and the dashed
+                  safe line with their sizes.
+                </li>
+                <li>
+                  "How sure are we?" is a 3-step meter: Estimated → Tested on a print → Measured.
+                </li>
+                <li>
+                  Setup steps are three picture tiles. The detailed evidence (five tiers) sits under
+                  "How do we know?".
+                </li>
+                <li>
+                  Guidance (what the app shows) stays separate from printer setup (done on the booth
+                  PC).
                 </li>
               </ul>
             </div>
@@ -3319,8 +3776,8 @@
               <h4>Decide</h4>
               <ul>
                 <li>
-                  Record the visual print pass in the profile data as Observed? That is a data-only
-                  change and needs your approval.
+                  Later: pick from a list of booth printers, or detect the printer automatically
+                  (future scope, not 7B).
                 </li>
               </ul>
             </div>
@@ -3330,12 +3787,12 @@
         <section class="s" id="m10" aria-labelledby="h-m10">
           <h2 id="h-m10">10 · dslrBooth import</h2>
           <p class="meta">
-            1426 × 779 · Dark · a two-up 4×6 template detected · technical notes folded away
+            1426 × 779 · Light · a two-up 4×6 template detected · technical notes folded away
           </p>
           <div
             class="fw"
             data-render="importDlg"
-            data-theme="dark"
+            data-theme="light"
             data-w="1426"
             data-h="779"
           ></div>
@@ -3372,50 +3829,56 @@
         </section>
 
         <section class="s" id="m11" aria-labelledby="h-m11">
-          <h2 id="h-m11">11 · Light theme</h2>
+          <h2 id="h-m11">11 · Dark theme and Compact size</h2>
           <p class="meta">
-            1920 × 1000 · Light · text selected · Colors drawer with the Event Palette · colour
-            popover open · safe areas on
+            For comparison: Dark (1920 × 1000, with the Colors drawer and colour popover) and
+            Compact size (1920 × 1000, Light)
           </p>
           <div
             class="fw"
-            data-render="editorLight"
-            data-theme="light"
+            data-render="editorColors"
+            data-theme="dark"
             data-w="1920"
             data-h="1000"
           ></div>
           <ul class="anns" aria-label="Annotations for mockup 11">
-            <li><i>1</i>Colors drawer: Event Palette rows with name, hex and "Used by".</li>
-            <li>
-              <i>2</i>Colour popover: Event Palette first, then colours in this design, then custom.
-            </li>
-            <li><i>3</i>The artboard looks exactly as in Dark. Only the room around it changes.</li>
-            <li><i>4</i>Safe-area hues are the same as in Dark; the halo keeps them visible.</li>
+            <li><i>1</i>Colors drawer: Event Palette with names, hex and use.</li>
+            <li><i>2</i>Colour popover: palette first, then colours in the design, then custom.</li>
+            <li><i>3</i>The artboard and safe-area colours do not change with the theme.</li>
           </ul>
+          <div style="height: 16px"></div>
+          <div
+            class="fw"
+            data-render="editorText"
+            data-theme="light"
+            data-w="1920"
+            data-h="1000"
+            data-density="compact"
+          ></div>
           <div class="notes">
             <div>
-              <h4>Approach</h4>
+              <h4>Solves</h4>
               <ul>
                 <li>
-                  Not an inversion: white panels, a soft grey canvas surround so the artboard still
-                  floats, darker accent and status hues for contrast.
+                  Dark is an option, not the default. Compact is for experienced users who want more
+                  room.
                 </li>
-                <li>Shadows replace some borders on raised surfaces.</li>
               </ul>
             </div>
             <div>
               <h4>Look at</h4>
               <ul>
-                <li>Warnings, kind chips and the selected Layers row keep their meaning.</li>
+                <li>Dark: the artboard and safe-area colours are identical to Light.</li>
                 <li>
-                  Selecting a palette colour links it (chain icon); "Use fixed colour" unlinks.
+                  Colors drawer with the Event Palette; the colour popover puts the palette first.
                 </li>
+                <li>Compact: 28 px controls, icon-only Undo and Redo, 13 px text.</li>
               </ul>
             </div>
             <div class="q">
               <h4>Decide</h4>
               <ul>
-                <li>Is Light good enough to ship in 7B alongside Dark (B12), or later?</li>
+                <li>Keep both options in Settings?</li>
               </ul>
             </div>
           </div>
@@ -3424,13 +3887,13 @@
         <section class="s" id="m12" aria-labelledby="h-m12">
           <h2 id="h-m12">12 · Settings</h2>
           <p class="meta">
-            1426 × 779 · Appearance (Dark) and Printing + Editor (Light) · settings for this
-            computer, never stored in a project
+            1426 × 779 · Light · Appearance, then Printing + Editor · settings for this computer,
+            never stored in a project
           </p>
           <div
             class="fw"
             data-render="settingsA"
-            data-theme="dark"
+            data-theme="light"
             data-w="1426"
             data-h="779"
           ></div>
@@ -3453,7 +3916,10 @@
               <h4>Look at</h4>
               <ul>
                 <li>Three sections only; Company appears later, once Company Profile exists.</li>
-                <li>UI scale (90–125 %) is separate from canvas zoom.</li>
+                <li>
+                  Light is the default theme. Button and text size: Comfortable (default) or
+                  Compact. Interface scale (90–125 %) is separate from both and from canvas zoom.
+                </li>
                 <li>
                   The status-bar printer chip stays the quick switch; Settings sets the default.
                 </li>
@@ -3595,9 +4061,10 @@
 
         <section class="s" id="themes" aria-labelledby="h-th">
           <h2 id="h-th">Theme notes</h2>
+          <p class="meta">Light is the default from round 2. Dark stays a full option.</p>
           <div class="two">
             <div class="prose">
-              <h3>Dark (default, D3)</h3>
+              <h3>Dark (option)</h3>
               <p>
                 Canvas surround darkest, then app chrome, then panels, then raised surfaces
                 (dialogs, popovers). Cool neutrals with a slight indigo bias, so the indigo accent
@@ -3607,7 +4074,7 @@
               <p>Matches today's values closely, so B2 (tokens) changes structure, not the look.</p>
             </div>
             <div class="prose">
-              <h3>Light, and Match system</h3>
+              <h3>Light (default), and Match system</h3>
               <p>
                 White panels on a near-white app frame, with a grey canvas surround (#e6e7ec) so a
                 white or cream artboard still stands out. The accent darkens to keep 4.5:1 on white.
@@ -3706,76 +4173,96 @@
           </div>
         </section>
 
-        <section class="s" id="decisions" aria-labelledby="h-dec">
-          <h2 id="h-dec">Open design decisions</h2>
-          <p class="meta">
-            Decisions already approved for this pass (D1–D14 working answers) are applied. These are
-            the new questions the mockups raise.
-          </p>
+        <section class="s" id="decisions" aria-labelledby="h-decisions">
+          <h2 id="h-decisions">Decisions</h2>
+          <p class="meta">Round 2 applies the owner's answers. New questions are listed last.</p>
           <div class="tbl">
             <table>
               <thead>
                 <tr>
                   <th>#</th>
                   <th>Question</th>
-                  <th>Shown / recommended</th>
+                  <th>Answer</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
+                  <td>D3</td>
+                  <td>Default theme</td>
+                  <td><b>Light</b> (changed from Dark). Dark and Match system available</td>
+                </tr>
+                <tr>
                   <td>V1</td>
                   <td>Interface font</td>
-                  <td>
-                    Bundled Inter (same look on Mac and Windows, strong numerals). Alternative:
-                    system UI font
-                  </td>
+                  <td>Inter, bundled</td>
                 </tr>
                 <tr>
                   <td>V2</td>
-                  <td>Kind colours (D8 hues)</td>
-                  <td>Photo orchid · Text lime · Image violet · Shape slate · Group grey</td>
+                  <td>Kind colours</td>
+                  <td>Approved, softened; Layers chips and Properties header only</td>
                 </tr>
                 <tr>
                   <td>V3</td>
-                  <td>Guided design card before 7C</td>
-                  <td>
-                    Hidden in the 7B build (7A rule); drawn here with a 7C tag only for review
-                  </td>
+                  <td>Guided card before 7C</td>
+                  <td>Hidden until usable</td>
                 </tr>
                 <tr>
                   <td>V4</td>
-                  <td>Selection toolbar content</td>
-                  <td>Verb + the three most-used values; Delete under More</td>
+                  <td>Selection toolbar</td>
+                  <td>3–5 frequent actions plus More</td>
                 </tr>
                 <tr>
                   <td>V5</td>
-                  <td>Where the Checks panel opens</td>
-                  <td>Left, in the drawer slot, so Properties stays visible</td>
+                  <td>Checks panel</td>
+                  <td>Left, in the drawer area</td>
                 </tr>
                 <tr>
                   <td>V6</td>
-                  <td>Trim hatch colour</td>
-                  <td>Orange hatch; alternative neutral grey</td>
+                  <td>Trim hatch</td>
+                  <td>Muted amber</td>
                 </tr>
                 <tr>
                   <td>V7</td>
-                  <td>Floating drawer closes after an add</td>
-                  <td>Yes, unless pinned</td>
+                  <td>Floating drawer</td>
+                  <td>Stays open; closes on canvas click or another rail item. Pin later</td>
                 </tr>
                 <tr>
                   <td>V8</td>
-                  <td>Record the visual DNP print pass in the profile data</td>
-                  <td>As Observed (data-only change, separate approval)</td>
+                  <td>DS-RX1 print pass</td>
+                  <td>
+                    Recorded as tested and ready to use; trim stays estimated, no exact measurements
+                    claimed (separate commit)
+                  </td>
                 </tr>
                 <tr>
                   <td>V9</td>
-                  <td>Learn row on Start</td>
-                  <td>Keep, filled when help pages exist (P2)</td>
+                  <td>Learn row</td>
+                  <td>Keep, visually quiet</td>
                 </tr>
                 <tr>
                   <td>V10</td>
                   <td>Drawer width</td>
-                  <td>264 px docked (today 224) to fit previews and palette rows</td>
+                  <td>264 px default, resizable 240–360 px</td>
+                </tr>
+                <tr>
+                  <td>R1</td>
+                  <td>Comfortable sizes</td>
+                  <td>Big enough, or one more step up?</td>
+                </tr>
+                <tr>
+                  <td>R2</td>
+                  <td>Export defaults</td>
+                  <td>"For the booth" + "Print files" on (shown), or only "For the booth"?</td>
+                </tr>
+                <tr>
+                  <td>R3</td>
+                  <td>First-run tips</td>
+                  <td>Every new project until hidden, or only once?</td>
+                </tr>
+                <tr>
+                  <td>R4</td>
+                  <td>"See how it prints"</td>
+                  <td>Keep the name and the top-bar place?</td>
                 </tr>
               </tbody>
             </table>
@@ -3801,9 +4288,9 @@
             <li>Output Profile dialog <span>· 9</span></li>
             <li>dslrBooth Import simplification <span>· 10</span></li>
             <li>Settings architecture <span>· 12</span></li>
-            <li>Dark-theme direction <span>· all</span></li>
-            <li>Light-theme direction <span>· 11, 12</span></li>
-            <li>Spacing and density <span>· view at 1:1</span></li>
+            <li>Light default + Dark option <span>· all, 11</span></li>
+            <li>Comfortable vs Compact size <span>· all, 11</span></li>
+            <li>First-run tips and picture tooltips <span>· 2b</span></li>
             <li>Typography <span>· system</span></li>
             <li>Element-kind colours <span>· system, 3, 4</span></li>
             <li>Responsive behaviour <span>· 5, notes</span></li>
@@ -3918,8 +4405,11 @@
           observed: 'eye',
           estimated: 'approx',
           reference: 'ruler',
-          unknown: 'unknown'
+          unknown: 'unknown',
+          ready: 'okc'
         }
+        let DENS = 'comfy'
+        const nic = (n) => `<span class="kc k-project">${ic(n)}</span>`
         const tier = (t, word) =>
           `<span class="tier ${t}">${ic(tierIcon[t], t === 'unknown' ? 'dash' : '')}${word}</span>`
         const sev = (s, word) => {
@@ -3961,15 +4451,19 @@
           const counts =
             (ck.e ? `<b class="count e">${ck.e}</b>` : '') +
             (ck.w ? `<b class="count w">${ck.w}</b>` : '')
-          const ckIcon = ck.e ? 'error' : 'alert'
+          const ckIcon = ck.e ? 'error' : ck.w ? 'alert' : 'okc'
+          const undo =
+            DENS === 'comfy'
+              ? `<button class="btn ghost ${o.undoHover ? 'hov' : ''}">${ic('undo')}Undo</button><button class="btn ghost">${ic('redo')}Redo</button>`
+              : `<button class="ib ${o.undoHover ? 'hov' : ''}" title="Undo">${ic('undo')}</button><button class="ib" title="Redo">${ic('redo')}</button>`
           return `<header class="tb">
         <div class="tb-l"><span class="mark" title="Template Studio"></span><nav class="menus">${m}</nav></div>
         <div class="tb-c"><span class="doc">${o.title || 'Ava &amp; Theo Wedding'}</span>${st}</div>
         <div class="tb-r">
-          <button class="ib ${o.undoHover ? 'hov' : ''}" title="Undo">${ic('undo')}</button>
-          <button class="ib" title="Redo">${ic('redo')}</button>
+          ${undo}
           <span class="vsep"></span>
           <button class="btn ghost checks ${ck.e ? 'err' : ''} ${o.checksOpen ? 'open' : ''}">${ic(ckIcon)}Checks ${counts}</button>
+          <button class="btn sec ${o.printOn ? 'hov' : ''}">${ic('eye')}See how it prints</button>
           <button class="btn sec ${o.state === 'modified' ? '' : 'dis'}">Save</button>
           <button class="btn pri">${ic('exportI')}Export</button>
         </div>
@@ -3995,7 +4489,7 @@
 
         // ---------- drawers ----------
         function drawer(title, body, o = {}) {
-          return `<aside class="drawer ${o.float ? 'float' : ''} ${o.wide ? 'w320' : ''}" style="${o.style || ''}">
+          return `<aside class="drawer ${o.float ? 'float' : 'rz'} ${o.wide ? 'w320' : ''}" style="${o.style || ''}">
         <div class="dh"><span class="t">${title}</span>${
           o.float ? `<button class="ib sm" title="Keep open">${ic('pin', 's14')}</button>` : ''
         }<button class="ib sm" title="Close">${ic('x', 's14')}</button></div>
@@ -4005,8 +4499,8 @@
           drawer(
             'Elements',
             `<div class="search">${ic('search', 's14')}Search elements</div>
-        <div class="bigadd">${kc('photo')}<span>Photo slot<span class="sub">Where the booth puts a guest photo</span></span></div>
-        <div class="bigadd">${kc('text')}<span>Text<span class="sub">Names, date, hashtag</span></span></div>
+        <div class="bigadd">${nic('camera')}<span>Photo slot<span class="sub">Where the booth puts a guest photo</span></span></div>
+        <div class="bigadd">${nic('type')}<span>Text<span class="sub">Names, date, hashtag</span></span></div>
         <div class="lbl-caps">Shapes</div>
         <div class="tiles"><div class="tile"><span class="shp"></span>Rectangle</div><div class="tile"><span class="shp c"></span>Ellipse</div><div class="tile"><span class="shp l"></span>Line</div></div>
         <div class="lbl-caps">Graphics</div>
@@ -4028,7 +4522,7 @@
         const dPhotos = () =>
           drawer(
             'Photos',
-            `<div class="bigadd">${kc('photo')}<span>Add photo slot<span class="sub">Keeps the shape of the selected slot</span></span></div>
+            `<div class="bigadd">${nic('camera')}<span>Add photo slot<span class="sub">Keeps the shape of the selected slot</span></span></div>
         <div class="card" style="display:flex;flex-direction:column;gap:6px">
           <div class="rowi" style="font-weight:600">3 photo slots<span class="r">Booth takes 3 shots</span></div>
           <div style="display:flex;gap:6px"><span class="num">#1</span><span class="num">#2</span><span class="num">#3</span></div>
@@ -4073,7 +4567,7 @@
         <div class="help">Change a palette colour to recolour every layer linked to it.</div>
         <div class="lbl-caps">Background</div>
         <div class="rowi"><span class="sw" style="background:#F6F0E7"></span>Cream<span class="r">${ic('link', 's14')}</span></div>
-        <div class="rowi">${kc('image', true)}Paper texture<span class="r">Image</span></div>`
+        <div class="rowi">${nic('image')}Paper texture<span class="r">Image</span></div>`
           )
 
         // ---------- view bar ----------
@@ -4114,6 +4608,7 @@
         }
         function stripInner(o = {}) {
           let h = ''
+          if (o.blank) return o.safe ? safeOv() : ''
           SLOTS.forEach((s) => {
             const empty = o.samples === false || (o.samples === 'mixed' && s.n === 3)
             h += empty
@@ -4163,19 +4658,16 @@
         }
         const tbText = (o = {}) =>
           `<span class="b ${o.hov ? 'hov' : ''}">${ic('edit', 's14')}Edit text</span><span class="sep"></span>
-      <span class="b"><span class="fbox" style="font-family:'Allura',cursive;font-size:16px">Allura ${chev()}</span></span>
-      <span class="b"><span class="fbox tnum">200</span></span>
-      <span class="b"><span class="sw" style="background:#B8915A"></span>Gold</span><span class="sep"></span>
+      <span class="qrow" title="Event palette">${PAL.map((p) => `<span class="qsw ${p.n === 'Gold' ? 'on' : ''}" style="background:${p.h}"></span>`).join('')}</span><span class="sep"></span>
       <span class="b">${ic('arrange', 's14')}Arrange ${chev()}</span>
       ${o.compact ? '' : `<span class="b">${ic('copy', 's14')}Duplicate</span>`}
-      <span class="b" title="More actions">${ic('more')}</span>`
+      <span class="b" title="More: font, size, delete, lock">${ic('more')}</span>`
         const tbPhoto = () =>
-          `<span class="b"><span class="num">#2</span>Photo 2 ${chev()}</span><span class="sep"></span>
-      <span class="b">${ic('move', 's14')}Reposition</span>
+          `<span class="b">${ic('move', 's14')}Reposition</span>
       <span class="b">${ic('frameI', 's14')}Frame ${chev()}</span><span class="sep"></span>
       <span class="b">${ic('arrange', 's14')}Arrange ${chev()}</span>
       <span class="b">${ic('copy', 's14')}Duplicate</span>
-      <span class="b" title="More actions">${ic('more')}</span>`
+      <span class="b" title="More: photo number, delete, lock">${ic('more')}</span>`
 
         // ---------- properties ----------
         function pHeader(k, name, sub) {
@@ -4242,7 +4734,7 @@
             true
           )}
           ${fr('Background', `<div class="r2">${colorField('Cream', '#F6F0E7', true)}<div class="in">${ic('image', 's14')}Paper…</div></div>`)}
-          ${fr('Printer', `<div class="in"><span>DNP DS-RX1</span>${tier('estimated', 'Provisional')}<span class="chev">${ic('cd', 's14')}</span></div>`)}
+          ${fr('Printer', `<div class="in"><span>DNP DS-RX1</span>${tier('ready', 'Tested')}<span class="chev">${ic('cd', 's14')}</span></div>`)}
         </div>
         ${sect('Event palette', '5 colours · Gold, Ink, Cream…', false)}
         ${sect('Printing notes', 'Two per sheet · keep 3 mm from edges', false)}`
@@ -4266,6 +4758,8 @@
 
         // ---------- layers ----------
         function layers(sel, o = {}) {
+          if (o.empty)
+            return `<div style="padding:18px 16px;display:flex;flex-direction:column;gap:6px;align-items:flex-start"><b style="font-size:14px">No layers yet</b><span class="help">Everything you add appears here. Drag a row up or down to put it in front or behind.</span></div>`
           return `<div class="lrs">${LAYERS.map((l) => {
             const on = l.n === sel
             return `<div class="lr ${l.ind ? 'ind' : ''} ${on ? 'on' : ''} ${o.hover === l.n ? 'hov' : ''}">
@@ -4287,7 +4781,7 @@
           return `<aside class="rc">
         <div class="pnl" style="flex:1.45;overflow:hidden"><div class="ph"><span class="lbl-caps t">Properties</span></div>${o.props}</div>
         <div style="height:5px;border-top:1px solid var(--border-subtle);cursor:row-resize;flex:none"></div>
-        <div class="pnl" style="flex:1;overflow:hidden"><div class="ph"><span class="lbl-caps t">Layers <span class="muted" style="font-weight:500">10</span></span><button class="ib sm">${ic('plus', 's14')}</button><button class="ib sm">${ic('cd', 's14')}</button></div>${layers(o.sel, o)}</div>
+        <div class="pnl" style="flex:1;overflow:hidden"><div class="ph"><span class="lbl-caps t">Layers <span class="muted" style="font-weight:500">${o.empty ? 0 : 10}</span></span><button class="ib sm">${ic('plus', 's14')}</button><button class="ib sm">${ic('cd', 's14')}</button></div>${layers(o.sel, o)}</div>
       </aside>`
         }
 
@@ -4303,8 +4797,8 @@
         ${o.compact ? '' : `<span>${ic('clock', 's14')} Recovery copy 12:04</span>`}
         <span class="grow"></span>
         ${o.compact ? '' : `<span>${o.selInfo || 'No selection'}</span>`}
-        <span class="chip warn ${o.checksHover ? 'hov' : ''}">${ic('alert')}${o.checksLabel || '2 need attention'}</span>
-        <span class="chip">${ic('printer')}DNP DS-RX1 · ≈ Provisional ${ic('cd', 's14')}</span>
+        <span class="chip ${o.checksOk ? '' : 'warn'} ${o.checksHover ? 'hov' : ''}">${ic(o.checksOk ? 'okc' : 'alert')}${o.checksLabel || '2 need attention'}</span>
+        <span class="chip">${ic('printer')}DNP DS-RX1 · Tested ${ic('cd', 's14')}</span>
         <span class="chip">${ic('grid')}Snap</span>
         <span class="zoom"><button class="ib">${ic('minus')}</button><span class="v">${z}</span><button class="ib">${ic('plus')}</button><button class="btn ghost sm">Fit</button></span>
       </footer>`
@@ -4335,7 +4829,7 @@
           <div class="stage">${o.banner || ''}${ab}${o.stageExtra || ''}</div>
           ${o.cvExtra || ''}
         </div>
-        ${rightCol({ props: o.props, sel: o.sel, tabs: compact, hover: o.layerHover })}
+        ${rightCol({ props: o.props, sel: o.sel, tabs: compact, hover: o.layerHover, empty: o.layersEmpty })}
         ${floatD}
         ${o.edExtra || ''}
       </div>
@@ -4356,14 +4850,54 @@
             layerHover: 'Photo 1',
             rail: { hover: 'text' },
             anns:
-              ann(1, 70, 8) +
-              ann(2, 1040, 8) +
-              ann(3, 1660, 8) +
-              ann(4, 40, 70) +
-              ann(5, 900, 52) +
-              ann(6, 1600, 100) +
-              ann(7, 1600, 560) +
-              ann(8, 1120, 970)
+              ann(1, 330, 12) +
+              ann(2, 1225, 12) +
+              ann(3, 1665, 40) +
+              ann(4, 1880, 40) +
+              ann(5, 26, 410) +
+              ann(6, 330, 470) +
+              ann(7, 1000, 62) +
+              ann(8, 1530, 600)
+          })
+
+        R.editorFirstRun = () =>
+          editor({
+            drawer: null,
+            top: { title: 'Untitled strip', checks: {} },
+            props: propsProject().replace('Ava &amp; Theo Wedding', 'Untitled strip'),
+            sel: null,
+            blank: true,
+            safe: true,
+            layersEmpty: true,
+            checksOk: true,
+            checksLabel: 'No issues',
+            vb: { safe: true, safeOpen: true },
+            stageExtra: `<div style="position:absolute;left:calc(50% + 175px);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:12px">
+          <div style="font-size:16px;font-weight:600">Three steps to a template</div>
+          ${[
+            [
+              'Add photo slots',
+              'Where the booth puts each guest photo.',
+              'Add photo slot',
+              'camera'
+            ],
+            ['Add names and the date', 'Pick a ready-made text style.', 'Add text', 'type'],
+            [
+              'Pick the event colours',
+              'Set them once, use them everywhere.',
+              'Open Colors',
+              'palette'
+            ]
+          ]
+            .map(
+              (t, i) =>
+                `<div class="tipcard"><span class="n">${i + 1}</span><div style="display:flex;flex-direction:column;gap:6px;flex:1"><b style="font-size:14px">${t[0]}</b><span class="help">${t[1]}</span><button class="btn sec sm" style="align-self:flex-start">${ic(t[3], 's14')}${t[2]}</button></div></div>`
+            )
+            .join('')}
+          <span class="lnk" style="font-size:13px">Hide these tips</span></div>`,
+            cvExtra: `<div class="ptip" style="left:380px;top:52px"><div style="flex:none;width:58px;height:110px;border-radius:4px;position:relative;background:#f4ece0;overflow:hidden;box-shadow:inset 0 0 0 1px var(--border)"><div style="position:absolute;inset:0;border:6px solid transparent;background:repeating-linear-gradient(-45deg,color-mix(in srgb,var(--overlay-trim) 75%,transparent) 0 1.5px,transparent 1.5px 5px) border-box;-webkit-mask:linear-gradient(#000 0 0) border-box,linear-gradient(#000 0 0) padding-box;-webkit-mask-composite:xor;mask-composite:exclude"></div><div style="position:absolute;inset:11px;border:1.5px dashed var(--overlay-safe)"></div></div><div style="display:flex;flex-direction:column;gap:4px"><b>Safe areas</b><span>The striped edge may be cut off by the printer. Keep names, dates and logos inside the dashed line.</span><span class="help">Only shown here. Never printed.</span></div></div>`,
+            selInfo: 'No selection',
+            anns: ann(1, 690, 220) + ann(2, 360, 70) + ann(3, 1530, 470)
           })
 
         R.editorText = () =>
@@ -4376,12 +4910,12 @@
             tags: true,
             selInfo: 'Names · 960 × 270 px',
             anns:
-              ann(1, 860, 600) +
+              ann(1, 660, 643) +
               ann(2, 1060, 760) +
               ann(3, 1890, 96) +
-              ann(4, 1550, 150) +
-              ann(5, 1890, 375) +
-              ann(6, 1890, 470) +
+              ann(4, 1530, 150) +
+              ann(5, 1530, 408) +
+              ann(6, 1530, 520) +
               ann(7, 330, 150)
           })
 
@@ -4398,7 +4932,7 @@
               ann(1, 640, 268) +
               ann(2, 1100, 500) +
               ann(3, 820, 340) +
-              ann(4, 1550, 150) +
+              ann(4, 1530, 150) +
               ann(5, 1890, 420) +
               ann(6, 330, 150)
           })
@@ -4415,12 +4949,12 @@
             tags: true,
             edExtra: `<div class="tip" style="right:330px;top:4px">Undo<span class="kbd">Ctrl+Z</span><span class="muted">·</span>Redo<span class="kbd">Ctrl+Y</span></div>`,
             anns:
-              ann(1, 292, 8) +
+              ann(1, 310, 12) +
               ann(2, 858, 48) +
               ann(3, 1395, 48) +
               ann(4, 360, 100) +
-              ann(5, 676, 50) +
-              ann(6, 1110, 160) +
+              ann(5, 735, 62) +
+              ann(6, 1110, 110) +
               ann(7, 1390, 660) +
               ann(8, 800, 750)
           })
@@ -4428,7 +4962,7 @@
         function safeMenu() {
           return `<div class="floatmenu" style="left:332px;top:38px;width:330px;padding:12px;display:flex;flex-direction:column;gap:10px">
         <div class="rowi" style="font-weight:600">Safe areas<span class="tog on" style="margin-left:auto"></span></div>
-        <div class="rowi">${ic('printer', 's14')}DNP DS-RX1<span style="margin-left:auto">${tier('estimated', 'Provisional')}</span></div>
+        <div class="rowi">${ic('printer', 's14')}DNP DS-RX1<span style="margin-left:auto">${tier('ready', 'Tested')}</span></div>
         <div style="display:flex;flex-direction:column;gap:7px;padding:8px 0;border-top:1px solid var(--border-subtle);border-bottom:1px solid var(--border-subtle)">
           <div class="rowi"><span style="width:26px;height:12px;background:repeating-linear-gradient(-45deg,var(--overlay-trim) 0 1.4px,transparent 1.4px 5px);flex:none"></span>May be trimmed (estimated)</div>
           <div class="rowi"><span style="width:26px;border-top:1.5px dashed var(--overlay-safe);flex:none"></span>Keep important content inside</div>
@@ -4449,12 +4983,13 @@
             safe: true,
             flag: true,
             vb: { mode: 'print', safe: true, safeOpen: true },
+            top: { printOn: true },
             banner: `<div class="banner" style="left:auto;right:24px;transform:none">${ic('eye')}Print Preview · read only<button class="btn sec sm">Edit in Design</button></div>`,
             cvExtra: safeMenu(),
             zoom: '21%',
             selInfo: 'Two copies of one strip',
             anns:
-              ann(1, 1232, 102) +
+              ann(1, 1200, 116) +
               ann(2, 840, 925) +
               ann(3, 790, 150) +
               ann(4, 730, 935) +
@@ -4492,7 +5027,7 @@
         <div class="ck info"><div class="top">dslrBooth</div>
           <div class="hl">4 texts export as part of the picture</div>
           <div class="ex">They print exactly as designed but can't be edited inside dslrBooth.</div></div>
-        <div class="disc" style="margin:0 10px;height:32px;font-weight:500">${ic('cr', 's14')}2 more<span class="r">Safe areas are provisional · 1 hidden layer</span></div>
+        <div class="disc" style="margin:0 10px;height:32px;font-weight:500">${ic('cr', 's14')}2 more<span class="r">Trim at the cut not measured · 1 hidden layer</span></div>
         <div class="scrollfade b" style="background:linear-gradient(to top,var(--surface-panel),transparent)"></div>
       </aside>`
         }
@@ -4512,8 +5047,8 @@
               ann(1, 300, 60) +
               ann(2, 60, 140) +
               ann(3, 393, 690) +
-              ann(4, 392, 500) +
-              ann(5, 318, 452) +
+              ann(4, 395, 535) +
+              ann(5, 300, 470) +
               ann(6, 60, 860)
           })
 
@@ -4539,58 +5074,64 @@
             overlay: dialog({
               title: 'Export',
               desc: 'Ava &amp; Theo Wedding · 2×6 strip',
-              summary: `<b>3 files</b><span class="muted">·</span>${sev('warn', '1 needs attention')}<span class="muted">·</span><span class="sec-t">Printer:</span><span class="chip" style="box-shadow:inset 0 0 0 1px var(--border)">DNP DS-RX1 ${tier('estimated', 'Provisional')}${ic('cd', 's14')}</span>`,
-              body: `<div class="grp"><div class="lbl-caps">For dslrBooth</div>
-              <div class="opt on"><span class="cb on">${ic('check')}</span><span><div class="tt">dslrBooth template · 2×6 strip</div><div class="dd">Native strip; dslrBooth prints it two per sheet</div></span><span class="fn">Ava &amp; Theo Wedding.zip</span></div>
-              <div class="opt"><span class="cb"></span><span><div class="tt">dslrBooth template · 4×6 sheet</div><div class="dd">Both copies on one sheet, for setups that need a 4×6 template</div></span><span class="fn">Ava &amp; Theo Wedding 4x6.zip</span></div></div>
-            <div class="grp"><div class="lbl-caps">Images</div>
-              <div class="opt on"><span class="cb on">${ic('check')}</span><span><div class="tt">Print sheet PNG</div><div class="dd">4×6 · both strips · 2400 × 3600 px</div></span><span class="fn">… print.png</span></div>
-              <div class="opt on"><span class="cb on">${ic('check')}</span><span><div class="tt">Design PNG</div><div class="dd">One strip · 1200 × 3600 px</div></span><span class="fn">… design.png</span></div></div>
-            <div class="grp"><div class="lbl-caps">For the client</div>
-              <div class="opt"><span class="cb"></span><span><div class="tt">Client proof</div><div class="dd">Sample photos and a "Proof" mark · not for printing</div></span><span class="fn">… proof.png</span></div></div>
-            <div class="disc">${ic('cr', 's14')}Checks<span class="sev warn" style="margin-left:6px">${ic('alert', 's14')}1 needs attention</span><span class="sev info">${ic('info', 's14')}2 good to know</span><span class="r">Errors open here automatically</span></div>`,
+              summary: `<div class="readyrow"><span class="big warn">${ic('alert')}</span><div class="grow"><b style="font-size:15px">Almost ready · 1 thing to look at</b><div class="help">"Date" is close to the bottom edge. You can still export.</div></div><button class="btn sec sm">Review</button><span class="chip" style="box-shadow:inset 0 0 0 1px var(--border)">${ic('printer')}DNP DS-RX1 ${tier('ready', 'Tested')}${ic('cd', 's14')}</span></div>`,
+              body: `<div style="font-size:15px;font-weight:600">What do you need?</div>
+            <div class="pcards">
+              <div class="pcard on"><span class="ck2">${ic('check', 's14')}</span><div class="pic">${miniStrip('#f6f0e7', '#c9b7a0', '#b8915a', 38)}<span style="display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--text-secondary)">${ic('zip', 's20')}<span style="font-size:11px">dslrBooth</span></span></div><div class="tt">For the booth</div><div class="dd">A dslrBooth template. The booth prints it two per sheet.</div></div>
+              <div class="pcard on"><span class="ck2">${ic('check', 's14')}</span><div class="pic">${miniSheet('#f6f0e7', '#c9b7a0', '#b8915a')}</div><div class="tt">Print files</div><div class="dd">The 4×6 sheet and the single strip as pictures.</div></div>
+              <div class="pcard"><span class="ck2 off"></span><div class="pic"><div style="position:relative">${miniStrip('#f6f0e7', '#c9b7a0', '#b8915a', 38)}<span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-60deg);font:800 15px var(--ui);letter-spacing:.2em;color:rgb(200 40 40/.75);white-space:nowrap">PROOF</span></div></div><div class="tt">Client proof</div><div class="dd">A preview to send for approval. Not for printing.</div></div>
+            </div>
+            <div class="help" style="display:flex;gap:8px;align-items:center">${ic('file', 's14')}Creates 3 files: Ava &amp; Theo Wedding.zip · print.png · design.png</div>
+            <div class="disc">${ic('cr', 's14')}More options<span class="r">4×6 dslrBooth template · single files · file names</span></div>`,
               footer: `${ic('folder')}<span class="sec-t" style="white-space:nowrap">Exports › Ava &amp; Theo Wedding</span><button class="btn ghost sm">Change…</button><span class="grow"></span><button class="btn sec">Cancel</button><button class="btn pri">Export 3 files</button>`
             }),
-            anns: ann(1, 322, 152) + ann(2, 322, 198) + ann(3, 322, 606) + ann(4, 1080, 694)
+            anns:
+              ann(1, 322, 175) +
+              ann(2, 322, 300) +
+              ann(3, 322, 545) +
+              ann(4, 322, 585) +
+              ann(5, 1080, 660)
           })
 
         R.profileDlg = () =>
           back({
             overlay: dialog({
-              title: 'Printer profile · DNP DS-RX1',
-              desc: '6×4 paper · two 2×6 strips per sheet · 2-inch cut · borderless',
-              headRight: tier('estimated', 'Provisional'),
-              fade: true,
-              body: `<div class="card" style="display:flex;flex-direction:column;gap:10px">
-              <div class="lbl-caps">What this means for your design</div>
-              <div class="rowi" style="align-items:flex-start;gap:10px"><span style="flex:1">Keep important content at least <b>3 mm</b> from the strip edges and from the cut.</span>${tier('estimated', 'Estimated')}</div>
-              <div class="rowi" style="align-items:flex-start;gap:10px"><span style="flex:1">About <b>1.6–1.8 mm</b> may be trimmed at the outer edges.</span>${tier('estimated', 'Estimated')}</div>
-              <div class="rowi" style="align-items:flex-start;gap:10px"><span style="flex:1">How much the cut itself trims is <b>not measured yet</b>.</span>${tier('unknown', 'Not measured yet')}</div>
-              <div class="help">How sure are we? 0 verified · 4 observed · 2 estimated · 2 reference · 2 not measured yet</div></div>
-            <div class="inl ok" style="font-size:13px">${ic('okc')}<span><b>Latest test print looked right.</b> Both strips matched, the cut was clean and there was no white gap. Exact trim distances haven't been measured, so the 3 mm guidance stays.</span></div>
-            <div class="two" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-              <div class="card"><div class="lbl-caps" style="margin-bottom:6px">Output guidance · in Template Studio</div><div class="help" style="font-size:12.5px;color:var(--text-secondary)">Safe-area lines, trim hatching and the checks that warn you. Shown in the editor only; never printed.</div></div>
-              <div class="card"><div class="lbl-caps" style="margin-bottom:6px">Printer setup · on the booth PC</div><div class="help" style="font-size:12.5px;color:var(--text-secondary)">Cut and margins are set in the printer driver and dslrBooth. Template Studio never changes them.</div></div>
+              title: 'Printer &amp; cutting · DNP DS-RX1',
+              desc: '6×4 paper · two 2×6 strips per sheet, cut apart by the printer',
+              headRight: `<span class="tier ready">${ic('okc')}Ready to use</span>`,
+              bodyStyle: 'flex-direction:row;gap:20px',
+              body: `<div style="flex:none;width:300px;display:flex;flex-direction:column;gap:8px">
+              <div style="position:relative;flex:none;height:300px;border-radius:8px;overflow:hidden;background:linear-gradient(180deg,#f7f1e8,#f1e8db);box-shadow:inset 0 0 0 1px var(--border)">
+                <div style="position:absolute;left:0;top:0;right:0;height:30px;background:repeating-linear-gradient(-45deg,color-mix(in srgb,var(--overlay-trim) 80%,transparent) 0 2px,transparent 2px 8px)"></div>
+                <div style="position:absolute;left:0;top:0;bottom:0;width:30px;background:repeating-linear-gradient(-45deg,color-mix(in srgb,var(--overlay-trim) 80%,transparent) 0 2px,transparent 2px 8px)"></div>
+                <div style="position:absolute;left:56px;top:56px;right:-4px;bottom:-4px;border-left:2px dashed var(--overlay-safe);border-top:2px dashed var(--overlay-safe)"></div>
+                <div class="ph1" style="position:absolute;left:84px;top:104px;right:-20px;bottom:-20px;box-shadow:0 0 0 5px #fff"></div>
+                <span style="position:absolute;left:38px;top:5px;font:600 12px var(--ui);color:#3a332c;background:#fff;border-radius:4px;padding:2px 7px;box-shadow:0 1px 3px rgb(0 0 0/.2)">May be cut off · about 1.7 mm</span>
+                <span style="position:absolute;left:64px;top:64px;font:600 12px var(--ui);color:#145c58;background:#fff;border-radius:4px;padding:2px 7px;box-shadow:0 1px 3px rgb(0 0 0/.2)">Keep names and logos inside · 3 mm</span>
+              </div>
+              <div class="help">The corner of a strip, enlarged. Striped = may be cut off. Dashed = safe line.</div>
+              <div style="display:flex;gap:12px;align-items:center;padding:8px 10px;border-radius:8px;background:var(--surface-canvas)"><div style="position:relative">${miniSheet('#f6f0e7', '#c9b7a0', '#b8915a')}<span style="position:absolute;left:50%;top:-4px;bottom:-4px;border-left:1.5px dashed #888"></span></div><span class="help">Two strips per sheet. The printer cuts them apart down the middle.</span></div>
             </div>
-            <div class="grp"><div class="lbl-caps">Set up the booth PC</div>
-              <div class="rowi" style="align-items:flex-start"><b class="tnum" style="width:16px">1</b><span>In dslrBooth, use the 2×6 template exported from Template Studio, with "Print 2 per page" on.</span></div>
-              <div class="rowi" style="align-items:flex-start"><b class="tnum" style="width:16px">2</b><span>In the DNP DS-RX1 printer settings, choose the 2-inch cut and turn the print margin off (borderless).</span></div>
-              <div class="rowi" style="align-items:flex-start"><b class="tnum" style="width:16px">3</b><span>Load 6×4 (PC) media.</span></div></div>
-            <div class="grp"><div class="lbl-caps" style="display:flex;align-items:center;gap:6px">${ic('cd', 's14')}Evidence</div>
-              <div class="rowi">${tier('verified', 'Verified')}<span class="muted">Nothing verified on the booth PC yet</span></div>
-              <div class="rowi" style="align-items:flex-start">${tier('observed', 'Observed')}<span>Driver page 156.1 × 105.0 mm · borderless on · 2-inch cut set in the driver (test printer) · test print visually matched</span></div>
-              <div class="rowi" style="align-items:flex-start">${tier('estimated', 'Estimated')}<span>Trim 1.8 mm top and bottom, 1.6 mm sides · keep-safe 3 mm</span></div>
-              <div class="rowi">${tier('reference', 'Reference')}<span>Paper 152.4 × 101.6 mm · strip 2 × 6 in</span></div>
-              <div class="rowi">${tier('unknown', 'Not measured yet')}<span>Trim at the cut · booth PC driver version</span></div></div>`,
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:14px">
+              <div class="card" style="display:flex;flex-direction:column;gap:8px"><div style="font-weight:600">How sure are we?</div>
+                <div class="meter"><span class="on"></span><span class="on"></span><span></span></div>
+                <div class="meterl"><span>Estimated</span><span><b>Tested on a print</b></span><span>Measured</span></div>
+                <div class="help">A real print looked right: both strips matched, the cut was clean, no white gap. Trim wasn't measured exactly, so the 3 mm line stays as a safety margin.</div></div>
+              <div style="font-weight:600">Set up the booth PC</div>
+              <div class="steptile"><span class="pi"><b>1</b>${ic('zip', 's20')}</span><span><b>dslrBooth</b><br><span class="help">Use the 2×6 template, with "Print 2 per page" on.</span></span></div>
+              <div class="steptile"><span class="pi"><b>2</b>${ic('printer', 's20')}</span><span><b>Printer settings</b><br><span class="help">2-inch cut on, print margin off (borderless).</span></span></div>
+              <div class="steptile"><span class="pi"><b>3</b>${ic('file', 's20')}</span><span><b>Paper</b><br><span class="help">Load 6×4 (PC) media.</span></span></div>
+              <div class="help">Template Studio shows the guides. It never changes printer settings.</div>
+              <div class="disc">${ic('cr', 's14')}How do we know?<span class="r">The evidence behind each value</span></div>
+            </div>`,
               footer: `<span class="sec-t">This project: ${sev('warn', '1 item near an edge')}</span><button class="btn ghost sm">Open Checks</button><span class="grow"></span><button class="btn ghost">Change printer…</button><button class="btn pri">Done</button>`
             }),
             anns:
-              ann(1, 893, 36) +
-              ann(2, 322, 116) +
-              ann(3, 322, 305) +
-              ann(4, 322, 380) +
-              ann(5, 322, 598) +
-              ann(6, 322, 712)
+              ann(1, 1000, 52) +
+              ann(2, 322, 150) +
+              ann(3, 1060, 135) +
+              ann(4, 1060, 330) +
+              ann(5, 1060, 625)
           })
 
         function sheetMini(sel) {
@@ -4624,7 +5165,7 @@
           })
 
         function colorPop() {
-          return `<div class="cpop" style="right:350px;top:250px">
+          return `<div class="cpop" style="right:372px;top:250px">
         <div class="lbl-caps">Event palette</div>
         <div class="swgrid">${PAL.map((p, i) => `<span class="sw ${i === 1 ? 'on' : ''}" title="${p.n}" style="background:${p.h}"></span>`).join('')}</div>
         <div class="rowi" style="min-height:22px;font-size:12px">${ic('link', 's14')}<span>Linked to <b>Gold</b></span><span class="lnk" style="margin-left:auto">Use fixed colour</span></div>
@@ -4634,7 +5175,7 @@
         <div class="r2"><div class="in tnum"># B8915A</div><button class="btn sec">Pick on screen…</button></div>
       </div>`
         }
-        R.editorLight = () =>
+        R.editorColors = () =>
           editor({
             drawer: 'colors',
             top: { state: 'modified' },
@@ -4647,7 +5188,7 @@
             vb: { safe: true },
             edExtra: colorPop(),
             selInfo: 'Names · 960 × 270 px',
-            anns: ann(1, 330, 120) + ann(2, 1300, 236) + ann(3, 1030, 700) + ann(4, 860, 940)
+            anns: ann(1, 330, 120) + ann(2, 1250, 236) + ann(3, 1100, 860)
           })
 
         function settings(section) {
@@ -4658,7 +5199,7 @@
             )
             .join('')
           const theme = (id, label, icon, on, pv) =>
-            `<div class="themecard ${on ? 'on' : ''} ${id === 'dark' ? 'focusable focus' : ''}"><div class="pv">${pv}</div><div class="rowi"><span class="rb ${on ? 'on' : ''}"></span>${ic(icon, 's14')}${label}</div></div>`
+            `<div class="themecard ${on ? 'on' : ''} ${id === 'light' ? 'focusable focus' : ''}"><div class="pv">${pv}</div><div class="rowi"><span class="rb ${on ? 'on' : ''}"></span>${ic(icon, 's14')}${label}</div></div>`
           const pvD =
             '<span style="background:#17181c"></span><span style="background:#0e0f12;display:grid;place-items:center"><i style="width:14px;height:36px;background:#f6f0e7;display:block"></i></span><span style="background:#1c1d22"></span>'
           const pvL =
@@ -4670,15 +5211,18 @@
           let content
           if (section === 'Appearance') {
             content = `<div class="lbl-caps">Theme</div>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">${theme('dark', 'Dark', 'moon', true, pvD)}${theme('light', 'Light', 'sun', false, pvL)}${theme('sys', 'Match system', 'monitor', false, pvS)}</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">${theme('light', 'Light · default', 'sun', true, pvL)}${theme('dark', 'Dark', 'moon', false, pvD)}${theme('sys', 'Match system', 'monitor', false, pvS)}</div>
           <div class="help">Your designs look the same in every theme. Only the space around them changes.</div>
-          <div class="lbl-caps" style="margin-top:6px">Interface size</div>
+          <div class="lbl-caps" style="margin-top:6px">Button and text size</div>
+          <span class="seg" style="align-self:flex-start"><span class="on">Comfortable · default</span><span>Compact</span></span>
+          <div class="help">Comfortable has larger buttons and text. Compact fits more on screen for experienced users.</div>
+          <div class="lbl-caps" style="margin-top:6px">Interface scale</div>
           <span class="seg" style="align-self:flex-start"><span>90 %</span><span class="on">100 %</span><span>110 %</span><span>125 %</span></span>
           <div class="help">Makes panels and text larger or smaller. Canvas zoom is separate. Windows display scaling still applies.</div>
-          <div class="card" style="display:flex;gap:14px;align-items:center"><span style="font-size:13px">Preview: <b>Properties</b> · Font size <span class="in tnum" style="display:inline-flex;width:70px;height:24px">200<span class="u">px</span></span></span></div>`
+`
           } else {
             content = `<div class="lbl-caps">Printing</div>
-          ${row('Default printer profile', 'Used for safe areas and printer checks in every project on this computer.', `<div class="in lg" style="width:250px">DNP DS-RX1 ${tier('estimated', 'Provisional')}${chev()}</div>`)}
+          ${row('Default printer profile', 'Used for safe areas and printer checks in every project on this computer.', `<div class="in lg" style="width:250px">DNP DS-RX1 ${tier('ready', 'Tested')}${chev()}</div>`)}
           ${row('Show safe areas when a printer is chosen', 'You can still hide them per session from the view bar.', '<span class="tog on"></span>')}
           ${row('Printer details', '', '<button class="btn sec">Open…</button>')}
           <div class="lbl-caps" style="margin-top:10px">Editor</div>
@@ -4754,8 +5298,7 @@
           <div style="display:flex;align-items:flex-end;gap:16px"><div class="grow"><div class="disp">Start a template</div><div class="sec-t" style="margin-top:4px;font-size:14px">Design a print template for dslrBooth, or pick up where you left off.</div></div>
             <button class="btn sec lg">${ic('folder')}Open project…<span class="kbd">Ctrl+O</span></button></div>
           <div class="sbanner">${ic('clock')}<span class="grow"><b>Unsaved changes to "Lena's 40th" were kept</b> from yesterday at 6:12 PM.</span><button class="btn sec sm">Review</button><button class="btn ghost sm">Not now</button></div>
-          <div class="cards3">
-            ${card('sparkle', 'Guided design', 'Answer a few questions about the event and get a finished template you can still edit.', steps, { future: true, tag: '<span class="tag future" style="margin-left:auto">Phase 7C</span>' })}
+          <div class="cards3" style="grid-template-columns:repeat(2,minmax(0,1fr))">
             ${card('plus', 'Blank design', 'Choose a print size and design it your way in the full editor.', blank, { hov: true })}
             ${card('upload', 'Import dslrBooth', 'Turn a dslrBooth template (.zip) into a project you can edit.', imp)}
           </div>
@@ -4767,8 +5310,8 @@
             ${rc('Class of 2027 Prom', '2×6 strip · 12 Nov', miniSheet('#111', '#5a5a5a', '#d4b36a'))}
             ${rc('Spring Gala', '4×6 portrait · 3 Nov', mini46('#e8efe6', '#9fb39b', '#3f5a3c'), { missing: true })}
           </div>
-          <div style="display:flex;gap:18px;font-size:13px;color:var(--text-muted);align-items:center">${ic('book', 's14')}<span class="lnk">What is a photo slot?</span><span class="lnk">Why strips print two per sheet</span><span class="lnk">What safe areas are</span></div>
-        </div></div>${ann(1, 470, 300) + ann(2, 880, 130) + ann(3, 120, 395) + ann(4, 1280, 640)}`
+          <div style="display:flex;gap:16px;font-size:12px;color:var(--text-muted);align-items:center">Learn:<span style="text-decoration:underline">What is a photo slot?</span><span style="text-decoration:underline">Why strips print two per sheet</span><span style="text-decoration:underline">What safe areas are</span></div>
+        </div></div>${ann(1, 120, 395) + ann(2, 880, 130) + ann(3, 1280, 640)}`
         }
 
         // ---------- component sheet ----------
@@ -4863,12 +5406,14 @@
           const h = +fw.dataset.h
           const key = fw.dataset.render
           const theme = fw.dataset.theme
-          fw.id = fw.id || `fw-${key}-${theme}`
+          const dens = fw.dataset.density || 'comfy'
+          DENS = dens
+          fw.id = fw.id || `fw-${key}-${theme}${dens === 'compact' ? '-compact' : ''}`
           const f = document.createElement('div')
           f.className = 'frame'
           f.style.width = w + 'px'
           f.style.height = h + 'px'
-          f.innerHTML = `<div class="app t-${theme}" role="img" aria-label="Mockup: ${key} (${theme})">${R[key]()}</div>`
+          f.innerHTML = `<div class="app t-${theme} d-${dens}" role="img" aria-label="Mockup: ${key} (${theme})">${R[key]()}</div>`
           fw.appendChild(f)
           frames.push({ fw, f, w, h })
         })

@@ -1,19 +1,59 @@
 # Phase 7B · B1 — Editor refresh mockup review
 
-_Status: **awaiting owner review** (2026-11-19). Design-only. No production code, schema, `.boothproject`, renderer, export, import, Output Profile, Safe Area, preflight, autosave, recovery, keyboard or test change._
+_Status: **round 2 delivered, awaiting owner review** (2026-11-19). Round 1 was reviewed by the owner; their feedback and answers are applied in §0. Design-only. No production code, schema, `.boothproject`, renderer, export, import, Output Profile, Safe Area, preflight, autosave, recovery, keyboard or test change._
 
 **Mockups:** [`design/phase-7b-b1/index.html`](../design/phase-7b-b1/index.html). It is a standalone page: open it in any browser. It has no app imports or app state and is not wired into the app. Rendered PNGs of every mockup are in [`design/phase-7b-b1/png/`](../design/phase-7b-b1/png/).
 **Architecture source:** [PHASE_7A_UX_ARCHITECTURE.md](PHASE_7A_UX_ARCHITECTURE.md). B1 shows that architecture and does not restate it. Section references (§) below point to it.
 
 All sample content is fictional: Ava & Theo Wedding, Northfield Holiday Party and the other names. Sample photos are abstract drawings.
 
-## 1. Working decisions applied (owner brief for B1)
+## 0. Round 2 (owner feedback, 2026-11-19)
+
+| Change | Where |
+|---|---|
+| **Light is the default theme** (D3 changed from Dark). Dark and Match system stay in Settings | All mockups; Dark sample 11a |
+| **Comfortable size by default**: 34 px buttons and fields, 38 px primary buttons, 36 px layer rows, 14 px text, 80 px rail. **Compact** (round 1 sizes) is a Settings option for experienced users | All mockups; Compact sample 11b; Settings 12a |
+| **Export**: keeps the pinned summary and sticky footer (the fix for the Windows fold). The middle becomes a readiness line ("Almost ready · 1 thing to look at" + Review), three **picture cards** (For the booth · Print files · Client proof), one "Creates 3 files" line and **More options** (4×6 dslrBooth template, single files, file names) | 8 |
+| **Printer & cutting** (was "Printer profile"): an enlarged strip-corner drawing with the cut-off band and the safe line and their sizes, a 3-step **"How sure are we?"** meter (Estimated → Tested on a print → Measured), setup steps as picture tiles, and the five evidence tiers behind **"How do we know?"** | 9 |
+| **DS-RX1 shown as "Tested · ready to use"** (owner decision V8). Trim stays an estimate; the 3 mm guidance stays; no exact measurements claimed | 2, 6, 8, 9, 12 |
+| **New:** first-run tips on an empty canvas, a tooltip with a picture, a **See how it prints** button (opens Print Preview), **Undo/Redo with words**, Event Palette colours in the selection toolbar | 2, 2b, 3 |
+| Selection toolbar limited to 3–5 actions plus More. Text: Edit text · palette colours · Arrange · Duplicate · More. Photo slot: Reposition · Frame · Arrange · Duplicate · More | 3, 4, 5 |
+
+**Owner answers to V1–V10 (applied):**
+
+| # | Answer |
+|---|---|
+| V1 | Inter, bundled |
+| V2 | Kind colours approved but softened, and shown only on the small chip in Layers and the Properties header (not on the rail, drawers, canvas or selection) |
+| V3 | The Guided design card is hidden until it works (7C). Start shows Blank design and Import dslrBooth |
+| V4 | Toolbar extremely contextual, 3–5 frequent actions + More |
+| V5 | Checks panel in the left drawer area |
+| V6 | Muted amber trim hatch |
+| V7 | The floating drawer stays open while adding several things. It closes on a canvas click or another rail item. Pinning comes later |
+| V8 | Record the DNP visual print pass. The owner rules the profile **ready for production use**; trim values stay estimates and no exact measurements are claimed. A full printer-profile scope (a list of booth printers, or detecting the printer) is future work. Done as a separate commit after round 2 |
+| V9 | Keep the Learn row, visually quiet (small grey text) |
+| V10 | Drawer 264 px by default, resizable 240–360 px |
+
+**Evidence tiers** now use icon + word + a subtle tone (a neutral chip with a tinted icon), not a different colour per tier.
+
+**New questions (round 2):**
+
+| # | Question |
+|---|---|
+| R1 | Do the Comfortable sizes feel friendly enough, or one more step up? |
+| R2 | Export defaults: "For the booth" + "Print files" on (shown), or only "For the booth"? |
+| R3 | First-run tips: on every new project until hidden, or only the first time? |
+| R4 | "See how it prints": keep the name and its place in the top bar? |
+
+PNG renders were replaced: `design/phase-7b-b1/png/` now holds the 17 round 2 images (00a/00b design system, 01–12b, incl. 02b first run, 11a dark theme, 11b compact size).
+
+## 1. Working decisions applied (owner brief for B1, round 1)
 
 | # | Applied as |
 |---|---|
 | D1 | **Export** is the primary top-bar button. Save is secondary and greyed out while the project is saved. |
 | D2 | Properties \| Layers become **tabs** below 860 px of window height and are stacked above it. |
-| D3 | **Dark** is the default. Light and Match system are designed (mockups 11, 12). |
+| D3 | ~~Dark default~~ → **Light default** in round 2. Dark and Match system available. |
 | D4 | The rail reads **Elements · Text · Photos · Uploads · Colors**. No better label emerged, so there is no alternative. |
 | D5 | Guide answers that are only recommendations stay on this computer. Not shown (7C). |
 | D6 | Logos are copied into the project. Not shown (Company Profile is future work). |
@@ -188,7 +228,7 @@ At 1426×779 the canvas area measures 1054 × 671 px, and the full 2×6 strip sh
 
 Screen-reader work stays in B24.
 
-## 7. Open design decisions (new in B1)
+## 7. Open design decisions from round 1 (answered, see §0)
 
 | # | Question | Shown / recommended |
 |---|---|---|
