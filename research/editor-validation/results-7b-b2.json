@@ -1,7 +1,7 @@
 {
-  "when": "2026-11-19T13:41:15.527Z",
-  "pass": 25,
-  "total": 25,
+  "when": "2026-11-19T18:34:42.477Z",
+  "pass": 27,
+  "total": 27,
   "results": [
     {
       "name": "1 a fresh install starts in the Light theme at Comfortable density and 100 % scale",
@@ -194,9 +194,9 @@
             "maxDelta": 0
           },
           "sheet": {
-            "identical": true,
-            "differing": 0,
-            "maxDelta": 0
+            "identical": false,
+            "differing": 1,
+            "maxDelta": 1
           }
         }
       }
@@ -255,14 +255,14 @@
       "ok": true,
       "detail": {
         "design": {
-          "identical": true,
-          "differing": 0,
-          "maxDelta": 0
+          "identical": false,
+          "differing": 1,
+          "maxDelta": 1
         },
         "sheet": {
-          "identical": true,
-          "differing": 0,
-          "maxDelta": 0
+          "identical": false,
+          "differing": 2,
+          "maxDelta": 1
         }
       }
     },
@@ -273,7 +273,24 @@
         "same": true,
         "files": ["B2 Strip 4x6.zip", "B2 Strip-design.png", "B2 Strip-print.png", "B2 Strip.zip"],
         "diffs": [],
-        "tolerated": [],
+        "tolerated": [
+          {
+            "file": "B2 Strip 4x6.zip",
+            "entry": "preview.png",
+            "width": 2400,
+            "height": 3600,
+            "differing": 1,
+            "maxDelta": 1
+          },
+          {
+            "file": "B2 Strip.zip",
+            "entry": "preview.png",
+            "width": 1200,
+            "height": 3600,
+            "differing": 1,
+            "maxDelta": 1
+          }
+        ],
         "masked": ["template.xml: LastSavedDate"]
       }
     },
@@ -325,6 +342,56 @@
       "detail": {
         "undo": "⌘Z",
         "redo": "⇧⌘Z"
+      }
+    },
+    {
+      "name": "11b every tooltip in the top bar, rail, Layers header and status bar stays ≥ 8 px inside the window (Comfortable + Compact, 1426×779 + 1100×650)",
+      "ok": true,
+      "detail": [
+        {
+          "density": "Comfortable size",
+          "size": "1426x779",
+          "triggers": 26,
+          "outside": []
+        },
+        {
+          "density": "Comfortable size",
+          "size": "1100x650",
+          "triggers": 26,
+          "outside": []
+        },
+        {
+          "density": "Compact size",
+          "size": "1426x779",
+          "triggers": 26,
+          "outside": []
+        },
+        {
+          "density": "Compact size",
+          "size": "1100x650",
+          "triggers": 26,
+          "outside": []
+        }
+      ]
+    },
+    {
+      "name": "11c the Layers help tooltip (near the right edge) is fully visible on hover and on keyboard focus, role=tooltip",
+      "ok": true,
+      "detail": {
+        "trigger": {
+          "x": 1421,
+          "y": 72,
+          "right": 6
+        },
+        "hoverTip": {
+          "text": "Layer shortcutsShow the keyboard shortcuts for the Layers panel",
+          "role": "tooltip",
+          "right": 8,
+          "left": 1172
+        },
+        "focusTip": {
+          "right": 8
+        }
       }
     },
     {

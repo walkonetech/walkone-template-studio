@@ -548,6 +548,82 @@ async function sameExports(c, a, b) {
       { undo: undo.kbd, redo: redo.kbd }
     )
 
+    // ---- 11b: every tooltip stays fully inside the window (real hover), Comfortable and Compact, two window sizes
+    const tipTargets = `[...document.querySelectorAll('.topbar .ui-tipwrap, .toolrail .ui-tipwrap, .layers-panel .panel-header .ui-tipwrap, .statusbar .ui-tipwrap')].filter(e=>{const r=e.getBoundingClientRect(); return r.width>0&&r.height>0})`
+    const tipReport = []
+    for (const density of ['Comfortable size', 'Compact size'])
+      for (const [w, ht] of [
+        [1426, 779],
+        [1100, 650]
+      ]) {
+        await viewMenu(c, density)
+        await c.send('Emulation.setDeviceMetricsOverride', {
+          width: w,
+          height: ht,
+          deviceScaleFactor: 0,
+          mobile: false
+        })
+        await sleep(500)
+        const n = await c.ev(`${tipTargets}.length`)
+        let bad = []
+        for (let i = 0; i < n; i++) {
+          const p = await J(c)(
+            `(()=>{const r=${tipTargets}[${i}].getBoundingClientRect(); return {x:r.left+r.width/2, y:r.top+r.height/2}})()`
+          )
+          await c.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: p.x, y: p.y })
+          await waitFor(c, `!!document.querySelector('.ui-tip[data-side]')`, 2000)
+          const t = await J(
+            c
+          )(`(()=>{const e=document.querySelector('.ui-tip'); if(!e) return null; const r=e.getBoundingClientRect(); const W=document.documentElement.clientWidth, H=document.documentElement.clientHeight;
+            return {text:e.textContent.slice(0,40), side:e.dataset.side, l:Math.round(r.left), t:Math.round(r.top), r:Math.round(W-r.right), b:Math.round(H-r.bottom), sw:e.scrollWidth, cw:e.clientWidth}})()`)
+          await c.send('Input.dispatchMouseEvent', {
+            type: 'mouseMoved',
+            x: 2,
+            y: Math.round(ht / 2)
+          })
+          await sleep(120)
+          if (!t || t.l < 7 || t.t < 7 || t.r < 7 || t.b < 7 || t.sw > t.cw + 1)
+            bad.push({ i, ...t })
+        }
+        tipReport.push({ density, size: `${w}x${ht}`, triggers: n, outside: bad })
+      }
+    await c.send('Emulation.clearDeviceMetricsOverride')
+    await viewMenu(c, 'Comfortable size')
+    await sleep(300)
+    check(
+      '11b every tooltip in the top bar, rail, Layers header and status bar stays ≥ 8 px inside the window (Comfortable + Compact, 1426×779 + 1100×650)',
+      tipReport.every((r) => r.triggers >= 10 && r.outside.length === 0),
+      tipReport
+    )
+    // The Layers-panel shortcut/help button (the owner's report): right edge, real hover, and keyboard focus.
+    const help = `document.querySelector('.layers-panel .panel-header .ui-tipwrap:last-of-type')`
+    const hp = await J(c)(
+      `(()=>{const r=${help}.getBoundingClientRect(); return {x:r.left+r.width/2, y:r.top+r.height/2, right:innerWidth-r.right}})()`
+    )
+    await c.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: hp.x, y: hp.y })
+    await waitFor(c, `!!document.querySelector('.ui-tip[data-side]')`, 2000)
+    const hoverTip = await J(c)(
+      `(()=>{const e=document.querySelector('.ui-tip'); const r=e.getBoundingClientRect(); return {text:e.textContent, role:e.getAttribute('role'), right:Math.round(document.documentElement.clientWidth-r.right), left:Math.round(r.left)}})()`
+    )
+    await c.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 2, y: 400 })
+    await sleep(200)
+    await c.ev(`${help}.querySelector('button').focus(); 1`)
+    await waitFor(c, `!!document.querySelector('.ui-tip[data-side]')`, 2000)
+    const focusTip = await J(c)(
+      `(()=>{const e=document.querySelector('.ui-tip'); if(!e) return null; const r=e.getBoundingClientRect(); return {right:Math.round(document.documentElement.clientWidth-r.right)}})()`
+    )
+    await c.ev(`document.activeElement.blur(); 1`)
+    await sleep(200)
+    check(
+      '11c the Layers help tooltip (near the right edge) is fully visible on hover and on keyboard focus, role=tooltip',
+      hoverTip.role === 'tooltip' &&
+        hoverTip.right >= 7 &&
+        hoverTip.left >= 7 &&
+        focusTip &&
+        focusTip.right >= 7,
+      { trigger: hp, hoverTip, focusTip }
+    )
+
     // ---- 12: the choice survives a restart; the project file never carries it
     await viewMenu(c, 'Dark theme')
     await viewMenu(c, 'Compact size')

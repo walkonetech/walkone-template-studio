@@ -29,7 +29,7 @@ export function IconButton({
   active?: boolean
   size?: 'sm' | 'md'
   tone?: 'warn'
-  placement?: 'bottom' | 'right' | 'top'
+  placement?: 'bottom' | 'right' | 'top' | 'left'
   className?: string
   tabIndex?: number
   onMouseDown?: (e: React.MouseEvent<HTMLButtonElement>) => void
