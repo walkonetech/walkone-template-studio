@@ -2,11 +2,14 @@
 // shell in the BUILT app. Start screen (Blank design, Import dslrBooth, Open project…, recent cards, no Guided Design);
 // the labelled rail and its five drawers (docked at ≥ 1600 px, floating below; stays open while adding; closes on a
 // canvas click, another category, Close and Escape; 240–360 px and remembered on this computer); the canvas-state bar
-// (Design | Print Preview, Sample photos, Safe areas, Overflow: view only, never Modified); the right column (Properties
+// (Design | Print Preview, Safe areas, Overflow: view only, never Modified); the right column (Properties
 // above Layers ≥ 860 px tall, tabs below); the top bar (Undo/Redo, Checks, See how it prints / Preview, Save, Export at
 // every size, platform shortcut labels, title ellipsis); Help › Keyboard shortcuts, F6 regions, Escape order; every
 // shell tooltip inside the window; design/print renders and exported files identical across shell states; the
-// owner's actual-app screenshots; no console errors.
+// owner's actual-app screenshots; no console errors. B3.1 (checks "B31-…"): Sample Photos are gone from every surface
+// and photo slots still work; Escape closes the floating drawer right after its resize grip was dragged; entering
+// Print Preview closes the creation drawer; a dialog closed with the mouse leaves no stale tooltip on its trigger (Tab
+// and hover still show it); the right column follows the responsive contract for the ACTUAL CSS height.
 // Run: npm run build && node research/editor-validation/validate-7b-b3.js
 const fs = require('fs')
 const path = require('path')
@@ -550,15 +553,15 @@ async function tooltipsInside(c, sel, height) {
       bodies[t] = await J(
         c
       )(`(()=>{const d=document.querySelector('.tooldrawer'); return d?{tool:d.dataset.tool, count:document.querySelectorAll('.tooldrawer').length, title:d.querySelector('.drawer-title').textContent,
-        has:{addText:!!d.querySelector('[data-testid=add-text]'), styles:!!d.querySelector('[data-testid=text-styles]'), fonts:!!d.querySelector('[data-testid=font-inventory]'), addPhoto:!!d.querySelector('[data-testid=add-photo]'), samples:!!d.querySelector('[data-testid=sample-photos]'), upload:/Upload images/.test(d.textContent), palette:!!d.querySelector('[data-testid=event-palette]'), bg:!!d.querySelector('[data-testid=canvas-background]'), shapes:d.querySelectorAll('.shape-tile').length}}:null})()`)
+        has:{addText:!!d.querySelector('[data-testid=add-text]'), styles:!!d.querySelector('[data-testid=text-styles]'), fonts:!!d.querySelector('[data-testid=font-inventory]'), addPhoto:!!d.querySelector('[data-testid=add-photo]'), samples:!!d.querySelector('[data-testid=sample-photos]')||/sample|shuffle/i.test(d.textContent), upload:/Upload images/.test(d.textContent), palette:!!d.querySelector('[data-testid=event-palette]'), bg:!!d.querySelector('[data-testid=canvas-background]'), shapes:d.querySelectorAll('.shape-tile').length}}:null})()`)
     }
     check(
-      '11 each rail category opens its own drawer in place: Text (add + styles + fonts), Photos (photo slot vs sample photos), Uploads, Colors (palette + background), Elements (slot, text, 3 shapes)',
+      '11 each rail category opens its own drawer in place: Text (add + styles + fonts), Photos (photo slots only: no sample photos, B3.1), Uploads, Colors (palette + background), Elements (slot, text, 3 shapes)',
       bodies.text?.has.addText &&
         bodies.text.has.styles &&
         bodies.text.has.fonts &&
         bodies.photos?.has.addPhoto &&
-        bodies.photos.has.samples &&
+        !bodies.photos.has.samples &&
         bodies.uploads?.has.upload &&
         bodies.colors?.has.palette &&
         bodies.colors.has.bg &&
@@ -704,10 +707,9 @@ async function tooltipsInside(c, sel, height) {
     await realClick(c, '#print-preview-button')
     vb.viaTop = await c.ev(`${S}.viewMode`)
     await realClick(c, '#print-preview-button')
-    vb.samples0 = await pill('Sample photos')
-    await realClick(c, '.viewbar [aria-label="Sample photos"]')
-    vb.samples1 = await pill('Sample photos')
-    vb.shuffle = await c.ev(`!!document.querySelector('.viewbar [aria-label="Shuffle photos"]')`)
+    vb.samples = await c.ev(
+      `/sample|shuffle/i.test(document.querySelector('.viewbar').textContent)`
+    )
     vb.safeNoProfile = await pill('Safe areas')
     await realClick(c, '.viewbar [aria-label="Safe areas"]')
     vb.safeStill = await c.ev(`${S}.showSafeAreas`)
@@ -735,11 +737,8 @@ async function tooltipsInside(c, sel, height) {
       vb.preview
     )
     check(
-      '19 Sample photos On/Off (with Shuffle while on), Safe areas "No profile" (not clickable) until a profile is chosen then On/Off, Overflow Show/Hide',
-      vb.samples0.value === 'Off' &&
-        vb.samples1.value === 'On' &&
-        vb.samples1.pressed === 'true' &&
-        vb.shuffle &&
+      '19 the bar holds Design | Print Preview, Safe areas and Overflow only (no Sample photos, B3.1); Safe areas "No profile" (not clickable) until a profile is chosen then On/Off, Overflow Show/Hide',
+      !vb.samples &&
         vb.safeNoProfile.value === 'No profile' &&
         vb.safeNoProfile.disabled === 'true' &&
         vb.safeStill === true &&
@@ -770,7 +769,7 @@ async function tooltipsInside(c, sel, height) {
     await rail(c, 'photos')
 
     // keep reference renders in the roomy, docked, stacked, Light Comfortable shell
-    await c.ev(`${S}.setPhotoDisplay('placeholder'); ${S}.selectLayer(null); 1`)
+    await c.ev(`${S}.selectLayer(null); 1`)
     await openDrawer(c, 'elements')
     const geom0 = await geometry(c)
     await keepRenders(c, 'wide')
@@ -862,6 +861,231 @@ async function tooltipsInside(c, sel, height) {
         d.past === t0.past,
       { tabs, layersTab, propsTab }
     )
+
+    // ================================================================ B3.1 at the Windows target (1426×779, floating)
+    const rc = await h.rightColumn(c)
+    check(
+      'B31-1 the right column follows the responsive contract for the ACTUAL CSS height (779 px → tabs; the harness helper reaches Layers and Properties)',
+      rc.expected === 'tabs' &&
+        rc.layout === 'tabs' &&
+        (await h.showPanel(c, 'layers')) &&
+        (await h.showPanel(c, 'properties')),
+      rc
+    )
+    // Sample Photos: gone from every surface; photo slots still add and edit
+    const layerCount = () => c.ev(`${S}.project.layers.length`)
+    const n31 = await layerCount()
+    await openDrawer(c, 'photos')
+    await realClick(c, '[data-testid=add-photo]')
+    const slot = await J(c)(
+      `(()=>{const id=${S}.selectedIds[0]; const l=${S}.project.layers.find(x=>x.id===id); return l?{id, type:l.type, n:l.photoNumber}:null})()`
+    )
+    await h.showPanel(c, 'properties')
+    const props31 = await J(c)(
+      `({text:document.querySelector('.inspector-panel').textContent, photoSection:!!document.querySelector('.inspector-panel [data-section=photo], .inspector-panel #photo, .inspector-panel [aria-label=Photo]')||/Photo number/.test(document.querySelector('.inspector-panel').textContent)})`
+    )
+    // edit the photo number through the real field
+    const numSel = `document.getElementById([...document.querySelectorAll('.inspector-panel label')].find(l=>/Photo number/.test(l.textContent)).htmlFor)`
+    await c.ev(`(()=>{const i=${numSel}; i.focus(); i.select(); return 1})()`)
+    await c.insertText('5')
+    await press(c, 'Enter', 'Enter', 13)
+    await sleep(200)
+    const edited31 = await c.ev(
+      `${S}.project.layers.find(l=>l.id===${JSON.stringify(slot?.id)})?.photoNumber`
+    )
+    // double-clicking a slot on the canvas no longer starts a "reposition" mode
+    const slotCentre = await J(c)(`__wts.layerCenter(${JSON.stringify(slot?.id)})`)
+    if (slotCentre) await c.dblclick(slotCentre)
+    await sleep(250)
+    await openMenu(c, 'view')
+    const viewItems = await c.ev(
+      `[...document.querySelectorAll('[role=menu] [role^=menuitem]')].map(e=>e.textContent).join(' | ')`
+    )
+    await escape(c)
+    const everywhere = await c.ev(
+      `/sample photo|shuffle|reset samples|choose photo|reposition/i.test(document.body.innerText)`
+    )
+    check(
+      'B31-2 no Sample photos anywhere: view bar, Photos drawer, Properties, View menu, canvas (no Shuffle, Reset samples, Choose photo or Reposition)',
+      /overflow/i.test(viewItems) &&
+        !/sample|shuffle/i.test(viewItems) &&
+        !everywhere &&
+        !/sample photo|shuffle|reposition/i.test(props31.text) &&
+        !(await c.ev(
+          `!!document.querySelector('[data-testid=crop-bar], .crop-overlay, [data-testid=sample-photos]')`
+        )),
+      { viewItems, everywhere }
+    )
+    check(
+      'B31-3 photo slots still work: Add photo slot adds and selects one; Properties edits its number (5) through the real field',
+      slot && slot.type === 'photo' && props31.photoSection && edited31 === 5,
+      { slot, edited31 }
+    )
+    await c.ev(`${S}.undo(); ${S}.undo(); ${S}.selectLayer(null); 1`)
+    await sleep(200)
+    d = await doc(c)
+    const base31 = { json: d.json, past: d.past, dirty: d.dirty }
+    const n31b = await layerCount()
+    check('B31-3b undoing the slot edits restores the layer count', n31b === n31, { n31b, n31 })
+
+    // Escape right after dragging the floating drawer's resize grip
+    await openDrawer(c, 'elements')
+    const grip = await rect(c, '.tooldrawer .splitter')
+    const w0 = (await drawerState(c)).w
+    await c.drag({ x: grip.l + 2, y: grip.t + 200 }, { x: grip.l + 42, y: grip.t + 200 })
+    await sleep(250)
+    const afterDrag = await J(c)(
+      `({w:Math.round(document.querySelector('.tooldrawer').getBoundingClientRect().width), focus:document.activeElement?.getAttribute('role'), label:document.activeElement?.getAttribute('aria-label')})`
+    )
+    await press(c, 'Escape', 'Escape', 27)
+    await sleep(250)
+    const afterEsc = await J(c)(
+      `({drawer:!!document.querySelector('.tooldrawer'), focus:document.activeElement?.dataset?.tool??document.activeElement?.tagName})`
+    )
+    d = await doc(c)
+    check(
+      'B31-4 after dragging the resize grip (focus stays on the grip), one Escape closes the floating drawer; focus returns to its rail button; the project is untouched',
+      afterDrag.w > w0 &&
+        afterDrag.focus === 'separator' &&
+        !afterEsc.drawer &&
+        afterEsc.focus === 'elements' &&
+        d.json === base31.json &&
+        d.past === base31.past,
+      { w0, afterDrag, afterEsc }
+    )
+    // the grip is still keyboard-resizable (arrows) and Escape from a keyboard resize closes it too
+    await openDrawer(c, 'elements')
+    await c.ev(`document.querySelector('.tooldrawer .splitter').focus(); 1`)
+    const wk0 = (await drawerState(c)).w
+    await press(c, 'ArrowLeft', 'ArrowLeft', 37)
+    await sleep(150)
+    const wk1 = (await drawerState(c))?.w
+    await press(c, 'Escape', 'Escape', 27)
+    await sleep(200)
+    check(
+      'B31-5 the resize grip stays keyboard accessible (arrow resizes) and Escape then closes the drawer',
+      wk1 === wk0 - 16 && !(await drawerState(c)),
+      { wk0, wk1 }
+    )
+
+    // put the drawer back to the width check 8 set (check 33 verifies it is remembered across a restart)
+    await openDrawer(c, 'elements')
+    await c.ev(`document.querySelector('.tooldrawer .splitter').focus(); 1`)
+    for (let i = 0; i < 4; i++) await press(c, 'ArrowLeft', 'ArrowLeft', 37, 8) // to the 240 minimum
+    for (let i = 0; i < 2; i++) await press(c, 'ArrowRight', 'ArrowRight', 39) // 272, as check 8 set it
+    const wBack = (await drawerState(c)).w
+    await press(c, 'Escape', 'Escape', 27)
+    await sleep(200)
+    check('B31-5b the drawer width is back to 272 px for the restart check', wBack === 272, {
+      wBack
+    })
+    // entering Print Preview closes the floating creation drawer
+    await openDrawer(c, 'elements')
+    const beforePv = !!(await drawerState(c))
+    await realClick(c, '[data-testid=workspace-mode] [data-mode=preview]')
+    await sleep(300)
+    const inPv = await J(c)(
+      `({mode:${S}.viewMode, drawer:!!document.querySelector('.tooldrawer'), addButtons:document.querySelectorAll('[data-testid^=add-]').length})`
+    )
+    await shot(c, '12-b31-print-preview-no-drawer')
+    await realClick(c, '[data-testid=preview-readonly] button')
+    await sleep(300)
+    const backPv = await J(c)(
+      `({mode:${S}.viewMode, drawer:!!document.querySelector('.tooldrawer')})`
+    )
+    // a rail category chosen IN Print Preview goes back to Design first, then opens
+    await c.ev(`${S}.setViewMode('preview'); 1`)
+    await sleep(250)
+    await realClick(c, '.toolrail-btn[data-tool=text]')
+    await sleep(300)
+    const railFromPv = await J(c)(
+      `({mode:${S}.viewMode, drawer:document.querySelector('.tooldrawer')?.dataset.tool})`
+    )
+    await openDrawer(c, 'elements')
+    const n0pv = await c.ev(`${S}.project.layers.length`)
+    await realClick(c, '[data-testid=add-rectangle]')
+    const addWorks = (await c.ev(`${S}.project.layers.length`)) === n0pv + 1
+    await c.ev(`${S}.undo(); ${S}.selectLayer(null); 1`)
+    await rail(c, 'elements')
+    await sleep(200)
+    d = await doc(c)
+    check(
+      'B31-6 entering Print Preview closes the floating drawer (no Add control over the read-only preview); returning to Design does not reopen it; a rail category chosen in Preview returns to Design; adding still works',
+      beforePv &&
+        inPv.mode === 'preview' &&
+        !inPv.drawer &&
+        inPv.addButtons === 0 &&
+        backPv.mode === 'design' &&
+        !backPv.drawer &&
+        railFromPv.mode === 'design' &&
+        railFromPv.drawer === 'text' &&
+        addWorks &&
+        d.json === base31.json,
+      { inPv, backPv, railFromPv, addWorks }
+    )
+
+    // no stale Export tooltip after the dialog closes (mouse and keyboard); Tab and hover still show it
+    const tipShown = () => c.ev(`!!document.querySelector('.ui-tip')`)
+    await realClick(c, '#export-button')
+    await waitFor(c, `!!document.querySelector('[role=dialog][aria-modal=true]')`, 5000)
+    await sleep(300)
+    const cancel = `[...document.querySelectorAll('[role=dialog] button')].find(b=>/^(Cancel|Close)$/.test(b.textContent.trim())||b.getAttribute('aria-label')==='Close')`
+    const cp = await J(c)(
+      `(()=>{const r=${cancel}.getBoundingClientRect(); return {x:Math.round(r.left+r.width/2), y:Math.round(r.top+r.height/2)}})()`
+    )
+    await c.click(cp)
+    await sleep(900)
+    const mouseClose = await J(c)(
+      `({dialog:!!document.querySelector('[role=dialog][aria-modal=true]'), focus:document.activeElement?.id, tip:!!document.querySelector('.ui-tip')})`
+    )
+    await c.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 600, y: 400 })
+    await sleep(700)
+    const afterLeave = await tipShown()
+    await press(c, 'e', 'KeyE', 69, h.MOD_BIT)
+    await waitFor(c, `!!document.querySelector('[role=dialog][aria-modal=true]')`, 5000)
+    await sleep(300)
+    await press(c, 'Escape', 'Escape', 27)
+    await sleep(900)
+    const keyClose = await J(c)(
+      `({dialog:!!document.querySelector('[role=dialog][aria-modal=true]'), tip:!!document.querySelector('.ui-tip')})`
+    )
+    // ordinary Tab focus onto Export shows its tooltip
+    // focus the control before Save/Export (Save is disabled while saved, so Tab skips it), then a real Tab
+    await c.ev(
+      `(document.getElementById('save-button').disabled ? document.getElementById('print-preview-button') : document.getElementById('save-button')).focus(); 1`
+    )
+    await press(c, 'Tab', 'Tab', 9)
+    await sleep(800)
+    const tabTip = await J(c)(
+      `({focus:document.activeElement?.id, tip:document.querySelector('.ui-tip')?.textContent?.slice(0,20)??null})`
+    )
+    await c.ev(`document.activeElement.blur(); 1`)
+    await sleep(100)
+    const ex = await centre(c, '#export-button')
+    await c.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: ex.x, y: ex.y })
+    await sleep(800)
+    const hoverTip = await c.ev(`document.querySelector('.ui-tip')?.textContent?.slice(0,20)??null`)
+    await c.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 600, y: 400 })
+    await sleep(200)
+    check(
+      'B31-7 closing the Export dialog with the mouse (or Escape) returns focus to Export without a lingering tooltip; Tab onto Export and hovering it still show the tooltip',
+      !mouseClose.dialog &&
+        mouseClose.focus === 'export-button' &&
+        !mouseClose.tip &&
+        !afterLeave &&
+        !keyClose.dialog &&
+        !keyClose.tip &&
+        tabTip.focus === 'export-button' &&
+        /^Export/.test(tabTip.tip || '') &&
+        /^Export/.test(hoverTip || ''),
+      { mouseClose, afterLeave, keyClose, tabTip, hoverTip }
+    )
+    d = await doc(c)
+    check(
+      'B31-8 none of the B3.1 interactions changed the project or its history',
+      d.json === base31.json && d.past === base31.past
+    )
+
     const top1426 = await J(c)(
       `({preview:document.getElementById('print-preview-button').textContent.trim(), undo:document.querySelector('.topbar-right [aria-label=Undo]').textContent.trim()})`
     )
@@ -993,7 +1217,7 @@ async function tooltipsInside(c, sel, height) {
     await size(c, 1100, 650)
     await viewMenu(c, 'Dark theme')
     await viewMenu(c, 'Compact size')
-    await c.ev(`${S}.setPhotoDisplay('placeholder'); ${S}.selectLayer(null); 1`)
+    await c.ev(`${S}.selectLayer(null); 1`)
     await openDrawer(c, 'elements')
     await keepRenders(c, 'narrow')
     const geom1 = await geometry(c)

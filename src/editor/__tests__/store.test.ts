@@ -138,7 +138,6 @@ describe('dirty state', () => {
     s().fitToWindow()
     s().setGuides([{ axis: 'x', at: 1200 }])
     s().setSnapping({ enabled: false })
-    s().setPhotoDisplay('preview')
     s().setGuidesVisible(false)
     expect(s().project).toBe(project)
     expect(selectIsDirty(s())).toBe(false)

@@ -20,8 +20,9 @@ WalkOne Template Studio is an internal desktop tool (Electron + React + TypeScri
 | Product ecosystem (standalone + WalkOne Booth, long-term) | docs/PRODUCT_ECOSYSTEM.md |
 | UX | docs/UX_SPEC.md, docs/USER_WORKFLOWS.md |
 | UX architecture for the refresh + Design Guide (Phase 7A, authoritative) | docs/PHASE_7A_UX_ARCHITECTURE.md |
-| 7B B1 mockups (approved; design-only reference; B3 status in §0b) | docs/PHASE_7B_B1_MOCKUP_REVIEW.md, design/phase-7b-b1/ |
-| Editor shell layout rules (7B B3: tiers, drawer, right column, top bar, Escape/F6) | src/editor/layout.ts, src/editor/tools.ts, docs/CURRENT_STATE.md (B3) |
+| 7B B1 mockups (approved; design-only reference; B3 status in §0b; Sample Photos in them are superseded, §0c / ADR-056) | docs/PHASE_7B_B1_MOCKUP_REVIEW.md, design/phase-7b-b1/ |
+| Editor shell layout rules (7B B3/B3.1: tiers, drawer, right column, top bar, Escape/F6, key ownership, Print Preview closes the drawer) | src/editor/layout.ts, src/editor/tools.ts, docs/CURRENT_STATE.md (B3, B3.1) |
+| Built-app suites and the responsive right-column contract (stacked ≥ 860 CSS px, tabs below; `WTS_VALIDATE_SIZE`) | research/editor-validation/README.md, research/editor-validation/harness.js, docs/TESTING_STRATEGY.md §9n |
 | Design tokens, themes, density (7B B2, ADR-055) | src/renderer/src/styles/tokens.css, src/editor/appearance.ts, docs/DECISIONS.md ADR-055 |
 | Domain model | docs/DATA_MODEL.md |
 | DSLR Booth | docs/DSLRBOOTH_COMPATIBILITY.md |

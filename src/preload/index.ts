@@ -23,8 +23,7 @@ const api: RendererApi = {
     recents: () => ipcRenderer.invoke(IpcChannel.ProjectRecents),
     readAsset: (req) => ipcRenderer.invoke(IpcChannel.ProjectReadAsset, req),
     importAssets: (req) => ipcRenderer.invoke(IpcChannel.ProjectImportAssets, req),
-    importAssetData: (req) => ipcRenderer.invoke(IpcChannel.ProjectImportAssetData, req),
-    pickPreviewPhoto: () => ipcRenderer.invoke(IpcChannel.ProjectPickPreviewPhoto)
+    importAssetData: (req) => ipcRenderer.invoke(IpcChannel.ProjectImportAssetData, req)
   },
   dslrImport: {
     choose: () => ipcRenderer.invoke(IpcChannel.DslrImportChoose),

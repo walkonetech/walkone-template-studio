@@ -60,13 +60,13 @@
         "before": {
           "dirty": true,
           "past": 13,
-          "ref": "2026-11-20T00:11:32.264Z",
+          "ref": "2026-11-20T07:55:18.567Z",
           "layers": 6
         },
         "after": {
           "dirty": true,
           "past": 13,
-          "ref": "2026-11-20T00:11:32.264Z",
+          "ref": "2026-11-20T07:55:18.567Z",
           "layers": 6
         }
       }
@@ -178,7 +178,7 @@
       }
     },
     {
-      "name": "4i the production PNGs contain no sample photos and no slot numbers",
+      "name": "4i the production PNGs contain no pictures and no slot numbers in the photo slots",
       "ok": true,
       "detail": {
         "slot": [32, 48, 74, 255],
@@ -186,7 +186,7 @@
       }
     },
     {
-      "name": "4j proof: sample photos fill every slot (differs from production inside slots)",
+      "name": "4j proof: numbered placeholders fill every slot (differs from production inside slots; sample photos were removed in B3.1)",
       "ok": true,
       "detail": [176800, 176800, 194400, 194400]
     },
@@ -209,7 +209,7 @@
       ]
     },
     {
-      "name": "4l proof keeps the frame over the sample",
+      "name": "4l proof keeps the frame over the placeholder",
       "ok": true,
       "detail": {
         "frameL": [255, 0, 0, 255]

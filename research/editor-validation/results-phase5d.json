@@ -1,6 +1,6 @@
 {
-  "passed": 40,
-  "total": 40,
+  "passed": 41,
+  "total": 41,
   "failed": [],
   "results": [
     {
@@ -8,7 +8,7 @@
       "ok": true,
       "detail": {
         "rows": 60,
-        "openMs": 765
+        "openMs": 764
       }
     },
     {
@@ -143,7 +143,7 @@
           [255, 255, 255, 255]
         ],
         "photo": {
-          "id": "30b62fd8-67ce-4d7e-bcd0-caed2e732a40",
+          "id": "293301e7-6bab-471f-ad51-424bb242d829",
           "type": "photo",
           "name": "Photo 1",
           "x": 100,
@@ -155,7 +155,7 @@
             "thickness": 40,
             "color": {
               "kind": "palette",
-              "paletteColorId": "0c9652fb-c398-4550-91a6-d48d3660e8c6"
+              "paletteColorId": "0ab3d885-dca7-4962-8230-d80a2e38b44c"
             }
           },
           "locked": false
@@ -187,6 +187,10 @@
       ]
     },
     {
+      "name": "14c entering Print Preview closed the Colors drawer (B3.1)",
+      "ok": true
+    },
+    {
       "name": "15 \"Use fixed color\" resolves the current palette value into a literal (appearance unchanged)",
       "ok": true,
       "detail": {
@@ -212,7 +216,7 @@
       "name": "17 \"Add color\" creates a custom palette entry with a stable id",
       "ok": true,
       "detail": {
-        "id": "949d06d7-71eb-495c-a90a-d5a2784d205c",
+        "id": "17116be4-c411-4a11-872e-52285afdc08c",
         "role": "custom",
         "name": "Color 1",
         "value": "#b76e79"

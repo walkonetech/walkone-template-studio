@@ -11,7 +11,6 @@ import { SafeAreaShapes, safeAreaLegend, useSafeAreaOverlay } from './SafeAreaOv
 import { registerCanvasDebug } from './debugHooks'
 import { editorStore, useEditor, useViewTransform } from './editorStore'
 import { useProjectImages } from './useProjectImages'
-import { usePreviewPhotos } from './usePreviewPhotos'
 import { useSpacePan } from './useSpacePan'
 
 const COMPONENTS = { Group, Rect, Ellipse, Line, Text, Shape } as unknown as Record<
@@ -58,9 +57,7 @@ export function PrintPreviewCanvas(): React.JSX.Element | null {
   const project = useEditor((s) => s.project)
   const sessionId = useEditor((s) => s.session?.sessionId ?? null)
   const viewport = useEditor((s) => s.viewport)
-  const photoDisplay = useEditor((s) => s.photoDisplay)
   const images = useProjectImages(sessionId, project?.layers)
-  const photoPreview = usePreviewPhotos(project?.layers)
   const view = useViewTransform()
   const hostRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<Konva.Stage>(null)
@@ -174,8 +171,7 @@ export function PrintPreviewCanvas(): React.JSX.Element | null {
                   env={{
                     palette: project.palette,
                     images,
-                    photoMode: photoDisplay,
-                    ...(photoPreview ? { photoPreview } : {}),
+                    photoMode: 'placeholder',
                     interactive: false,
                     photoLabels: true,
                     allLayers: copy.layers

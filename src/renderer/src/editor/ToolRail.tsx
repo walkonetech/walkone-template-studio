@@ -1,17 +1,5 @@
 import { useEffect } from 'react'
-import {
-  Camera,
-  Circle,
-  Minus,
-  Palette,
-  RotateCcw,
-  Shapes,
-  Shuffle,
-  Square,
-  Type,
-  Upload,
-  X
-} from 'lucide-react'
+import { Camera, Circle, Minus, Palette, Shapes, Square, Type, Upload, X } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import type { PhotoLayer, TextLayer } from '@domain'
 import { TEXT_PRESETS } from '@editor/textPresets'
@@ -22,6 +10,7 @@ import {
   type DrawerMode
 } from '@editor/layout'
 import { TOOLS, type ToolId } from '@editor/tools'
+import { selectViewMode } from '@editor/store'
 import type { NewLayerKind } from '@editor/newLayers'
 import { AssetsDrawer } from './AssetsDrawer'
 import { CanvasBackgroundSection } from './CanvasBackgroundSection'
@@ -30,15 +19,24 @@ import { FontInventoryPanel } from './FontInventoryPanel'
 import { fontStatusOf } from './fontCatalog'
 import { editorStore, useEditor } from './editorStore'
 import { layoutStore, useLayout } from './layoutStore'
-import { runCommand } from './commandRunner'
 import { tipProps } from './tips'
-import { Button } from '../ui/Button'
 import { IconButton } from '../ui/IconButton'
-import { Switch } from '../ui/Controls'
 import { Splitter } from '../ui/Splitter'
 import { Tooltip } from '../ui/Tooltip'
+import { restoreFocus } from '../ui/restoreFocus'
 
 const st = editorStore.getState
+
+/**
+ * Closes the tool drawer. When keyboard focus was inside it (a control, or the resize grip), focus goes back to the
+ * drawer's rail button instead of falling to the page, so the keyboard user is never stranded.
+ */
+export function closeDrawerReturningFocus(): void {
+  const l = layoutStore.getState()
+  const inside = document.activeElement?.closest('#tool-drawer') != null
+  l.closeDrawer()
+  if (inside) restoreFocus(document.querySelector<HTMLElement>(`.toolrail [data-tool="${l.tool}"]`))
+}
 
 const TOOL_ICONS: Record<ToolId, LucideIcon> = {
   elements: Shapes,
@@ -68,7 +66,13 @@ export function ToolRail(): React.JSX.Element {
               data-tool={t.id}
               aria-pressed={active}
               aria-controls={active ? 'tool-drawer' : undefined}
-              onClick={() => layoutStore.getState().clickTool(t.id)}
+              onClick={() => {
+                // A creation drawer never floats above the read-only Print Preview: choosing a category there goes
+                // back to Design first.
+                if (selectViewMode(editorStore.getState()) === 'preview')
+                  editorStore.getState().setViewMode('design')
+                layoutStore.getState().clickTool(t.id)
+              }}
             >
               <Icon size={22} strokeWidth={1.6} aria-hidden="true" />
               <span>{t.label}</span>
@@ -217,7 +221,6 @@ function TextBody(): React.JSX.Element {
 }
 
 function PhotosBody(): React.JSX.Element {
-  const display = useEditor((s) => s.photoDisplay)
   const layers = useEditor((s) => s.project?.layers)
   const selectedIds = useEditor((s) => s.selectedIds)
   const sorted = (layers ?? [])
@@ -233,41 +236,6 @@ function PhotosBody(): React.JSX.Element {
         testId="add-photo"
         onClick={() => st().addNewLayer('photo')}
       />
-      <section aria-label="Sample photos" data-testid="sample-photos">
-        <h3 className="section-heading">Sample photos</h3>
-        <p className="drawer-note">
-          Example pictures that fill the photo slots while you design, so you can judge the layout.
-          View only: they are never saved or exported.
-        </p>
-        <Switch
-          label="Show sample photos"
-          checked={display === 'preview'}
-          onChange={() => runCommand('view.previewPhotos')}
-        />
-        <div className="drawer-row">
-          <Tooltip label="Shuffle photos" {...tipProps('shuffle')}>
-            <Button
-              size="sm"
-              icon={Shuffle}
-              disabled={display !== 'preview'}
-              onClick={() => runCommand('view.shufflePhotos')}
-            >
-              Shuffle
-            </Button>
-          </Tooltip>
-          <Tooltip label="Reset samples" {...tipProps('resetSamples')}>
-            <Button
-              size="sm"
-              variant="ghost"
-              icon={RotateCcw}
-              disabled={display !== 'preview'}
-              onClick={() => st().resetSamples()}
-            >
-              Reset
-            </Button>
-          </Tooltip>
-        </div>
-      </section>
       <section aria-label="Photo slots in this design">
         <h3 className="section-heading">Photo slots in this design ({sorted.length})</h3>
         {sorted.length === 0 ? (
@@ -342,7 +310,7 @@ export function ToolDrawer({ mode }: { mode: DrawerMode }): React.JSX.Element | 
           icon={X}
           label="Close"
           {...tipProps('closeDrawer')}
-          onClick={() => layoutStore.getState().closeDrawer()}
+          onClick={closeDrawerReturningFocus}
         />
       </header>
       {tool === 'uploads' ? (

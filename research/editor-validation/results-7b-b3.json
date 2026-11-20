@@ -215,7 +215,7 @@
     }
   },
   {
-    "name": "11 each rail category opens its own drawer in place: Text (add + styles + fonts), Photos (photo slot vs sample photos), Uploads, Colors (palette + background), Elements (slot, text, 3 shapes)",
+    "name": "11 each rail category opens its own drawer in place: Text (add + styles + fonts), Photos (photo slots only: no sample photos, B3.1), Uploads, Colors (palette + background), Elements (slot, text, 3 shapes)",
     "ok": true,
     "detail": {
       "text": {
@@ -243,7 +243,7 @@
           "styles": false,
           "fonts": false,
           "addPhoto": true,
-          "samples": true,
+          "samples": false,
           "upload": false,
           "palette": false,
           "bg": false,
@@ -392,10 +392,10 @@
     }
   },
   {
-    "name": "19 Sample photos On/Off (with Shuffle while on), Safe areas \"No profile\" (not clickable) until a profile is chosen then On/Off, Overflow Show/Hide",
+    "name": "19 the bar holds Design | Print Preview, Safe areas and Overflow only (no Sample photos, B3.1); Safe areas \"No profile\" (not clickable) until a profile is chosen then On/Off, Overflow Show/Hide",
     "ok": true,
     "detail": {
-      "items": ["Design", "Print Preview", "Sample photos", "Safe areas", "Overflow"],
+      "items": ["Design", "Print Preview", "Safe areas", "Overflow"],
       "preview": {
         "mode": "preview",
         "ro": "Print Preview · read onlyEdit in Design",
@@ -403,17 +403,7 @@
       },
       "back": "design",
       "viaTop": "preview",
-      "samples0": {
-        "pressed": "false",
-        "disabled": null,
-        "value": "Off"
-      },
-      "samples1": {
-        "pressed": "true",
-        "disabled": null,
-        "value": "On"
-      },
-      "shuffle": true,
+      "samples": false,
       "safeNoProfile": {
         "pressed": "false",
         "disabled": "true",
@@ -447,7 +437,7 @@
     "name": "20 the canvas-state bar is view only: none of its controls changed the project, its Modified state or history; the status bar no longer repeats them",
     "ok": true,
     "detail": {
-      "items": ["Design", "Print Preview", "Sample photos", "Safe areas", "Overflow"],
+      "items": ["Design", "Print Preview", "Safe areas", "Overflow"],
       "statusToggles": 0
     }
   },
@@ -525,10 +515,126 @@
       },
       "propsTab": {
         "props": true,
-        "sel": ["3a12d890-950e-4895-92b7-e9300c2ccfd2"],
+        "sel": ["ea380fda-dbdf-4fb8-a1a1-74c5eea22a67"],
         "badge": "Text"
       }
     }
+  },
+  {
+    "name": "B31-1 the right column follows the responsive contract for the ACTUAL CSS height (779 px → tabs; the harness helper reaches Layers and Properties)",
+    "ok": true,
+    "detail": {
+      "height": 779,
+      "layout": "tabs",
+      "expected": "tabs",
+      "tab": "properties",
+      "layers": false,
+      "properties": true
+    }
+  },
+  {
+    "name": "B31-2 no Sample photos anywhere: view bar, Photos drawer, Properties, View menu, canvas (no Shuffle, Reset samples, Choose photo or Reposition)",
+    "ok": true,
+    "detail": {
+      "viewItems": "Design view | Print Preview | Fit to window⌘0 | Actual size (100%)⌘1 | Zoom in⌘+ | Zoom out⌘− | Snap to guides | Show overflow | Safe areas | Output profile… | Light theme | Dark theme | Match system theme | Comfortable size | Compact size",
+      "everywhere": false
+    }
+  },
+  {
+    "name": "B31-3 photo slots still work: Add photo slot adds and selects one; Properties edits its number (5) through the real field",
+    "ok": true,
+    "detail": {
+      "slot": {
+        "id": "d7cbd023-4c80-4bc4-b6fa-57e3c04a2093",
+        "type": "photo",
+        "n": 4
+      },
+      "edited31": 5
+    }
+  },
+  {
+    "name": "B31-3b undoing the slot edits restores the layer count",
+    "ok": true,
+    "detail": {
+      "n31b": 6,
+      "n31": 6
+    }
+  },
+  {
+    "name": "B31-4 after dragging the resize grip (focus stays on the grip), one Escape closes the floating drawer; focus returns to its rail button; the project is untouched",
+    "ok": true,
+    "detail": {
+      "w0": 272,
+      "afterDrag": {
+        "w": 312,
+        "focus": "separator",
+        "label": "Resize drawer"
+      },
+      "afterEsc": {
+        "drawer": false,
+        "focus": "elements"
+      }
+    }
+  },
+  {
+    "name": "B31-5 the resize grip stays keyboard accessible (arrow resizes) and Escape then closes the drawer",
+    "ok": true,
+    "detail": {
+      "wk0": 312,
+      "wk1": 296
+    }
+  },
+  {
+    "name": "B31-5b the drawer width is back to 272 px for the restart check",
+    "ok": true,
+    "detail": {
+      "wBack": 272
+    }
+  },
+  {
+    "name": "B31-6 entering Print Preview closes the floating drawer (no Add control over the read-only preview); returning to Design does not reopen it; a rail category chosen in Preview returns to Design; adding still works",
+    "ok": true,
+    "detail": {
+      "inPv": {
+        "mode": "preview",
+        "drawer": false,
+        "addButtons": 0
+      },
+      "backPv": {
+        "mode": "design",
+        "drawer": false
+      },
+      "railFromPv": {
+        "mode": "design",
+        "drawer": "text"
+      },
+      "addWorks": true
+    }
+  },
+  {
+    "name": "B31-7 closing the Export dialog with the mouse (or Escape) returns focus to Export without a lingering tooltip; Tab onto Export and hovering it still show the tooltip",
+    "ok": true,
+    "detail": {
+      "mouseClose": {
+        "dialog": false,
+        "focus": "export-button",
+        "tip": false
+      },
+      "afterLeave": false,
+      "keyClose": {
+        "dialog": false,
+        "tip": false
+      },
+      "tabTip": {
+        "focus": "export-button",
+        "tip": "Export⌘EExport a dsl"
+      },
+      "hoverTip": "Export⌘EExport a dsl"
+    }
+  },
+  {
+    "name": "B31-8 none of the B3.1 interactions changed the project or its history",
+    "ok": true
   },
   {
     "name": "26 F6 moves focus through top bar → rail → canvas-state bar → canvas → Properties/Layers → status bar and wraps; Shift+F6 goes back",
@@ -584,37 +690,37 @@
       {
         "density": "Comfortable size",
         "size": "1920x1000",
-        "triggers": 26,
+        "triggers": 23,
         "outside": []
       },
       {
         "density": "Comfortable size",
         "size": "1426x779",
-        "triggers": 24,
+        "triggers": 21,
         "outside": []
       },
       {
         "density": "Comfortable size",
         "size": "1100x650",
-        "triggers": 24,
+        "triggers": 21,
         "outside": []
       },
       {
         "density": "Compact size",
         "size": "1920x1000",
-        "triggers": 26,
+        "triggers": 23,
         "outside": []
       },
       {
         "density": "Compact size",
         "size": "1426x779",
-        "triggers": 24,
+        "triggers": 21,
         "outside": []
       },
       {
         "density": "Compact size",
         "size": "1100x650",
-        "triggers": 24,
+        "triggers": 21,
         "outside": []
       }
     ]

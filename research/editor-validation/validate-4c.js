@@ -22,9 +22,25 @@ const sessionsDir = () => path.join(ud, 'sessions')
 const sessions = () => (fs.existsSync(sessionsDir()) ? fs.readdirSync(sessionsDir()) : [])
 let port = 9370
 
+/**
+ * The right-column panel an expression/selector needs (B3.1). Below 860 CSS px tall Properties and Layers are TABS
+ * (Windows 1440×900 at 125 % ≈ 779 px), so only one exists in the DOM: before reading or clicking inside one, the
+ * helpers below bring it on screen exactly as a user would (a tab click via h.showPanel; nothing when stacked).
+ * An expression that needs BOTH panels is left alone (such checks read them one at a time).
+ */
+const panelFor = (js) => {
+  const props = /inspector-panel|psection/.test(js)
+  const layers = /layers-panel|layer-row|More layer actions|Add layer/.test(js)
+  return props && !layers ? 'properties' : layers && !props ? 'layers' : null
+}
+
 async function session(opts, fn) {
   const { proc, c } = await h.launch({ port: port++, userData: ud, ...opts })
-  const S = (e) => c.ev(`JSON.stringify(${e})`).then(JSON.parse)
+  const S = async (e) => {
+    const panel = panelFor(e)
+    if (panel) await h.showPanel(c, panel)
+    return c.ev(`JSON.stringify(${e})`).then(JSON.parse)
+  }
   // Measure after the panel has finished scrolling the element into view (first call scrolls, second is stable).
   const Sstable = async (e) => {
     await S(e)
@@ -41,7 +57,7 @@ async function session(opts, fn) {
     },
     state: () =>
       S(
-        `(()=>{const s=__wts.store.getState(); return {has:!!s.project, name:s.project&&s.project.metadata.name, dirty:s.project!==null&&s.project!==s.savedProject, past:s.history.past.length, sel:s.selectedIds, layers:s.project?s.project.layers.length:0, snapping:s.snapping.enabled, preview:s.photoDisplay, file:s.session&&s.session.fileName, scale:s.view&&s.view.mode}})()`
+        `(()=>{const s=__wts.store.getState(); return {has:!!s.project, name:s.project&&s.project.metadata.name, dirty:s.project!==null&&s.project!==s.savedProject, past:s.history.past.length, sel:s.selectedIds, layers:s.project?s.project.layers.length:0, snapping:s.snapping.enabled, file:s.session&&s.session.fileName, scale:s.view&&s.view.mode}})()`
       ),
     layer: (name) =>
       S(`__wts.store.getState().project.layers.find(l=>l.name===${JSON.stringify(name)})`),
@@ -56,6 +72,8 @@ async function session(opts, fn) {
     menuItem: (text) =>
       `[...document.querySelectorAll('[role=menu] [role^=menuitem]')].find(x=>x.querySelector('.grow').textContent.trim()===${JSON.stringify(text)})`,
     clickEl: async (js) => {
+      const panel = panelFor(js)
+      if (panel) await h.showPanel(c, panel)
       const p = await api.center(js)
       if (!p) return false
       await c.click(p)
@@ -90,7 +108,7 @@ async function session(opts, fn) {
   await session(
     {
       env: { WALKONE_DEV_SAVE_PATH: savePath, WALKONE_DEV_UNSAVED_CHOICES: 'discard' },
-      size: { width: 1440, height: 900 }
+      size: h.STANDARD_SIZE
     },
     async (a) => {
       const { c } = a
@@ -217,10 +235,19 @@ async function session(opts, fn) {
         )
       )
       check(
-        'empty project: Layers shows its empty state, Properties shows the project',
-        await a.S(
-          `!!document.querySelector('.layers-panel .ui-empty') && /No layers yet/.test(document.querySelector('.layers-panel').textContent) && /No layer selected/.test(document.querySelector('.inspector-panel').textContent)`
-        )
+        'empty project: Layers shows its empty state, Properties shows the project (read one panel at a time: tabs below 860 px)',
+        (await a.S(
+          `!!document.querySelector('.layers-panel .ui-empty') && /No layers yet/.test(document.querySelector('.layers-panel').textContent)`
+        )) &&
+          (await a.S(
+            `/No layer selected/.test(document.querySelector('.inspector-panel').textContent)`
+          ))
+      )
+      const rc = await h.rightColumn(c)
+      check(
+        'the right column follows the responsive contract for the actual CSS height (stacked ≥ 860 px, tabs below)',
+        rc.layout === rc.expected,
+        rc
       )
       // Save via the primary button (Save As dialog answered by override) -> Saved state
       await a.press('Save')
@@ -237,38 +264,35 @@ async function session(opts, fn) {
   )
 
   // ================= RECENT + OPEN from welcome =================
-  await session(
-    { env: { WALKONE_DEV_OPEN_PATH: savePath }, size: { width: 1440, height: 900 } },
-    async (a) => {
-      const card = await a.S(
-        `[...document.querySelectorAll('.recent-card')].map(x=>({t:x.textContent, dis:x.disabled}))`
-      )
-      check(
-        'recent project card appears with a relative time and no path',
-        card.length === 1 &&
-          /Studio Test/.test(card[0].t) &&
-          /2×6 strip · opened (just now|\d+ minutes? ago)/.test(card[0].t) &&
-          !card[0].t.includes(tmp),
-        card
-      )
-      await a.shot('4c-03-welcome-recent')
-      await a.clickEl('document.querySelector(".recent-card")')
-      await sleep(1200)
-      const s = await a.state()
-      check(
-        'clicking a recent project opens it clean',
-        s.has && s.name === 'Studio Test' && !s.dirty,
-        s
-      )
-      await a.c.ev('__wts.store.getState().closeProject ? 1 : 0')
-      await a.press('Close project').catch(() => {})
-    }
-  )
+  await session({ env: { WALKONE_DEV_OPEN_PATH: savePath }, size: h.STANDARD_SIZE }, async (a) => {
+    const card = await a.S(
+      `[...document.querySelectorAll('.recent-card')].map(x=>({t:x.textContent, dis:x.disabled}))`
+    )
+    check(
+      'recent project card appears with a relative time and no path',
+      card.length === 1 &&
+        /Studio Test/.test(card[0].t) &&
+        /2×6 strip · opened (just now|\d+ minutes? ago)/.test(card[0].t) &&
+        !card[0].t.includes(tmp),
+      card
+    )
+    await a.shot('4c-03-welcome-recent')
+    await a.clickEl('document.querySelector(".recent-card")')
+    await sleep(1200)
+    const s = await a.state()
+    check(
+      'clicking a recent project opens it clean',
+      s.has && s.name === 'Studio Test' && !s.dirty,
+      s
+    )
+    await a.c.ev('__wts.store.getState().closeProject ? 1 : 0')
+    await a.press('Close project').catch(() => {})
+  })
   fs.rmSync(path.join(ud, 'sessions'), { recursive: true, force: true })
 
   // Missing recent file is flagged, not clickable
   fs.renameSync(savePath, savePath + '.moved')
-  await session({ size: { width: 1440, height: 900 } }, async (a) => {
+  await session({ size: h.STANDARD_SIZE }, async (a) => {
     const card = await a.S(
       `[...document.querySelectorAll('.recent-grid > li')].map(x=>({t:x.textContent, dis:x.querySelector('.recent-card').disabled, locate:!!x.querySelector('[aria-label^="Locate"]')}))`
     )
@@ -288,7 +312,7 @@ async function session(opts, fn) {
         WALKONE_DEV_SAVE_PATH: path.join(tmp, 'Sample.boothproject'),
         WALKONE_DEV_UNSAVED_CHOICES: 'discard'
       },
-      size: { width: 1440, height: 900 }
+      size: h.STANDARD_SIZE
     },
     async (a) => {
       const { c } = a
@@ -414,9 +438,9 @@ async function session(opts, fn) {
       )
       await a.selectByName('Photo 1')
       check(
-        'collapse state persists across selection; photo sections (Photo, Sample photo, Frame) shown',
+        'collapse state persists across selection; photo sections (Photo, Frame) shown and no Sample photo section (removed in B3.1)',
         await a.S(
-          `(()=>{const t=[...document.querySelectorAll('.psection-toggle')]; return t.find(x=>x.textContent.trim()==='Appearance').getAttribute('aria-expanded')==='false' && t.some(x=>x.textContent.trim()==='Sample photo') && t.some(x=>x.textContent.trim()==='Frame')})()`
+          `(()=>{const t=[...document.querySelectorAll('.psection-toggle')]; return t.find(x=>x.textContent.trim()==='Appearance').getAttribute('aria-expanded')==='false' && t.some(x=>x.textContent.trim()==='Photo') && !t.some(x=>/Sample/.test(x.textContent)) && t.some(x=>x.textContent.trim()==='Frame')})()`
         )
       )
       check('collapsing a section does not touch history', (await a.state()).past === pastBefore)
@@ -541,7 +565,7 @@ async function session(opts, fn) {
       check(
         'shell buttons have accessible names (Undo, Redo, Save, Export, Add layer, More layer actions, Snap)',
         await a.S(
-          `['Undo','Redo','Save','Export','See how it prints','Add layer','More layer actions','Snap to guides','Sample photos','Overflow'].every(n=>!!document.querySelector('[aria-label="'+n+'"]'))`
+          `['Undo','Redo','Save','Export','See how it prints','Add layer','More layer actions','Snap to guides','Safe areas','Overflow'].every(n=>!!document.querySelector('[aria-label="'+n+'"]'))`
         )
       )
 
@@ -583,13 +607,19 @@ async function session(opts, fn) {
       )
       await a.press('Snap to guides')
       check('status bar Snap button toggles it back', (await a.state()).snapping === true)
-      await a.press('Sample photos')
-      await sleep(300)
       check(
-        'canvas-state bar Sample photos toggles photo display (moved from the status bar in B3)',
-        (await a.state()).preview === 'preview'
+        'canvas-state bar has no Sample photos control (removed in B3.1); its Overflow pill toggles the view',
+        await (async () => {
+          const none = !(await a.S(`!!document.querySelector('[aria-label="Sample photos"]')`))
+          const before = await a.S(`__wts.store.getState().showOverflow`)
+          await a.press('Overflow')
+          await sleep(200)
+          const after = await a.S(`__wts.store.getState().showOverflow`)
+          await a.press('Overflow')
+          await sleep(200)
+          return none && before === true && after === false
+        })()
       )
-      await a.press('Sample photos')
 
       // Zoom
       const z0 = await a.S(`document.querySelector('#zoom-label').textContent`)
@@ -654,28 +684,46 @@ async function session(opts, fn) {
         { w0, w1 }
       )
       check('resizing a panel does not touch history', (await a.state()).past === dirtyBefore)
-      const split0 = await a.S(
-        `document.querySelector('.sidebar-pane').getBoundingClientRect().height`
-      )
-      await a.c.drag(
-        await a.center(`document.querySelector('[aria-label="Resize Layers and Properties"]')`),
-        {
-          x: (
-            await a.center(`document.querySelector('[aria-label="Resize Layers and Properties"]')`)
-          ).x,
-          y:
-            (
+      // The Layers/Properties splitter exists only when they are stacked (≥ 860 CSS px tall); below that they are
+      // tabs and there is nothing to drag (B3.1: responsive contract, not a window-size assumption).
+      const rcSplit = await h.rightColumn(c)
+      if (rcSplit.layout === 'stacked') {
+        const split0 = await a.S(
+          `document.querySelector('.sidebar-pane').getBoundingClientRect().height`
+        )
+        await a.c.drag(
+          await a.center(`document.querySelector('[aria-label="Resize Layers and Properties"]')`),
+          {
+            x: (
               await a.center(
                 `document.querySelector('[aria-label="Resize Layers and Properties"]')`
               )
-            ).y + 80
-        }
-      )
-      await sleep(300)
-      const split1 = await a.S(
-        `document.querySelector('.sidebar-pane').getBoundingClientRect().height`
-      )
-      check('Layers/Properties splitter drags (mouse)', split1 > split0 + 40, { split0, split1 })
+            ).x,
+            y:
+              (
+                await a.center(
+                  `document.querySelector('[aria-label="Resize Layers and Properties"]')`
+                )
+              ).y + 80
+          }
+        )
+        await sleep(300)
+        const split1 = await a.S(
+          `document.querySelector('.sidebar-pane').getBoundingClientRect().height`
+        )
+        check('Layers/Properties splitter drags (mouse)', split1 > split0 + 40, { split0, split1 })
+      } else {
+        check(
+          'Layers/Properties: tabs below 860 px tall, so no split to drag (tabs switch the panel instead)',
+          rcSplit.expected === 'tabs' &&
+            !(await a.S(
+              `!!document.querySelector('[aria-label="Resize Layers and Properties"]')`
+            )) &&
+            (await h.showPanel(c, 'layers')) &&
+            (await h.showPanel(c, 'properties')),
+          rcSplit
+        )
+      }
       await a.shot('4c-09-editor-resized')
 
       // Keyboard: shortcuts must not fire from inside inputs
@@ -722,7 +770,7 @@ async function session(opts, fn) {
   // ================= RECOVERY (Decide later / Discard / Recover) =================
   fs.rmSync(ud, { recursive: true, force: true })
   async function crashWithEdit(name) {
-    await session({ env: {}, size: { width: 1440, height: 900 } }, async (a) => {
+    await session({ env: {}, size: h.STANDARD_SIZE }, async (a) => {
       await a.press('New sample project')
       await sleep(1000)
       await a.c.ev(
@@ -733,7 +781,7 @@ async function session(opts, fn) {
   }
   await crashWithEdit('Crash one')
   check('abrupt termination (SIGKILL) left a recoverable session', sessions().length === 1)
-  await session({ size: { width: 1440, height: 900 } }, async (a) => {
+  await session({ size: h.STANDARD_SIZE }, async (a) => {
     const d = await a.S(
       `(()=>{const d=document.querySelector('[role=dialog]'); return d&&{title:d.querySelector('h2').textContent, modal:d.getAttribute('aria-modal'), text:d.textContent, buttons:[...d.querySelectorAll('button')].map(b=>b.textContent.trim()), focus:document.activeElement.textContent.trim()}})()`
     )
@@ -767,7 +815,7 @@ async function session(opts, fn) {
     )
   })
   // Second launch: SIGKILL'd again -> still offered -> Discard path
-  await session({ size: { width: 1440, height: 900 } }, async (a) => {
+  await session({ size: h.STANDARD_SIZE }, async (a) => {
     check(
       'session still offered on the next launch',
       await a.S(`!!document.querySelector('[role=dialog]')`)
@@ -804,7 +852,7 @@ async function session(opts, fn) {
     )
   })
   await crashWithEdit('Crash two')
-  await session({ size: { width: 1440, height: 900 } }, async (a) => {
+  await session({ size: h.STANDARD_SIZE }, async (a) => {
     await a.press('Recover')
     await sleep(1200)
     const s = await a.state()
@@ -822,7 +870,7 @@ async function session(opts, fn) {
 
   // ================= AUTOSAVE ISSUE UI =================
   fs.rmSync(ud, { recursive: true, force: true })
-  await session({ size: { width: 1440, height: 900 } }, async (a) => {
+  await session({ size: h.STANDARD_SIZE }, async (a) => {
     await a.press('New sample project')
     await sleep(1000)
     const sid = await a.c.ev('__wts.store.getState().session.sessionId')

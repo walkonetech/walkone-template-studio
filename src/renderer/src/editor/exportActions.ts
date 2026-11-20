@@ -1,7 +1,7 @@
 import type { Layer, PhotoLayer, TemplateProject } from '@domain'
 import type { ExportFile, ExportPackageEntry } from '@shared/ipc'
 import { imageKey } from '@canvas/assets/imageCache'
-import type { ImageLookup, PhotoPreviewLookup } from '@canvas/rendering/nodeSpec'
+import type { ImageLookup } from '@canvas/rendering/nodeSpec'
 import type { RenderOptions } from '@canvas/rendering/plan'
 import { renderOutputToCanvas, renderProjectToCanvas } from '@canvas/rendering/renderProject'
 import {
@@ -11,7 +11,6 @@ import {
   packageReadme,
   type ExportOutput
 } from '@editor/exportPlan'
-import { sampleIdFor } from '@editor/previewPhotos'
 import type { ExportKind } from '@export/naming'
 import { clampCornerRadius } from '@canvas/rendering/photoFit'
 import { PREVIEW_PNG, TEMPLATE_XML } from '@export/dslrbooth/profile'
@@ -28,14 +27,14 @@ import {
   isDslrKind
 } from '@export/dslrbooth/outputs'
 import { encodeTemplateXml, writeTemplateXml } from '@export/dslrbooth/templateXml'
-import { editorStore, imageCache } from './editorStore'
+import { imageCache } from './editorStore'
 import { fontEnvironment } from './fontCatalog'
-import { previewCache } from './samplePhotos'
 
 /**
  * Renderer side of export (Phase 6A, ADR-041). Konva renders every pixel through the SAME exact-size pipeline as the
- * editor's print preview (`renderProjectToCanvas` / `renderOutputToCanvas`); production outputs use `photos: 'omit'`
- * and never contain sample photos. Only the proof draws the current preview samples. Bytes go to the main process,
+ * editor's print preview (`renderProjectToCanvas` / `renderOutputToCanvas`); production outputs draw photo slots as
+ * frames only, the proof and dslrBooth preview.png as neutral numbered slots. No output ever has a picture in a photo
+ * slot (Sample Photos were removed in B3.1). Bytes go to the main process,
  * which verifies and writes them. Export never touches the project, its history or its Modified state.
  */
 
@@ -51,26 +50,6 @@ export async function loadExportImages(
   const ids = imageAssetIds(project.layers)
   await imageCache.ensure(ids.map((id) => imageKey(sessionId, id)))
   return ids.filter((id) => imageCache.status(imageKey(sessionId, id)) !== 'ready')
-}
-
-/**
- * The sample photos the proof shows: the CURRENT preview choice (seed, per-number overrides, user-picked pictures and
- * crops), exactly what the designer sees with Preview Photos on, whether or not the toggle is on right now.
- */
-async function proofPhotos(project: TemplateProject): Promise<PhotoPreviewLookup> {
-  const s = editorStore.getState()
-  const numbers = [
-    ...new Set(project.layers.flatMap((l) => (l.type === 'photo' ? [l.photoNumber] : [])))
-  ]
-  const ids = [...new Set(numbers.map((n) => sampleIdFor(n, s.previewPhotos)))]
-  await previewCache.ensure(ids)
-  const crops = s.photoCrops
-  return (layer: PhotoLayer) => {
-    const image = previewCache.peek(sampleIdFor(layer.photoNumber, s.previewPhotos))
-    if (!image) return undefined
-    const crop = crops[layer.id]
-    return crop ? { image, crop } : { image }
-  }
 }
 
 async function toPng(canvas: HTMLCanvasElement): Promise<Uint8Array> {
@@ -90,6 +69,11 @@ export interface ExportProgress {
  * empty, no placeholder tint, no number, no sample). So the print PNG is the printed result minus the booth photos.
  */
 const PRODUCTION: RenderOptions & { photoLabels: boolean } = { photos: 'frame', photoLabels: false }
+/** Client-approval proof: the print with each photo slot as its neutral numbered placeholder (never a picture). */
+const PROOF: RenderOptions & { photoLabels: boolean } = {
+  photos: 'placeholder',
+  photoLabels: false
+}
 /** Layer package bands: no photo slots at all (frames get their own file). */
 const BAND: RenderOptions & { photoLabels: boolean } = { photos: 'omit', photoLabels: false }
 
@@ -190,8 +174,6 @@ export async function renderExports(
   const images: ImageLookup = (assetId) => imageCache.peek(imageKey(sessionId, assetId))
   // Text is drawn with whatever fonts the document has; make sure web/system font loading has settled first.
   await document.fonts.ready
-  const needsProof = outputs.some((o) => o.kind === 'proof' || o.kind === 'package')
-  const photoPreview = needsProof ? await proofPhotos(project) : undefined
 
   const bands = outputs.some((o) => o.kind === 'package') ? classifyLayerPackage(project) : null
   const dslrPlans = new Map<ExportKind, DslrPlan>()
@@ -260,12 +242,7 @@ export async function renderExports(
       files.push(png(o, await toPng(renderProjectToCanvas(project, images, PRODUCTION))))
     } else if (o.kind === 'proof') {
       await step(`Rendering ${o.label}`)
-      const canvas = renderOutputToCanvas(project, images, {
-        photos: 'preview',
-        photoLabels: false,
-        ...(photoPreview ? { photoPreview } : {})
-      })
-      files.push(png(o, await toPng(canvas)))
+      files.push(png(o, await toPng(renderOutputToCanvas(project, images, PROOF))))
     } else if (o.kind === 'package' && bands) {
       const facts = { width: o.width, height: o.height, dpi: o.dpi }
       const entries: ExportPackageEntry[] = []
@@ -308,11 +285,7 @@ export async function renderExports(
         })
       else await step('Layer package: text')
       await band('design.png', PRODUCTION)
-      await band('proof.png', {
-        photos: 'preview',
-        photoLabels: false,
-        ...(photoPreview ? { photoPreview } : {})
-      })
+      await band('proof.png', PROOF)
       await step('Layer package: manifest')
       const manifest = buildPackageManifest(project, bands, {
         appVersion: await appVersion(),

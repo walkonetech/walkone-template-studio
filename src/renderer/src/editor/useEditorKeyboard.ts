@@ -4,22 +4,30 @@ import { editorStore } from './editorStore'
 import { commandForKey } from '@editor/commands'
 import { runCommand } from './commandRunner'
 import { isMac, isPrimaryModifier } from './platform'
-import { drawerMode, escapeTarget } from '@editor/layout'
+import { controlOwnsKey, drawerMode, escapeTarget } from '@editor/layout'
 import { layoutStore } from './layoutStore'
 import { cycleRegion } from './regionNav'
+import { closeDrawerReturningFocus } from './ToolRail'
 import { focusMenuBar } from '../ui/Menu'
 
-const isTypingTarget = (t: EventTarget | null): boolean => {
+/** Keys the focused control keeps for itself (see `controlOwnsKey`). */
+const isTypingTarget = (t: EventTarget | null, key: string): boolean => {
   if (!(t instanceof HTMLElement)) return false
-  // Keys belong to the control itself: splitters (arrows resize), menus, dialogs, radio groups.
-  if (t.closest('[role=separator],[role=menu],[role=menubar],[role=dialog],[role=radiogroup]'))
-    return true
-  return (
+  const role = t.closest('[role=menu],[role=menubar]')
+    ? 'menu'
+    : t.closest('[role=dialog]')
+      ? 'dialog'
+      : t.closest('[role=separator]')
+        ? 'separator'
+        : t.closest('[role=radiogroup]')
+          ? 'radiogroup'
+          : null
+  const textEntry =
     t.tagName === 'INPUT' ||
     t.tagName === 'TEXTAREA' ||
     t.tagName === 'SELECT' ||
     t.isContentEditable
-  )
+  return controlOwnsKey({ role, textEntry }, key)
 }
 
 /**
@@ -55,20 +63,19 @@ export function useEditorKeyboard(): void {
           return
         }
       }
-      if (!s.project || isTypingTarget(e.target) || s.editingTextId) return
-      // Escape closes ONE thing, in the 7A order: popover (handled by the popover itself), floating drawer,
-      // Reposition, selection.
+      if (!s.project || isTypingTarget(e.target, e.key) || s.editingTextId) return
+      // Escape closes ONE thing, in the 7A order: popover/menu (handled by the popover itself), floating drawer,
+      // selection.
       if (e.key === 'Escape') {
         const l = layoutStore.getState()
         const target = escapeTarget({
           popoverOpen: document.querySelector('[data-popover], [role=menu]') !== null,
           floatingDrawerOpen: l.drawerOpen && drawerMode(l.viewport.width) === 'floating',
-          repositioning: s.cropSession !== null,
           hasSelection: s.selectedIds.length > 0
         })
         if (target === 'floating-drawer') {
           e.preventDefault()
-          l.closeDrawer()
+          closeDrawerReturningFocus()
           return
         }
         if (target === 'popover') return
@@ -126,19 +133,6 @@ export function useEditorKeyboard(): void {
       if (key === 'Delete' || key === 'Backspace') {
         if (s.deleteSelection()) e.preventDefault()
         return
-      }
-      if (s.cropSession) {
-        // Reposition mode owns Enter (finish) and Escape (cancel, restoring the crop it began with).
-        if (key === 'Escape') {
-          s.cancelCrop()
-          e.preventDefault()
-          return
-        }
-        if (key === 'Enter') {
-          s.commitCrop()
-          e.preventDefault()
-          return
-        }
       }
       if (key === 'Escape') {
         s.clearSelection()

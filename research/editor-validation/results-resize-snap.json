@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-20T00:13:11.597Z",
+  "when": "2026-11-20T07:55:33.355Z",
   "pass": 9,
   "total": 9,
   "results": [
@@ -69,15 +69,15 @@
       "ok": true,
       "detail": {
         "minEdge": 255,
-        "inner": [231, 184, 148]
+        "inner": [249, 251, 246]
       }
     },
     {
-      "name": "4c the sample photo is still drawn inside the frame",
+      "name": "4c the numbered placeholder is still drawn inside the frame (proof; sample photos removed in B3.1)",
       "ok": true,
       "detail": {
         "minEdge": 255,
-        "inner": [231, 184, 148]
+        "inner": [249, 251, 246]
       }
     }
   ]

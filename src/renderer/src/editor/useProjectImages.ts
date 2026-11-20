@@ -4,12 +4,11 @@ import { imageKey } from '@canvas/assets/imageCache'
 import type { ImageLookup } from '@canvas/rendering/nodeSpec'
 import { imageCache } from './editorStore'
 
-/** Asset ids the layers need: image layers and photo sample previews. */
+/** Asset ids the layers need: image layers (a photo slot never shows a picture). */
 function neededAssetIds(layers: readonly Layer[] | undefined): string[] {
   const ids = new Set<string>()
   for (const l of layers ?? []) {
     if (l.type === 'image') ids.add(l.assetId)
-    if (l.type === 'photo' && l.sampleAssetId) ids.add(l.sampleAssetId)
   }
   return [...ids].sort()
 }

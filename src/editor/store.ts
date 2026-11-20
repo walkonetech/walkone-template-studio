@@ -93,17 +93,8 @@ import {
 } from './paletteMutations'
 import { TEXT_PRESETS, presetPatch } from './textPresets'
 import type { PaletteRole, TextLayer } from '@domain'
-import { clampCrop, type PhotoCrop } from '@canvas/rendering/photoFit'
-import {
-  initialPreviewPhotos,
-  resetPreviewPhotos,
-  setSampleOverride,
-  shufflePreviewPhotos,
-  type PreviewPhotoState
-} from './previewPhotos'
 
-export type Interaction = 'idle' | 'transforming' | 'editingText' | 'cropping'
-export type PhotoDisplay = 'placeholder' | 'preview'
+export type Interaction = 'idle' | 'transforming' | 'editingText'
 /** Design edits the authored (logical) design; Print Preview shows the derived print sheet, read-only. */
 export type ViewMode = 'design' | 'preview'
 
@@ -132,7 +123,6 @@ export interface EditorState {
   guides: Guide[]
   /** Active "same size" marks while resizing (editor-only, like guides). */
   sizeMarks: SizeMark[]
-  photoDisplay: PhotoDisplay
   /**
    * Show artwork that extends beyond the printable artboard (default). Off = "clipped view": the editor shows only the
    * printable area. Editor presentation only: never project data, history or dirty state, and it never changes output.
@@ -145,14 +135,6 @@ export interface EditorState {
   outputProfileId: string | null
   /** View › Safe areas: draw the active profile's trim, keep-safe lines and cuts (editor-only, never printed). */
   showSafeAreas: boolean
-  /** Preview-photo assignment (editor/session state, ADR-038). */
-  previewPhotos: PreviewPhotoState
-  /** Sample pictures the user picked from disk this session (bytes live in the renderer only). */
-  userSamples: { id: string; name: string; width: number; height: number }[]
-  /** Editor-only crop per photo LAYER id (shared by every derived print copy). Session state, not project data. */
-  photoCrops: Readonly<Record<string, PhotoCrop>>
-  /** Active Reposition mode: the layer and its crop when the mode began (Escape restores it). */
-  cropSession: { layerId: string; original: PhotoCrop | null } | null
   history: History<TemplateProject>
   lastMessage: string | null
   /** Recovery-copy status for the UI: saved / pending / saving / error (never affects Modified). */
@@ -277,19 +259,6 @@ export interface EditorActions {
   /** Selects an Output Profile by id (null = none). An unknown id selects none. Never touches the project. */
   setOutputProfile(id: string | null): void
   setShowSafeAreas(show: boolean): void
-  // ---- preview photos and crop: editor/session state, never in the project, history or dirty state
-  shufflePhotos(): void
-  resetSamples(): void
-  setSampleFor(photoNumber: number, sampleId: string): void
-  addUserSample(sample: { id: string; name: string; width: number; height: number }): void
-  setPhotoCrop(layerId: string, crop: PhotoCrop): void
-  resetPhotoCrop(layerId: string): void
-  /** Enters Reposition mode for a photo layer (turns Preview Photos on). */
-  beginCrop(layerId: string): boolean
-  /** Done: keeps the crop and leaves the mode. */
-  commitCrop(): void
-  /** Escape: restores the crop the mode began with and leaves the mode. */
-  cancelCrop(): void
   // ---- selection / interaction (never in history)
   selectLayer(id: string | null): void
   selectLayers(ids: readonly string[]): void
@@ -313,7 +282,6 @@ export interface EditorActions {
   /** Snap guides (and, while resizing, same-size marks); an empty call clears both. */
   setGuides(guides: Guide[], sizeMarks?: SizeMark[]): void
   setGuidesVisible(visible: boolean): void
-  setPhotoDisplay(mode: PhotoDisplay): void
   setMessage(message: string | null): void
   // ---- document safety (close guard, recovery)
   /** Asks the main process (unsaved-changes prompt) whether the open project may be closed/replaced. */
@@ -374,14 +342,9 @@ const initialState = (): EditorState => ({
   guidesVisible: true,
   guides: [],
   sizeMarks: [],
-  photoDisplay: 'placeholder',
   showOverflow: true,
   outputProfileId: null,
   showSafeAreas: true,
-  previewPhotos: initialPreviewPhotos(),
-  userSamples: [],
-  photoCrops: {},
-  cropSession: null,
   history: emptyHistory<TemplateProject>(),
   lastMessage: null,
   autosave: { state: 'idle', lastSavedAt: null, failures: 0, error: null },
@@ -426,9 +389,6 @@ export const PREVIEW_PADDING = 56
 /** The selected Output Profile (null when none is selected). */
 export const selectOutputProfile = (s: EditorState): OutputProfile | null =>
   findOutputProfile(s.outputProfileId)
-/** Selecting something else ends Reposition mode (the crop made so far is kept). */
-const LEAVE_CROP = (s: EditorState): Partial<EditorState> =>
-  s.cropSession ? { cropSession: null, interaction: 'idle' } : {}
 const READ_ONLY_MESSAGE = 'Print Preview is read-only. Switch to Design to edit.'
 
 const sameGuides = (a: Guide[], b: Guide[]): boolean =>
@@ -727,7 +687,6 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
       setLocked: (id, locked) => get().commit((p, c) => setLockedMutation(p, id, locked, c)),
       reorder: (id, direction) => get().commit((p, c) => reorderLayer(p, id, direction, c)),
       nudgeSelection(dx, dy) {
-        if (get().cropSession) return false
         const layers = editableSelected()
         if (layers.length === 0) return false
         const key = `nudge:${layers.map((l) => l.id).join(',')}`
@@ -858,50 +817,6 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
       setShowOverflow: (showOverflow) => set({ showOverflow }),
       setOutputProfile: (id) => set({ outputProfileId: findOutputProfile(id)?.id ?? null }),
       setShowSafeAreas: (showSafeAreas) => set({ showSafeAreas }),
-      shufflePhotos: () => set((s) => ({ previewPhotos: shufflePreviewPhotos(s.previewPhotos) })),
-      resetSamples: () => set({ previewPhotos: resetPreviewPhotos() }),
-      setSampleFor: (photoNumber, sampleId) =>
-        set((s) => ({ previewPhotos: setSampleOverride(s.previewPhotos, photoNumber, sampleId) })),
-      addUserSample: (sample) =>
-        set((s) => ({
-          userSamples: s.userSamples.some((u) => u.id === sample.id)
-            ? s.userSamples
-            : [...s.userSamples, sample]
-        })),
-      setPhotoCrop: (layerId, crop) =>
-        set((s) => ({ photoCrops: { ...s.photoCrops, [layerId]: clampCrop(crop) } })),
-      resetPhotoCrop(layerId) {
-        const { [layerId]: _dropped, ...rest } = get().photoCrops
-        void _dropped
-        set({ photoCrops: rest })
-      },
-      beginCrop(layerId) {
-        const s = get()
-        const layer = s.project?.layers.find((l) => l.id === layerId)
-        if (!s.project || !layer || layer.type !== 'photo' || selectViewMode(s) !== 'design')
-          return false
-        if (!isEditable(s.project.layers, layer)) return false
-        set({
-          selectedIds: [layerId],
-          anchorId: layerId,
-          photoDisplay: 'preview',
-          interaction: 'cropping',
-          editingTextId: null,
-          cropSession: { layerId, original: s.photoCrops[layerId] ?? null }
-        })
-        return true
-      },
-      commitCrop() {
-        if (get().cropSession) set({ cropSession: null, interaction: 'idle' })
-      },
-      cancelCrop() {
-        const { cropSession, photoCrops } = get()
-        if (!cropSession) return
-        const rest = { ...photoCrops }
-        if (cropSession.original) rest[cropSession.layerId] = cropSession.original
-        else delete rest[cropSession.layerId]
-        set({ photoCrops: rest, cropSession: null, interaction: 'idle' })
-      },
       fitTextHeight(layerId) {
         const { project } = get()
         const layer = project?.layers.find((l) => l.id === layerId)
@@ -965,7 +880,6 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
         if (s.viewMode === mode) return
         // The workspace frames a different size, so go back to "fit"; end any text edit. Nothing here is document state.
         set({
-          cropSession: null,
           lastMessage: s.lastMessage === READ_ONLY_MESSAGE ? null : s.lastMessage,
           viewMode: mode,
           view: { mode: 'fit' },
@@ -1100,18 +1014,14 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
 
       selectLayer(id) {
         const { project } = get()
-        if (id === null) return set({ selectedIds: [], anchorId: null, ...LEAVE_CROP(get()) })
+        if (id === null) return set({ selectedIds: [], anchorId: null })
         if (!project?.layers.some((l) => l.id === id)) return
-        set({
-          selectedIds: [id],
-          anchorId: id,
-          ...(get().cropSession?.layerId === id ? {} : LEAVE_CROP(get()))
-        })
+        set({ selectedIds: [id], anchorId: id })
       },
       selectLayers(ids) {
         const { project } = get()
         const valid = ids.filter((id) => project?.layers.some((l) => l.id === id))
-        set({ selectedIds: valid, anchorId: valid[valid.length - 1] ?? null, ...LEAVE_CROP(get()) })
+        set({ selectedIds: valid, anchorId: valid[valid.length - 1] ?? null })
       },
       toggleSelection(id) {
         const { project, selectedIds } = get()
@@ -1119,20 +1029,19 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
         const next = toggleId(selectedIds, id)
         set({
           selectedIds: next,
-          anchorId: next.includes(id) ? id : get().anchorId,
-          ...LEAVE_CROP(get())
+          anchorId: next.includes(id) ? id : get().anchorId
         })
       },
       selectRange(orderedIds, targetId) {
         const ids = rangeIds(orderedIds, get().anchorId, targetId)
-        if (ids.length > 0) set({ selectedIds: ids, ...LEAVE_CROP(get()) })
+        if (ids.length > 0) set({ selectedIds: ids })
       },
       toggleCollapsed(id) {
         const c = get().collapsedGroups
         set({ collapsedGroups: c.includes(id) ? c.filter((x) => x !== id) : [...c, id] })
       },
       setLayerFilter: (layerFilter) => set({ layerFilter }),
-      clearSelection: () => set({ selectedIds: [], anchorId: null, ...LEAVE_CROP(get()) }),
+      clearSelection: () => set({ selectedIds: [], anchorId: null }),
       beginTextEdit(id) {
         const { project } = get()
         const layer = project?.layers.find((l) => l.id === id)
@@ -1178,7 +1087,6 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
         if (!sameMarks(s.sizeMarks, sizeMarks)) set({ sizeMarks })
       },
       setGuidesVisible: (guidesVisible) => set({ guidesVisible }),
-      setPhotoDisplay: (photoDisplay) => set({ photoDisplay }),
       setMessage: (lastMessage) => set({ lastMessage }),
 
       async guardClose(reason) {
@@ -1253,13 +1161,12 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
   })
 }
 
-/** On project change keep user preferences (snapping, guide visibility, photo display, viewport size). */
+/** On project change keep user preferences (snapping, guide visibility, view toggles, viewport size). */
 function initialStateKeepingUi(s: EditorState): EditorState {
   return {
     ...initialState(),
     snapping: s.snapping,
     guidesVisible: s.guidesVisible,
-    photoDisplay: s.photoDisplay,
     showOverflow: s.showOverflow,
     outputProfileId: s.outputProfileId,
     showSafeAreas: s.showSafeAreas,

@@ -583,9 +583,6 @@
   color: var(--c-text-3);
   font-weight: 500;
 }
-.view-pill .short {
-  display: none;
-}
 .viewbar-readonly {
   display: flex;
   align-items: center;
@@ -602,14 +599,6 @@
 @container viewbar (max-width: 880px) {
   .readonly-text {
     display: none;
-  }
-}
-@container viewbar (max-width: 700px) {
-  .view-pill .long {
-    display: none;
-  }
-  .view-pill .short {
-    display: inline;
   }
 }
 .drawer-item {
@@ -1196,39 +1185,6 @@
 .canvas-host.panning .konvajs-content,
 .canvas-host.panning canvas {
   cursor: grabbing !important;
-}
-.canvas-host.cropping .konvajs-content,
-.canvas-host.cropping canvas {
-  cursor: move !important;
-}
-.crop-bar {
-  position: absolute;
-  bottom: var(--sp-4);
-  left: 50%;
-  white-space: nowrap;
-  z-index: 6;
-  display: flex;
-  align-items: center;
-  gap: var(--sp-3);
-  padding: 4px var(--sp-4);
-  transform: translateX(-50%);
-  border: 1px solid var(--c-border);
-  border-radius: var(--r-md);
-  background: var(--c-panel);
-  color: var(--c-text-2);
-  font-size: var(--fs-meta);
-}
-.crop-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  cursor: move;
-}
-.crop-frame {
-  position: absolute;
-  border: 2px dashed var(--c-accent);
-  pointer-events: none;
-  box-shadow: 0 0 0 1px var(--c-overlay-halo);
 }
 
 /* Export dialog (Phase 6A) */

@@ -47,7 +47,6 @@ const ctx = (over: Partial<CommandContext> = {}): CommandContext => ({
   canRedo: false,
   selectionCount: 0,
   snapping: true,
-  previewPhotos: false,
   hasPrintPreview: true,
   showOverflow: true,
   hasOutputProfile: false,
@@ -208,11 +207,10 @@ describe('B3 top bar', () => {
 
 describe('B3 canvas-state bar', () => {
   it('holds view controls only (the B1 rule)', () => {
-    expect([...CANVAS_STATE_CONTROLS]).toEqual(['mode', 'samplePhotos', 'safeAreas', 'overflow'])
+    expect([...CANVAS_STATE_CONTROLS]).toEqual(['mode', 'safeAreas', 'overflow'])
     for (const id of [
       'view.design',
       'view.printPreview',
-      'view.previewPhotos',
       'view.safeAreas',
       'view.showOverflow'
     ] as const)
@@ -222,10 +220,10 @@ describe('B3 canvas-state bar', () => {
     expect(isCommandEnabled('view.printPreview', ctx({ hasPrintPreview: true }))).toBe(true)
     expect(isCommandEnabled('view.printPreview', ctx({ hasPrintPreview: false }))).toBe(false)
   })
-  it('12 Sample photos: On/Off', () => {
-    expect(COMMANDS['view.previewPhotos'].label).toBe('Sample photos')
-    expect(isCommandChecked('view.previewPhotos', ctx({ previewPhotos: true }))).toBe(true)
-    expect(isCommandChecked('view.previewPhotos', ctx({ previewPhotos: false }))).toBe(false)
+  it('12 Sample photos are gone (owner decision, B3.1): no command, menu item, tooltip or view-bar control', () => {
+    expect(Object.keys(COMMANDS).filter((id) => /photo|shuffle/i.test(id))).toEqual([])
+    expect(JSON.stringify(MENUS)).not.toMatch(/previewPhotos|shufflePhotos/)
+    expect([...CANVAS_STATE_CONTROLS]).not.toContain('samplePhotos')
   })
   it('13 Safe areas: unavailable (with its reason) without an output profile, else On/Off', () => {
     expect(safeAreasControl(false, true)).toEqual({
@@ -276,9 +274,6 @@ describe('B3 right column', () => {
     }
     s().setViewMode('preview')
     s().setViewMode('design')
-    s().setPhotoDisplay('preview')
-    s().shufflePhotos()
-    s().setPhotoDisplay('placeholder')
     s().setShowOverflow(false)
     s().setShowOverflow(true)
     s().setShowSafeAreas(false)
@@ -295,33 +290,15 @@ describe('B3 right column', () => {
 })
 
 describe('B3 Escape order and F6 regions', () => {
-  it('Escape closes one thing at a time: popover, floating drawer, Reposition, selection', () => {
-    const all = {
-      popoverOpen: true,
-      floatingDrawerOpen: true,
-      repositioning: true,
-      hasSelection: true
-    }
+  it('Escape closes one thing at a time: popover/menu, floating drawer, selection', () => {
+    const all = { popoverOpen: true, floatingDrawerOpen: true, hasSelection: true }
     expect(escapeTarget(all)).toBe('popover')
     expect(escapeTarget({ ...all, popoverOpen: false })).toBe('floating-drawer')
     expect(escapeTarget({ ...all, popoverOpen: false, floatingDrawerOpen: false })).toBe(
-      'reposition'
+      'selection'
     )
     expect(
-      escapeTarget({
-        popoverOpen: false,
-        floatingDrawerOpen: false,
-        repositioning: false,
-        hasSelection: true
-      })
-    ).toBe('selection')
-    expect(
-      escapeTarget({
-        popoverOpen: false,
-        floatingDrawerOpen: false,
-        repositioning: false,
-        hasSelection: false
-      })
+      escapeTarget({ popoverOpen: false, floatingDrawerOpen: false, hasSelection: false })
     ).toBeNull()
   })
   it('F6 cycles top bar → rail → drawer → canvas-state bar → canvas → panels → status bar, skipping absent ones', () => {

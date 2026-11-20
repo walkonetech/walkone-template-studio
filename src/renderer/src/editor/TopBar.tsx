@@ -30,7 +30,6 @@ export function useCommandContext(): CommandContext {
   const canRedo = useEditor(selectCanRedo)
   const selectionCount = useEditor((s) => s.selectedIds.length)
   const snapping = useEditor((s) => s.snapping.enabled)
-  const previewPhotos = useEditor((s) => s.photoDisplay === 'preview')
   const hasPrintPreview = useEditor((s) => s.project !== null && hasDerivedCopies(s.project))
   const viewMode = useEditor(selectViewMode)
   const showOverflow = useEditor((s) => s.showOverflow)
@@ -44,7 +43,6 @@ export function useCommandContext(): CommandContext {
     canRedo,
     selectionCount,
     snapping,
-    previewPhotos,
     hasPrintPreview,
     showOverflow,
     viewMode,

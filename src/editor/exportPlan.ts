@@ -95,7 +95,7 @@ export function exportOutputs(project: TemplateProject): ExportOutput[] {
     kind: 'proof',
     label: 'Proof PNG',
     description:
-      'For client approval only, not for printing: the print with the current sample photos in the photo slots.',
+      'For client approval only, not for printing: the print with each photo slot shown as a numbered placeholder.',
     fileName: exportFileName(name, 'proof'),
     ...sheetSize,
     production: false,
@@ -343,7 +343,7 @@ export function packageFiles(bands: PackageBands): PackageFileEntry[] {
       path: 'proof.png',
       role: 'proof',
       description:
-        'Reference only, NOT production artwork: the design with sample photos in the slots.',
+        'Reference only, NOT production artwork: the design with numbered photo-slot placeholders.',
       opaque: true,
       layerIds: []
     }
@@ -507,7 +507,7 @@ export function packageReadme(m: LayerPackageManifest): string {
     ),
     '',
     'design.png is the finished design for reference (production artwork: frames drawn, photo areas empty).',
-    'proof.png shows sample photos and is for approval only. It is NOT production artwork.',
+    'proof.png shows numbered photo-slot placeholders and is for approval only. It is NOT production artwork.',
     '',
     'Photo slots (design pixels; rotation clockwise about the centre):'
   ]

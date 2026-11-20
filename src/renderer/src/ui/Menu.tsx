@@ -1,6 +1,7 @@
 import { Check } from 'lucide-react'
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { restoreFocus } from './restoreFocus'
 
 export type MenuEntry =
   | {
@@ -75,7 +76,7 @@ export function MenuPopover({
       e.preventDefault()
       e.stopPropagation()
       onClose()
-      anchor.focus()
+      restoreFocus(anchor)
     } else if (e.key === 'Tab') {
       e.preventDefault()
       onClose()

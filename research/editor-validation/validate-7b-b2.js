@@ -48,7 +48,10 @@ const waitFor = async (c, expr, ms = 30000) => {
 const S = `__wts.store.getState()`
 const PORT = 9572
 
-const look = (c) =>
+// Properties | Layers are tabs below 860 CSS px tall (Windows 1440×900 at 125 % ≈ 779 px): show Layers first so the
+// layer-row measurement exists in either right-column state (UI state only; never touches the project).
+const look = async (c) => (await h.showPanel(c, 'layers'), lookNow(c))
+const lookNow = (c) =>
   J(
     c
   )(`(()=>{const r=document.documentElement, cs=getComputedStyle(document.body), q=(s,p)=>{const e=document.querySelector(s); return e?Math.round(e.getBoundingClientRect()[p]*10)/10:null};
@@ -243,7 +246,7 @@ async function sameExports(c, a, b) {
     WALKONE_DEV_EXPORT_DIR: outs.join(';'),
     WALKONE_DEV_NO_REVEAL: '1'
   }
-  const size = { width: 1440, height: 900 }
+  const size = h.STANDARD_SIZE
   let { proc, c } = await h.launch({ port: PORT, userData: ud, env, size })
   await c.send('Runtime.enable').catch(() => {})
   try {
@@ -432,9 +435,17 @@ async function sameExports(c, a, b) {
         L.fontSize === '13px',
       L
     )
-    const structure = await J(c)(
-      `['.topbar','.toolrail','.workspace','.sidebar','.statusbar','.layers-panel','.inspector-panel'].map(s=>!!document.querySelector(s))`
-    )
+    // Regions, plus the right column in the state the responsive contract expects for the ACTUAL CSS height
+    // (stacked: both panels; tabs: the tab list, and each panel reachable through its tab).
+    const rc = await h.rightColumn(c)
+    const structure = [
+      ...(await J(c)(
+        `['.topbar','.toolrail','.workspace','.sidebar','.statusbar'].map(s=>!!document.querySelector(s))`
+      )),
+      rc.layout === rc.expected,
+      await h.showPanel(c, 'properties'),
+      await h.showPanel(c, 'layers')
+    ]
     const d2 = await doc(c)
     check(
       '8b the shell keeps the same regions; the project stays Saved and unchanged; design geometry identical',
@@ -597,6 +608,7 @@ async function sameExports(c, a, b) {
     )
     // The Layers-panel shortcut/help button (the owner's report): right edge, real hover, and keyboard focus.
     const help = `document.querySelector('.layers-panel .panel-header .ui-tipwrap:last-of-type')`
+    await h.showPanel(c, 'layers')
     const hp = await J(c)(
       `(()=>{const r=${help}.getBoundingClientRect(); return {x:r.left+r.width/2, y:r.top+r.height/2, right:innerWidth-r.right}})()`
     )

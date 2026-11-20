@@ -11,16 +11,11 @@ import {
 } from '@domain'
 import { wrapDegrees } from '@canvas/geometry/geometry'
 import { copiesPerSheet, describePrint, printSizeName } from '@editor/describe'
-import { isDefaultCrop } from '@canvas/rendering/photoFit'
-import { BUILT_IN_SAMPLES, sampleIdFor } from '@editor/previewPhotos'
-import { chooseUserPreviewPhoto } from './previewActions'
-import { tipProps } from './tips'
-import { Tooltip } from '../ui/Tooltip'
 import { selectionBounds } from '@editor/arrange'
 import { ArrangeControls } from './ArrangeControls'
 import { opacityToPercent, percentToOpacity } from '@editor/numberInput'
 import { layerTypeLabel } from '@editor/layerTree'
-import { Copy, Group, MousePointerClick, Move, RotateCcw, Shuffle, Trash2 } from 'lucide-react'
+import { Copy, Group, MousePointerClick, Trash2 } from 'lucide-react'
 import { editorStore, useEditor } from './editorStore'
 import { layoutStore, useLayout } from './layoutStore'
 import { TypographySection } from './TypographySection'
@@ -252,17 +247,6 @@ function PhotoSection({
   locked: boolean
 }): React.JSX.Element {
   const solid = layer.frame.style === 'solid' ? layer.frame : null
-  const previewOn = useEditor((s) => s.photoDisplay === 'preview')
-  const previewPhotos = useEditor((s) => s.previewPhotos)
-  const userSamples = useEditor((s) => s.userSamples)
-  const crop = useEditor((s) => s.photoCrops[layer.id])
-  const cropping = useEditor((s) => s.cropSession?.layerId === layer.id)
-  const sampleId = sampleIdFor(layer.photoNumber, previewPhotos)
-  const options = [
-    ...BUILT_IN_SAMPLES.map((x) => ({ value: x.id, label: x.label })),
-    ...userSamples.map((x) => ({ value: x.id, label: `Your photo: ${x.name}` }))
-  ]
-  const st = (): ReturnType<typeof editorStore.getState> => editorStore.getState()
   return (
     <>
       <Section id="photo" title="Photo">
@@ -284,73 +268,6 @@ function PhotoSection({
           disabled={locked}
           onCommit={(fit) => edit([layer.id], { fit })}
         />
-      </Section>
-      <Section id="photo-preview" title="Sample photo">
-        <CheckboxField
-          label="Preview photos"
-          checked={previewOn}
-          onCommit={(on) => st().setPhotoDisplay(on ? 'preview' : 'placeholder')}
-        />
-        <SelectField
-          label="Sample"
-          value={sampleId}
-          options={options}
-          onCommit={(id) => st().setSampleFor(layer.photoNumber, id)}
-        />
-        <p className="field-note">
-          Samples are only a preview: they follow the photo number, are not saved in the project and
-          are never printed as capture content.
-        </p>
-        <div className="button-row">
-          <Tooltip label="Shuffle photos" {...tipProps('shuffle')}>
-            <Button size="sm" icon={Shuffle} onClick={() => st().shufflePhotos()}>
-              Shuffle
-            </Button>
-          </Tooltip>
-          <Tooltip label="Reset samples" {...tipProps('resetSamples')}>
-            <Button size="sm" onClick={() => st().resetSamples()}>
-              Reset samples
-            </Button>
-          </Tooltip>
-          <Tooltip label="Choose photo…" {...tipProps('chooseSample')}>
-            <Button
-              size="sm"
-              onClick={() =>
-                void chooseUserPreviewPhoto(layer.photoNumber).then((m) => m && st().setMessage(m))
-              }
-            >
-              Choose photo…
-            </Button>
-          </Tooltip>
-        </div>
-        <div className="button-row">
-          <Tooltip label="Reposition photo" {...tipProps('reposition')}>
-            <Button
-              size="sm"
-              icon={Move}
-              disabled={locked || layer.fit === 'stretch'}
-              aria-pressed={cropping}
-              onClick={() => (cropping ? st().commitCrop() : st().beginCrop(layer.id))}
-            >
-              {cropping ? 'Done' : 'Reposition…'}
-            </Button>
-          </Tooltip>
-          <Tooltip label="Reset position" {...tipProps('resetCrop')}>
-            <Button
-              size="sm"
-              icon={RotateCcw}
-              disabled={isDefaultCrop(crop)}
-              onClick={() => st().resetPhotoCrop(layer.id)}
-            >
-              Reset position
-            </Button>
-          </Tooltip>
-        </div>
-        {layer.fit === 'stretch' && (
-          <p className="field-note">
-            Stretch fills the frame exactly, so there is nothing to reposition.
-          </p>
-        )}
       </Section>
       <Section id="photo-frame" title="Frame">
         <SelectField

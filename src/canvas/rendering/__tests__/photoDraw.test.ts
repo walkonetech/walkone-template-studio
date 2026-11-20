@@ -29,7 +29,6 @@ function recorder() {
 }
 const named = <T extends { fn: string }>(calls: T[], fn: string): T[] =>
   calls.filter((c) => c.fn === fn)
-const picture = { source: {} as CanvasImageSource, width: 1800, height: 1200 }
 const base: PhotoDrawSpec = {
   width: 1049,
   height: 700,
@@ -37,50 +36,21 @@ const base: PhotoDrawSpec = {
   frameThickness: 12,
   frameColor: '#ffffff',
   cornerRadius: 0,
-  fit: 'cover',
   label: true
 }
 
-describe('photo preview drawing', () => {
-  it('cover draws the picture over the whole frame, centred (destination covers the box)', () => {
+describe('photo slot drawing (neutral numbered placeholder; a slot never shows a picture)', () => {
+  it('corner radius clips the fill and the frame: clip is called with a rounded path first', () => {
     const { ctx, calls } = recorder()
-    drawPhotoPlaceholder(ctx, { ...base, preview: picture })
-    const [, , , , , dx, dy, dw, dh] = named(calls, 'drawImage')[0]!.args as number[]
-    expect(dx!).toBeLessThanOrEqual(0)
-    expect(dy!).toBeLessThanOrEqual(0)
-    expect(dx! + dw!).toBeGreaterThanOrEqual(1049)
-    expect(dy! + dh!).toBeGreaterThanOrEqual(700)
-  })
-  it('contain keeps the whole picture inside the frame', () => {
-    const { ctx, calls } = recorder()
-    drawPhotoPlaceholder(ctx, { ...base, fit: 'contain', preview: picture })
-    const [, , , , , dx, dy, dw, dh] = named(calls, 'drawImage')[0]!.args as number[]
-    expect(dx!).toBeGreaterThanOrEqual(0)
-    expect(dy!).toBeGreaterThanOrEqual(0)
-    expect(dx! + dw!).toBeLessThanOrEqual(1049 + 1e-6)
-    expect(dy! + dh!).toBeLessThanOrEqual(700 + 1e-6)
-  })
-  it('the crop moves and magnifies the picture inside the same frame', () => {
-    const plain = recorder()
-    drawPhotoPlaceholder(plain.ctx, { ...base, preview: picture })
-    const cropped = recorder()
-    drawPhotoPlaceholder(cropped.ctx, { ...base, preview: picture, crop: { zoom: 2, x: 1, y: 0 } })
-    const a = named(plain.calls, 'drawImage')[0]!.args as number[]
-    const b = named(cropped.calls, 'drawImage')[0]!.args as number[]
-    expect(b[7]).toBeCloseTo(a[7]! * 2, 6) // twice as wide
-    expect(b[5]! + b[7]!).toBeCloseTo(1049, 6) // right edge flush with the frame
-  })
-  it('corner radius clips the picture and the frame: clip is called with a rounded path first', () => {
-    const { ctx, calls } = recorder()
-    drawPhotoPlaceholder(ctx, { ...base, cornerRadius: 60, preview: picture })
+    drawPhotoPlaceholder(ctx, { ...base, cornerRadius: 60 })
     const firstClip = calls.findIndex((c) => c.fn === 'clip')
-    const firstImage = calls.findIndex((c) => c.fn === 'drawImage')
+    const firstFill = calls.findIndex((c) => c.fn === 'fillRect')
     expect(named(calls.slice(0, firstClip), 'arcTo').length).toBe(4)
-    expect(firstClip).toBeLessThan(firstImage)
+    expect(firstClip).toBeLessThan(firstFill)
   })
   it('a radius beyond half the shorter side is clamped (350 for a 1049×700 frame)', () => {
     const { ctx, calls } = recorder()
-    drawPhotoPlaceholder(ctx, { ...base, cornerRadius: 99999, preview: picture, frameThickness: 0 })
+    drawPhotoPlaceholder(ctx, { ...base, cornerRadius: 99999, frameThickness: 0 })
     const arc = named(calls, 'arcTo')[0]!.args as number[]
     // first corner starts at x + radius: moveTo(radius, 0)
     expect(named(calls, 'moveTo')[0]!.args[0]).toBe(350)
@@ -88,57 +58,55 @@ describe('photo preview drawing', () => {
   })
   it('radius 0 uses a plain rectangle (no arcs)', () => {
     const { ctx, calls } = recorder()
-    drawPhotoPlaceholder(ctx, { ...base, preview: picture })
+    drawPhotoPlaceholder(ctx, base)
     expect(named(calls, 'arcTo')).toHaveLength(0)
   })
   it('frame: none draws no stroke; solid uses its thickness and colour; thickness is capped at half the shorter side', () => {
     const none = recorder()
-    drawPhotoPlaceholder(none.ctx, { ...base, frameThickness: 0, preview: picture })
+    drawPhotoPlaceholder(none.ctx, { ...base, frameThickness: 0 })
     expect(named(none.calls, 'stroke')).toHaveLength(0)
     const solid = recorder()
-    drawPhotoPlaceholder(solid.ctx, {
-      ...base,
-      frameThickness: 24,
-      frameColor: '#c9a860',
-      preview: picture
-    })
+    drawPhotoPlaceholder(solid.ctx, { ...base, frameThickness: 24, frameColor: '#c9a860' })
     expect(named(solid.calls, 'stroke')).toHaveLength(1)
     expect(named(solid.calls, 'set:lineWidth')[0]!.args[0]).toBe(24)
     expect(named(solid.calls, 'set:strokeStyle')[0]!.args[0]).toBe('#c9a860')
     const huge = recorder()
-    drawPhotoPlaceholder(huge.ctx, { ...base, frameThickness: 9999, preview: picture })
+    drawPhotoPlaceholder(huge.ctx, { ...base, frameThickness: 9999 })
     expect(named(huge.calls, 'set:lineWidth')[0]!.args[0]).toBe(350)
   })
   it('frame thickness is design-space: the same numbers at 300 and 600 DPI projects, whatever the zoom', () => {
     // Drawing receives design pixels only; there is no zoom or DPI parameter to leak into it.
     const a = recorder()
     const b = recorder()
-    drawPhotoPlaceholder(a.ctx, { ...base, preview: picture })
-    drawPhotoPlaceholder(b.ctx, { ...base, preview: picture })
-    expect(a.calls).toEqual(b.calls)
+    drawPhotoPlaceholder(a.ctx, base)
+    drawPhotoPlaceholder(b.ctx, base)
+    // (gradient objects are fresh per call, so compare the serialised calls)
+    expect(JSON.stringify(a.calls)).toBe(JSON.stringify(b.calls))
   })
-  it('preview mode never prints "PHOTO n" or the big number; the "#n" slot tag is editor-only', () => {
-    const exact = recorder()
-    drawPhotoPlaceholder(exact.ctx, { ...base, preview: picture, badge: false })
-    expect(named(exact.calls, 'fillText')).toHaveLength(0)
-    const editor = recorder()
-    drawPhotoPlaceholder(editor.ctx, { ...base, preview: picture, badge: true })
-    expect(named(editor.calls, 'fillText').map((c) => c.args[0])).toEqual(['#2'])
-  })
-  it('placeholder mode keeps the number and label (and no editor-only badge)', () => {
+  it('placeholder keeps the number and the "PHOTO n" label; without the label only the number', () => {
     const { ctx, calls } = recorder()
-    drawPhotoPlaceholder(ctx, { ...base, badge: true })
+    drawPhotoPlaceholder(ctx, base)
     expect(named(calls, 'fillText').map((c) => c.args[0])).toEqual(['2', 'PHOTO 2'])
+    const plain = recorder()
+    drawPhotoPlaceholder(plain.ctx, { ...base, label: false })
+    expect(named(plain.calls, 'fillText').map((c) => c.args[0])).toEqual(['2'])
+  })
+  it('never draws a picture', () => {
+    const { ctx, calls } = recorder()
+    drawPhotoPlaceholder(ctx, base)
+    expect(named(calls, 'drawImage')).toHaveLength(0)
   })
 })
 
-describe('specFor: sample photos are a preview aid supplied by the editor, never by production output', () => {
-  const layer: PhotoLayer = photo('p', 2) as PhotoLayer
+describe('specFor: a photo slot is always the placeholder (Sample Photos removed, B3.1)', () => {
+  const picture = { source: {} as CanvasImageSource, width: 1800, height: 1200 }
+  // An older project may still carry the dormant `sampleAssetId`; it is kept in the file but never drawn.
+  const layer = { ...(photo('p', 2) as PhotoLayer), sampleAssetId: 'asset-old' } as PhotoLayer
   const env = (over: Partial<RenderEnv>): RenderEnv => ({
     palette: { colors: [] },
-    images: () => undefined,
-    photoMode: 'preview',
-    interactive: false,
+    images: () => picture,
+    photoMode: 'placeholder',
+    interactive: true,
     photoLabels: true,
     allLayers: [layer],
     ...over
@@ -149,34 +117,17 @@ describe('specFor: sample photos are a preview aid supplied by the editor, never
     ;(spec.config.sceneFunc as (c: unknown) => void)({ _context: ctx })
     return calls
   }
-  it('without a preview lookup the placeholder is drawn even in preview mode', () => {
-    expect(named(draw(env({})), 'fillText').map((c) => c.args[0])).toContain('2')
+  it('editor and exact renders draw the numbered placeholder, never the dormant sample asset', () => {
+    for (const interactive of [true, false]) {
+      const calls = draw(env({ interactive }))
+      expect(named(calls, 'drawImage')).toHaveLength(0)
+      expect(named(calls, 'fillText').map((c) => c.args[0])).toContain('2')
+    }
   })
-  it('with a lookup the sample is drawn with the layer crop; exact (non-interactive) renders have no badge', () => {
-    const calls = draw(
-      env({ photoPreview: () => ({ image: picture, crop: { zoom: 1.5, x: 0, y: 0 } }) })
-    )
-    expect(named(calls, 'drawImage')).toHaveLength(1)
-    expect(named(calls, 'fillText')).toHaveLength(0)
-  })
-  it('placeholder mode ignores a lookup', () => {
-    const calls = draw(env({ photoMode: 'placeholder', photoPreview: () => ({ image: picture }) }))
+  it('frame mode (production artwork) draws only the frame, never a picture', () => {
+    const calls = draw(env({ photoMode: 'frame', interactive: false, photoLabels: false }))
     expect(named(calls, 'drawImage')).toHaveLength(0)
-  })
-  it('both copies of a two-up sheet resolve the same sample for the same layer id/number (lookup is by layer, state is shared)', () => {
-    const lookup = (l: PhotoLayer) => ({
-      image: picture,
-      crop: l.photoNumber === 2 ? { zoom: 2, x: 0, y: 0 } : undefined
-    })
-    const moved = { ...layer, x: layer.x + 1200 } as PhotoLayer
-    const a = draw(env({ photoPreview: lookup }))
-    const calls = recorder()
-    ;(
-      specFor(moved, env({ photoPreview: lookup, allLayers: [moved] }))!.config.sceneFunc as (
-        c: unknown
-      ) => void
-    )({ _context: calls.ctx })
-    expect(named(a, 'drawImage')[0]!.args).toEqual(named(calls.calls, 'drawImage')[0]!.args)
+    expect(named(calls, 'fillText')).toHaveLength(0)
   })
 })
 
@@ -202,7 +153,7 @@ describe('artboard clipping contract (design cell = the artboard)', () => {
 describe('frame-only photo drawing (layer package frames.png)', () => {
   it('strokes only the frame: no fill, no picture, no number', () => {
     const { ctx, calls } = recorder()
-    drawPhotoPlaceholder(ctx, { ...base, frameOnly: true, preview: picture })
+    drawPhotoPlaceholder(ctx, { ...base, frameOnly: true })
     expect(named(calls, 'stroke')).toHaveLength(1)
     expect(named(calls, 'fillRect')).toHaveLength(0)
     expect(named(calls, 'fillText')).toHaveLength(0)

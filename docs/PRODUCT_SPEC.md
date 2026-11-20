@@ -95,8 +95,8 @@ Semantic roles: Primary, Secondary, Accent, Background, Text, plus optional extr
 ## 14. Assets
 Import PNG, JPG/JPEG, WebP, SVG, PDF where practical. Categories: Background, Texture, Frame, Border, Overlay, Badge, Ornament, Icon, Pattern, Logo, Monogram, Floral, Holiday, Corporate, School, Wedding, Birthday, Sports, Custom. Reusable local library; project vs library assets are distinguishable; local search by metadata. Details: [ASSET_AND_INTEGRATION_STRATEGY.md](ASSET_AND_INTEGRATION_STRATEGY.md).
 
-## 15. Sample photo preview
-Built-in sample photos: toggle, shuffle, replace individual sample, preview without placeholders, final print preview.
+## 15. Photo slot preview
+**Sample photos were removed (owner decision, Phase 7B B3.1, ADR-056):** the booth places each guest photo in its slot after capture, so Template Studio designs the slot and never simulates the future photograph. Photo slots always show a neutral numbered placeholder; Print Preview shows the printed sheet with those placeholders. _(Earlier scope, superseded: built-in sample photos with toggle, shuffle and replace.)_
 
 ## 16. Imports
 **Status: built (Phase 6D, ADR-048).** Import a DSLR Booth template ZIP: safe extraction, read `template.xml`, discover referenced images, parse supported configuration, convert to the internal model, reconstruct an editable canvas where possible, warn about unsupported/unknown properties. Also import assets (above) and native projects.
@@ -139,7 +139,7 @@ Design Recipes with AI assistance; provider integrations; commercialization to o
 2. **Precision zoom and pan.** The canvas supports precision zoom and pan for detailed alignment without changing project geometry.
 3. **Constrained dragging.** Holding Shift while dragging constrains layer movement horizontally or vertically based on the intended drag direction.
 4. **Tooltips.** Canvas and editor tools provide contextual hover tooltips describing their purpose and relevant shortcuts/modifiers.
-5. **Sample photos are a design aid.** A photo placeholder is a future booth capture slot. A sample picture shown in it never changes its photo number, the project, the output composition or any future DSLR Booth export, and is never baked into production output.
+5. **A photo slot is a future booth capture slot.** Template Studio designs the slot (number, size, position, fit, frame) and shows it as a numbered placeholder; it never puts a picture in it, in the editor or in any output (sample photos were removed in B3.1, ADR-056).
 
 ## 27. Typography and palette contracts (Phase 5D)
 1. **Requested font preservation.** A text layer stores the font family the designer asked for. It is never silently rewritten; if the font is not installed the app renders a fallback and says so.

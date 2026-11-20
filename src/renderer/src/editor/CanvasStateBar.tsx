@@ -1,12 +1,11 @@
-import { Eye, PenLine, Shuffle } from 'lucide-react'
+import { Eye, PenLine } from 'lucide-react'
 import { selectOutputProfile, selectViewMode } from '@editor/store'
 import { safeAreasControl } from '@editor/layout'
 import { runCommand } from './commandRunner'
 import { editorStore, useEditor } from './editorStore'
-import { commandTipProps, tipProps } from './tips'
+import { tipProps } from './tips'
 import { WorkspaceModeSwitch } from './WorkspaceModeSwitch'
 import { Button } from '../ui/Button'
-import { IconButton } from '../ui/IconButton'
 import { Tooltip } from '../ui/Tooltip'
 
 /**
@@ -15,7 +14,6 @@ import { Tooltip } from '../ui/Tooltip'
  */
 function ViewToggle({
   name,
-  short,
   value,
   pressed,
   disabled,
@@ -24,8 +22,6 @@ function ViewToggle({
   testId
 }: {
   name: string
-  /** Shorter name used when the bar is narrow. */
-  short?: string
   value: string
   pressed: boolean
   disabled?: boolean
@@ -48,8 +44,7 @@ function ViewToggle({
       >
         <span className="led" aria-hidden="true" />
         <span className="pill-name" aria-hidden="true">
-          <span className="long">{name}</span>
-          {short && <span className="short">{short}</span>}:
+          {name}:
         </span>
         <b aria-hidden="true">{value}</b>
       </button>
@@ -63,7 +58,6 @@ function ViewToggle({
  */
 export function CanvasStateBar(): React.JSX.Element {
   const viewMode = useEditor(selectViewMode)
-  const samples = useEditor((s) => s.photoDisplay === 'preview')
   const showOverflow = useEditor((s) => s.showOverflow)
   const showSafe = useEditor((s) => s.showSafeAreas)
   const profile = useEditor(selectOutputProfile)
@@ -77,24 +71,6 @@ export function CanvasStateBar(): React.JSX.Element {
       data-region="viewbar"
     >
       <WorkspaceModeSwitch />
-      <ViewToggle
-        name="Sample photos"
-        short="Samples"
-        value={samples ? 'On' : 'Off'}
-        pressed={samples}
-        testId="view-sample-photos"
-        tip={{ label: 'Sample photos', ...tipProps('samplePhotos') }}
-        onClick={() => runCommand('view.previewPhotos')}
-      />
-      {samples && (
-        <IconButton
-          size="sm"
-          icon={Shuffle}
-          label="Shuffle photos"
-          {...commandTipProps('view.shufflePhotos')}
-          onClick={() => runCommand('view.shufflePhotos')}
-        />
-      )}
       <ViewToggle
         name="Safe areas"
         value={safe.value}

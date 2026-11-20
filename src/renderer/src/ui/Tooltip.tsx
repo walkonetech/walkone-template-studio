@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { placeFloating, type Side } from '@editor/floatingPlacement'
+import { isRestoringFocus } from './restoreFocus'
 
 /**
  * Hover/focus tooltip for icon-only controls: the shared tooltip (HTML `title` is only a fallback during migration).
@@ -80,7 +81,10 @@ export function Tooltip({
       onMouseEnter={show}
       onMouseLeave={hide}
       onMouseDown={hide}
-      onFocus={show}
+      onFocus={(e) => {
+        // Focus handed back by a closing dialog/popover/menu is not the user's move: no tooltip for it.
+        if (!isRestoringFocus(e.target)) show()
+      }}
       onBlur={hide}
     >
       {children}

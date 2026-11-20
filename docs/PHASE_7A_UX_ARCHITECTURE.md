@@ -2,6 +2,8 @@
 
 _Status: **planning document, complete for owner review (2026-11-19).** Nothing here is implemented. This is the authoritative UX architecture for the refresh. Phase 7B (editor/shell refresh) and Phase 7C (Design Guide) start only after the owner approves it. Decision record: ADR-054 (dual entry, Accepted). The layout proposals in this document are **Proposed** until the owner approves them, and the open decisions in §43 stay open._
 
+> **Superseded in part (owner decision, B3.1, 2026-11-20, ADR-056): Sample Photos are removed from the product.** Every mention below of sample photos, Shuffle, Choose photo…, the "Sample · #n" tag, a photo-slot **Reposition** verb, the Reposition/crop mode or banner, and the Escape step "Reposition" is historical and must not be built in B4/B5. A photo slot is always the neutral numbered placeholder; the view bar is Design | Print Preview · Safe areas · Overflow; the Photos drawer is Add photo slot + the slot list; Escape order is popover/menu → floating drawer → selection. The rest of this document stands.
+
 **Labels used:** **Confirmed** = owner decision, or observed in the built app or in validation. **Proposed** = recommendation in this document. **Assumption** = not measured yet. **OPEN** = the owner decides.
 
 **Inputs reviewed:**

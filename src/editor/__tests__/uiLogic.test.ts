@@ -37,7 +37,6 @@ const ctx = (over: Partial<CommandContext> = {}): CommandContext => ({
   canRedo: false,
   selectionCount: 0,
   snapping: true,
-  previewPhotos: false,
   hasPrintPreview: false,
   showOverflow: true,
   hasOutputProfile: false,
@@ -137,7 +136,7 @@ describe('command model', () => {
 
   it('checkable commands reflect state', () => {
     expect(isCommandChecked('view.snap', ctx({ snapping: true }))).toBe(true)
-    expect(isCommandChecked('view.previewPhotos', ctx({ previewPhotos: false }))).toBe(false)
+    expect(isCommandChecked('view.showOverflow', ctx({ showOverflow: false }))).toBe(false)
     expect(isCommandChecked('file.save', ctx())).toBeUndefined()
   })
 

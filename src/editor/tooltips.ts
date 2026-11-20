@@ -34,35 +34,11 @@ export const TIPS = {
   },
   visibility: { label: 'Visibility', hint: 'Show or hide this layer in the design and in prints' },
   lock: { label: 'Lock', hint: 'Locked layers cannot be moved or edited on the canvas' },
-  // photo workflow
-  reposition: {
-    label: 'Reposition photo',
-    hint: 'Drag the sample photo inside its frame. Enter finishes, Escape cancels.'
-  },
-  resetCrop: {
-    label: 'Reset position',
-    hint: 'Return the sample photo to its default fit and position'
-  },
-  cropZoomIn: { label: 'Zoom photo in', hint: 'Magnify the sample photo inside its frame' },
-  cropZoomOut: { label: 'Zoom photo out', hint: 'Shrink the sample photo back toward its fit' },
-  shuffle: { label: 'Shuffle photos', hint: 'Pick a different set of sample photos' },
-  resetSamples: {
-    label: 'Reset samples',
-    hint: 'Return to the default sample photo for each number'
-  },
-  chooseSample: {
-    label: 'Choose photo…',
-    hint: 'Use a photo from your computer as the sample. It is only a preview and is not saved in the project.'
-  },
   layersMore: {
     label: 'More layer actions',
     hint: 'Duplicate, group, stacking order, delete and the Layers keyboard shortcuts'
   },
   // canvas-state bar (view only: none of these change the design)
-  samplePhotos: {
-    label: 'Sample photos',
-    hint: 'Show example guest photos inside the photo slots. View only: never saved or exported.'
-  },
   safeAreas: {
     label: 'Safe areas',
     hint: 'Show where the printer may trim or cut. View only: never printed.'

@@ -23,9 +23,7 @@ export type CommandId =
   | 'view.zoomIn'
   | 'view.zoomOut'
   | 'view.snap'
-  | 'view.previewPhotos'
   | 'view.showOverflow'
-  | 'view.shufflePhotos'
   | 'view.design'
   | 'view.printPreview'
   | 'view.safeAreas'
@@ -65,7 +63,6 @@ export interface CommandContext {
   canRedo: boolean
   selectionCount: number
   snapping: boolean
-  previewPhotos: boolean
   /** The project prints several copies per sheet, so a Print Preview exists. */
   hasPrintPreview: boolean
   /** Artwork beyond the artboard is shown (not the clipped view). */
@@ -306,17 +303,6 @@ export const COMMANDS: Readonly<Record<CommandId, CommandDef>> = {
     needsProject: true,
     checked: (c) => c.showOverflow
   },
-  'view.shufflePhotos': {
-    label: 'Shuffle photos',
-    hint: 'Pick a different set of sample photos',
-    needsProject: true
-  },
-  'view.previewPhotos': {
-    label: 'Sample photos',
-    hint: 'Show sample photos of guests inside the photo slots (view only: never saved or exported)',
-    needsProject: true,
-    checked: (c) => c.previewPhotos
-  },
   // Appearance (B2): interim home until Settings › Appearance (B5). Settings of this computer, never the project.
   'view.themeLight': {
     label: 'Light theme',
@@ -359,7 +345,6 @@ export function isCommandEnabled(id: CommandId, ctx: CommandContext): boolean {
       ? ctx.selectionCount >= 3
       : ctx.selectionCount >= 1
   }
-  if (id === 'view.shufflePhotos') return ctx.previewPhotos
   if (id === 'view.safeAreas') return ctx.hasOutputProfile
   return true
 }
@@ -446,9 +431,6 @@ export const MENUS: readonly { id: string; label: string; items: readonly (Comma
         '-',
         'view.safeAreas',
         'view.outputProfile',
-        '-',
-        'view.previewPhotos',
-        'view.shufflePhotos',
         '-',
         'view.themeLight',
         'view.themeDark',

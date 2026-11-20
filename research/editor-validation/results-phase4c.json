@@ -91,7 +91,6 @@
       "sel": [],
       "layers": 0,
       "snapping": true,
-      "preview": "placeholder",
       "file": null,
       "scale": "fit"
     }
@@ -114,8 +113,20 @@
     "ok": true
   },
   {
-    "name": "empty project: Layers shows its empty state, Properties shows the project",
+    "name": "empty project: Layers shows its empty state, Properties shows the project (read one panel at a time: tabs below 860 px)",
     "ok": true
+  },
+  {
+    "name": "the right column follows the responsive contract for the actual CSS height (stacked ≥ 860 px, tabs below)",
+    "ok": true,
+    "detail": {
+      "height": 872,
+      "layout": "stacked",
+      "expected": "stacked",
+      "tab": null,
+      "layers": true,
+      "properties": true
+    }
   },
   {
     "name": "Save (primary button) writes the file and the title shows Saved",
@@ -146,7 +157,6 @@
       "sel": [],
       "layers": 0,
       "snapping": true,
-      "preview": "placeholder",
       "file": "Studio.boothproject",
       "scale": "fit"
     }
@@ -231,7 +241,7 @@
     "ok": true
   },
   {
-    "name": "collapse state persists across selection; photo sections (Photo, Sample photo, Frame) shown",
+    "name": "collapse state persists across selection; photo sections (Photo, Frame) shown and no Sample photo section (removed in B3.1)",
     "ok": true
   },
   {
@@ -325,7 +335,7 @@
     "ok": true
   },
   {
-    "name": "canvas-state bar Sample photos toggles photo display (moved from the status bar in B3)",
+    "name": "canvas-state bar has no Sample photos control (removed in B3.1); its Overflow pill toggles the view",
     "ok": true
   },
   {
@@ -446,7 +456,6 @@
       "sel": [],
       "layers": 10,
       "snapping": true,
-      "preview": "placeholder",
       "file": null,
       "scale": "fit"
     }

@@ -82,6 +82,43 @@ exports.launch = async ({ port, userData, env = {}, size }) => {
   return { proc, c }
 }
 
+/**
+ * The standard editor window the suites launch with. `WTS_VALIDATE_SIZE=WxH` overrides it for a whole run, so the
+ * same suite can be exercised in BOTH right-column states of the production responsive contract (B3.1):
+ *   default 1440x900 on macOS  → about 1440×872 CSS px → Properties stacked above Layers
+ *   WTS_VALIDATE_SIZE=1440x807  → about 1440×779 CSS px → Properties | Layers tabs (Windows 125 %: ≈1426×779)
+ * On Windows the default 1440x900 window already gives tabs (≈1426×779 at 125 %, ≈1422×853 at 100 %).
+ */
+const parseSize = (v) => {
+  const m = /^(\d{3,5})x(\d{3,5})$/.exec(v || '')
+  return m ? { width: Number(m[1]), height: Number(m[2]) } : null
+}
+exports.STANDARD_SIZE = parseSize(process.env.WTS_VALIDATE_SIZE) || { width: 1440, height: 900 }
+/** Mirrors `rightColumnLayout` (src/editor/layout.ts): stacked at ≥ 860 CSS px tall, tabs below. */
+exports.STACK_MIN_HEIGHT = 860
+
+/** The right column as rendered, plus what the responsive contract expects for the ACTUAL CSS viewport height. */
+exports.rightColumn = (c) =>
+  c.ev(
+    `({height: innerHeight, layout: document.querySelector('.sidebar')?.dataset.layout ?? null, expected: innerHeight >= ${exports.STACK_MIN_HEIGHT} ? 'stacked' : 'tabs', tab: document.querySelector('.sidebar [role=tab][aria-selected=true]')?.dataset.tab ?? null, layers: !!document.querySelector('.layers-panel'), properties: !!document.querySelector('.inspector-panel')})`
+  )
+
+/**
+ * Makes the Layers or Properties panel visible in either right-column state: stacked shows both (nothing to do);
+ * tabs shows one at a time, so the matching tab is activated first (a click, like a user). Resolves true when the
+ * panel is on screen. Switching tabs is UI state only: it never touches the project.
+ */
+exports.showPanel = async (c, which) => {
+  const sel = which === 'layers' ? '.layers-panel' : '.inspector-panel'
+  const tabbed = await c.ev(`document.querySelector('.sidebar')?.dataset.layout === 'tabs'`)
+  if (tabbed && !(await c.ev(`!!document.querySelector('${sel}')`))) {
+    await c.ev(`document.querySelector('.sidebar [role=tab][data-tab="${which}"]')?.click(); 1`)
+    for (let i = 0; i < 20 && !(await c.ev(`!!document.querySelector('${sel}')`)); i++)
+      await sleep(50)
+  }
+  return c.ev(`!!document.querySelector('${sel}')`)
+}
+
 exports.alive = (proc) => proc && proc.exitCode === null && proc.signalCode === null
 exports.kill = async (proc) => {
   if (exports.alive(proc)) proc.kill('SIGKILL')

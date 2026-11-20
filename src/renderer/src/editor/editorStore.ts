@@ -14,7 +14,6 @@ import {
 } from '@editor/store'
 import { measureTextHeight } from '@canvas/rendering/measureText'
 import { loadProjectImage } from './assetLoader'
-import { clearUserPhotos, previewCache } from './samplePhotos'
 
 const api = window.api.project
 
@@ -41,14 +40,6 @@ const ports: EditorPorts = {
 export type ImportPlacementArg = ImportPlacement
 
 export const editorStore = createEditorStore({ ports, measureTextHeight })
-
-// A different (or no) project: forget the pictures the user picked as preview samples (they are session-only).
-editorStore.subscribe((s, prev) => {
-  if (prev.session?.sessionId !== s.session?.sessionId) {
-    clearUserPhotos()
-    previewCache.clear('user-')
-  }
-})
 
 /**
  * The selected Output Profile and the Safe areas toggle are a per-computer preference (ADR-053): remembered in this

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { restoreFocus } from './restoreFocus'
 
 const FOCUSABLE =
   'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])'
@@ -72,7 +73,7 @@ export function Dialog({
       box.current?.querySelector<HTMLElement>('[data-autofocus]') ??
       box.current?.querySelector<HTMLElement>(FOCUSABLE)
     target?.focus()
-    return () => previous?.focus?.()
+    return () => restoreFocus(previous)
   }, [])
 
   // Escape must still close the dialog when focus has fallen out of it (e.g. a focused button became disabled while

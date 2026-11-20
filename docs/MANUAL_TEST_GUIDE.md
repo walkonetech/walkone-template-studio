@@ -42,7 +42,7 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] Shapes and images resize as expected (images keep ratio; shapes free).
 - [ ] Shift-drag locks to an axis; snapping guides appear and can be toggled.
 - [ ] Resize snapping: drag a corner of one photo slot towards another slot's size — it snaps to the same width/height and pink size bars appear on both; edges also snap to other objects and the canvas; Alt/Option-resize and Snap off do not snap.
-- [ ] A framed photo slot (e.g. white frame) at an odd position shows no grey hairline at its outer edge with Preview photos on, nor in the proof PNG.
+- [ ] A framed photo slot (e.g. white frame) at an odd position shows no grey hairline at its outer edge on the canvas, nor in the proof PNG.
 - [ ] Zoom (wheel, pointer-centred), Space+drag pan, fit-to-window.
 - [ ] Layers panel: select, multi-select (⇧/⌘), rename, lock, hide, reorder, group/ungroup, filter, 50+ layers scroll.
 - [ ] Align/Distribute and exact X/Y fields; arrow-key nudging.
@@ -55,11 +55,9 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] Set as Background; canvas background colour editable.
 - [ ] Save/reopen keeps assets; undo/redo of import works.
 
-### D. Photo preview and cropping
-- [ ] **Sample photos** (canvas-state bar or the Photos drawer) shows sample photos by photo number; Shuffle; Choose photo… with your own image.
-- [ ] Reposition/crop a photo: zoom and drag inside the frame; reset crop.
-- [ ] Frame styling (thickness, colour, corner radius) updates live.
-- [ ] Samples/crops never mark the project Modified and are not saved.
+### D. Photo slots
+- [ ] Photo slots show the numbered placeholder (no sample photos or Reposition since B3.1; see H2).
+- [ ] Frame styling (thickness, colour, corner radius) and Photo fit update live and are undoable.
 
 ### E. Typography (Phase 5D)
 - [ ] Add text; edit inline (double-click): Enter commits, Shift+Enter newline, Esc cancels.
@@ -91,7 +89,7 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] 2×6 strip: Print sheet PNG + Design PNG ticked; Proof offered (unticked); no Layer package; sizes shown (e.g. 1200 × 1800 px · 4 × 6 in · 300 DPI).
 - [ ] Open the print PNG: both strips identical, photo areas empty, frames drawn, artwork clipped at the strip edge, no "PHOTO n" labels.
 - [ ] Preview / Get Info shows the DPI (300 or 600).
-- [ ] Proof shows the same sample photos you see with Preview Photos on (incl. a Reposition crop); it is clearly named `-proof`.
+- [ ] Proof shows each photo slot as its numbered placeholder (never a picture); it is clearly named `-proof`.
 - [ ] Export twice into the same folder: Replace / Keep both / Cancel all behave.
 - [ ] Rename a font to something not installed: warning, export still allowed; result uses a fallback font.
 - [ ] "Show in Finder" opens the folder with the file selected.
@@ -141,7 +139,7 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] Rail: **Elements, Text, Photos, Uploads, Colors**, each with a word; the open one is highlighted in indigo with a bar on its left.
 - [ ] Window ≥ 1600 px wide: the drawer sits beside the canvas and pushes it. Narrower (e.g. 1426×779): the drawer floats over the canvas, stays open while you add several items, and closes when you click the canvas, choose another category, press its ✕ or press Esc.
 - [ ] Drag the drawer's right edge: it stays between 240 and 360 px and keeps its width after a restart. The project stays **Saved**.
-- [ ] Canvas-state bar: **Design | Print Preview** (strips only), **Sample photos: On/Off**, **Safe areas** ("No profile" until you choose an output profile in the status bar, then On/Off), **Overflow: Show/Hide**. None of them changes Saved/Modified. Print Preview says "read only" with **Edit in Design**.
+- [ ] Canvas-state bar: **Design | Print Preview** (strips only), **Safe areas** ("No profile" until you choose an output profile in the status bar, then On/Off), **Overflow: Show/Hide**. None of them changes Saved/Modified. Print Preview says "read only" with **Edit in Design**.
 - [ ] Tall window (≥ 860 px): Properties above Layers with a draggable divider. Short window (e.g. 1426×779): **Properties | Layers** tabs; picking a layer in Layers then switching to Properties shows that layer.
 - [ ] Layers header: **+** and **⋯** only; ⋯ has Duplicate, Group, Ungroup, the four stacking moves, Delete, Keyboard shortcuts…
 - [ ] Status bar: format, selection, Output, Snap, zoom; no sample/safe/overflow toggles there any more.
@@ -150,6 +148,15 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] Help › Keyboard shortcuts… shows ⌘ on macOS and Ctrl on Windows.
 - [ ] Every tooltip stays fully inside the window, including at the right edge, the status bar and inside a floating drawer.
 - [ ] Repeat the main checks in **Dark** and **Compact** (View menu) and at 1100×650.
+
+### H2. B3.1 follow-ups (Phase 7B B3.1)
+- [ ] **No Sample photos anywhere:** not in the bar above the canvas (it shows Design | Print Preview · Safe areas · Overflow), not in the Photos drawer (Add photo slot + the slot list only), not in Properties for a selected photo slot, not in the View menu; no Shuffle, Reset samples, Choose photo… or Reposition. Double-clicking a photo slot does nothing special.
+- [ ] Photo slots still work: add one from Photos or Elements, change its number, fit, frame and corner radius in Properties; it shows the numbered placeholder (tint + number). Export: print/design PNGs keep the slot areas empty with frames; the Proof PNG shows numbered placeholders, never pictures.
+- [ ] Older projects (saved before B3.1) open, edit and save normally.
+- [ ] Floating drawer (window < 1600 px wide): drag its right edge, then press **Esc** once: the drawer closes and focus moves to its rail button. With the edge focused, the arrow keys still resize it.
+- [ ] Open a drawer, then press **See how it prints** / Design | Print Preview: the drawer closes; nothing covers the preview caption. Back in Design the drawer stays closed. Clicking a rail item while in Print Preview goes back to Design and opens it.
+- [ ] Open Export, close it with the mouse (Cancel or ✕) and move the mouse away: no Export tooltip stays on screen. Same with Esc. Tabbing onto Export, or hovering it, still shows its tooltip.
+- [ ] Windows: the window cannot be made narrower than 1100 DIP; at 1920×1080 125 % a half-screen Snap docks the minimum-size window at the left (expected, owner decision). F10 focuses the menus without underlines (holding Alt shows them) — known, B6.
 
 ### H. UI, accessibility, polish
 - [ ] Tooltips on icon-only controls, with shortcut hints.

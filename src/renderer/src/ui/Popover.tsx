@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { placeFloating, type Side } from '@editor/floatingPlacement'
+import { restoreFocus } from './restoreFocus'
 
 /**
  * A non-modal popover anchored to a trigger (role=dialog, labelled). Placed with the same viewport-aware rule as
@@ -67,7 +68,7 @@ export function Popover({
       e.preventDefault()
       e.stopPropagation()
       onClose()
-      anchor.focus()
+      restoreFocus(anchor)
     }
     window.addEventListener('mousedown', onDown, true)
     window.addEventListener('keydown', onKey, true)

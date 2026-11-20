@@ -156,7 +156,11 @@ print(json.dumps({'minEdge': min(min(px) for px in edge), 'inner': inner}))
       m.minEdge >= 250,
       m
     )
-    check('4c the sample photo is still drawn inside the frame', Math.min(...m.inner) < 250, m)
+    check(
+      '4c the numbered placeholder is still drawn inside the frame (proof; sample photos removed in B3.1)',
+      Math.min(...m.inner) < 250,
+      m
+    )
   } catch (e) {
     check('script error', false, String(e && e.stack))
   } finally {

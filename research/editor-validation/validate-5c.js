@@ -1,4 +1,6 @@
-// Phase 5C scripted validation (automation over the DevTools protocol, NOT human testing): photo preview, crop, frames,
+// Phase 5C scripted validation (automation over the DevTools protocol, NOT human testing): photo slots (numbered
+// placeholders; the 5C sample photos and Reposition/crop were removed in 7B B3.1, so those checks now assert their
+// absence), fit, frames,
 // artboard overflow, precision zoom/pan, Shift-constrained dragging, tooltips. Launches the BUILT app itself.
 // Run: npm run build && node research/editor-validation/validate-5c.js
 const fs = require('fs')
@@ -63,8 +65,7 @@ const state = (c) =>
     c,
     `(()=>{const s=__wts.store.getState(); const p=s.project; return {
     has:!!p, dirty:p!==null&&p!==s.savedProject, past:s.history.past.length, msg:s.lastMessage, mode:s.viewMode,
-    selected:s.selectedIds, overflow:s.showOverflow, preview:s.photoDisplay, crops:s.photoCrops, crop:s.cropSession,
-    previewPhotos:s.previewPhotos, view:s.view, interaction:s.interaction,
+    selected:s.selectedIds, overflow:s.showOverflow, view:s.view, interaction:s.interaction,
     layers:p?p.layers.map(l=>({id:l.id,type:l.type,name:l.name,x:l.x,y:l.y,width:l.width,height:l.height,rotation:l.rotation,z:l.zIndex,photoNumber:l.photoNumber,fit:l.fit,frame:l.frame,cornerRadius:l.cornerRadius,role:l.role,locked:l.locked})):[],
     assets:p?p.assets.length:0, projectJson:p?JSON.stringify(p.layers):''}})()`
   )
@@ -180,7 +181,7 @@ const tipText = (c) =>
     port: 9510,
     userData: ud,
     env,
-    size: { width: 1440, height: 900 }
+    size: h.STANDARD_SIZE
   })
   try {
     // ------------------------------------------------------------------ setup: 2×6 strip, 3 photos, imported overlay
@@ -765,7 +766,7 @@ const tipText = (c) =>
       )
     }
 
-    // ------------------------------------------------------------------ preview photos
+    // ------------------------------------------------------------------ photo slots are placeholders (Sample Photos removed in B3.1)
     await c.ev(
       `(()=>{const s=__wts.store.getState(); s.fitToWindow(); s.clearSelection(); return 1})()`
     )
@@ -790,245 +791,122 @@ const tipText = (c) =>
       placeholderDesign.px
     )
     await shot(c, '5c-04-placeholder-mode.png')
-    await clickLabel(c, 'Sample photos')
-    await sleep(900)
-    st = await state(c)
-    check(
-      '12 Preview Photos ON is editor state: not Modified by it, no history',
-      st.preview === 'preview' && st.past === (await state(c)).past
+    // Sample Photos were removed (owner decision, B3.1, ADR-056): no control anywhere, and a slot never shows a picture.
+    await c.ev(
+      `(()=>{const s=__wts.store.getState(); s.selectLayer(s.project.layers.find(l=>l.type==='photo').id); return 1})()`
     )
-    const dirtyNow = st.dirty
-    const previewDesign = await design(c, [...photoRegions.p1, ...photoRegions.p2], true)
-    const differs = (a, b) => a.some((v, i) => Math.abs(v - b[i]) > 12)
-    check(
-      '12b sample pictures replace the placeholders in the (design-preview) render',
-      previewDesign.px.slice(0, 3).some((p, i) => differs(p, placeholderDesign.px[i])) &&
-        previewDesign.px.slice(3).some((p, i) => differs(p, placeholderDesign.px[3 + i]))
+    await sleep(300)
+    await h.showPanel(c, 'properties')
+    await c.ev(`document.querySelector('.toolrail-btn[data-tool=photos]').click(); 1`)
+    await sleep(300)
+    const noSamples = await J(
+      c,
+      `({viewbar:/sample|shuffle/i.test(document.querySelector('.viewbar')?.textContent||''), drawer:/sample|shuffle/i.test(document.querySelector('.tooldrawer')?.textContent||''), drawerAdd:!!document.querySelector('[data-testid=add-photo]'), inspector:/sample|shuffle|reposition|choose photo/i.test(document.querySelector('.inspector-panel')?.textContent||''), photoNumber:/Photo number/.test(document.querySelector('.inspector-panel')?.textContent||''), buttons:[...document.querySelectorAll('button')].filter(b=>/sample|shuffle|reposition/i.test((b.getAttribute('aria-label')||'')+b.textContent)).length, state:['photoDisplay','previewPhotos','photoCrops','cropSession'].filter(k=>k in __wts.store.getState())})`
     )
-    const production = await design(c, [...photoRegions.p1, ...photoRegions.p2], false)
     check(
-      '12c production-style render (no preview supplied) keeps placeholders: sample photos are never baked in unless a preview render asks for it',
-      production.px.every((p, i) => near(p, placeholderDesign.px[i], 3)),
-      production.px
+      '12 no Sample photos anywhere (view bar, Photos drawer, Properties, buttons) and no sample/crop editor state; the Photos drawer adds photo slots and Properties edits the photo number',
+      !noSamples.viewbar &&
+        !noSamples.drawer &&
+        noSamples.drawerAdd &&
+        !noSamples.inspector &&
+        noSamples.photoNumber &&
+        noSamples.buttons === 0 &&
+        noSamples.state.length === 0,
+      noSamples
     )
-    await shot(c, '5c-05-preview-photos-on.png')
-    // PhotoNumber mapping: a second layer with the same number shows the same sample
+    await c.ev(`document.querySelector('.toolrail-btn[data-tool=photos]').click(); 1`)
+    await sleep(200)
+    // A legacy "preview" render request is ignored: the debug render always draws placeholders.
+    const legacyPreview = await design(c, [...photoRegions.p1, ...photoRegions.p2], true)
+    check(
+      '12b every render draws the numbered placeholder (a legacy preview request changes nothing): no picture ever enters a photo slot',
+      legacyPreview.px.every((p, i) => near(p, placeholderDesign.px[i], 0)),
+      legacyPreview.px
+    )
+    // the live canvas shows the same placeholders
+    const live = await stagePx(c, [photoRegions.p1[1], photoRegions.p2[1]])
+    check(
+      '12c the live canvas shows the placeholder tints (photo 1 red-ish, photo 2 green-ish)',
+      live[0] && live[1] && live[0][0] > live[0][1] && live[1][1] > live[1][0],
+      live
+    )
+    // PhotoNumber: a second layer with the same number shows the same numbered placeholder
     await c.ev(
       `(()=>{const s=__wts.store.getState(); s.addNewLayer('photo'); const t=__wts.store.getState(); const id=t.selectedIds[0]; t.editLayers([id],{photoNumber:1,x:76,y:2600,width:1049,height:700,frame:{style:'none'}}); return 1})()`
     )
     await sleep(400)
-    const dupPts = [
-      [160, 2690],
-      [600, 2950],
-      [1000, 3200]
-    ]
-    const dupRender = await design(c, [...photoRegions.p1.map(([x, y]) => [x, y]), ...dupPts], true)
-    // Same sample, same frame size: compare the same relative spots (offset 2600-168 = 2432 down)
     const rel = (pt, dy) => [pt[0], pt[1] + dy]
-    const same = await design(
-      c,
-      [rel([160, 260], 2432), rel([600, 520], 2432), rel([1000, 760], 2432)],
-      true
-    )
+    const same = await design(c, [rel([160, 260], 2432), rel([1000, 760], 2432)])
     check(
-      '13 two photo layers sharing PhotoNumber 1 show the same sample picture at the same relative spots',
-      same.px.every((p, i) => near(p, previewDesign.px[i], 6)),
-      { a: previewDesign.px.slice(0, 3), b: same.px }
+      '13 two photo layers sharing PhotoNumber 1 show the same placeholder tint',
+      same.px[0][0] > same.px[0][1] && near(same.px[1], placeholderDesign.px[2], 12),
+      { same: same.px, ref: placeholderDesign.px.slice(0, 3) }
     )
     await c.ev(`(()=>{const s=__wts.store.getState(); s.deleteSelection(); return 1})()`)
-    // shuffle
-    const shufflePast = (await state(c)).past
-    const shuffleDirty = (await state(c)).dirty
-    const mapBefore = await design(c, [...photoRegions.p1, ...photoRegions.p2], true)
-    await clickLabel(c, 'Shuffle photos')
-    await sleep(800)
-    const mapShuffled = await design(c, [...photoRegions.p1, ...photoRegions.p2], true)
-    const afterShuffle = await state(c)
-    check(
-      '14 Shuffle changes the sample assignment; no Modified, no history',
-      mapShuffled.px.some((p, i) => differs(p, mapBefore.px[i])) &&
-        afterShuffle.past === shufflePast &&
-        afterShuffle.dirty === shuffleDirty &&
-        afterShuffle.previewPhotos.seed === 1,
-      {
-        past: afterShuffle.past,
-        shufflePast,
-        dirty: afterShuffle.dirty,
-        shuffleDirty,
-        seed: afterShuffle.previewPhotos.seed
-      }
-    )
-    await c.ev(`__wts.store.getState().resetSamples(); 1`)
-    await sleep(500)
-    const mapReset = await design(c, [...photoRegions.p1, ...photoRegions.p2], true)
-    check(
-      '14b Reset samples returns to the default mapping',
-      mapReset.px.every((p, i) => near(p, mapBefore.px[i], 3))
-    )
+    await sleep(300)
     // two-up
     await c.ev(`__wts.store.getState().setViewMode('preview'); 1`)
     await sleep(900)
-    await shot(c, '5c-06-print-preview-with-samples.png')
-    const hv2 = await halves(c, true)
+    await shot(c, '5c-06-print-preview-placeholders.png')
+    const hv2 = await halves(c, false)
     check(
-      '15 Print Preview with sample photos: both copies show identical pictures (same samples, same crops)',
+      '15 Print Preview: both copies show identical numbered placeholders',
       hv2.diff <= 64 && hv2.max <= 2,
       hv2
     )
     await c.ev(`__wts.store.getState().setViewMode('design'); 1`)
     await sleep(600)
-    // preview OFF -> placeholders
-    await clickLabel(c, 'Sample photos')
-    await sleep(500)
-    const off = await design(c, [...photoRegions.p1, ...photoRegions.p2], false)
+    // a double-click on a photo slot starts no Reposition mode and changes nothing
+    const ph0 = (await state(c)).layers.find((l) => l.type === 'photo')
+    const beforeDbl = await state(c)
+    const pc = await centre(c, ph0.id)
+    await c.dblclick(pc)
+    await sleep(300)
+    const afterDbl = await state(c)
     check(
-      '16 Preview Photos OFF: placeholders return unchanged',
-      (await state(c)).preview === 'placeholder' &&
-        off.px.every((p, i) => near(p, placeholderDesign.px[i], 3))
+      '16 double-clicking a photo slot starts no Reposition mode: no crop bar, interaction idle, the project and history unchanged',
+      !(await c.ev(`!!document.querySelector('[data-testid=crop-bar], .crop-overlay')`)) &&
+        afterDbl.interaction === 'idle' &&
+        afterDbl.projectJson === beforeDbl.projectJson &&
+        afterDbl.past === beforeDbl.past,
+      { interaction: afterDbl.interaction }
     )
 
-    // ------------------------------------------------------------------ fit
+    // ------------------------------------------------------------------ fit (a real photo-slot property; dslrBooth preflight)
     await c.ev(
-      `(()=>{const s=__wts.store.getState(); s.setPhotoDisplay('preview'); const ph=s.project.layers.filter(l=>l.type==='photo'); s.selectLayer(ph[1].id); return 1})()`
+      `(()=>{const s=__wts.store.getState(); const ph=s.project.layers.filter(l=>l.type==='photo'); s.selectLayer(ph[1].id); return 1})()`
     )
-    await sleep(700)
-    const frame2 = { x: 76, y: 934, w: 1049, h: 700 }
-    const cornerPt = [frame2.x + 6, frame2.y + frame2.h / 2]
-    const coverR = await design(c, [cornerPt], true)
+    await sleep(400)
+    await h.showPanel(c, 'properties')
+    const fitPast = (await state(c)).past
+    const fitSel = `document.getElementById([...document.querySelectorAll('.inspector-panel label')].find(l=>/Photo fit/.test(l.textContent)).htmlFor)`
     await c.ev(
-      `(()=>{const s=__wts.store.getState(); const l=s.project.layers.filter(l=>l.type==='photo')[1]; s.editLayers([l.id],{fit:'contain'}); return 1})()`
-    )
-    await sleep(500)
-    const containR = await design(c, [cornerPt], true)
-    check(
-      '17 photo fit: Cover fills the frame; Contain (a portrait sample in a landscape frame) leaves the canvas colour at the sides',
-      !near(coverR.px[0], [255, 255, 255, 255], 6) && near(containR.px[0], [255, 255, 255, 255], 3),
-      { cover: coverR.px[0], contain: containR.px[0] }
-    )
-    await c.ev(
-      `(()=>{const s=__wts.store.getState(); const l=s.project.layers.filter(l=>l.type==='photo')[1]; s.editLayers([l.id],{fit:'cover'}); return 1})()`
+      `(()=>{const e=${fitSel}; const set=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set; set.call(e,'contain'); e.dispatchEvent(new Event('change',{bubbles:true})); return 1})()`
     )
     await sleep(300)
-
-    // ------------------------------------------------------------------ crop / reposition (real UI)
+    const fitSt = await state(c)
+    check(
+      '17 Photo fit stays a real slot property: Properties sets Contain (one history step, Modified); the slot still draws its placeholder',
+      fitSt.layers.filter((l) => l.type === 'photo')[1].fit === 'contain' &&
+        fitSt.past === fitPast + 1 &&
+        fitSt.dirty,
+      { fit: fitSt.layers.filter((l) => l.type === 'photo')[1].fit, past: fitSt.past, fitPast }
+    )
+    await c.ev(`__wts.store.getState().undo(); 1`)
+    await sleep(300)
+    check(
+      '17b Undo returns the fit to Cover',
+      (await state(c)).layers.filter((l) => l.type === 'photo')[1].fit === 'cover'
+    )
     await c.ev(
       `(()=>{const s=__wts.store.getState(); const ph=s.project.layers.filter(l=>l.type==='photo'); s.selectLayer(ph[0].id); return 1})()`
     )
     await sleep(500)
     await shot(c, '5c-07-photo-inspector.png')
-    const geoBefore = (await state(c)).layers.find((l) => l.type === 'photo')
-    const dirtyBeforeCrop = (await state(c)).dirty
-    await clickLabel(c, 'Reposition…')
-    await sleep(500)
-    st = await state(c)
-    check(
-      '18 Reposition mode: the crop bar appears, the frame stays selected, interaction is "cropping"',
-      !!st.crop &&
-        st.interaction === 'cropping' &&
-        (await c.ev(`!!document.querySelector('[data-testid=crop-bar]')`)),
-      { crop: st.crop, interaction: st.interaction, selected: st.selected, mode: st.mode }
-    )
-    await shot(c, '5c-08-crop-mode.png')
-    const frameC = await centre(c, geoBefore.id)
-    const refBefore = await design(
-      c,
-      [
-        [600, 260],
-        [300, 400]
-      ],
-      true
-    )
-    await dragSteps(c, frameC, [
-      { x: frameC.x + 8, y: frameC.y + 4 },
-      { x: frameC.x + 30, y: frameC.y + 14 },
-      { x: frameC.x + 60, y: frameC.y + 30 }
-    ])
-    // zoom the picture in (button), then drag again
-    await clickLabel(c, 'Zoom photo in')
-    await clickLabel(c, 'Zoom photo in')
-    await sleep(300)
-    await dragSteps(c, frameC, [
-      { x: frameC.x - 10, y: frameC.y - 10 },
-      { x: frameC.x - 40, y: frameC.y - 20 }
-    ])
-    st = await state(c)
-    const crop = st.crops[geoBefore.id]
-    const geoAfter = st.layers.find((l) => l.id === geoBefore.id)
-    check(
-      '19 dragging repositions the PICTURE (crop changes) and never the layer (geometry identical)',
-      !!crop &&
-        (crop.x !== 0 || crop.y !== 0) &&
-        ['x', 'y', 'width', 'height', 'rotation'].every((k) => geoAfter[k] === geoBefore[k]),
-      { crop }
-    )
-    check(
-      '19b crop zoom (separate from workspace zoom) increased the picture magnification',
-      crop.zoom >= 1.4 && (await c.ev(`document.querySelector('#zoom-label').textContent`)) !== '',
-      { zoom: crop.zoom }
-    )
-    const refAfter = await design(
-      c,
-      [
-        [600, 260],
-        [300, 400]
-      ],
-      true
-    )
-    check(
-      '19c the rendered crop differs from the default (Design render uses it)',
-      refAfter.px.some((p, i) => differs(p, refBefore.px[i]))
-    )
-    await key(c, 'Escape', 'Escape', 27)
-    st = await state(c)
-    check(
-      '20 Escape cancels the uncommitted reposition (crop restored to what it was, mode left)',
-      !st.crop && st.crops[geoBefore.id] === undefined && st.interaction === 'idle'
-    )
-    // do it again and commit with Enter
-    await clickLabel(c, 'Reposition…')
-    await sleep(300)
-    await dragSteps(c, frameC, [
-      { x: frameC.x + 20, y: frameC.y + 10 },
-      { x: frameC.x + 70, y: frameC.y + 30 }
-    ])
-    await clickLabel(c, 'Zoom photo in')
-    await key(c, 'Enter', 'Enter', 13)
-    await sleep(300)
-    st = await state(c)
-    check(
-      '20b Enter commits: the crop is kept, the mode is left',
-      !st.crop && !!st.crops[geoBefore.id] && st.interaction === 'idle',
-      st.crops
-    )
-    check(
-      '20c crop never marks the project Modified or enters history',
-      st.dirty === dirtyBeforeCrop && st.past === (await state(c)).past
-    )
-    await c.ev(`__wts.store.getState().setViewMode('preview'); 1`)
-    await sleep(700)
-    const hv3 = await halves(c, true)
-    check(
-      '21 Print Preview: the crop duplicates identically in both copies (no per-copy state)',
-      hv3.diff <= 64 && hv3.max <= 2,
-      hv3
-    )
-    await shot(c, '5c-09-print-preview-crop.png')
-    await c.ev(`__wts.store.getState().setViewMode('design'); 1`)
-    await sleep(500)
-    await c.ev(
-      `(()=>{const s=__wts.store.getState(); s.selectLayer(s.project.layers.filter(l=>l.type==='photo')[0].id); return 1})()`
-    )
-    await sleep(300)
-    await clickLabel(c, 'Reset position')
-    await sleep(300)
-    check(
-      '21b Reset position returns to the default fit',
-      (await state(c)).crops[geoBefore.id] === undefined
-    )
 
     // ------------------------------------------------------------------ frame workflow
     await c.ev(
-      `(()=>{const s=__wts.store.getState(); const ph=s.project.layers.filter(l=>l.type==='photo'); s.setPhotoDisplay('preview'); s.editLayers([ph[2].id],{frame:{style:'solid',thickness:40,color:{kind:'literal',value:'#c9a860'}},cornerRadius:0}); s.selectLayer(ph[2].id); return 1})()`
+      `(()=>{const s=__wts.store.getState(); const ph=s.project.layers.filter(l=>l.type==='photo'); s.editLayers([ph[2].id],{frame:{style:'solid',thickness:40,color:{kind:'literal',value:'#c9a860'}},cornerRadius:0}); s.selectLayer(ph[2].id); return 1})()`
     )
     await sleep(600)
     const f3 = { x: 76, y: 1704, w: 1049, h: 700 }
@@ -1042,7 +920,7 @@ const tipText = (c) =>
       true
     )
     check(
-      '22 native solid frame: 40 px gold border drawn on top of the photo (and inside it only)',
+      '22 native solid frame: 40 px gold border drawn on top of the placeholder (and inside it only)',
       near(frameCol.px[0], [201, 168, 96, 255], 3) &&
         near(frameCol.px[1], [201, 168, 96, 255], 3) &&
         !near(frameCol.px[2], [201, 168, 96, 255], 8),
@@ -1061,7 +939,7 @@ const tipText = (c) =>
       true
     )
     check(
-      '22b corner radius 200 clips the sample and the frame: the very corner shows the canvas colour, the straight edge keeps the frame',
+      '22b corner radius 200 clips the placeholder and the frame: the very corner shows the canvas colour, the straight edge keeps the frame',
       near(rad.px[0], [255, 255, 255, 255], 3) && near(rad.px[1], [201, 168, 96, 255], 6),
       rad.px
     )
@@ -1122,13 +1000,6 @@ const tipText = (c) =>
         null
       ],
       [
-        'sample photos (canvas-state bar, B3)',
-        `[...document.querySelectorAll('button')].find(b=>b.getAttribute('aria-label')==='Sample photos')`,
-        /Sample photos/,
-        /example guest photos inside the photo slots/,
-        null
-      ],
-      [
         'overflow (canvas-state bar, B3)',
         `[...document.querySelectorAll('button')].find(b=>b.getAttribute('aria-label')==='Overflow')`,
         /Overflow/,
@@ -1147,7 +1018,8 @@ const tipText = (c) =>
         `[...document.querySelectorAll('button')].find(b=>b.getAttribute('aria-label')==='More layer actions')`,
         /More layer actions/,
         /Duplicate, group, stacking order, delete/,
-        null
+        null,
+        'layers'
       ],
       [
         'top bar: checks (B3)',
@@ -1172,7 +1044,9 @@ const tipText = (c) =>
       ]
     ]
     const tipResults = []
-    for (const [name, expr, labelRe, hintRe, scRe] of tips) {
+    for (const [name, expr, labelRe, hintRe, scRe, panel] of tips) {
+      // Properties | Layers are tabs below 860 CSS px tall: bring the panel a control lives in on screen first.
+      if (panel) await h.showPanel(c, panel)
       const p = await elCentre(c, expr)
       if (!p) {
         tipResults.push({ name, ok: false, why: 'no element' })
@@ -1193,6 +1067,7 @@ const tipText = (c) =>
       `(()=>{const s=__wts.store.getState(); const ph=s.project.layers.filter(l=>l.type==='photo'); s.selectLayers([ph[0].id, ph[1].id, ph[2].id]); return 1})()`
     )
     await sleep(400)
+    await h.showPanel(c, 'properties')
     const alignP = await elCentre(
       c,
       `[...document.querySelectorAll('button')].find(b=>b.getAttribute('aria-label')==='Align left')`
@@ -1204,33 +1079,23 @@ const tipText = (c) =>
       /Align left/.test(alignTip) && /left edge/.test(alignTip),
       alignTip
     )
-    const moveTip = await c.ev(`1`)
-    await c.ev(
-      `__wts.store.getState().selectLayer(__wts.store.getState().project.layers.filter(l=>l.type==='photo')[0].id); 1`
-    )
-    await sleep(300)
-    await c.ev(
-      `[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Reposition…').scrollIntoView({block:'center'}); 1`
-    )
-    await sleep(200)
-    const repoP = await elCentre(
-      c,
-      `[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Reposition…')`
-    )
-    await hover(c, repoP)
-    const repoTip = await tipText(c)
+    const photosP = await elCentre(c, `document.querySelector('.toolrail-btn[data-tool=photos]')`)
+    await hover(c, photosP)
+    const photosTip = await tipText(c)
     await shot(c, '5c-11-tooltip.png')
     check(
-      '23c photo tools have tooltips (Reposition: what it does and how to finish)',
-      /Reposition photo/.test(repoTip) && /Enter finishes, Escape cancels/.test(repoTip),
-      repoTip
+      '23c the Photos rail tooltip describes photo slots only (no sample photos, B3.1)',
+      /Photos/.test(photosTip) && /photo slots/i.test(photosTip) && !/sample/i.test(photosTip),
+      photosTip
     )
+    await c.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 5, y: 5 })
+    await sleep(120)
 
     // ------------------------------------------------------------------ keyboard accessibility of the new controls
     check(
-      '24 new controls are real buttons with accessible names and pressed state (Sample photos, Overflow)',
+      '24 view controls are real buttons with accessible names and pressed state (Safe areas, Overflow)',
       await c.ev(
-        `(()=>{const q=(l)=>[...document.querySelectorAll('button')].find(b=>b.getAttribute('aria-label')===l); const p=q('Sample photos'), o=q('Overflow'); return !!p&&!!o&&p.hasAttribute('aria-pressed')&&o.hasAttribute('aria-pressed')&&p.tabIndex>=0&&o.tabIndex>=0})()`
+        `(()=>{const q=(l)=>[...document.querySelectorAll('button')].find(b=>b.getAttribute('aria-label')===l); const p=q('Safe areas'), o=q('Overflow'); return !!p&&!!o&&p.hasAttribute('aria-pressed')&&o.hasAttribute('aria-pressed')&&p.tabIndex>=0&&o.tabIndex>=0})()`
       )
     )
 
@@ -1258,11 +1123,8 @@ const tipText = (c) =>
       re
     )
     check(
-      '25b editor-only state follows the documented policy after reopen: overflow view kept, samples/crops reset, Design mode',
-      st.overflow === true &&
-        Object.keys(st.crops).length === 0 &&
-        st.previewPhotos.seed === 0 &&
-        st.mode === 'design'
+      '25b editor-only state follows the documented policy after reopen: overflow view kept, Design mode',
+      st.overflow === true && st.mode === 'design'
     )
     // autosave + crash recovery with the off-artboard asset
     await c.ev(
@@ -1275,7 +1137,7 @@ const tipText = (c) =>
       port: 9511,
       userData: ud,
       env: { ...env, WALKONE_DEV_IMPORT_PATHS: '' },
-      size: { width: 1440, height: 900 }
+      size: h.STANDARD_SIZE
     }))
     for (let i = 0; i < 20 && !(await c.ev(`__wts.store.getState().recovery.loaded`)); i++)
       await sleep(250)

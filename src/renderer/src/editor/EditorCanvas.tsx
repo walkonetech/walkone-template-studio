@@ -53,9 +53,7 @@ import {
   initialAxisLock,
   restrictSnap
 } from '@canvas/transforms/axisLock'
-import { usePreviewPhotos } from './usePreviewPhotos'
 import { useSpacePan } from './useSpacePan'
-import { CropOverlay } from './CropOverlay'
 import { dropPointToDesign } from '@editor/imagePlacement'
 import { ASSET_DRAG_TYPE, dragHasAsset, dragHasFiles } from './dropFiles'
 import { importDroppedFiles } from './importActions'
@@ -331,14 +329,8 @@ function handlersFor(
     base.onDblClick = () => store.getState().beginTextEdit(layer.id)
     base.onDblTap = () => store.getState().beginTextEdit(layer.id)
   }
-  // Double-click a photo to reposition the sample picture inside its frame.
-  if (layer.type === 'photo') {
-    base.onDblClick = () => store.getState().beginCrop(layer.id)
-    base.onDblTap = () => store.getState().beginCrop(layer.id)
-  }
   base.onMouseEnter = (e: Konva.KonvaEventObject<MouseEvent>) => {
-    if (!store.getState().cropSession)
-      e.target.getStage()?.container().style.setProperty('cursor', 'move')
+    e.target.getStage()?.container().style.setProperty('cursor', 'move')
   }
   base.onMouseLeave = (e: Konva.KonvaEventObject<MouseEvent>) => {
     e.target.getStage()?.container().style.removeProperty('cursor')
@@ -417,14 +409,11 @@ export function EditorCanvas(): React.JSX.Element | null {
   const viewport = useEditor((s) => s.viewport)
   const selectedIds = useEditor((s) => s.selectedIds)
   const editingTextId = useEditor((s) => s.editingTextId)
-  const photoDisplay = useEditor((s) => s.photoDisplay)
   const guides = useEditor((s) => s.guides)
   const guidesVisible = useEditor((s) => s.guidesVisible)
   const sizeMarks = useEditor((s) => s.sizeMarks)
   const images: ImageLookup = useProjectImages(sessionId, project?.layers)
-  const photoPreview = usePreviewPhotos(project?.layers)
   const showOverflow = useEditor((s) => s.showOverflow)
-  const cropSession = useEditor((s) => s.cropSession)
   const safe = useSafeAreaOverlay()
 
   const hostRef = useRef<HTMLDivElement>(null)
@@ -473,8 +462,7 @@ export function EditorCanvas(): React.JSX.Element | null {
     const tr = trRef.current
     const stage = stageRef.current
     if (!tr || !stage) return
-    const targets =
-      project && !editingTextId && !cropSession ? transformTargets(project.layers, selectedIds) : []
+    const targets = project && !editingTextId ? transformTargets(project.layers, selectedIds) : []
     const nodes = targets
       .map((l) => stage.findOne((n: Konva.Node) => n.id() === l.id))
       .filter((n): n is Konva.Node => !!n)
@@ -505,7 +493,7 @@ export function EditorCanvas(): React.JSX.Element | null {
     }
     tr.nodes(nodes)
     tr.getLayer()?.batchDraw()
-  }, [selectedIds, project, editingTextId, cropSession, viewState, viewport])
+  }, [selectedIds, project, editingTextId, viewState, viewport])
 
   useEffect(
     () => registerCanvasDebug(() => ({ stage: stageRef.current, transformer: trRef.current })),
@@ -517,9 +505,7 @@ export function EditorCanvas(): React.JSX.Element | null {
   const env: RenderEnv = {
     palette: project.palette,
     images,
-    photoMode: photoDisplay,
-    ...(photoPreview ? { photoPreview } : {}),
-    frozenId: cropSession?.layerId ?? null,
+    photoMode: 'placeholder',
     interactive: true,
     photoLabels: true,
     editingTextId,
@@ -576,7 +562,7 @@ export function EditorCanvas(): React.JSX.Element | null {
   return (
     <div
       ref={hostRef}
-      className={`canvas-host${pan.ready ? ' pan-ready' : ''}${pan.panning ? ' panning' : ''}${cropSession ? ' cropping' : ''}`}
+      className={`canvas-host${pan.ready ? ' pan-ready' : ''}${pan.panning ? ' panning' : ''}`}
       onDragOver={(e) => {
         if (!acceptsDrop(e)) return
         e.preventDefault()
@@ -694,7 +680,6 @@ export function EditorCanvas(): React.JSX.Element | null {
         </div>
       )}
       <TextEditOverlay />
-      {cropSession && <CropOverlay />}
     </div>
   )
 }

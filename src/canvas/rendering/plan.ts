@@ -1,4 +1,4 @@
-import type { ImageLookup, PhotoPreviewLookup } from './nodeSpec'
+import type { ImageLookup } from './nodeSpec'
 import {
   getPixelSize,
   isEffectivelyVisible,
@@ -16,9 +16,10 @@ export interface RenderOptions {
   height?: number
   /**
    * 'omit' leaves photo slots out entirely (layer package bands); 'frame' draws ONLY each slot's native frame, with
-   * the photo area empty (production export PNGs and the package `frames.png`). Neither ever draws samples.
+   * the photo area empty (production export PNGs and the package `frames.png`). 'placeholder' (default) draws the
+   * neutral numbered slot. No mode ever draws a picture in a slot.
    */
-  photos?: 'placeholder' | 'preview' | 'omit' | 'frame'
+  photos?: 'placeholder' | 'omit' | 'frame'
   /**
    * Draw only the leaf layers (non-group) this accepts; groups are always kept as containers. Used by the layer package
    * to render one semantic band of the stack at a time. Omitted = every printable layer.
@@ -27,11 +28,6 @@ export interface RenderOptions {
   /** 'transparent' leaves the canvas background colour out (layer package bands, dslrBooth overlay images). Default
    *  'canvas'. */
   background?: 'canvas' | 'transparent'
-  /**
-   * Sample pictures (with `photos: 'preview'`). A DESIGN-PREVIEW render may bake sample photos in; PRODUCTION output
-   * (a future export) must use `photos: 'omit'`, which leaves the capture slots empty, and never supplies this.
-   */
-  photoPreview?: PhotoPreviewLookup
 }
 
 export interface RenderPlan {
@@ -76,17 +72,11 @@ export function planRender(project: TemplateProject, options: RenderOptions = {}
   }
 }
 
-/** Asset ids used by the planned layers (image layers, plus photo samples in preview mode) that cannot be resolved. */
-export function missingAssetIds(
-  layers: readonly Layer[],
-  images: ImageLookup,
-  includeSamples = false
-): string[] {
+/** Asset ids used by the planned image layers that cannot be resolved. */
+export function missingAssetIds(layers: readonly Layer[], images: ImageLookup): string[] {
   const missing = new Set<string>()
   for (const l of layers) {
     if (l.type === 'image' && !images(l.assetId)) missing.add(l.assetId)
-    if (includeSamples && l.type === 'photo' && l.sampleAssetId && !images(l.sampleAssetId))
-      missing.add(l.sampleAssetId)
   }
   return [...missing]
 }

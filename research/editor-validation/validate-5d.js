@@ -480,6 +480,12 @@ const drawer = (c, tool) =>
     )
     await shot(c, '5d-10-print-preview-palette.png')
     await c.ev(`__wts.store.getState().setViewMode('design'); 1`)
+    // B3.1: entering Print Preview closes the creation drawer (and Design does not reopen it): reopen Colors.
+    check(
+      '14c entering Print Preview closed the Colors drawer (B3.1)',
+      !(await c.ev(`!!document.querySelector('.tooldrawer')`))
+    )
+    await drawer(c, 'colors')
     await sleep(500)
 
     // detach one object, then change Accent again

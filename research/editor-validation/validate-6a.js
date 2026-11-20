@@ -342,12 +342,12 @@ const RED = [255, 0, 0, 255]
         F.print.px
       )
       check(
-        '4i the production PNGs contain no sample photos and no slot numbers',
+        '4i the production PNGs contain no pictures and no slot numbers in the photo slots',
         near(F.design.px.slot, BG) && near(F.design.px.frame, RED),
         F.design.px
       )
       check(
-        '4j proof: sample photos fill every slot (differs from production inside slots)',
+        '4j proof: numbered placeholders fill every slot (differs from production inside slots; sample photos were removed in B3.1)',
         m.proofInsideSlots.every((d) => d.over2 > 1000),
         m.proofInsideSlots.map((d) => d.over2)
       )
@@ -356,7 +356,11 @@ const RED = [255, 0, 0, 255]
         m.proofOutsideSlots.every((d) => d.over2 === 0),
         m.proofOutsideSlots
       )
-      check('4l proof keeps the frame over the sample', near(F.proof.px.frameL, RED), F.proof.px)
+      check(
+        '4l proof keeps the frame over the placeholder',
+        near(F.proof.px.frameL, RED),
+        F.proof.px
+      )
     }
 
     // ---- 6: conflicts

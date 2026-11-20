@@ -39,8 +39,6 @@ export function runCommand(id: CommandId): void {
       void s.saveAs()
       return
     case 'file.export':
-      // Finish a Reposition first so the proof shows the crop the user sees.
-      s.commitCrop()
       layoutStore.getState().setExportOpen(true)
       return
     case 'file.close':
@@ -132,12 +130,6 @@ export function runCommand(id: CommandId): void {
       return
     case 'view.outputProfile':
       layoutStore.getState().setOutputProfileOpen(true)
-      return
-    case 'view.shufflePhotos':
-      s.shufflePhotos()
-      return
-    case 'view.previewPhotos':
-      s.setPhotoDisplay(s.photoDisplay === 'preview' ? 'placeholder' : 'preview')
       return
     case 'view.themeLight':
       appearanceStore.getState().setTheme('light')

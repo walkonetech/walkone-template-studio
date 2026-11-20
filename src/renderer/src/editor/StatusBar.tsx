@@ -15,7 +15,7 @@ const st = editorStore.getState
 
 /**
  * Status bar (B1): facts and state only (format, selection, recovery copy, Output profile, snapping, zoom). The view
- * toggles (sample photos, safe areas, overflow, Design/Print Preview) live in the canvas-state bar above the canvas.
+ * toggles (safe areas, overflow, Design/Print Preview) live in the canvas-state bar above the canvas.
  */
 export function StatusBar(): React.JSX.Element {
   const project = useEditor((s) => s.project)

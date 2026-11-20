@@ -34,9 +34,9 @@ Workflows A–O were written before the build as **Proposed** behaviour; section
 **Happy:** add Photo layer → auto-number → set position/size/rotation/crop/frame → renumber via drag or field.
 **Edge:** duplicate/missing numbers → inline warning; placeholder off-canvas → warning; unsupported rotation/corner/shadow for export → preflight warning.
 
-## I. Preview with sample photos
-**Happy:** toggle sample photos → shuffle/replace → final print preview.
-**Edge:** sample aspect mismatch → show crop behavior; preview must match export render.
+## I. Preview the print
+**Happy:** design → See how it prints (Print Preview) → check the numbered photo slots, cut line and safe areas.
+**Edge:** preview must match the export render. _(Sample photos were removed in 7B B3.1, ADR-056: the booth supplies the photos.)_
 
 ## J. Run preflight
 **Happy:** run → report with errors/warnings → click item to select layer → fix → re-run → clean.
@@ -102,7 +102,7 @@ Workflows A–O were written before the build as **Proposed** behaviour; section
 1. **Artwork past the edge:** place or drag a petal overlay beyond the artboard; keep **Show overflow** on to keep editing it; switch to **Clipped view** to see what prints. Print Preview shows the clipped result per copy.
 2. **Fine alignment:** zoom to 200–400% (buttons, ⌘/Ctrl +/−, Ctrl/Cmd + wheel at the detail), Space + drag to pan, drag with **Shift** for a straight horizontal/vertical move, let snapping settle the free axis, release; Undo undoes the whole gesture.
 3. **Discover tools:** hover any control for a tooltip with its purpose and shortcut/modifier.
-4. **Preview real photography:** turn on **Preview Photos**, pick or **Shuffle** samples, or **Choose photo…** for a picture of your own (preview only). Switch **Cover/Contain**; **Reposition…** to move/zoom the picture inside the frame; **Reset position**; style the **Frame** (colour, thickness, corner radius). Turn Preview Photos off to return to numbered placeholders. Samples never become project artwork or capture content.
+4. _(Removed in 7B B3.1, ADR-056 — history only.)_ **Preview real photography:** turn on **Preview Photos**, pick or **Shuffle** samples, or **Choose photo…** for a picture of your own (preview only). Switch **Cover/Contain**; **Reposition…** to move/zoom the picture inside the frame; **Reset position**; style the **Frame** (colour, thickness, corner radius). Turn Preview Photos off to return to numbered placeholders. Samples never become project artwork or capture content.
 
 ## U. Typography and event colours (Phase 5D, implemented)
 1. **Choose an installed font:** select text → Typeface → Font → type part of a name → Enter.
@@ -114,7 +114,7 @@ Workflows A–O were written before the build as **Proposed** behaviour; section
 
 ## V. Export print files (Phase 6A, implemented)
 1. **Open Export:** top-bar **Export**, File → Export…, or ⌘E.
-2. **Choose files:** Print sheet PNG and Design PNG are ticked for a 2×6 strip (a 4×6 offers one Print PNG). Tick **Proof PNG** for client approval (sample photos; labelled Not for printing). (The layer package is not offered: the booth composites the photos itself; see ADR-041 §8.)
+2. **Choose files:** Print sheet PNG and Design PNG are ticked for a 2×6 strip (a 4×6 offers one Print PNG). Tick **Proof PNG** for client approval (numbered photo-slot placeholders; labelled Not for printing). (The layer package is not offered: the booth composites the photos itself; see ADR-041 §8.)
 3. **Review checks:** errors (e.g. a deleted palette colour, a missing image) block export; warnings (missing font, low-resolution image, artwork outside) and notes do not.
 4. **Export…** → choose a folder → files are written as `<Project>-print.png` etc. If names exist: **Replace**, **Keep both** (adds a number) or **Cancel**.
 5. **Show in Finder/Explorer** next to each written file. The project itself is never changed by exporting.

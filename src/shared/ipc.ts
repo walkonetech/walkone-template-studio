@@ -26,7 +26,6 @@ export const IpcChannel = {
   /** Imports image bytes the renderer already holds (drag and drop); no path ever crosses IPC. */
   ProjectImportAssetData: 'project:importAssetData',
   /** Native picker for ONE preview photo; returns its bytes only (never stored in the project, no path crosses IPC). */
-  ProjectPickPreviewPhoto: 'project:pickPreviewPhoto',
   /** DSLR Booth importer: main shows the ZIP picker and returns the analysis (an opaque token, never a path). */
   DslrImportChoose: 'dslrImport:choose',
   /** Creates the project from an analysed ZIP (by token) in the chosen layout. */
@@ -124,15 +123,6 @@ export interface ImportFailure {
 export interface ImportAssetsResult {
   imported: ImportedAsset[]
   failures: ImportFailure[]
-}
-/** A picture the user chose as a sample photo: a design aid, never project content. */
-export interface PreviewPhotoData {
-  /** Display name only. */
-  name: string
-  mediaType: string
-  data: Uint8Array
-  pixelWidth: number
-  pixelHeight: number
 }
 // ------------------------------------------------------------------------------------------- DSLR Booth importer
 
@@ -316,8 +306,6 @@ export interface RendererApi {
     importAssets(req: ImportAssetsRequest): Promise<IpcResult<ImportAssetsResult>>
     /** Imports dropped files from their bytes (the renderer never supplies a filesystem path). */
     importAssetData(req: ImportAssetDataRequest): Promise<IpcResult<ImportAssetsResult>>
-    /** Shows the native picker and returns the chosen picture's bytes for use as a PREVIEW sample (not saved anywhere). */
-    pickPreviewPhoto(): Promise<IpcResult<PreviewPhotoData>>
   }
   dslrImport: {
     /** Shows the native ZIP picker and analyses the chosen dslrBooth template (nothing is created yet). */

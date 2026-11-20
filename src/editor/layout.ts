@@ -163,18 +163,20 @@ export function topBarPresentation(windowWidth: number, density: Density): TopBa
 }
 
 // ---- Escape and F6 ------------------------------------------------------------------------------------------------
-export type EscapeTarget = 'popover' | 'floating-drawer' | 'reposition' | 'selection' | null
+export type EscapeTarget = 'popover' | 'floating-drawer' | 'selection' | null
 
-/** One Escape press closes or ends exactly one thing, in this order (7A): popover, floating drawer, Reposition, selection. */
+/**
+ * One Escape press closes or ends exactly one thing, in this order (7A): popover/menu, floating drawer, selection.
+ * (7A also listed Reposition mode between drawer and selection; that mode went with Sample Photos in B3.1. Text
+ * editing owns its own Escape inside the text editor.)
+ */
 export function escapeTarget(s: {
   popoverOpen: boolean
   floatingDrawerOpen: boolean
-  repositioning: boolean
   hasSelection: boolean
 }): EscapeTarget {
   if (s.popoverOpen) return 'popover'
   if (s.floatingDrawerOpen) return 'floating-drawer'
-  if (s.repositioning) return 'reposition'
   if (s.hasSelection) return 'selection'
   return null
 }
@@ -208,7 +210,21 @@ export function nextRegion(
  * The canvas-state bar holds VIEW controls only. The rule (B1 sign-off): if a control changes how the canvas is
  * viewed, it may belong here; if it changes the design itself, it does not.
  */
-export const CANVAS_STATE_CONTROLS = ['mode', 'samplePhotos', 'safeAreas', 'overflow'] as const
+export const CANVAS_STATE_CONTROLS = ['mode', 'safeAreas', 'overflow'] as const
+
+/**
+ * The tool drawer while the workspace changes mode (B3.1). Print Preview is read only, so entering it closes the
+ * creation drawer (floating or docked) instead of leaving Add buttons that do nothing; going back to Design never
+ * reopens it by itself.
+ */
+export function drawerOpenAfterModeChange(
+  before: 'design' | 'preview',
+  after: 'design' | 'preview',
+  open: boolean
+): boolean {
+  if (after === 'preview' && before !== 'preview') return false
+  return open
+}
 
 export function safeAreasControl(
   hasProfile: boolean,
@@ -249,4 +265,20 @@ export function parseLayoutPrefs(raw: unknown): LayoutPrefs {
     sidebarWidth: sw === null ? null : clampSidebarWidth(sw),
     rightTab: o['rightTab'] === 'layers' ? 'layers' : 'properties'
   }
+}
+
+// ---- which keys a focused control keeps for itself ------------------------------------------------------------------
+/**
+ * Whether a key pressed while `target` has focus belongs to that control rather than to the window's shortcuts.
+ * Menus and dialogs own every key (Escape included). Splitters (arrows resize) and radio groups own their keys but
+ * have no use for Escape, so Escape still follows the window's dismissal order from there: right after dragging the
+ * floating drawer's resize grip, Escape closes the drawer (B3.1). Text entry owns every key.
+ */
+export function controlOwnsKey(
+  target: { role: 'menu' | 'dialog' | 'separator' | 'radiogroup' | null; textEntry: boolean },
+  key: string
+): boolean {
+  if (target.role === 'menu' || target.role === 'dialog') return true
+  if (target.role === 'separator' || target.role === 'radiogroup') return key !== 'Escape'
+  return target.textEntry
 }

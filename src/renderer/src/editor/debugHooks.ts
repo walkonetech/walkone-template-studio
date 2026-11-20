@@ -28,14 +28,12 @@ export interface DebugApi {
   /** Renders the current project offscreen at an exact size and reports what came out. */
   renderToDataUrl: (
     width?: number,
-    height?: number,
-    preview?: boolean
+    height?: number
   ) => Promise<{ width: number; height: number; dataUrl: string; ms: number }>
   /** Renders the PRINT SHEET (output composition: every copy, clipped to its cell) at an exact size. */
   renderSheetToDataUrl: (
     width?: number,
-    height?: number,
-    preview?: boolean
+    height?: number
   ) => Promise<{ width: number; height: number; dataUrl: string; ms: number }>
   /** Client coordinates of a transformer handle ('top-left', 'rotater', …) or null. */
   handlePoint: (name: string) => { x: number; y: number } | null

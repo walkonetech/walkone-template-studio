@@ -40,13 +40,7 @@ function addDesignNodes(
   const env: RenderEnv = {
     palette: project.palette,
     images,
-    photoMode:
-      options.photos === 'preview'
-        ? 'preview'
-        : options.photos === 'frame'
-          ? 'frame'
-          : 'placeholder',
-    ...(options.photoPreview ? { photoPreview: options.photoPreview } : {}),
+    photoMode: options.photos === 'frame' ? 'frame' : 'placeholder',
     interactive: false,
     photoLabels: options.photoLabels ?? true,
     allLayers: layers

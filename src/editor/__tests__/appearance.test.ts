@@ -128,7 +128,6 @@ describe('appearance commands (View menu, interim until Settings)', () => {
     canRedo: false,
     selectionCount: 0,
     snapping: true,
-    previewPhotos: false,
     hasPrintPreview: false,
     showOverflow: false,
     viewMode: 'design',

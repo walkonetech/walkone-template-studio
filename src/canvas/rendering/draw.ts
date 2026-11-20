@@ -1,5 +1,5 @@
 import type { FitMode } from '@domain'
-import { clampCornerRadius, clampFrameThickness, placePhoto, type PhotoCrop } from './photoFit'
+import { clampCornerRadius, clampFrameThickness } from './photoFit'
 
 /** Pure 2D-canvas drawing used identically by the interactive editor and the offscreen renderer. */
 
@@ -125,15 +125,8 @@ export interface PhotoDrawSpec {
   frameThickness: number
   frameColor: string
   cornerRadius: number
-  fit: FitMode
-  /** Preview mode: a picture shown in the placeholder. Never stored in the project. */
-  preview?: ImageSource | undefined
   /** Show the "PHOTO n" label (editor/preview aid, not part of final artwork). */
   label: boolean
-  /** Editor-only crop (reposition + zoom) of the preview picture inside the frame. */
-  crop?: PhotoCrop | undefined
-  /** Editor-only: draw a small "#n" tag on a preview picture so the capture slot stays identifiable. */
-  badge?: boolean
   /** Draw ONLY the frame (layer package `frames.png`): no fill, no picture, no number. */
   frameOnly?: boolean
 }
@@ -159,7 +152,7 @@ function strokeFrame(
 const TINTS = ['#e8544a', '#8bc34a', '#4db6ac', '#ba68c8', '#ffb74d', '#64b5f6']
 
 /**
- * One drawing routine for a photo placeholder: tinted background (or preview picture), frame,
+ * One drawing routine for a photo placeholder: tinted background, frame,
  * large photo number and optional label. Origin top-left, size width×height.
  */
 export function drawPhotoPlaceholder(ctx: CanvasRenderingContext2D, s: PhotoDrawSpec): void {
@@ -171,55 +164,33 @@ export function drawPhotoPlaceholder(ctx: CanvasRenderingContext2D, s: PhotoDraw
     return
   }
   ctx.save()
-  // With a frame, the picture/tint stops just inside the frame's OUTER edge. At a fractional position both edges are
-  // anti-aliased in the same pixel, and stacking two partial coverages lets the picture bleed through as a grey
-  // hairline (c·(1−c) of it). The inset (≤ 1 px, and never past the stroke's middle) keeps that pixel frame-only;
-  // the picture's placement (crop/fit) still uses the full box.
+  // With a frame, the tint stops just inside the frame's OUTER edge. At a fractional position both edges are
+  // anti-aliased in the same pixel, and stacking two partial coverages lets the tint bleed through as a grey
+  // hairline (c·(1−c) of it). The inset (≤ 1 px, and never past the stroke's middle) keeps that pixel frame-only.
   const inset = thickness > 0 ? Math.min(thickness / 2, 1) : 0
   roundRectPath(ctx, inset, inset, w - inset * 2, h - inset * 2, Math.max(0, radius - inset))
   ctx.clip()
-  if (s.preview) {
-    const p = placePhoto(s.preview, { width: w, height: h }, s.fit, s.crop)
-    ctx.drawImage(s.preview.source, p.sx, p.sy, p.sw, p.sh, p.dx, p.dy, p.dw, p.dh)
-  } else {
-    ctx.fillStyle = TINTS[(s.photoNumber - 1) % TINTS.length] ?? '#999999'
-    ctx.fillRect(0, 0, w, h)
-    // light diagonal sheen so the placeholder reads as a "window", not a flat block
-    const g = ctx.createLinearGradient(0, 0, w, h)
-    g.addColorStop(0, 'rgba(255,255,255,0.18)')
-    g.addColorStop(1, 'rgba(0,0,0,0.10)')
-    ctx.fillStyle = g
-    ctx.fillRect(0, 0, w, h)
-  }
+  ctx.fillStyle = TINTS[(s.photoNumber - 1) % TINTS.length] ?? '#999999'
+  ctx.fillRect(0, 0, w, h)
+  // light diagonal sheen so the placeholder reads as a "window", not a flat block
+  const g = ctx.createLinearGradient(0, 0, w, h)
+  g.addColorStop(0, 'rgba(255,255,255,0.18)')
+  g.addColorStop(1, 'rgba(0,0,0,0.10)')
+  ctx.fillStyle = g
+  ctx.fillRect(0, 0, w, h)
   ctx.restore()
 
   strokeFrame(ctx, w, h, thickness, radius, s.frameColor)
 
-  if (!s.preview) {
-    ctx.save()
-    ctx.fillStyle = 'rgba(255,255,255,0.95)'
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    ctx.font = `700 ${Math.round(Math.min(w, h) * 0.4)}px Helvetica, Arial, sans-serif`
-    ctx.fillText(String(s.photoNumber), w / 2, h / 2)
-    if (s.label) {
-      ctx.font = `600 ${Math.round(Math.min(w, h) * 0.07)}px Helvetica, Arial, sans-serif`
-      ctx.fillText(`PHOTO ${s.photoNumber}`, w / 2, h * 0.86)
-    }
-    ctx.restore()
-  } else if (s.badge) {
-    // Editor-only slot tag (never drawn by the offscreen/exact render, which sets badge false).
-    const size = Math.max(14, Math.round(Math.min(w, h) * 0.07))
-    ctx.save()
-    ctx.font = `700 ${size}px Helvetica, Arial, sans-serif`
-    ctx.textBaseline = 'middle'
-    const text = `#${s.photoNumber}`
-    const pad = size * 0.45
-    const bw = ctx.measureText(text).width + pad * 2
-    ctx.fillStyle = 'rgba(0,0,0,0.55)'
-    ctx.fillRect(thickness + size * 0.3, thickness + size * 0.3, bw, size * 1.5)
-    ctx.fillStyle = '#ffffff'
-    ctx.fillText(text, thickness + size * 0.3 + pad, thickness + size * 0.3 + size * 0.75)
-    ctx.restore()
+  ctx.save()
+  ctx.fillStyle = 'rgba(255,255,255,0.95)'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.font = `700 ${Math.round(Math.min(w, h) * 0.4)}px Helvetica, Arial, sans-serif`
+  ctx.fillText(String(s.photoNumber), w / 2, h / 2)
+  if (s.label) {
+    ctx.font = `600 ${Math.round(Math.min(w, h) * 0.07)}px Helvetica, Arial, sans-serif`
+    ctx.fillText(`PHOTO ${s.photoNumber}`, w / 2, h * 0.86)
   }
+  ctx.restore()
 }

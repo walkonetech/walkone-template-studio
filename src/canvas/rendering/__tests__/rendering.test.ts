@@ -64,7 +64,6 @@ describe('drawPhotoPlaceholder', () => {
     frameThickness: 12,
     frameColor: '#ffffff',
     cornerRadius: 0,
-    fit: 'cover' as const,
     label: true
   }
   it('draws the number and optional label in placeholder mode', () => {
@@ -77,15 +76,6 @@ describe('drawPhotoPlaceholder', () => {
     const { ctx, calls } = fakeCtx()
     drawPhotoPlaceholder(ctx, { ...spec, label: false })
     expect(calls.some((c) => c.startsWith('fillText(PHOTO'))).toBe(false)
-  })
-  it('preview mode draws the picture instead of the placeholder number', () => {
-    const { ctx, calls } = fakeCtx()
-    drawPhotoPlaceholder(ctx, {
-      ...spec,
-      preview: { source: {} as CanvasImageSource, width: 100, height: 100 }
-    })
-    expect(calls.some((c) => c.startsWith('drawImage'))).toBe(true)
-    expect(calls.some((c) => c.startsWith('fillText'))).toBe(false)
   })
   it('draws a frame only when thickness > 0', () => {
     const a = fakeCtx()
@@ -205,20 +195,13 @@ describe('specFor (shared by editor and offscreen render)', () => {
     }
   })
 
-  it('photo preview mode asks for the sample image only for layers that have one', () => {
+  it('a photo slot never looks up its dormant sample asset (Sample Photos removed, B3.1)', () => {
     const lookup = vi.fn(() => undefined)
-    specFor(
-      { ...find('photo-1'), sampleAssetId: 'sample' } as Layer,
-      env(layers, { photoMode: 'preview', images: lookup })
-    )
-    expect(lookup).toHaveBeenCalledWith('sample')
-    lookup.mockClear()
-    specFor(find('photo-1'), env(layers, { photoMode: 'preview', images: lookup }))
-    expect(lookup).not.toHaveBeenCalled()
-    specFor(
-      { ...find('photo-1'), sampleAssetId: 'sample' } as Layer,
-      env(layers, { photoMode: 'placeholder', images: lookup })
-    )
+    for (const photoMode of ['placeholder', 'frame'] as const)
+      specFor(
+        { ...find('photo-1'), sampleAssetId: 'sample' } as Layer,
+        env(layers, { photoMode, images: lookup })
+      )
     expect(lookup).not.toHaveBeenCalled()
   })
 })
@@ -283,14 +266,10 @@ describe('missingAssetIds', () => {
       fit: 'cover'
     } as unknown as Layer
     const p = { ...photo('p', 1), sampleAssetId: 's1' } as Layer
+    // A dormant sample asset on a photo slot is never needed to render (Sample Photos removed, B3.1).
     expect(missingAssetIds([img, p], () => undefined)).toEqual(['a1'])
-    expect(missingAssetIds([img, p], () => undefined, true).sort()).toEqual(['a1', 's1'])
     expect(
-      missingAssetIds(
-        [img, p],
-        () => ({ source: {} as CanvasImageSource, width: 1, height: 1 }),
-        true
-      )
+      missingAssetIds([img, p], () => ({ source: {} as CanvasImageSource, width: 1, height: 1 }))
     ).toEqual([])
   })
 })

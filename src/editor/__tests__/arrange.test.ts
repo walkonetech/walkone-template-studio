@@ -306,7 +306,6 @@ describe('status text, new-project choices and commands', () => {
       canRedo: false,
       selectionCount: 0,
       snapping: true,
-      previewPhotos: false,
       hasPrintPreview: true,
       showOverflow: true,
       hasOutputProfile: false,

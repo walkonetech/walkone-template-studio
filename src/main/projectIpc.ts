@@ -149,10 +149,6 @@ export function registerProjectIpc(
     guard((_e, p: unknown) => handlers.importAssetData(p))
   )
   ipcMain.handle(
-    IpcChannel.ProjectPickPreviewPhoto,
-    guard((e) => handlers.pickPreviewPhoto(win(e)))
-  )
-  ipcMain.handle(
     IpcChannel.DslrImportChoose,
     guard((e) => handlers.dslrImportChoose(win(e)))
   )

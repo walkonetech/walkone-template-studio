@@ -88,7 +88,6 @@ describe('View › Safe areas / Output profile… commands', () => {
     canRedo: false,
     selectionCount: 0,
     snapping: true,
-    previewPhotos: false,
     hasPrintPreview: true,
     showOverflow: true,
     viewMode: 'design',

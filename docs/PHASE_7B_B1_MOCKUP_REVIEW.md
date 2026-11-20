@@ -1,11 +1,20 @@
 # Phase 7B · B1 — Editor refresh mockup review
 
-_Status: **approved by the owner with minor implementation amendments** (2026-11-19, §0a). No third mockup round. Implemented so far: B2 (design-system foundation, ADR-055; Windows-validated at `d339444`) and **B3 (Start screen + editor shell, 2026-11-19; §0b)**. The mockups themselves stay design-only and are not wired into the app._
+_Status: **approved by the owner with minor implementation amendments** (2026-11-19, §0a). No third mockup round. Implemented so far: B2 (design-system foundation, ADR-055; Windows-validated at `d339444`) **B3 (Start screen + editor shell, 2026-11-19; §0b)** and **B3.1 (Windows follow-ups; Sample Photos removed by owner decision, 2026-11-20; §0c)**. The mockups themselves stay design-only and are not wired into the app._
 
 **Mockups:** [`design/phase-7b-b1/index.html`](../design/phase-7b-b1/index.html). It is a standalone page: open it in any browser. It has no app imports or app state and is not wired into the app. Rendered PNGs of every mockup are in [`design/phase-7b-b1/png/`](../design/phase-7b-b1/png/).
 **Architecture source:** [PHASE_7A_UX_ARCHITECTURE.md](PHASE_7A_UX_ARCHITECTURE.md). B1 shows that architecture and does not restate it. Section references (§) below point to it.
 
 All sample content is fictional: Ava & Theo Wedding, Northfield Holiday Party and the other names. Sample photos are abstract drawings.
+
+## 0c. Superseded by a later owner decision: Sample Photos removed (B3.1, 2026-11-20, ADR-056)
+
+These mockups were approved **before** the owner removed Sample Photos from the product. Wherever a mockup shows **Sample photos** (the view-bar pill "Sample photos: On", the Photos drawer's sample section with Shuffle/Reset, a "Preview only" sample box in Properties, the "#n"/"Sample · #n" tag, a photo-slot **Reposition** toolbar verb or a reposition banner), that control is **superseded and must not be built**. The mockup images are a historical approved artifact and are not redrawn. Read them with these substitutions:
+- **View bar:** Design | Print Preview · Safe areas · Overflow (nothing replaces the removed pill; no filler).
+- **Photos drawer:** Add photo slot + the list of this design's photo slots.
+- **Photo slot on the canvas:** the neutral numbered placeholder; never a picture or illustrated people.
+- **Photo slot selection toolbar (B4/B5):** Frame · Arrange · Duplicate · More (no Reposition). Properties keeps photo number, fit, frame, corner radius; no sample/preview box.
+- **Escape order:** popover/menu → floating drawer → selection.
 
 ## 0b. B3 implementation status (2026-11-19) — owner visual checkpoint required before B4
 
@@ -31,7 +40,7 @@ B1 round 2 is **approved with minor implementation amendments**. Approved direct
 - **Good to know** items start collapsed and never look like problems: with no errors or warnings the headline reads like "Ready · 8 notes".
 - **Print Preview:** a safe-area flag appears on **both** derived strip copies when the source problem affects both (Design view shows the source once).
 - **dslrBooth import:** for recognised duplicated two-strip sheets, "One strip, printed two per sheet" stays Recommended and selected by default.
-- **Selection toolbar:** keep Duplicate. Text: Edit text · Event Palette colours · Arrange · Duplicate · More. Photo slot: Reposition · Frame · Arrange · Duplicate · More.
+- **Selection toolbar:** keep Duplicate. Text: Edit text · Event Palette colours · Arrange · Duplicate · More. Photo slot: ~~Reposition ·~~ Frame · Arrange · Duplicate · More (Reposition superseded by §0c).
 - **Canvas-state bar rule:** if a control changes how the canvas is *viewed*, it may belong in the bar; if it changes the *design*, it does not. The bar must not become a second toolbar.
 - **Printer confidence:** the friendly meter (Estimated · Tested on a print · Measured) never collapses the evidence model; "Measured" does not mean "Verified on production booth".
 - **DS-RX1** may read "ready to use" / "tested on a print" while trim stays estimated, the 3 mm guidance stays, and production-booth verification stays unset.
