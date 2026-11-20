@@ -197,11 +197,9 @@ const tipText = (c) =>
         `(()=>{const s=__wts.store.getState(); s.addNewLayer('photo'); const t=__wts.store.getState(); t.editLayers([t.selectedIds[0]],{x:76,y:${y},width:1049,height:700,frame:{style:'none'}}); return 1})()`
       )
     }
-    await c.ev(
-      `[...document.querySelectorAll('button')].find(b=>b.getAttribute('aria-label')==='Assets').click(); 1`
-    )
+    await c.ev(`document.querySelector('[data-tool=uploads]').click(); 1`)
     await sleep(300)
-    await c.clickButton('Import files…')
+    await c.clickButton('Upload images…')
     await sleep(900)
     await clickLabel(c, 'Add petals.png to canvas')
     await sleep(500)
@@ -234,7 +232,7 @@ const tipText = (c) =>
     )
     await shot(c, '5c-01-show-overflow.png')
     const before = await state(c)
-    await clickLabel(c, 'Show overflow')
+    await clickLabel(c, 'Overflow')
     await sleep(300)
     const after = await state(c)
     sp = await stagePx(c, pts)
@@ -253,13 +251,13 @@ const tipText = (c) =>
         after.projectJson === before.projectJson
     )
     check(
-      '2c button states are not colour-only: aria-pressed and a changing label',
+      '2c button states are not colour-only: aria-pressed and a changing visible value (Overflow: Hide)',
       await c.ev(
-        `(()=>{const b=[...document.querySelectorAll('button')].find(x=>x.getAttribute('aria-label')==='Clipped view'); return !!b && b.getAttribute('aria-pressed')==='false'})()`
+        `(()=>{const b=[...document.querySelectorAll('button')].find(x=>x.getAttribute('aria-label')==='Overflow'); return !!b && b.getAttribute('aria-pressed')==='false' && b.querySelector('b').textContent==='Hide'})()`
       )
     )
     await shot(c, '5c-02-clipped-view.png')
-    await clickLabel(c, 'Clipped view')
+    await clickLabel(c, 'Overflow')
     await sleep(300)
     check('2d Show overflow restored', (await state(c)).overflow === true)
 
@@ -792,7 +790,7 @@ const tipText = (c) =>
       placeholderDesign.px
     )
     await shot(c, '5c-04-placeholder-mode.png')
-    await clickLabel(c, 'Preview photos')
+    await clickLabel(c, 'Sample photos')
     await sleep(900)
     st = await state(c)
     check(
@@ -880,7 +878,7 @@ const tipText = (c) =>
     await c.ev(`__wts.store.getState().setViewMode('design'); 1`)
     await sleep(600)
     // preview OFF -> placeholders
-    await clickLabel(c, 'Preview photos')
+    await clickLabel(c, 'Sample photos')
     await sleep(500)
     const off = await design(c, [...photoRegions.p1, ...photoRegions.p2], false)
     check(
@@ -1124,17 +1122,17 @@ const tipText = (c) =>
         null
       ],
       [
-        'preview photos',
-        `[...document.querySelectorAll('button')].find(b=>b.getAttribute('aria-label')==='Preview photos')`,
-        /Preview photos/,
-        /Show sample photos inside photo placeholders/,
+        'sample photos (canvas-state bar, B3)',
+        `[...document.querySelectorAll('button')].find(b=>b.getAttribute('aria-label')==='Sample photos')`,
+        /Sample photos/,
+        /example guest photos inside the photo slots/,
         null
       ],
       [
-        'show overflow',
-        `[...document.querySelectorAll('button')].find(b=>b.getAttribute('aria-label')==='Show overflow'||b.getAttribute('aria-label')==='Clipped view')`,
-        /overflow|Clipped/i,
-        /extends beyond the printable artboard/,
+        'overflow (canvas-state bar, B3)',
+        `[...document.querySelectorAll('button')].find(b=>b.getAttribute('aria-label')==='Overflow')`,
+        /Overflow/,
+        /extends past the edge of the print/,
         null
       ],
       [
@@ -1145,31 +1143,31 @@ const tipText = (c) =>
         /[⌘]Z|Ctrl\+Z/
       ],
       [
-        'layers: duplicate',
-        `[...document.querySelectorAll('button')].find(b=>b.getAttribute('aria-label')==='Duplicate')`,
-        /Duplicate/,
-        /Duplicate the selected layers/,
-        /[⌘]D|Ctrl\+D/
-      ],
-      [
-        'layers: arrange',
-        `[...document.querySelectorAll('button')].find(b=>b.getAttribute('aria-label')==='Arrange')`,
-        /Arrange/,
-        /stacking order/,
+        'layers: more actions (B3: Duplicate, Group, stacking, Delete)',
+        `[...document.querySelectorAll('button')].find(b=>b.getAttribute('aria-label')==='More layer actions')`,
+        /More layer actions/,
+        /Duplicate, group, stacking order, delete/,
         null
       ],
       [
-        'tool rail: assets',
-        `[...document.querySelectorAll('.toolrail-btn')].find(b=>b.textContent.trim()==='Assets')`,
-        /Assets/,
-        /Import and manage the images/,
+        'top bar: checks (B3)',
+        `document.getElementById('checks-button')`,
+        /Checks/,
+        /before you export/,
         null
       ],
       [
-        'tool rail: templates (disabled tool)',
-        `[...document.querySelectorAll('.toolrail-btn')].find(b=>b.textContent.trim()==='Templates')`,
-        /Templates/,
-        /later phase/,
+        'tool rail: uploads',
+        `[...document.querySelectorAll('.toolrail-btn')].find(b=>b.textContent.trim()==='Uploads')`,
+        /Uploads/,
+        /Your own images in this project/,
+        null
+      ],
+      [
+        'tool rail: elements',
+        `[...document.querySelectorAll('.toolrail-btn')].find(b=>b.textContent.trim()==='Elements')`,
+        /Elements/,
+        /Add photo slots, text and shapes/,
         null
       ]
     ]
@@ -1230,9 +1228,9 @@ const tipText = (c) =>
 
     // ------------------------------------------------------------------ keyboard accessibility of the new controls
     check(
-      '24 new controls are real buttons with accessible names and pressed state (Preview photos, Show overflow)',
+      '24 new controls are real buttons with accessible names and pressed state (Sample photos, Overflow)',
       await c.ev(
-        `(()=>{const q=(l)=>[...document.querySelectorAll('button')].find(b=>b.getAttribute('aria-label')===l); const p=q('Preview photos'), o=q('Show overflow')||q('Clipped view'); return !!p&&!!o&&p.hasAttribute('aria-pressed')&&o.hasAttribute('aria-pressed')&&p.tabIndex>=0&&o.tabIndex>=0})()`
+        `(()=>{const q=(l)=>[...document.querySelectorAll('button')].find(b=>b.getAttribute('aria-label')===l); const p=q('Sample photos'), o=q('Overflow'); return !!p&&!!o&&p.hasAttribute('aria-pressed')&&o.hasAttribute('aria-pressed')&&p.tabIndex>=0&&o.tabIndex>=0})()`
       )
     )
 

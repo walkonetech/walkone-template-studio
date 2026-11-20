@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { FileImage, ImagePlus, ImageUp, Layers, Trash2 } from 'lucide-react'
+import { FileImage, ImagePlus, Upload, Layers, Trash2 } from 'lucide-react'
 import { assetUsage, type AssetReference, type TemplateProject } from '@domain'
 import { editorStore, useEditor } from './editorStore'
 import { useThumbnail } from './thumbnails'
@@ -109,10 +109,8 @@ export function AssetsDrawer(): React.JSX.Element {
   const [over, setOver] = useState(false)
   const assets = project?.assets ?? []
   return (
-    <aside
-      className={`tooldrawer assets-drawer ${over ? 'drop-active' : ''}`}
-      aria-label="Project assets"
-      data-editor-panel
+    <div
+      className={`drawer-body assets-drawer ${over ? 'drop-active' : ''}`}
       data-testid="assets-drawer"
       onDragOver={(e) => {
         if (!dragHasFiles(e.dataTransfer)) return
@@ -130,18 +128,19 @@ export function AssetsDrawer(): React.JSX.Element {
         void importDroppedFiles(e.dataTransfer, { kind: 'library' })
       }}
     >
-      <h2 className="panel-heading">Assets</h2>
       <Button
         variant="primary"
-        icon={ImageUp}
+        icon={Upload}
         className="assets-import"
         onClick={() => void editorStore.getState().importAssetsFromDialog({ kind: 'library' })}
       >
-        Import files…
+        Upload images…
       </Button>
-      <p className="field-note">PNG, JPEG, WebP or SVG. Images are copied into the project.</p>
+      <p className="drawer-note">
+        Or drag files onto the canvas. PNG, JPEG, WebP or SVG; images are copied into the project.
+      </p>
       <h3 className="section-heading">
-        Project assets{assets.length > 0 ? ` (${assets.length})` : ''}
+        This project{assets.length > 0 ? ` (${assets.length})` : ''}
       </h3>
       {assets.length === 0 ? (
         <p className="field-note assets-empty">
@@ -156,6 +155,6 @@ export function AssetsDrawer(): React.JSX.Element {
             : null}
         </ul>
       )}
-    </aside>
+    </div>
   )
 }

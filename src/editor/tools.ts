@@ -1,42 +1,38 @@
 /**
- * The left tool rail's structure. `design` (elements to add, canvas background) and `assets` (project images) are real today; the
- * other categories are declared so the layout is established, and are shown disabled with an honest "later phase"
- * tooltip. Adding a category later means adding an entry here and a drawer body for it, not reworking the rail.
+ * The labelled left rail (Phase 7B B3, B1 mockups): five categories, each opening a tool drawer. Every category is
+ * real (no disabled "coming soon" entries): Elements adds photo slots, text and shapes; Text adds text and applies the
+ * quick text styles; Photos explains photo slots vs sample photos; Uploads holds this project's own images; Colors
+ * holds the Event Palette and the canvas background. Adding a category later means an entry here and a drawer body.
  */
-export type ToolId = 'design' | 'templates' | 'photos' | 'assets'
+export type ToolId = 'elements' | 'text' | 'photos' | 'uploads' | 'colors'
 
 export interface ToolDef {
   id: ToolId
   label: string
-  status: 'available' | 'planned'
-  /** Shown as the tooltip of a planned tool. */
-  note?: string
+  /** One sentence for the rail tooltip. */
+  hint: string
 }
 
 export const TOOLS: readonly ToolDef[] = [
-  { id: 'design', label: 'Design', status: 'available' },
-  {
-    id: 'templates',
-    label: 'Templates',
-    status: 'planned',
-    note: 'Template gallery arrives in a later phase'
-  },
+  { id: 'elements', label: 'Elements', hint: 'Add photo slots, text and shapes' },
+  { id: 'text', label: 'Text', hint: 'Add text and apply quick text styles' },
   {
     id: 'photos',
     label: 'Photos',
-    status: 'planned',
-    note: 'Sample photos arrive in a later phase'
+    hint: 'Photo slots for guest photos, and sample photos to preview them'
   },
-  { id: 'assets', label: 'Assets', status: 'available' }
+  { id: 'uploads', label: 'Uploads', hint: 'Your own images in this project' },
+  { id: 'colors', label: 'Colors', hint: 'The event palette and the canvas background' }
 ]
 
-/** Selecting a planned tool does nothing; selecting the active tool toggles the drawer. */
+export const isToolId = (v: unknown): v is ToolId => TOOLS.some((t) => t.id === v)
+
+/** Selecting another category opens its drawer; selecting the open category again closes the drawer. */
 export function nextToolState(
   current: { tool: ToolId; open: boolean },
   clicked: ToolId
 ): { tool: ToolId; open: boolean } {
-  const def = TOOLS.find((t) => t.id === clicked)
-  if (!def || def.status !== 'available') return current
+  if (!isToolId(clicked)) return current
   if (clicked === current.tool) return { tool: current.tool, open: !current.open }
   return { tool: clicked, open: true }
 }

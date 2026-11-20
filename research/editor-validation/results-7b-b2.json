@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-19T18:34:42.477Z",
+  "when": "2026-11-20T00:14:38.703Z",
   "pass": 27,
   "total": 27,
   "results": [
@@ -20,7 +20,7 @@
         "topbar": 52,
         "status": 30,
         "rail": null,
-        "control": 34,
+        "control": null,
         "row": null,
         "stored": null
       }
@@ -174,17 +174,17 @@
       "ok": true,
       "detail": {
         "stage0": {
-          "w": 815,
-          "h": 790,
-          "scale": 0.2061111111111111,
-          "x": 283.83333333333337,
+          "w": 1059,
+          "h": 742,
+          "scale": 0.19277777777777777,
+          "x": 413.83333333333337,
           "y": 24
         },
         "stage1": {
-          "w": 815,
-          "h": 790,
-          "scale": 0.2061111111111111,
-          "x": 283.83333333333337,
+          "w": 1059,
+          "h": 742,
+          "scale": 0.19277777777777777,
+          "x": 413.83333333333337,
           "y": 24
         },
         "renders": {
@@ -194,9 +194,9 @@
             "maxDelta": 0
           },
           "sheet": {
-            "identical": false,
-            "differing": 1,
-            "maxDelta": 1
+            "identical": true,
+            "differing": 0,
+            "maxDelta": 0
           }
         }
       }
@@ -255,14 +255,14 @@
       "ok": true,
       "detail": {
         "design": {
-          "identical": false,
-          "differing": 1,
-          "maxDelta": 1
+          "identical": true,
+          "differing": 0,
+          "maxDelta": 0
         },
         "sheet": {
-          "identical": false,
-          "differing": 2,
-          "maxDelta": 1
+          "identical": true,
+          "differing": 0,
+          "maxDelta": 0
         }
       }
     },
@@ -273,24 +273,7 @@
         "same": true,
         "files": ["B2 Strip 4x6.zip", "B2 Strip-design.png", "B2 Strip-print.png", "B2 Strip.zip"],
         "diffs": [],
-        "tolerated": [
-          {
-            "file": "B2 Strip 4x6.zip",
-            "entry": "preview.png",
-            "width": 2400,
-            "height": 3600,
-            "differing": 1,
-            "maxDelta": 1
-          },
-          {
-            "file": "B2 Strip.zip",
-            "entry": "preview.png",
-            "width": 1200,
-            "height": 3600,
-            "differing": 1,
-            "maxDelta": 1
-          }
-        ],
+        "tolerated": [],
         "masked": ["template.xml: LastSavedDate"]
       }
     },
@@ -351,25 +334,25 @@
         {
           "density": "Comfortable size",
           "size": "1426x779",
-          "triggers": 26,
+          "triggers": 18,
           "outside": []
         },
         {
           "density": "Comfortable size",
           "size": "1100x650",
-          "triggers": 26,
+          "triggers": 18,
           "outside": []
         },
         {
           "density": "Compact size",
           "size": "1426x779",
-          "triggers": 26,
+          "triggers": 18,
           "outside": []
         },
         {
           "density": "Compact size",
           "size": "1100x650",
-          "triggers": 26,
+          "triggers": 18,
           "outside": []
         }
       ]
@@ -379,12 +362,12 @@
       "ok": true,
       "detail": {
         "trigger": {
-          "x": 1421,
-          "y": 72,
+          "x": 1420,
+          "y": 506.953125,
           "right": 6
         },
         "hoverTip": {
-          "text": "Layer shortcutsShow the keyboard shortcuts for the Layers panel",
+          "text": "More layer actionsDuplicate, group, stacking order, delete and the Layers keyboard shortcuts",
           "role": "tooltip",
           "right": 8,
           "left": 1172

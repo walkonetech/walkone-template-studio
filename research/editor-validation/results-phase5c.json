@@ -8,7 +8,7 @@
       "ok": true,
       "detail": {
         "overlay": {
-          "id": "7a9f58b5-11ad-4406-b0e0-5b8aeebbde0e",
+          "id": "47efbdf1-99cf-4efb-8684-e84fa69c14dd",
           "type": "image",
           "name": "petals",
           "x": 900,
@@ -42,7 +42,7 @@
       "ok": true
     },
     {
-      "name": "2c button states are not colour-only: aria-pressed and a changing label",
+      "name": "2c button states are not colour-only: aria-pressed and a changing visible value (Overflow: Hide)",
       "ok": true
     },
     {
@@ -112,11 +112,11 @@
       "name": "5 Zoom In / Zoom Out / 100% / Fit buttons and a visible zoom percentage",
       "ok": true,
       "detail": {
-        "z0": "21%",
-        "z1": "26%",
-        "z2": "21%",
+        "z0": "19%",
+        "z1": "24%",
+        "z2": "19%",
         "z100": "100%",
-        "zFit": "21%"
+        "zFit": "19%"
       }
     },
     {
@@ -124,16 +124,16 @@
       "ok": true,
       "detail": {
         "d0": {
-          "x": 797.708894878706,
-          "y": 1416.711590296496,
-          "scale": 0.2061111111111111
+          "x": 874.6685878962537,
+          "y": 1415.1008645533143,
+          "scale": 0.19277777777777777
         },
         "d1": {
-          "x": 796.5584568733152,
-          "y": 1416.711590296496,
-          "scale": 4
+          "x": 872.4505116005128,
+          "y": 1411.1576178053308,
+          "scale": 3.8720451735256223
         },
-        "tol": 4.8517520215633425
+        "tol": 5.187319884726225
       }
     },
     {
@@ -155,7 +155,7 @@
         {
           "label": "fit",
           "y": true,
-          "dxDesign": 727.7629999999999,
+          "dxDesign": 778.098,
           "history": 1
         },
         {
@@ -167,7 +167,7 @@
         {
           "label": "200%",
           "y": true,
-          "dxDesign": 76.80000000000018,
+          "dxDesign": 76.79999999999995,
           "history": 1
         }
       ]
@@ -205,8 +205,8 @@
       "name": "6d releasing Shift mid-gesture frees the movement (Y moves after release)",
       "ok": true,
       "detail": {
-        "dx": 436.6579999999999,
-        "dy": 388.1399999999999
+        "dx": 466.8589999999999,
+        "dy": 414.9859999999999
       }
     },
     {
@@ -236,8 +236,8 @@
       "name": "8 Shift-constrained drag of a multi-selection (partly beyond the artboard, no clamping): both move by the same ΔX, neither changes Y, one history entry",
       "ok": true,
       "detail": {
-        "dxO": 555.4870000000001,
-        "dxP": 555.487,
+        "dxO": 564.4770000000001,
+        "dxP": 564.477,
         "dyO": 0,
         "dyP": 0,
         "past": 1
@@ -262,7 +262,7 @@
       "detail": {
         "ready": true,
         "released": true,
-        "dx": 159.99999999999997,
+        "dx": 160,
         "dy": 60
       }
     },
@@ -363,11 +363,11 @@
       "ok": true,
       "detail": {
         "crop": {
-          "layerId": "960c447d-9e09-452a-ae90-c18a3e7f28b4",
+          "layerId": "ef78745d-519e-4211-8e0d-af18cb4265ce",
           "original": null
         },
         "interaction": "cropping",
-        "selected": ["960c447d-9e09-452a-ae90-c18a3e7f28b4"],
+        "selected": ["ef78745d-519e-4211-8e0d-af18cb4265ce"],
         "mode": "design"
       }
     },
@@ -377,8 +377,8 @@
       "detail": {
         "crop": {
           "zoom": 1.5,
-          "x": 0.7350573416826377,
-          "y": 0.5544859453215248
+          "x": 0.7860942790458137,
+          "y": 0.5928365582544257
         }
       }
     },
@@ -401,7 +401,7 @@
       "name": "20b Enter commits: the crop is kept, the mode is left",
       "ok": true,
       "detail": {
-        "960c447d-9e09-452a-ae90-c18a3e7f28b4": {
+        "ef78745d-519e-4211-8e0d-af18cb4265ce": {
           "zoom": 1.25,
           "x": -0.004743833017077814,
           "y": 0
@@ -466,14 +466,14 @@
       "detail": "Reposition photoDrag the sample photo inside its frame. Enter finishes, Escape cancels."
     },
     {
-      "name": "24 new controls are real buttons with accessible names and pressed state (Preview photos, Show overflow)",
+      "name": "24 new controls are real buttons with accessible names and pressed state (Sample photos, Overflow)",
       "ok": true
     },
     {
       "name": "25 save → reopen: negative X, rotation and oversized extent are preserved exactly",
       "ok": true,
       "detail": {
-        "id": "7a9f58b5-11ad-4406-b0e0-5b8aeebbde0e",
+        "id": "47efbdf1-99cf-4efb-8684-e84fa69c14dd",
         "type": "image",
         "name": "petals",
         "x": -120,
@@ -495,7 +495,7 @@
       "name": "26 crash recovery restores the off-artboard asset geometry (x −300) and its image",
       "ok": true,
       "detail": {
-        "id": "7a9f58b5-11ad-4406-b0e0-5b8aeebbde0e",
+        "id": "47efbdf1-99cf-4efb-8684-e84fa69c14dd",
         "type": "image",
         "name": "petals",
         "x": -300,

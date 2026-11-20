@@ -326,6 +326,8 @@ export interface EditorActions {
   recoverCandidate(sessionId: string): Promise<OpResult>
   discardCandidate(sessionId: string): Promise<OpResult>
   dismissRecovery(): void
+  /** Shows the recovery choices again after "Decide later" (the Start screen's "Review"). Nothing is restored. */
+  reviewRecovery(): void
 }
 
 export type EditorStore = StoreApi<EditorState & EditorActions>
@@ -1245,7 +1247,8 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
           return { status: 'error', message }
         }
       },
-      dismissRecovery: () => set((s) => ({ recovery: { ...s.recovery, dismissed: true } }))
+      dismissRecovery: () => set((s) => ({ recovery: { ...s.recovery, dismissed: true } })),
+      reviewRecovery: () => set((s) => ({ recovery: { ...s.recovery, dismissed: false } }))
     }
   })
 }

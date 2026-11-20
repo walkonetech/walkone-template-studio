@@ -1,32 +1,35 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ChevronRight,
-  Copy,
+  Ellipsis,
   Eye,
   EyeOff,
-  Group,
-  Keyboard,
   Layers as LayersIcon,
   ListFilter,
   Lock,
   LockOpen,
   Plus,
-  Trash2,
-  Ungroup,
-  Layers2
+  TriangleAlert
 } from 'lucide-react'
 import { NEW_LAYER_KINDS } from '@editor/newLayers'
 import { buildPanelRows, layerTypeLabel, type PanelRow } from '@editor/layerTree'
 import { editorStore, useEditor } from './editorStore'
 import { LayerTypeIcon } from './Icons'
-import { isMac, isPrimaryModifier } from './platform'
-import { Dialog } from '../ui/Dialog'
+import { isPrimaryModifier } from './platform'
 import { Tooltip } from '../ui/Tooltip'
-import { commandTipProps, tipProps } from './tips'
-import { Button } from '../ui/Button'
+import { tipProps } from './tips'
 import { EmptyState } from '../ui/EmptyState'
-import { IconButton } from '../ui/IconButton'
 import { MenuButton, type MenuEntry } from '../ui/Menu'
+import { COMMANDS, type CommandId } from '@editor/commands'
+import { runCommand } from './commandRunner'
+import { shortcutFor } from './TopBar'
+import { useSafeAreaReport } from './SafeAreaOverlay'
+
+/** Layers the Output Profile's safe-area check flags (shown as a warning marker on their rows). */
+function useFlaggedLayerIds(): ReadonlySet<string> {
+  const report = useSafeAreaReport()
+  return useMemo(() => new Set(report?.flagged.map((f) => f.layerId) ?? []), [report])
+}
 
 const store = editorStore
 type Placement = 'above' | 'below'
@@ -151,6 +154,8 @@ interface RowProps {
   active: boolean
   renaming: boolean
   mark: Placement | 'blocked' | null
+  /** The Output Profile's safe-area check flags this layer (near a trim line or across a cut). */
+  warning: boolean
   dragging: boolean
   onRowClick: (e: React.MouseEvent, id: string) => void
   onRowPointerDown: (e: React.PointerEvent, id: string) => void
@@ -164,6 +169,7 @@ const LayerRow = memo(function LayerRow({
   active,
   renaming,
   mark,
+  warning,
   dragging,
   onRowClick,
   onRowPointerDown,
@@ -189,6 +195,7 @@ const LayerRow = memo(function LayerRow({
       data-layer-id={layer.id}
       data-parent-id={layer.parentId ?? ''}
       data-selected={selected || undefined}
+      data-kind={layer.type}
       className={[
         'layer-row',
         selected ? 'selected' : '',
@@ -237,6 +244,12 @@ const LayerRow = memo(function LayerRow({
         </span>
       )}
       {meta && <span className="layer-meta">{meta}</span>}
+      {warning && (
+        <span className="row-warning" title="Needs attention: close to a trim line or across a cut">
+          <TriangleAlert size={14} aria-hidden="true" />
+          <span className="sr-only"> (needs attention: close to a trim line or across a cut)</span>
+        </span>
+      )}
       <span className="row-actions">
         <button
           type="button"
@@ -387,40 +400,40 @@ export function LayersPanel(): React.JSX.Element {
   }
 
   const st = store.getState
-  const [helpOpen, setHelpOpen] = useState(false)
+  const flagged = useFlaggedLayerIds()
   const selectionCount = selectedIds.length
-  const mac = isMac()
   const addEntries: MenuEntry[] = NEW_LAYER_KINDS.map((k) => ({
     id: k.kind,
-    label: k.label,
+    label: k.kind === 'photo' ? 'Photo slot' : k.label,
     onSelect: () => st().addNewLayer(k.kind)
   }))
-  const arrangeEntries: MenuEntry[] = [
+  // Lower-frequency layer actions live in one "More" menu (B1); the same commands are in the Edit and Arrange menus
+  // and on the keyboard, so nothing is lost by taking them out of the header.
+  const cmd = (id: CommandId): MenuEntry => ({
+    id,
+    label: COMMANDS[id].label,
+    shortcut: shortcutFor(id),
+    disabled: selectionCount === 0,
+    onSelect: () => runCommand(id)
+  })
+  const moreEntries: MenuEntry[] = [
+    cmd('edit.duplicate'),
+    cmd('edit.group'),
+    cmd('edit.ungroup'),
+    'separator',
+    cmd('arrange.bringToFront'),
+    cmd('arrange.bringForward'),
+    cmd('arrange.sendBackward'),
+    cmd('arrange.sendToBack'),
+    'separator',
+    cmd('edit.delete'),
+    'separator',
     {
-      id: 'front',
-      label: 'Bring to front',
-      shortcut: mac ? '⇧⌘]' : 'Ctrl+Shift+]',
-      onSelect: () => st().stackSelection('front')
-    },
-    {
-      id: 'forward',
-      label: 'Bring forward',
-      shortcut: mac ? '⌘]' : 'Ctrl+]',
-      onSelect: () => st().stackSelection('forward')
-    },
-    {
-      id: 'backward',
-      label: 'Send backward',
-      shortcut: mac ? '⌘[' : 'Ctrl+[',
-      onSelect: () => st().stackSelection('backward')
-    },
-    {
-      id: 'back',
-      label: 'Send to back',
-      shortcut: mac ? '⇧⌘[' : 'Ctrl+Shift+[',
-      onSelect: () => st().stackSelection('back')
+      id: 'shortcuts',
+      label: COMMANDS['help.shortcuts'].label,
+      onSelect: () => runCommand('help.shortcuts')
     }
-  ].map((e) => ({ ...e, disabled: !activeId }))
+  ]
 
   return (
     <section className="panel layers-panel" aria-label="Layers" data-editor-panel>
@@ -439,60 +452,16 @@ export function LayersPanel(): React.JSX.Element {
               <Plus size={16} strokeWidth={2} aria-hidden="true" />
             </MenuButton>
           </Tooltip>
-          <span className="ui-divider" aria-hidden="true" />
-          <IconButton
-            size="sm"
-            icon={Copy}
-            label="Duplicate"
-            {...commandTipProps('edit.duplicate')}
-            disabled={selectionCount === 0}
-            onClick={() => st().duplicateSelection()}
-          />
-          <IconButton
-            size="sm"
-            icon={Group}
-            label="Group"
-            {...commandTipProps('edit.group')}
-            disabled={selectionCount === 0}
-            onClick={() => st().groupSelection()}
-          />
-          <IconButton
-            size="sm"
-            icon={Ungroup}
-            label="Ungroup"
-            {...commandTipProps('edit.ungroup')}
-            disabled={selectionCount === 0}
-            onClick={() => st().ungroupSelection()}
-          />
-          <span className="ui-divider" aria-hidden="true" />
-          <Tooltip label="Arrange" {...tipProps('arrangeStacking')}>
+          <Tooltip label="More layer actions" {...tipProps('layersMore')}>
             <MenuButton
-              label="Arrange"
-              entries={arrangeEntries}
-              className="ui-iconbtn sm"
+              label="More layer actions"
+              entries={moreEntries}
+              className="ui-iconbtn sm more-btn"
               align="end"
             >
-              <Layers2 size={16} strokeWidth={1.75} aria-hidden="true" />
+              <Ellipsis size={16} strokeWidth={2} aria-hidden="true" />
             </MenuButton>
           </Tooltip>
-          <IconButton
-            size="sm"
-            icon={Trash2}
-            label="Delete"
-            {...commandTipProps('edit.delete')}
-            className="danger-btn"
-            disabled={selectionCount === 0}
-            onClick={() => st().deleteSelection()}
-          />
-          <span className="ui-divider" aria-hidden="true" />
-          <IconButton
-            size="sm"
-            icon={Keyboard}
-            label="Layer shortcuts"
-            {...tipProps('layerShortcuts')}
-            className="quiet-btn"
-            onClick={() => setHelpOpen(true)}
-          />
         </div>
       </header>
       <div className="panel-sub">
@@ -524,6 +493,7 @@ export function LayersPanel(): React.JSX.Element {
             selected={selected.has(row.layer.id)}
             active={row.layer.id === activeId}
             renaming={renamingId === row.layer.id}
+            warning={flagged.has(row.layer.id)}
             mark={markFor(row.layer.id)}
             dragging={drag?.id === row.layer.id}
             onRowClick={onRowClick}
@@ -546,48 +516,6 @@ export function LayersPanel(): React.JSX.Element {
           </li>
         )}
       </ul>
-      {helpOpen && <ShortcutsDialog onClose={() => setHelpOpen(false)} />}
     </section>
-  )
-}
-
-function ShortcutsDialog({ onClose }: { onClose: () => void }): React.JSX.Element {
-  const mac = isMac()
-  const mod = mac ? '⌘' : 'Ctrl+'
-  const rows: [string, string][] = [
-    ['Move between layers', '↑ ↓'],
-    ['Extend selection', 'Shift + ↑ ↓'],
-    ['Expand / collapse group', '→ ←'],
-    ['Rename', 'Enter or F2'],
-    ['Lock / unlock', 'L'],
-    ['Show / hide', 'V'],
-    ['Delete', mac ? '⌫' : 'Delete'],
-    ['Toggle in selection', `${mod}click`],
-    ['Select a range', 'Shift + click'],
-    ['Reorder', 'Drag a row (within its group)']
-  ]
-  return (
-    <Dialog
-      title="Layer panel shortcuts"
-      description="The top of the list is the front of the artwork."
-      onEscape={onClose}
-      size="sm"
-      footer={
-        <Button variant="primary" data-autofocus onClick={onClose}>
-          Done
-        </Button>
-      }
-    >
-      <dl className="shortcut-list">
-        {rows.map(([what, keys]) => (
-          <div key={what}>
-            <dt>{what}</dt>
-            <dd>
-              <kbd>{keys}</kbd>
-            </dd>
-          </div>
-        ))}
-      </dl>
-    </Dialog>
   )
 }

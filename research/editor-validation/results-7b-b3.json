@@ -1,0 +1,671 @@
+[
+  {
+    "name": "1 Start screen: Blank design and Import dslrBooth are visual cards, Open project… is visible; all above the fold at 1920×1000, 1426×779 and 1280×720; no horizontal scroll",
+    "ok": true,
+    "detail": [
+      {
+        "w": 1920,
+        "ht": 1000,
+        "h1": "Start a template",
+        "blank": {
+          "b": 351,
+          "r": 952
+        },
+        "imp": {
+          "b": 351,
+          "r": 1502
+        },
+        "open": {
+          "b": 114,
+          "r": 1502
+        },
+        "guided": false,
+        "docActions": false,
+        "blankArt": 3,
+        "importArt": true,
+        "kbd": "⌘O",
+        "ih": 1000,
+        "iw": 1920,
+        "sw": 1920
+      },
+      {
+        "w": 1426,
+        "ht": 779,
+        "h1": "Start a template",
+        "blank": {
+          "b": 351,
+          "r": 705
+        },
+        "imp": {
+          "b": 351,
+          "r": 1255
+        },
+        "open": {
+          "b": 114,
+          "r": 1255
+        },
+        "guided": false,
+        "docActions": false,
+        "blankArt": 3,
+        "importArt": true,
+        "kbd": "⌘O",
+        "ih": 779,
+        "iw": 1426,
+        "sw": 1426
+      },
+      {
+        "w": 1280,
+        "ht": 720,
+        "h1": "Start a template",
+        "blank": {
+          "b": 351,
+          "r": 632
+        },
+        "imp": {
+          "b": 351,
+          "r": 1186
+        },
+        "open": {
+          "b": 114,
+          "r": 1186
+        },
+        "guided": false,
+        "docActions": false,
+        "blankArt": 3,
+        "importArt": true,
+        "kbd": "⌘O",
+        "ih": 720,
+        "iw": 1280,
+        "sw": 1280
+      }
+    ]
+  },
+  {
+    "name": "1b no Guided Design (no placeholder, no disabled card) and no document actions in the top bar without a project",
+    "ok": true
+  },
+  {
+    "name": "1c Open project… shows the platform shortcut (⌘O)",
+    "ok": true,
+    "detail": "⌘O"
+  },
+  {
+    "name": "2 the Blank design card opens the New project dialog",
+    "ok": true
+  },
+  {
+    "name": "3 the Import dslrBooth card runs the dslrBooth import (synthetic template → an editable project)",
+    "ok": true,
+    "detail": {
+      "layers": 19,
+      "name": "WalkOne Live Text Fixture"
+    }
+  },
+  {
+    "name": "4 recent projects are cards with a format placeholder, the name and \"2×6 strip · opened …\" (no file path)",
+    "ok": true,
+    "detail": [
+      {
+        "t": "B3 Shell Check: Ava and Theo Wedding Reception at the Old Mill, Saturday Evening Strip2×6 strip · opened just now",
+        "art": true,
+        "dis": false
+      }
+    ]
+  },
+  {
+    "name": "4b a recent card opens the project, clean (Saved)",
+    "ok": true,
+    "detail": "Saved"
+  },
+  {
+    "name": "5 Open project… opens a saved project",
+    "ok": true
+  },
+  {
+    "name": "6 labelled rail: Elements, Text, Photos, Uploads, Colors, each icon + word, 80 px wide (Comfortable), none disabled",
+    "ok": true,
+    "detail": {
+      "labels": ["Elements", "Text", "Photos", "Uploads", "Colors"],
+      "icons": true,
+      "w": 80,
+      "disabled": 0
+    }
+  },
+  {
+    "name": "7 at 1920×1000 the drawer DOCKS: its own 264 px column that pushes the canvas",
+    "ok": true,
+    "detail": {
+      "dr": {
+        "tool": "elements",
+        "mode": "docked",
+        "w": 264,
+        "l": 80,
+        "r": 344
+      },
+      "ws0": {
+        "l": 80,
+        "t": 100,
+        "r": 1579,
+        "b": 970,
+        "w": 1499,
+        "h": 870
+      },
+      "ws1": {
+        "l": 344,
+        "t": 100,
+        "r": 1579,
+        "b": 970,
+        "w": 1235,
+        "h": 870
+      }
+    }
+  },
+  {
+    "name": "7b the active rail item uses the accent (subtle background, accent icon and marker), not a kind colour",
+    "ok": true,
+    "detail": {
+      "pressed": "true",
+      "bg": "rgba(68, 86, 224, 0.09)",
+      "accentSubtle": "rgba(68, 86, 224, 0.09)",
+      "icon": "rgb(68, 86, 224)",
+      "accent": "rgb(68, 86, 224)",
+      "marker": "rgb(68, 86, 224)"
+    }
+  },
+  {
+    "name": "8 drawer width is resizable within 240–360 px, remembered on this computer, and resizing never touches the project",
+    "ok": true,
+    "detail": {
+      "wMax": 360,
+      "wMin": 240,
+      "wSet": 272,
+      "stored": "{\"drawerWidth\":272,\"layersSplit\":0.45,\"sidebarWidth\":null,\"rightTab\":\"properties\"}"
+    }
+  },
+  {
+    "name": "9 adding five elements in a row keeps the drawer open (it never auto-closes after an add)",
+    "ok": true,
+    "detail": {
+      "dr": {
+        "tool": "elements",
+        "mode": "docked",
+        "w": 272,
+        "l": 80,
+        "r": 352
+      },
+      "layers": 10
+    }
+  },
+  {
+    "name": "10 Undo and Redo (icon + word at Comfortable) step history from the top bar",
+    "ok": true,
+    "detail": {
+      "ur": [
+        {
+          "text": "Undo",
+          "disabled": false
+        },
+        {
+          "text": "Redo",
+          "disabled": true
+        }
+      ],
+      "afterUndo": 5,
+      "afterRedo": 6
+    }
+  },
+  {
+    "name": "11 each rail category opens its own drawer in place: Text (add + styles + fonts), Photos (photo slot vs sample photos), Uploads, Colors (palette + background), Elements (slot, text, 3 shapes)",
+    "ok": true,
+    "detail": {
+      "text": {
+        "tool": "text",
+        "count": 1,
+        "title": "Text",
+        "has": {
+          "addText": true,
+          "styles": true,
+          "fonts": true,
+          "addPhoto": false,
+          "samples": false,
+          "upload": false,
+          "palette": false,
+          "bg": false,
+          "shapes": 0
+        }
+      },
+      "photos": {
+        "tool": "photos",
+        "count": 1,
+        "title": "Photos",
+        "has": {
+          "addText": false,
+          "styles": false,
+          "fonts": false,
+          "addPhoto": true,
+          "samples": true,
+          "upload": false,
+          "palette": false,
+          "bg": false,
+          "shapes": 0
+        }
+      },
+      "uploads": {
+        "tool": "uploads",
+        "count": 1,
+        "title": "Uploads",
+        "has": {
+          "addText": false,
+          "styles": false,
+          "fonts": false,
+          "addPhoto": false,
+          "samples": false,
+          "upload": true,
+          "palette": false,
+          "bg": false,
+          "shapes": 0
+        }
+      },
+      "colors": {
+        "tool": "colors",
+        "count": 1,
+        "title": "Colors",
+        "has": {
+          "addText": false,
+          "styles": false,
+          "fonts": false,
+          "addPhoto": false,
+          "samples": false,
+          "upload": false,
+          "palette": true,
+          "bg": true,
+          "shapes": 0
+        }
+      },
+      "elements": {
+        "tool": "elements",
+        "count": 1,
+        "title": "Elements",
+        "has": {
+          "addText": true,
+          "styles": false,
+          "fonts": false,
+          "addPhoto": true,
+          "samples": false,
+          "upload": false,
+          "palette": false,
+          "bg": false,
+          "shapes": 3
+        }
+      }
+    }
+  },
+  {
+    "name": "11b the drawer Close button closes it",
+    "ok": true
+  },
+  {
+    "name": "12 ≥ 860 px tall: Properties sits ABOVE Layers with a splitter; the column is 340 px at 1920",
+    "ok": true,
+    "detail": {
+      "layout": "stacked",
+      "propsTop": 52,
+      "layersTop": 557.3515625,
+      "ph": 504,
+      "lh": 413,
+      "w": 340,
+      "splitter": true
+    }
+  },
+  {
+    "name": "13 Layers header keeps only Add and More; More holds Duplicate, Group, Ungroup, the four stacking moves, Delete and the shortcuts",
+    "ok": true,
+    "detail": {
+      "layersHeader": ["Add layer", "More layer actions"],
+      "more": [
+        "Duplicate",
+        "Group",
+        "Ungroup",
+        "Bring to front",
+        "Bring forward",
+        "Send backward",
+        "Send to back",
+        "Delete",
+        "Keyboard shortcuts…"
+      ]
+    }
+  },
+  {
+    "name": "14 Checks opens a read-only list with its headline inside the window; Escape closes it and returns focus to Checks",
+    "ok": true,
+    "detail": {
+      "pop": {
+        "head": "Ready",
+        "items": 0,
+        "inside": true,
+        "focusIn": true
+      },
+      "popClosed": {
+        "open": false,
+        "focus": "checks-button"
+      }
+    }
+  },
+  {
+    "name": "15 Save is disabled while everything is saved, enabled when Modified, and saves from the top bar",
+    "ok": true,
+    "detail": {
+      "saveClean": true,
+      "saveDirty": false,
+      "state": "Saved"
+    }
+  },
+  {
+    "name": "15b Export (primary) opens the existing Export dialog",
+    "ok": true
+  },
+  {
+    "name": "16 platform shortcut labels (macOS ⌘): Undo tooltip ⌘Z, Arrange › Bring to front ⇧⌘]",
+    "ok": true,
+    "detail": {
+      "undoTip": "⌘Z",
+      "front": {
+        "found": true,
+        "disabled": false,
+        "checked": null,
+        "role": "menuitem",
+        "kbd": "⇧⌘]"
+      }
+    }
+  },
+  {
+    "name": "17 Help › Keyboard shortcuts… lists command, canvas/window and Layers keys with platform labels",
+    "ok": true
+  },
+  {
+    "name": "18 Design | Print Preview drives the existing mode; Print Preview says \"read only\" with \"Edit in Design\"; the top-bar button does the same",
+    "ok": true,
+    "detail": {
+      "mode": "preview",
+      "ro": "Print Preview · read onlyEdit in Design",
+      "topPressed": "true"
+    }
+  },
+  {
+    "name": "19 Sample photos On/Off (with Shuffle while on), Safe areas \"No profile\" (not clickable) until a profile is chosen then On/Off, Overflow Show/Hide",
+    "ok": true,
+    "detail": {
+      "items": ["Design", "Print Preview", "Sample photos", "Safe areas", "Overflow"],
+      "preview": {
+        "mode": "preview",
+        "ro": "Print Preview · read onlyEdit in Design",
+        "topPressed": "true"
+      },
+      "back": "design",
+      "viaTop": "preview",
+      "samples0": {
+        "pressed": "false",
+        "disabled": null,
+        "value": "Off"
+      },
+      "samples1": {
+        "pressed": "true",
+        "disabled": null,
+        "value": "On"
+      },
+      "shuffle": true,
+      "safeNoProfile": {
+        "pressed": "false",
+        "disabled": "true",
+        "value": "No profile"
+      },
+      "safeStill": true,
+      "safeOn": {
+        "pressed": "true",
+        "disabled": null,
+        "value": "On"
+      },
+      "safeOff": {
+        "pressed": "false",
+        "disabled": null,
+        "value": "Off"
+      },
+      "overflow0": {
+        "pressed": "true",
+        "disabled": null,
+        "value": "Show"
+      },
+      "overflow1": {
+        "pressed": "false",
+        "disabled": null,
+        "value": "Hide"
+      },
+      "statusToggles": 0
+    }
+  },
+  {
+    "name": "20 the canvas-state bar is view only: none of its controls changed the project, its Modified state or history; the status bar no longer repeats them",
+    "ok": true,
+    "detail": {
+      "items": ["Design", "Print Preview", "Sample photos", "Safe areas", "Overflow"],
+      "statusToggles": 0
+    }
+  },
+  {
+    "name": "21 crossing below 1600 px closes the docked drawer (it would otherwise suddenly cover the canvas)",
+    "ok": true,
+    "detail": null
+  },
+  {
+    "name": "22 at 1426×779 the drawer FLOATS beside the rail over the canvas (the canvas keeps its width)",
+    "ok": true,
+    "detail": {
+      "dr": {
+        "tool": "uploads",
+        "mode": "floating",
+        "w": 272,
+        "l": 86,
+        "r": 358
+      },
+      "wsClosed": {
+        "l": 80,
+        "t": 100,
+        "r": 1125,
+        "b": 749,
+        "w": 1045,
+        "h": 649
+      },
+      "wsOpen": {
+        "l": 80,
+        "t": 100,
+        "r": 1125,
+        "b": 749,
+        "w": 1045,
+        "h": 649
+      }
+    }
+  },
+  {
+    "name": "23 the floating drawer stays open while adding, and a click on the canvas closes it",
+    "ok": true,
+    "detail": {
+      "added": 2,
+      "stillOpen": true,
+      "closedByCanvas": true
+    }
+  },
+  {
+    "name": "24 Escape closes the floating drawer first (selection kept), then clears the selection",
+    "ok": true,
+    "detail": {
+      "esc1": {
+        "drawer": false,
+        "sel": 1
+      },
+      "esc2": {
+        "drawer": false,
+        "sel": 0
+      }
+    }
+  },
+  {
+    "name": "25 below 860 px tall, Properties | Layers are tabs (300 px column at 1426); choosing a layer in the Layers tab shows it in Properties; switching never touches the project",
+    "ok": true,
+    "detail": {
+      "tabs": {
+        "layout": "tabs",
+        "tabs": ["Properties", "Layers6"],
+        "selected": "Properties",
+        "w": 300
+      },
+      "layersTab": {
+        "layers": true,
+        "props": false,
+        "rows": 6
+      },
+      "propsTab": {
+        "props": true,
+        "sel": ["3a12d890-950e-4895-92b7-e9300c2ccfd2"],
+        "badge": "Text"
+      }
+    }
+  },
+  {
+    "name": "26 F6 moves focus through top bar → rail → canvas-state bar → canvas → Properties/Layers → status bar and wraps; Shift+F6 goes back",
+    "ok": true,
+    "detail": {
+      "regions": ["topbar", "rail", "viewbar", "canvas", "sidebar", "statusbar", "topbar"],
+      "back": ["statusbar", "sidebar"]
+    }
+  },
+  {
+    "name": "27 macOS: the in-window menu bar shows no Windows access-key underlines",
+    "ok": true
+  },
+  {
+    "name": "28 top bar responds: \"See how it prints\" + Undo/Redo words at 1426; \"Preview\" (eye) + icon-only Undo/Redo at 1100; the long title ellipsizes; Export fully visible; nothing clips",
+    "ok": true,
+    "detail": {
+      "top1426": {
+        "preview": "See how it prints",
+        "undo": "Undo"
+      },
+      "top1100": {
+        "preview": "Preview",
+        "undoText": "",
+        "exportIn": true,
+        "ellipsis": true,
+        "topClip": false
+      }
+    }
+  },
+  {
+    "name": "29 1100×650: no page overflow, the right column ends above the status bar, the canvas keeps ≥ 520 × 400, the status bar does not overflow",
+    "ok": true,
+    "detail": {
+      "iw": 1100,
+      "ih": 650,
+      "sw": 1100,
+      "sh": 650,
+      "statusBottom": 650,
+      "sideBottom": 620,
+      "statusTop": 620,
+      "ws": {
+        "w": 739,
+        "h": 520
+      },
+      "statusOverflow": false
+    }
+  },
+  {
+    "name": "30 every shell tooltip (top bar, rail, open drawer, canvas-state bar, panel headers, status bar) stays ≥ 8 px inside the window: Comfortable + Compact at 1920×1000, 1426×779, 1100×650",
+    "ok": true,
+    "detail": [
+      {
+        "density": "Comfortable size",
+        "size": "1920x1000",
+        "triggers": 26,
+        "outside": []
+      },
+      {
+        "density": "Comfortable size",
+        "size": "1426x779",
+        "triggers": 24,
+        "outside": []
+      },
+      {
+        "density": "Comfortable size",
+        "size": "1100x650",
+        "triggers": 24,
+        "outside": []
+      },
+      {
+        "density": "Compact size",
+        "size": "1920x1000",
+        "triggers": 26,
+        "outside": []
+      },
+      {
+        "density": "Compact size",
+        "size": "1426x779",
+        "triggers": 24,
+        "outside": []
+      },
+      {
+        "density": "Compact size",
+        "size": "1100x650",
+        "triggers": 24,
+        "outside": []
+      }
+    ]
+  },
+  {
+    "name": "31 the design and print renders are unchanged between the roomy docked/stacked Light Comfortable shell and the narrow floating/tabs Dark Compact shell; canvas geometry identical",
+    "ok": true,
+    "detail": {
+      "design": {
+        "identical": true,
+        "differing": 0,
+        "maxDelta": 0
+      },
+      "sheet": {
+        "identical": true,
+        "differing": 0,
+        "maxDelta": 0
+      },
+      "layers": [6, 6]
+    }
+  },
+  {
+    "name": "32 exported print PNGs, design PNGs and the dslrBooth ZIP entries are identical across the two shells (template.xml export time masked)",
+    "ok": true,
+    "detail": {
+      "same": true,
+      "files": [
+        "B3 Shell Check Ava and Theo Wedding Reception at the Old Mill, Saturday Evening Strip 4x6.zip",
+        "B3 Shell Check Ava and Theo Wedding Reception at the Old Mill, Saturday Evening Strip-design.png",
+        "B3 Shell Check Ava and Theo Wedding Reception at the Old Mill, Saturday Evening Strip-print.png",
+        "B3 Shell Check Ava and Theo Wedding Reception at the Old Mill, Saturday Evening Strip.zip"
+      ],
+      "diffs": [],
+      "tolerated": [],
+      "masked": ["template.xml: LastSavedDate"]
+    }
+  },
+  {
+    "name": "33 after a restart the drawer keeps its width (remembered on this computer); the saved .boothproject holds no layout or appearance data",
+    "ok": true,
+    "detail": {
+      "tool": "elements",
+      "mode": "floating",
+      "w": 272,
+      "l": 70,
+      "r": 342
+    }
+  },
+  {
+    "name": "34 no console errors or uncaught exceptions",
+    "ok": true,
+    "detail": []
+  }
+]

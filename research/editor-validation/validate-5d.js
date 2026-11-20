@@ -68,10 +68,11 @@ const tipText = (c) =>
 const dbg = async (c, l) =>
   console.log('  [drawer]', l, await c.ev(`!!document.querySelector('.tooldrawer')`))
 const FONT_INPUT = `.inspector-panel input[role=combobox]`
-// Opens the named tool's drawer only if it is not already showing (the rail button toggles).
-const drawer = (c, name) =>
+// Opens a rail category's drawer only if it is not already showing (the rail button toggles). B3: the font inventory
+// lives in the Text drawer, the Event palette and canvas background in the Colors drawer.
+const drawer = (c, tool) =>
   c.ev(
-    `(()=>{ if (document.querySelector('.tooldrawer [data-testid=canvas-background]')) return 1; [...document.querySelectorAll('.toolrail-btn')].find(b=>b.textContent.trim()===${JSON.stringify(name)}).click(); return 1})()`
+    `(()=>{ if (document.querySelector('.tooldrawer[data-tool=${tool}]')) return 1; document.querySelector('.toolrail-btn[data-tool=${tool}]').click(); return 1})()`
   )
 
 ;(async () => {
@@ -214,7 +215,7 @@ const drawer = (c, name) =>
     await shot(c, '5d-03-missing-font-warning.png')
     await dbg(c, "ing-font-warning.png')")
     // project font inventory
-    await drawer(c, 'Design')
+    await drawer(c, 'text')
     await sleep(300)
     const inv = await J(
       c,
@@ -318,7 +319,7 @@ const drawer = (c, name) =>
     )
 
     // ------------------------------------------------------------------ Event palette
-    await drawer(c, 'Design')
+    await drawer(c, 'colors')
     await sleep(300)
     await click(c, btn('Add basic colors'))
     await sleep(500)
@@ -609,7 +610,10 @@ const drawer = (c, name) =>
       }
       await hover(c, p)
       const t = await tipText(c)
-      tr.push({ name, ok: a.test(t) && b2.test(t), t })
+      const hit = await c.ev(
+        `(()=>{const e=document.elementFromPoint(${p.x},${p.y}); return e?e.outerHTML.slice(0,140):null})()`
+      )
+      tr.push({ name, ok: a.test(t) && b2.test(t), t, ...(a.test(t) ? {} : { p, hit }) })
       await c.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 5, y: 5 })
       await sleep(150)
     }

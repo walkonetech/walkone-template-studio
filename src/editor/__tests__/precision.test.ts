@@ -272,13 +272,13 @@ describe('tooltips derive from the command model', () => {
     expect(TIPS.move.hint).toMatch(/Shift/)
     expect(TIPS.pan.hint).toMatch(/Space/)
   })
-  it('non-command tips are complete, and disabled (planned) tools stay described and accessible', () => {
+  it('non-command tips are complete, and every rail category is real and described (no planned placeholders)', () => {
     for (const t of Object.values(TIPS)) {
       expect(t.label.length).toBeGreaterThan(2)
       expect(t.hint.length).toBeGreaterThan(10)
     }
-    expect(TOOLS.filter((t) => t.status === 'planned').length).toBeGreaterThan(0)
-    expect(TIPS.toolTemplates.hint).toMatch(/later phase/)
+    for (const t of TOOLS) expect(t.hint.length).toBeGreaterThan(10)
+    expect(JSON.stringify(TOOLS)).not.toMatch(/later phase|coming soon/i)
   })
   it('the View menu carries Show overflow and Preview/Shuffle photos', () => {
     const view = MENUS.find((m) => m.id === 'view')!.items

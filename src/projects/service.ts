@@ -208,7 +208,12 @@ export class ProjectService {
       await pkg.extractAssets(session.dir)
       const entry: OpenEntry = { session, filePath: path, assets: indexAssets(project) }
       this.open.set(session.id, entry)
-      await this.options.recents.add({ path, projectId: project.id, name: project.metadata.name })
+      await this.options.recents.add({
+        path,
+        projectId: project.id,
+        name: project.metadata.name,
+        print: project.canvas.print
+      })
       const warnings = unreferencedEntries.length
         ? [
             `${unreferencedEntries.length} unused file(s) in the package were not carried over: ${unreferencedEntries.join(', ')}`
@@ -407,7 +412,8 @@ export class ProjectService {
     await this.options.recents.add({
       path: destPath,
       projectId: project.id,
-      name: project.metadata.name
+      name: project.metadata.name,
+      print: project.canvas.print
     })
     return this.info(e, project, false)
   }

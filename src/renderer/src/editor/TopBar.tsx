@@ -1,4 +1,4 @@
-import { Download, Redo2, Save, TriangleAlert, Undo2 } from 'lucide-react'
+import { Download, Eye, Redo2, Save, TriangleAlert, Undo2 } from 'lucide-react'
 import {
   COMMANDS,
   MENUS,
@@ -10,6 +10,9 @@ import {
 } from '@editor/commands'
 import { hasDerivedCopies } from '@canvas/rendering/composition'
 import { selectCanRedo, selectCanUndo, selectIsDirty, selectViewMode } from '@editor/store'
+import { topBarPresentation } from '@editor/layout'
+import { ChecksButton } from './ChecksButton'
+import { useLayout } from './layoutStore'
 import { runCommand } from './commandRunner'
 import { commandTipProps } from './tips'
 import { editorStore, useEditor } from './editorStore'
@@ -113,59 +116,129 @@ function DocumentTitle(): React.JSX.Element {
   )
 }
 
+/**
+ * Top bar (B1 hierarchy): menus on the left; the document name and Saved/Modified state in the centre (the name
+ * ellipsizes first); Undo, Redo, Checks, See how it prints, Save and Export on the right. When the window narrows the
+ * actions are protected in this order: Export, Save + state, Preview, Checks, Undo/Redo (see `topBarPresentation`).
+ * Export is the one primary action and is shown at every supported size. The Start screen shows only the menus.
+ */
 export function TopBar(): React.JSX.Element {
   const ctx = useCommandContext()
   const menus = useMenus(ctx)
+  const width = useLayout((s) => s.viewport.width)
+  const density = useAppearance((s) => s.density)
+  const dirty = useEditor(selectIsDirty)
+  const hasFile = useEditor((s) => s.session?.fileName != null)
+  const present = topBarPresentation(width, density)
   const st = editorStore.getState
   return (
-    <header className="topbar" aria-label="Application bar">
+    <header className="topbar" aria-label="Application bar" data-region="topbar">
       <div className="topbar-left">
         <span className="brand" aria-label="WalkOne Template Studio">
           <span className="brand-mark" aria-hidden="true" />
+          {!ctx.hasProject && <span className="brand-name">Template Studio</span>}
         </span>
-        <MenuBar menus={menus} label="Application menu" />
+        <MenuBar menus={menus} label="Application menu" accessKeys={!isMac()} />
       </div>
       <DocumentTitle />
-      <div className="topbar-right" role="toolbar" aria-label="Document actions">
-        <IconButton
-          label="Undo"
-          icon={Undo2}
-          {...commandTipProps('edit.undo')}
-          disabled={!ctx.canUndo}
-          onClick={() => st().undo()}
-        />
-        <IconButton
-          label="Redo"
-          icon={Redo2}
-          {...commandTipProps('edit.redo')}
-          disabled={!ctx.canRedo}
-          onClick={() => st().redo()}
-        />
-        <span className="ui-divider" aria-hidden="true" />
-        <Tooltip label="Save" {...commandTipProps('file.save')}>
-          <Button
-            variant="primary"
-            icon={Save}
-            disabled={!ctx.hasProject}
-            aria-label="Save"
-            onClick={() => runCommand('file.save')}
+      {ctx.hasProject ? (
+        <div className="topbar-right" role="toolbar" aria-label="Document actions">
+          {present.undoRedoWords ? (
+            <>
+              <Tooltip label="Undo" {...commandTipProps('edit.undo')}>
+                <Button
+                  variant="ghost"
+                  icon={Undo2}
+                  aria-label="Undo"
+                  disabled={!ctx.canUndo}
+                  onClick={() => st().undo()}
+                >
+                  Undo
+                </Button>
+              </Tooltip>
+              <Tooltip label="Redo" {...commandTipProps('edit.redo')}>
+                <Button
+                  variant="ghost"
+                  icon={Redo2}
+                  aria-label="Redo"
+                  disabled={!ctx.canRedo}
+                  onClick={() => st().redo()}
+                >
+                  Redo
+                </Button>
+              </Tooltip>
+            </>
+          ) : (
+            <>
+              <IconButton
+                label="Undo"
+                icon={Undo2}
+                {...commandTipProps('edit.undo')}
+                disabled={!ctx.canUndo}
+                onClick={() => st().undo()}
+              />
+              <IconButton
+                label="Redo"
+                icon={Redo2}
+                {...commandTipProps('edit.redo')}
+                disabled={!ctx.canRedo}
+                onClick={() => st().redo()}
+              />
+            </>
+          )}
+          <span className="ui-divider" aria-hidden="true" />
+          <ChecksButton />
+          <Tooltip
+            label="See how it prints"
+            hint={
+              ctx.hasPrintPreview
+                ? COMMANDS['view.printPreview'].hint
+                : 'This design prints as it is: one copy per sheet, so the design view already shows the print'
+            }
           >
-            Save
-          </Button>
-        </Tooltip>
-        <Tooltip label="Export" {...commandTipProps('file.export')}>
-          <Button
-            variant="ghost"
-            icon={Download}
-            disabled={!ctx.hasProject}
-            aria-label="Export"
-            id="export-button"
-            onClick={() => runCommand('file.export')}
+            <Button
+              icon={Eye}
+              id="print-preview-button"
+              aria-label="See how it prints"
+              aria-pressed={ctx.viewMode === 'preview'}
+              disabled={!ctx.hasPrintPreview}
+              onClick={() =>
+                runCommand(ctx.viewMode === 'preview' ? 'view.design' : 'view.printPreview')
+              }
+            >
+              {present.previewLabel}
+            </Button>
+          </Tooltip>
+          <Tooltip
+            label="Save"
+            {...commandTipProps('file.save')}
+            {...(!dirty && hasFile ? { hint: 'All changes are saved to the project file' } : {})}
           >
-            Export
-          </Button>
-        </Tooltip>
-      </div>
+            <Button
+              icon={Save}
+              id="save-button"
+              disabled={!dirty && hasFile}
+              aria-label="Save"
+              onClick={() => runCommand('file.save')}
+            >
+              Save
+            </Button>
+          </Tooltip>
+          <Tooltip label="Export" {...commandTipProps('file.export')}>
+            <Button
+              variant="primary"
+              icon={Download}
+              aria-label="Export"
+              id="export-button"
+              onClick={() => runCommand('file.export')}
+            >
+              Export
+            </Button>
+          </Tooltip>
+        </div>
+      ) : (
+        <div className="topbar-right" />
+      )}
     </header>
   )
 }

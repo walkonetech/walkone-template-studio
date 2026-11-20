@@ -1,13 +1,13 @@
 {
-  "when": "2026-11-19T13:45:47.922Z",
+  "when": "2026-11-20T00:12:46.248Z",
   "fixtures": 5,
   "pass": 29,
   "total": 29,
   "results": [
     {
-      "name": "1 start screen offers “Import from dslrBooth…” next to New and Open",
+      "name": "1 start screen (B3) offers the “Import dslrBooth” card next to Blank design and Open project…",
       "ok": true,
-      "detail": ["New project", "Open project…", "Import from dslrBooth…", "New sample project"]
+      "detail": ["New sample project", "Open project…", "Blank design", "Import dslrBooth"]
     },
     {
       "name": "2 a ZIP without template.xml shows “could not be imported” with the reason",
@@ -191,8 +191,8 @@
         {
           "n": 2,
           "layout": "as-is",
-          "mean": 2.35,
-          "over32": 1.541
+          "mean": 2.388,
+          "over32": 1.579
         },
         {
           "n": 3,
@@ -232,8 +232,8 @@
         {
           "n": 2,
           "layout": "as-is",
-          "mean": 2.35,
-          "over32": 1.541,
+          "mean": 2.388,
+          "over32": 1.579,
           "rebuild": 2.355
         },
         {

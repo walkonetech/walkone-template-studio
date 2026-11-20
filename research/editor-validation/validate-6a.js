@@ -118,9 +118,9 @@ const RED = [255, 0, 0, 255]
   try {
     // ---- 0: Export is disabled without a project
     check(
-      '0 Export button disabled on the welcome screen',
+      '0 no project: the Start screen shows no Export button (B3) and File › Export… is disabled',
       await c.ev(
-        `(()=>{const b=document.getElementById('export-button'); return !!b && b.disabled})()`
+        `(async()=>{if(document.getElementById('export-button')) return false; const f=[...document.querySelectorAll('.menubar-btn')].find(b=>b.textContent==='File'); f.click(); await new Promise(r=>setTimeout(r,200)); const i=[...document.querySelectorAll('[role=menu] [role^=menuitem]')].find(x=>x.textContent.includes('Export')); const off=!!i&&i.disabled; document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'})); f.click(); return off})()`
       )
     )
 

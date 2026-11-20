@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
-  DRAWER_WIDTH,
+  DRAWER_WIDTH_DEFAULT,
   LAYERS_SPLIT_MAX,
   LAYERS_SPLIT_MIN,
   RAIL_WIDTH,
@@ -61,28 +61,41 @@ describe('layout rules', () => {
     expect(clampSidebarWidth(520, 600)).toBe(SIDEBAR_MIN) // the minimum still wins
   })
 
-  it('collapses the tool drawer on narrower windows', () => {
-    expect(drawerStartsOpen(1280)).toBe(false)
-    expect(drawerStartsOpen(1440)).toBe(true)
+  it('the tool drawer starts open only where it docks (≥ 1600 px, B3)', () => {
+    expect(drawerStartsOpen(1440)).toBe(false)
+    expect(drawerStartsOpen(1599)).toBe(false)
+    expect(drawerStartsOpen(1600)).toBe(true)
   })
 
-  it('leaves the canvas a usable width at the minimum and the default laptop window size', () => {
-    // The drawer starts collapsed below 1360 px, so these are the real layouts.
+  it('leaves the canvas a usable width at the minimum, the Windows target and a roomy window', () => {
     const min = { drawerOpen: drawerStartsOpen(1100), sidebarWidth: SIDEBAR_MAX, hasProject: true }
-    expect(workspaceWidth(1100, min)).toBeGreaterThanOrEqual(500)
-    const laptop = { drawerOpen: drawerStartsOpen(1280), sidebarWidth: 320, hasProject: true }
-    expect(workspaceWidth(1280, laptop)).toBeGreaterThanOrEqual(850)
+    expect(workspaceWidth(1100, min)).toBeGreaterThanOrEqual(520)
+    // A floating drawer covers the canvas instead of taking width.
+    expect(workspaceWidth(1426, { drawerOpen: true, sidebarWidth: 300, hasProject: true })).toBe(
+      1426 - RAIL_WIDTH - 300
+    )
+    const roomy = { drawerOpen: true, sidebarWidth: 340, hasProject: true }
+    expect(workspaceWidth(1920, roomy)).toBe(1920 - RAIL_WIDTH - DRAWER_WIDTH_DEFAULT - 340)
     expect(workspaceWidth(1100, { drawerOpen: false, sidebarWidth: 320, hasProject: false })).toBe(
       1100 - RAIL_WIDTH
     )
-    expect(DRAWER_WIDTH).toBeGreaterThan(0)
   })
 })
 
 describe('drawer auto-collapse', () => {
-  it('collapses an open drawer only when the canvas would be cramped', () => {
-    expect(shouldAutoCollapseDrawer(1100, true, 320)).toBe(true)
-    expect(shouldAutoCollapseDrawer(1280, true, 320)).toBe(false)
+  it('collapses a DOCKED drawer only when the canvas would be cramped; a floating one never takes width', () => {
+    // At the docking threshold even the widest drawer and right column leave the minimum canvas width…
+    expect(
+      workspaceWidth(1600, {
+        drawerOpen: true,
+        sidebarWidth: SIDEBAR_MAX,
+        hasProject: true,
+        drawerWidth: 360
+      })
+    ).toBeGreaterThanOrEqual(520)
+    expect(shouldAutoCollapseDrawer(1600, true, SIDEBAR_MAX, 360)).toBe(false)
+    expect(shouldAutoCollapseDrawer(1920, true, 340)).toBe(false)
+    expect(shouldAutoCollapseDrawer(1100, true, 320)).toBe(false)
     expect(shouldAutoCollapseDrawer(1100, false, 320)).toBe(false)
   })
   it('a collapsed drawer never reopens by this rule (growing the window does nothing)', () => {
@@ -102,6 +115,7 @@ describe('command model', () => {
       'file.importDslr',
       'file.new',
       'file.open',
+      'help.shortcuts',
       // Appearance is a setting of this computer (B2, ADR-055), not of a project.
       'view.densityComfortable',
       'view.densityCompact',
@@ -137,7 +151,7 @@ describe('command model', () => {
   it('every menu entry is a known command and no diagnostic command is exposed', () => {
     for (const m of MENUS) for (const i of m.items) if (i !== '-') expect(COMMANDS[i]).toBeDefined()
     const labels = MENUS.flatMap((m) => m.items).map((i) => (i === '-' ? '' : COMMANDS[i].label))
-    expect(labels.join(' ').toLowerCase()).not.toMatch(/sample|devtools|debug/)
+    expect(labels.join(' ').toLowerCase()).not.toMatch(/sample project|devtools|debug/)
   })
 })
 
@@ -168,26 +182,23 @@ describe('welcome state', () => {
 })
 
 describe('tool rail state', () => {
-  it('clicking the active tool toggles the drawer; another available tool opens it', () => {
-    expect(nextToolState({ tool: 'design', open: true }, 'design')).toEqual({
-      tool: 'design',
+  it('clicking the active category toggles the drawer; another category opens it', () => {
+    expect(nextToolState({ tool: 'elements', open: true }, 'elements')).toEqual({
+      tool: 'elements',
       open: false
     })
-    expect(nextToolState({ tool: 'design', open: false }, 'design')).toEqual({
-      tool: 'design',
+    expect(nextToolState({ tool: 'elements', open: false }, 'elements')).toEqual({
+      tool: 'elements',
+      open: true
+    })
+    expect(nextToolState({ tool: 'elements', open: true }, 'colors')).toEqual({
+      tool: 'colors',
       open: true
     })
   })
 
-  it('planned tools never change state', () => {
-    const cur = { tool: 'design' as const, open: false }
-    for (const t of TOOLS.filter((x) => x.status === 'planned'))
-      expect(nextToolState(cur, t.id)).toBe(cur)
-  })
-
-  it('planned tools carry an honest note', () => {
-    for (const t of TOOLS.filter((x) => x.status === 'planned'))
-      expect(t.note).toMatch(/later phase/)
+  it('the labelled rail is Elements, Text, Photos, Uploads, Colors (B1)', () => {
+    expect(TOOLS.map((t) => t.label)).toEqual(['Elements', 'Text', 'Photos', 'Uploads', 'Colors'])
   })
 })
 

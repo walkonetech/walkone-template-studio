@@ -48,11 +48,14 @@ const check = (name, ok, detail) => {
       const issues = []
       if (m.dsw > m.iw || m.dsh > m.ih) issues.push('page overflow')
       if (m.status.sw > m.status.cw + 1) issues.push('status bar crowded')
-      if (m.head.sw > m.head.cw + 1) issues.push('layers header clipped')
+      if (m.head && m.head.sw > m.head.cw + 1) issues.push('layers header clipped')
       if (m.top.sw > m.top.cw + 1) issues.push('top bar clipped')
       if (m.ws.w < 500) issues.push('workspace < 500')
       if (m.side.r > m.iw + 1) issues.push('sidebar off-screen')
-      if (m.layers.h < 150 || m.props.h < 150) issues.push('pane < 150')
+      // B3: below 860 px tall Properties and Layers are tabs (one pane on screen, the whole column); above, they stack.
+      if (m.layers && m.props) {
+        if (m.layers.h < 150 || m.props.h < 150) issues.push('pane < 150')
+      } else if ((m.layers ?? m.props)?.h < 300) issues.push('tab pane < 300')
       // the document title must not collide with the left or right groups
       if (m.docTitle.l < m.left.r - 1 || m.docTitle.r > m.right.l + 1) issues.push('title collides')
       zooms.push(parseInt(m.zoom, 10))
@@ -81,8 +84,9 @@ const check = (name, ok, detail) => {
     }
     const m = await measure()
     check(
-      'minimum width with the drawer opened by the user still leaves a usable canvas (≥ 440 px)',
-      m.ws.w >= 440,
+      'minimum width with the drawer opened by the user: it floats over the canvas (B3), which keeps ≥ 520 px',
+      m.ws.w >= 520 &&
+        (await S(`document.querySelector('.tooldrawer')?.dataset.mode === 'floating'`)),
       Math.round(m.ws.w)
     )
     // Widest allowed sidebar at the minimum width is capped by the share rule
@@ -102,9 +106,9 @@ const check = (name, ok, detail) => {
     await sleep(300)
     const f =
       await S(`(()=>{const cs=(sel,p)=>{const e=document.querySelector(sel); return e?getComputedStyle(e)[p]:null}; return {
-      railDisabled: cs(".toolrail-btn[aria-disabled=true]","color"),
-      railCursor: cs(".toolrail-btn[aria-disabled=true]","cursor"),
-      railAria: document.querySelector(".toolrail-btn[aria-disabled=true]").getAttribute("aria-disabled"),
+      railDisabledCount: document.querySelectorAll(".toolrail-btn[aria-disabled=true], .toolrail-btn:disabled").length,
+      railIdle: cs(".toolrail-btn:not(.active)","color"),
+      railText2: (()=>{const p=document.createElement('span'); p.style.color='var(--c-text-2)'; document.body.appendChild(p); const v=getComputedStyle(p).color; p.remove(); return v})(),
       xTag: cs(".compact-num label","color"),
       labelToken: (()=>{const p=document.createElement('span'); p.style.color='var(--c-text-label)'; document.body.appendChild(p); const v=getComputedStyle(p).color; p.remove(); return v})(),
       disabledToken: (()=>{const p=document.createElement('span'); p.style.color='var(--c-text-disabled)'; document.body.appendChild(p); const v=getComputedStyle(p).color; p.remove(); return v})(),
@@ -112,9 +116,9 @@ const check = (name, ok, detail) => {
       rangeHeight: cs(".ui-range","height"),
       addColor: cs(".panel-actions .add-btn","color")}})()`)
     check(
-      'disabled rail tools are dimmer than enabled ones but not near-invisible, cursor and aria-disabled kept',
-      // "not near-invisible": not the theme's disabled-text colour (B2: read from the token, was the dark literal).
-      f.railAria === 'true' && f.railCursor === 'default' && f.railDisabled !== f.disabledToken,
+      'rail (B3): no disabled placeholder categories; idle categories use the secondary text colour, never the disabled one',
+      // B2 amendment: no disabled future-action placeholders. (Was: disabled Templates/Photos tools readable.)
+      f.railDisabledCount === 0 && f.railIdle === f.railText2 && f.railIdle !== f.disabledToken,
       f
     )
     check(

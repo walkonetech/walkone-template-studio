@@ -99,7 +99,7 @@ const stagePixelsDiffer = async (c, fn) => {
       await chip(c)
     )
     const safeBtn = await J(c)(
-      `(()=>{const b=document.querySelector('button[aria-label="Safe areas"]'); return b?{disabled:b.disabled, pressed:b.getAttribute('aria-pressed')}:null})()`
+      `(()=>{const b=document.querySelector('button[aria-label="Safe areas"]'); return b?{disabled:b.disabled||b.getAttribute('aria-disabled')==='true', pressed:b.getAttribute('aria-pressed')}:null})()`
     )
     const m0 = await menuItem(c, 'view', 'Safe areas')
     await escapeMenu(c)

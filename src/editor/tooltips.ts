@@ -54,14 +54,33 @@ export const TIPS = {
     label: 'Choose photo…',
     hint: 'Use a photo from your computer as the sample. It is only a preview and is not saved in the project.'
   },
-  // tool rail
-  toolDesign: {
-    label: 'Design',
-    hint: 'Add photo placeholders, text and shapes; set the background'
+  layersMore: {
+    label: 'More layer actions',
+    hint: 'Duplicate, group, stacking order, delete and the Layers keyboard shortcuts'
   },
-  toolTemplates: { label: 'Templates', hint: 'Template gallery arrives in a later phase' },
-  toolPhotos: { label: 'Photos', hint: 'Sample photo library arrives in a later phase' },
-  toolAssets: { label: 'Assets', hint: 'Import and manage the images used in this project' }
+  // canvas-state bar (view only: none of these change the design)
+  samplePhotos: {
+    label: 'Sample photos',
+    hint: 'Show example guest photos inside the photo slots. View only: never saved or exported.'
+  },
+  safeAreas: {
+    label: 'Safe areas',
+    hint: 'Show where the printer may trim or cut. View only: never printed.'
+  },
+  safeAreasNoProfile: {
+    label: 'Safe areas',
+    hint: 'Safe areas need an output profile. Choose one with the Output button in the status bar.'
+  },
+  overflow: {
+    label: 'Overflow',
+    hint: 'Show artwork that extends past the edge of the print, or hide it to see the print as it will be cut'
+  },
+  checks: {
+    label: 'Checks',
+    hint: 'What to fix or know before you export: missing fonts, photo numbers, safe areas'
+  },
+  closeDrawer: { label: 'Close', hint: 'Close this drawer' },
+  editInDesign: { label: 'Edit in Design', hint: 'Go back to the design to make changes' }
 } as const satisfies Record<string, Tip>
 
 export type TipId = keyof typeof TIPS

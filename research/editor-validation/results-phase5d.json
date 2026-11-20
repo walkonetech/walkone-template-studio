@@ -8,7 +8,7 @@
       "ok": true,
       "detail": {
         "rows": 60,
-        "openMs": 781
+        "openMs": 765
       }
     },
     {
@@ -64,9 +64,9 @@
         },
         "invDbg": {
           "drawer": true,
-          "bg": true,
+          "bg": false,
           "invHtml": "<section aria-label=\"Project fonts\" data-testid=\"font-inventory\"><h3 class=\"section-heading\">Fonts in this project</h3><p class=\"field-note\" data-testid=\"font-summary\">1 font used, 1 missing</p><ul class=\"font-inventory\"><li class=\"font-inv-row missing\"><span class=\"font-inv-state\"><svg xmlns=\"http:",
-          "tool": ["Design"]
+          "tool": ["Text"]
         }
       }
     },
@@ -143,7 +143,7 @@
           [255, 255, 255, 255]
         ],
         "photo": {
-          "id": "f95b7b54-3fe1-474a-abd9-dee2ef8588fb",
+          "id": "30b62fd8-67ce-4d7e-bcd0-caed2e732a40",
           "type": "photo",
           "name": "Photo 1",
           "x": 100,
@@ -155,7 +155,7 @@
             "thickness": 40,
             "color": {
               "kind": "palette",
-              "paletteColorId": "577ae69e-c578-40cd-9a52-e9eab780f13e"
+              "paletteColorId": "0c9652fb-c398-4550-91a6-d48d3660e8c6"
             }
           },
           "locked": false
@@ -212,7 +212,7 @@
       "name": "17 \"Add color\" creates a custom palette entry with a stable id",
       "ok": true,
       "detail": {
-        "id": "22c63b04-8d8f-47c6-b87d-61d701ff0fcf",
+        "id": "949d06d7-71eb-495c-a90a-d5a2784d205c",
         "role": "custom",
         "name": "Color 1",
         "value": "#b76e79"

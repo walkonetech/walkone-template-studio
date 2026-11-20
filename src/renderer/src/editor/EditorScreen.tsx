@@ -1,11 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
 import { imageKey } from '@canvas/assets/imageCache'
 import { renderOutputToCanvas, renderProjectToCanvas } from '@canvas/rendering/renderProject'
-import { SIDEBAR_MAX, SIDEBAR_MIN } from '@editor/layout'
+import {
+  SIDEBAR_MAX,
+  SIDEBAR_MIN,
+  drawerMode,
+  rightColumnLayout,
+  sidebarWidthFor
+} from '@editor/layout'
 import { selectViewMode } from '@editor/store'
 import { EditorCanvas } from './EditorCanvas'
 import { PrintPreviewCanvas } from './PrintPreviewCanvas'
-import { WorkspaceModeSwitch } from './WorkspaceModeSwitch'
+import { CanvasStateBar } from './CanvasStateBar'
+import { ShortcutsDialog } from './ShortcutsDialog'
 import { CropBar } from './CropBar'
 import { loadFontCatalog } from './fontCatalog'
 import { editorStore, imageCache, useEditor } from './editorStore'
@@ -27,15 +34,22 @@ import { TopBar } from './TopBar'
 import { Welcome } from './Welcome'
 import { useEditorKeyboard } from './useEditorKeyboard'
 import { Splitter } from '../ui/Splitter'
+import { Tabs } from '../ui/Tabs'
 
 /**
- * Right-hand column: Layers above Properties (both stay visible so selecting and editing never needs a tab switch),
- * with a draggable/keyboard splitter between them and another on the column's left edge for its width. Sizes are UI
- * state only (layoutStore): resizing never touches the project, history or autosave.
+ * Right-hand column (B1): Properties ABOVE Layers with a draggable/keyboard splitter on windows at least 860 CSS px
+ * tall; Properties | Layers tabs on shorter ones, so neither is squeezed to an unusable height. Its width follows the
+ * window tier (340 / 300 / 280 px) until the user resizes it. Sizes and the chosen tab are UI state of this computer
+ * (layoutStore): resizing or switching never touches the project, history or autosave.
  */
 function Sidebar(): React.JSX.Element {
-  const width = useLayout((s) => s.sidebarWidth)
+  const stored = useLayout((s) => s.sidebarWidth)
+  const viewport = useLayout((s) => s.viewport)
   const split = useLayout((s) => s.layersSplit)
+  const tab = useLayout((s) => s.rightTab)
+  const layerCount = useEditor((s) => s.project?.layers.length ?? 0)
+  const width = sidebarWidthFor(stored, viewport.width)
+  const layout = rightColumnLayout(viewport.height)
   const column = useRef<HTMLDivElement>(null)
   const [height, setHeight] = useState(600)
   useEffect(() => {
@@ -57,22 +71,51 @@ function Sidebar(): React.JSX.Element {
         invert
         onChange={(w) => layoutStore.getState().setSidebarWidth(w)}
       />
-      <aside className="sidebar" aria-label="Layers and properties" style={{ width }} ref={column}>
-        <div className="sidebar-pane" style={{ flex: `${split} 1 0` }}>
-          <LayersPanel />
-        </div>
-        <Splitter
-          orientation="horizontal"
-          label="Resize Layers and Properties"
-          value={split * height}
-          min={0}
-          max={height}
-          invert={false}
-          onChange={(px) => layoutStore.getState().setLayersSplit(px / height)}
-        />
-        <div className="sidebar-pane" style={{ flex: `${1 - split} 1 0` }}>
-          <PropertiesInspector />
-        </div>
+      <aside
+        className={`sidebar ${layout}`}
+        aria-label="Properties and layers"
+        style={{ width }}
+        ref={column}
+        data-region="sidebar"
+        data-layout={layout}
+      >
+        {layout === 'stacked' ? (
+          <>
+            <div className="sidebar-pane properties-pane" style={{ flex: `${1 - split} 1 0` }}>
+              <PropertiesInspector />
+            </div>
+            <Splitter
+              orientation="horizontal"
+              label="Resize Layers and Properties"
+              value={(1 - split) * height}
+              min={0}
+              max={height}
+              invert={false}
+              onChange={(px) => layoutStore.getState().setLayersSplit(1 - px / height)}
+            />
+            <div className="sidebar-pane layers-pane" style={{ flex: `${split} 1 0` }}>
+              <LayersPanel />
+            </div>
+          </>
+        ) : (
+          <Tabs
+            label="Side panel"
+            value={tab}
+            onChange={(t) => layoutStore.getState().setRightTab(t)}
+            tabs={[
+              { value: 'properties', label: 'Properties' },
+              {
+                value: 'layers',
+                label: 'Layers',
+                badge: <span className="ui-count">{layerCount}</span>
+              }
+            ]}
+          >
+            <div className="sidebar-pane">
+              {tab === 'properties' ? <PropertiesInspector /> : <LayersPanel />}
+            </div>
+          </Tabs>
+        )}
       </aside>
     </>
   )
@@ -126,6 +169,7 @@ export function EditorScreen(): React.JSX.Element {
   useEditorKeyboard()
   const project = useEditor((s) => s.project)
   const viewMode = useEditor(selectViewMode)
+  const viewportWidth = useLayout((s) => s.viewport.width)
 
   // Main-process requests (document state for close/quit protection, save-before-close) and startup recovery.
   useEffect(() => {
@@ -158,30 +202,35 @@ export function EditorScreen(): React.JSX.Element {
     })
   }, [])
 
+  const mode = drawerMode(viewportWidth)
   return (
-    <div className="editor">
+    <div className="editor" data-has-project={project ? 'true' : 'false'}>
       <RecoveryDialog />
       <NewProjectDialog />
       <ExportDialog />
       <DslrImportDialog />
       <OutputProfileDialog />
+      <ShortcutsDialog />
       <TopBar />
       <div className="editor-body">
         {project && <ToolRail />}
-        {project && <ToolDrawer />}
-        <main className="workspace" aria-label="Canvas workspace">
-          {project ? (
-            viewMode === 'preview' ? (
-              <PrintPreviewCanvas />
+        {project && mode === 'docked' && <ToolDrawer mode="docked" />}
+        <div className="canvas-column">
+          {project && <CanvasStateBar />}
+          <main className="workspace" aria-label="Canvas workspace" data-region="canvas">
+            {project ? (
+              viewMode === 'preview' ? (
+                <PrintPreviewCanvas />
+              ) : (
+                <EditorCanvas />
+              )
             ) : (
-              <EditorCanvas />
-            )
-          ) : (
-            <Welcome />
-          )}
-          {project && <WorkspaceModeSwitch />}
-          {project && <CropBar />}
-        </main>
+              <Welcome />
+            )}
+            {project && <CropBar />}
+            {project && mode === 'floating' && <ToolDrawer mode="floating" />}
+          </main>
+        </div>
         {project && <Sidebar />}
       </div>
       <StatusBar />

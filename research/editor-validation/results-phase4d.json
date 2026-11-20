@@ -7,12 +7,12 @@
   {
     "name": "fit zoom grows smoothly with the window (no jumps backwards)",
     "ok": true,
-    "detail": [15, 16, 16, 17, 17, 18, 19, 19, 20, 20, 21, 21, 22, 22, 23, 23, 24, 25, 25, 26, 26]
+    "detail": [14, 14, 15, 16, 16, 17, 17, 18, 18, 19, 19, 20, 20, 21, 22, 22, 23, 23, 24, 24, 25]
   },
   {
-    "name": "minimum width with the drawer opened by the user still leaves a usable canvas (≥ 440 px)",
+    "name": "minimum width with the drawer opened by the user: it floats over the canvas (B3), which keeps ≥ 520 px",
     "ok": true,
-    "detail": 475
+    "detail": 739
   },
   {
     "name": "sidebar growth is capped (≤ 45% of the window) so the canvas cannot be squeezed out",
@@ -20,12 +20,12 @@
     "detail": 495
   },
   {
-    "name": "disabled rail tools are dimmer than enabled ones but not near-invisible, cursor and aria-disabled kept",
+    "name": "rail (B3): no disabled placeholder categories; idle categories use the secondary text colour, never the disabled one",
     "ok": true,
     "detail": {
-      "railDisabled": "rgb(122, 125, 138)",
-      "railCursor": "default",
-      "railAria": "true",
+      "railDisabledCount": 0,
+      "railIdle": "rgb(71, 74, 86)",
+      "railText2": "rgb(71, 74, 86)",
       "xTag": "rgb(79, 82, 96)",
       "labelToken": "rgb(79, 82, 96)",
       "disabledToken": "rgb(163, 165, 174)",

@@ -169,21 +169,21 @@ const sessionAssetFiles = (ud, sid) => {
     check('1 project created (4x6 @600 = 2400x3600)', st.has && st.layers.length === 0)
     const sid = st.session
     check(
-      '2 Assets tool is enabled in the rail',
+      '2 Uploads (B3 rail name for project assets) is enabled in the rail',
       await c.ev(
-        `(()=>{const b=[...document.querySelectorAll('.toolrail-btn')].find(x=>x.textContent.trim()==='Assets'); return !!b && b.getAttribute('aria-disabled')!=='true'})()`
+        `(()=>{const b=[...document.querySelectorAll('.toolrail-btn')].find(x=>x.textContent.trim()==='Uploads'); return !!b && b.getAttribute('aria-disabled')!=='true'})()`
       )
     )
-    await clickByLabel(c, 'Assets')
+    await c.ev(`document.querySelector('[data-tool=uploads]').click(); 1`)
     await sleep(300)
     check(
-      '2b Assets drawer opens with Import files… and an empty state',
+      '2b Uploads drawer opens with Upload images… and an empty state',
       await c.ev(
         `!!document.querySelector('[data-testid=assets-drawer]') && !!document.querySelector('.assets-empty')`
       )
     )
     await c.shot(path.join(shotsDir, '5a-01-assets-drawer-empty.png'))
-    await clickByText(c, 'Import files…')
+    await clickByText(c, 'Upload images…')
     await sleep(900)
     st = await state(c)
     check(
@@ -352,9 +352,12 @@ const sessionAssetFiles = (ud, sid) => {
     )
 
     // ---- 12-13: multi-import (transparent PNG, JPEG, WebP, SVG, large JPEG) + alpha pixel sampling
+    // B3: at this window size the Uploads drawer floats and closes on a canvas click; make sure it is open.
+    if (!(await c.ev(`!!document.querySelector('[data-testid=assets-drawer]')`)))
+      await c.ev(`document.querySelector('[data-tool=uploads]').click(); 1`)
+    await sleep(250)
     const tImp = Date.now()
-    await clickByText(c, 'Import files…')
-    // the drawer may have been closed by reopening; make sure it is open
+    await clickByText(c, 'Upload images…')
     await sleep(200)
     for (let i = 0; i < 40 && (await state(c)).assets.length < 6; i++) await sleep(250)
     const importMs = Date.now() - tImp
@@ -449,8 +452,9 @@ const sessionAssetFiles = (ud, sid) => {
         !near(bgPx.px[3], [0, 255, 0, 255], 20),
       bgPx.px
     )
-    // fit modes from the Design drawer
-    await clickByLabel(c, 'Design')
+    // fit modes from the canvas background controls (B3: in the Colors drawer)
+    if (!(await c.ev(`!!document.querySelector('.tooldrawer[data-tool=colors]')`)))
+      await c.ev(`document.querySelector('[data-tool=colors]').click(); 1`)
     await sleep(250)
     await c.ev(
       `(()=>{const l=[...document.querySelectorAll('[data-testid=canvas-background] label')].find(x=>x.textContent.trim()==='Image fit'); const sel=document.getElementById(l.htmlFor); const set=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set; set.call(sel,'contain'); sel.dispatchEvent(new Event('change',{bubbles:true})); return 1})()`
@@ -478,14 +482,14 @@ const sessionAssetFiles = (ud, sid) => {
     await c.shot(path.join(shotsDir, '5a-05-background.png'))
 
     // ---- 16-17: dedup
-    await clickByLabel(c, 'Assets')
+    await c.ev(`document.querySelector('[data-tool=uploads]').click(); 1`)
     await sleep(200)
     if (!(await c.ev(`!!document.querySelector('[data-testid=assets-drawer]')`)))
-      await clickByLabel(c, 'Assets')
+      await c.ev(`document.querySelector('[data-tool=uploads]').click(); 1`)
     await sleep(200)
     const filesBefore = sessionAssetFiles(ud, sid2).length
     const before = (await state(c)).assets.length
-    await clickByText(c, 'Import files…')
+    await clickByText(c, 'Upload images…')
     await sleep(900)
     st = await state(c)
     check(
@@ -497,7 +501,7 @@ const sessionAssetFiles = (ud, sid) => {
     )
 
     // ---- 18-19: error model, remove unused / used
-    await clickByText(c, 'Import files…')
+    await clickByText(c, 'Upload images…')
     await sleep(900)
     st = await state(c)
     check(
@@ -586,11 +590,18 @@ const sessionAssetFiles = (ud, sid) => {
       const added = st.layers[st.layers.length - 1]
       const cx = added.x + added.width / 2
       const cy = added.y + added.height / 2
+      // Drop events carry whole client pixels, so the landing point can be off by up to one SCREEN pixel: at the fit
+      // zoom (~18 %) that is ~5 design px. (B3 moved the canvas under the canvas-state bar, which changed the fit
+      // rounding; the drop math is unit-tested exactly.) Tolerance: 3 design px, or one screen pixel when larger.
+      const zoom =
+        parseInt(await c.ev(`document.getElementById('zoom-label').textContent`), 10) / 100
+      const tol = Math.max(3, Math.ceil(1 / zoom))
       landed.push({
         label,
         cx,
         cy,
-        ok: Math.abs(cx - 1500) <= 3 && Math.abs(cy - 700) <= 3 && st.layers.length === n0 + 1
+        tol,
+        ok: Math.abs(cx - 1500) <= tol && Math.abs(cy - 700) <= tol && st.layers.length === n0 + 1
       })
     }
     check(
@@ -628,10 +639,10 @@ const sessionAssetFiles = (ud, sid) => {
       st.msg
     )
     // dropping on the Assets drawer imports to the library only
-    await clickByLabel(c, 'Assets')
+    await c.ev(`document.querySelector('[data-tool=uploads]').click(); 1`)
     await sleep(200)
     if (!(await c.ev(`!!document.querySelector('[data-testid=assets-drawer]')`)))
-      await clickByLabel(c, 'Assets')
+      await c.ev(`document.querySelector('[data-tool=uploads]').click(); 1`)
     await sleep(250)
     const nC = (await state(c)).layers.length
     const aC = (await state(c)).assets.length

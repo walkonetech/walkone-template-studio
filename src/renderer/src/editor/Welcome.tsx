@@ -1,16 +1,112 @@
-import { FileInput, FilePlus2, FolderOpen, TriangleAlert } from 'lucide-react'
+import {
+  Clock,
+  FolderOpen,
+  Plus,
+  TriangleAlert,
+  Upload,
+  FileText,
+  ChevronRight
+} from 'lucide-react'
 import { useEffect, useState } from 'react'
 import type { RecentProjectItem } from '@shared/ipc'
-import { describeWhen } from '@editor/welcome'
+import { describeWhen, formatPlaceholderSize, recentMeta } from '@editor/welcome'
 import { guarded, runCommand } from './commandRunner'
 import { isDebugSession } from './debugFlag'
-import { editorStore } from './editorStore'
+import { editorStore, useEditor } from './editorStore'
 import { shortcutFor } from './TopBar'
+import { isMac } from './platform'
 import { Button } from '../ui/Button'
+import { Tooltip } from '../ui/Tooltip'
 
 const st = editorStore.getState
 
-/** The no-project state: start something new, open a file, or pick up where you left off. */
+/** Format imagery for the Blank design card (B1): the three print shapes, the strip highlighted. */
+function BlankArt(): React.JSX.Element {
+  return (
+    <span className="start-art formats" aria-hidden="true">
+      {[
+        { label: '2×6', w: 26, h: 76, on: true },
+        { label: '4×6', w: 48, h: 72, on: false },
+        { label: '6×4', w: 72, h: 48, on: false }
+      ].map((f) => (
+        <span key={f.label} className="format">
+          <span
+            className={`format-shape${f.on ? ' on' : ''}`}
+            style={{ width: f.w, height: f.h }}
+          />
+          <span className="format-label">{f.label}</span>
+        </span>
+      ))}
+    </span>
+  )
+}
+
+/** The import metaphor (B1): a template file becoming an editable strip. */
+function ImportArt(): React.JSX.Element {
+  return (
+    <span className="start-art import" aria-hidden="true">
+      <FileText size={22} strokeWidth={1.5} />
+      <ChevronRight size={18} strokeWidth={1.5} />
+      <span className="strip">
+        <span />
+        <span />
+        <span />
+        <i />
+      </span>
+    </span>
+  )
+}
+
+/** A recent project's format, drawn (there is no thumbnail store yet: B3 shows the shape, not the artwork). */
+function RecentArt({ item }: { item: RecentProjectItem }): React.JSX.Element {
+  const size = formatPlaceholderSize(item.print)
+  return (
+    <span className="recent-art" aria-hidden="true">
+      <span className={`recent-shape${item.print ? '' : ' unknown'}`} style={size} />
+    </span>
+  )
+}
+
+/**
+ * Banner for recovery copies the user put off with "Decide later" (B1). It never restores anything itself: Review
+ * shows the same recovery choices again (Recover / Discard / Decide later); Not now hides the banner until next launch.
+ */
+function RecoveryBanner(): React.JSX.Element | null {
+  const candidates = useEditor((s) => s.recovery.candidates)
+  const loaded = useEditor((s) => s.recovery.loaded)
+  const dismissed = useEditor((s) => s.recovery.dismissed)
+  const [hidden, setHidden] = useState(false)
+  if (!loaded || !dismissed || hidden || candidates.length === 0) return null
+  const first = candidates[0]
+  const text =
+    candidates.length === 1 && first ? (
+      <>
+        <strong>Unsaved changes to “{first.projectName || 'Untitled project'}” were kept</strong>{' '}
+        from {describeWhen(first.lastWorkingSaveAt)}.
+      </>
+    ) : (
+      <>
+        <strong>Unsaved work from {candidates.length} projects was kept.</strong>
+      </>
+    )
+  return (
+    <div className="start-banner" role="status" data-testid="recovery-banner">
+      <Clock size={17} aria-hidden="true" />
+      <span className="grow">{text}</span>
+      <Button size="sm" onClick={() => st().reviewRecovery()}>
+        Review
+      </Button>
+      <Button size="sm" variant="ghost" onClick={() => setHidden(true)}>
+        Not now
+      </Button>
+    </div>
+  )
+}
+
+/**
+ * The Start screen (B1): Blank design and Import dslrBooth as visual cards, Open project…, recent projects as cards,
+ * and recovered work as a banner. Guided Design is not shown until it works (Phase 7C).
+ */
 export function Welcome(): React.JSX.Element {
   const [recents, setRecents] = useState<RecentProjectItem[] | null>(null)
   useEffect(() => {
@@ -22,62 +118,117 @@ export function Welcome(): React.JSX.Element {
       live = false
     }
   }, [])
+  const openKeys = shortcutFor('file.open')
   return (
     <section className="welcome" aria-labelledby="welcome-title">
       <div className="welcome-inner">
         <div className="welcome-head">
-          <span className="brand-mark lg" aria-hidden="true" />
-          <h1 id="welcome-title">WalkOne Template Studio</h1>
-          <p>Build print templates for your photo booth.</p>
+          <div>
+            <h1 id="welcome-title">Start a template</h1>
+            <p>Design a print template for dslrBooth, or pick up where you left off.</p>
+          </div>
+          <div className="welcome-actions">
+            {isDebugSession() && (
+              <Button
+                variant="ghost"
+                onClick={() => void guarded('replace', () => st().createSample())()}
+              >
+                New sample project
+              </Button>
+            )}
+            <Tooltip
+              label="Open project"
+              hint="Open a saved .boothproject file"
+              shortcut={openKeys}
+            >
+              <Button
+                size="lg"
+                icon={FolderOpen}
+                id="open-project"
+                aria-label="Open project…"
+                aria-keyshortcuts={isMac() ? 'Meta+O' : 'Control+O'}
+                onClick={() => runCommand('file.open')}
+              >
+                Open project…
+                <kbd className="btn-kbd" aria-hidden="true">
+                  {openKeys}
+                </kbd>
+              </Button>
+            </Tooltip>
+          </div>
         </div>
-        <div className="welcome-actions">
-          <Button variant="primary" icon={FilePlus2} onClick={() => runCommand('file.new')}>
-            New project
-          </Button>
-          <Button icon={FolderOpen} onClick={() => runCommand('file.open')}>
-            Open project…
-          </Button>
-          <Button
-            icon={FileInput}
-            title="Turn a dslrBooth template ZIP into a new project you can edit"
+        <RecoveryBanner />
+        <div className="start-cards">
+          <button
+            type="button"
+            className="start-card"
+            id="start-blank"
+            aria-describedby="start-blank-desc"
+            onClick={() => runCommand('file.new')}
+          >
+            <BlankArt />
+            <span className="start-card-title">
+              <Plus size={20} aria-hidden="true" />
+              Blank design
+            </span>
+            <span className="start-card-desc" id="start-blank-desc">
+              Choose a print size and design it your way in the full editor.
+            </span>
+          </button>
+          <button
+            type="button"
+            className="start-card"
+            id="start-import"
+            aria-describedby="start-import-desc"
             onClick={() => runCommand('file.importDslr')}
           >
-            Import from dslrBooth…
-          </Button>
-          {isDebugSession() && (
-            <Button
-              variant="ghost"
-              onClick={() => void guarded('replace', () => st().createSample())()}
-            >
-              New sample project
-            </Button>
-          )}
+            <ImportArt />
+            <span className="start-card-title">
+              <Upload size={20} aria-hidden="true" />
+              Import dslrBooth
+            </span>
+            <span className="start-card-desc" id="start-import-desc">
+              Turn a dslrBooth template (.zip) into a project you can edit.
+            </span>
+          </button>
         </div>
-        <p className="welcome-hint">
-          New {shortcutFor('file.new')} · Open {shortcutFor('file.open')}
-        </p>
-        <h2 className="section-heading">Recent projects</h2>
+        <h2 className="start-heading">Recent</h2>
         {recents === null ? null : recents.length === 0 ? (
           <p className="welcome-empty">Projects you open or save will appear here.</p>
         ) : (
           <ul className="recent-grid" aria-label="Recent projects">
             {recents.map((r) => (
-              <li key={r.path}>
+              <li key={r.path} className={r.exists ? '' : 'missing'}>
                 <button
                   type="button"
                   className="recent-card"
                   disabled={!r.exists}
                   onClick={() => void guarded('replace', () => st().openRecent(r.path))()}
                 >
+                  <RecentArt item={r} />
                   <span className="recent-name">{r.name}</span>
-                  {r.exists ? (
-                    <span className="recent-when">Opened {describeWhen(r.lastOpenedAt)}</span>
-                  ) : (
-                    <span className="recent-missing">
-                      <TriangleAlert size={12} aria-hidden="true" /> File not found
-                    </span>
-                  )}
+                  <span className="recent-when">{recentMeta(r)}</span>
                 </button>
+                {!r.exists && (
+                  <span className="recent-missing">
+                    <span>
+                      <TriangleAlert size={14} aria-hidden="true" /> File not found
+                    </span>
+                    <Tooltip
+                      label="Locate…"
+                      hint="The file was moved or renamed. Find it and open it from its new place."
+                    >
+                      <button
+                        type="button"
+                        className="link"
+                        aria-label={`Locate ${r.name}…`}
+                        onClick={() => runCommand('file.open')}
+                      >
+                        Locate…
+                      </button>
+                    </Tooltip>
+                  </span>
+                )}
               </li>
             ))}
           </ul>

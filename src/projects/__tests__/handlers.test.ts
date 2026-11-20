@@ -84,8 +84,11 @@ describe('project IPC handlers', () => {
       'exists',
       'lastOpenedAt',
       'name',
-      'path'
+      'path',
+      'print'
     ])
+    // Only the print size (inches + DPI) for the Start screen card: never the project contents.
+    expect(Object.keys(recents.value[0]!.print!).sort()).toEqual(['dpi', 'height', 'width'])
     const reopened = await handlers.openRecent({ path: recents.value[0]!.path })
     expect(reopened).toMatchObject({
       status: 'ok',

@@ -1,11 +1,17 @@
 # Phase 7B · B1 — Editor refresh mockup review
 
-_Status: **approved by the owner with minor implementation amendments** (2026-11-19, §0a). No third mockup round. Implementation has started with B2 (design-system foundation, ADR-055); the mockups themselves stay design-only and are not wired into the app._
+_Status: **approved by the owner with minor implementation amendments** (2026-11-19, §0a). No third mockup round. Implemented so far: B2 (design-system foundation, ADR-055; Windows-validated at `d339444`) and **B3 (Start screen + editor shell, 2026-11-19; §0b)**. The mockups themselves stay design-only and are not wired into the app._
 
 **Mockups:** [`design/phase-7b-b1/index.html`](../design/phase-7b-b1/index.html). It is a standalone page: open it in any browser. It has no app imports or app state and is not wired into the app. Rendered PNGs of every mockup are in [`design/phase-7b-b1/png/`](../design/phase-7b-b1/png/).
 **Architecture source:** [PHASE_7A_UX_ARCHITECTURE.md](PHASE_7A_UX_ARCHITECTURE.md). B1 shows that architecture and does not restate it. Section references (§) below point to it.
 
 All sample content is fictional: Ava & Theo Wedding, Northfield Holiday Party and the other names. Sample photos are abstract drawings.
+
+## 0b. B3 implementation status (2026-11-19) — owner visual checkpoint required before B4
+
+The running app now follows these mockups for **Start (01), the editor default (02), text and photo slot selected (03/04, shell only), the short Windows window (05), Print Preview + safe areas (06, shell only), Dark (11a) and Compact (11b)**: hierarchy, spacing, labelled rail, docked/floating drawer, top bar, canvas-state bar, Properties/Layers stacking and tabs, Light + Comfortable defaults. Actual-app screenshots: `research/editor-validation/shots/7b-b3-*.png` (made by `validate-7b-b3.js`, git-ignored).
+**Deliberate differences from the mockups (practical, recorded):** recent-project cards draw the print format instead of the artwork (no thumbnail store yet); no Learn row (no help destinations exist; no dead links); no "Search recent", Settings or Help buttons on the Start screen (Settings is B5; Help is in the menu bar); recovered work still opens the proven recovery dialog at launch, and the B1 banner (Review / Not now) appears after "Decide later"; Elements has no search box (five items) and no Pin button; the Checks button opens a simple read-only list (the Checks panel 07 is B4); Properties content (Essentials, colour popover, selection toolbar) is unchanged (B4/B5); the first-run tips (02b) are not built.
+**Not built in B3 (B4/B5):** 02b first-run tips, 07 Checks panel, 08 Export, 09 Printer & cutting, 10 dslrBooth import, 12a/12b Settings, the selection toolbar.
 
 ## 0a. Owner sign-off (2026-11-19)
 

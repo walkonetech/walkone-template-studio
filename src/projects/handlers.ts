@@ -325,11 +325,14 @@ export function createProjectHandlers(deps: HandlerDeps) {
     recents: (): Promise<IpcResult<RecentProjectItem[]>> =>
       run(async () =>
         ok(
-          (await recents.list()).map(({ path, name, lastOpenedAt, exists }) => ({
+          (await recents.list()).map(({ path, name, lastOpenedAt, exists, print }) => ({
             path,
             name,
             lastOpenedAt,
-            exists
+            exists,
+            ...(print
+              ? { print: { width: print.width, height: print.height, dpi: print.dpi } }
+              : {})
           }))
         )
       )

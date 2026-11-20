@@ -8,11 +8,11 @@
       "ok": true
     },
     {
-      "name": "2 Assets tool is enabled in the rail",
+      "name": "2 Uploads (B3 rail name for project assets) is enabled in the rail",
       "ok": true
     },
     {
-      "name": "2b Assets drawer opens with Import files… and an empty state",
+      "name": "2b Uploads drawer opens with Upload images… and an empty state",
       "ok": true
     },
     {
@@ -20,14 +20,14 @@
       "ok": true,
       "detail": [
         {
-          "id": "dbfa65cd-5b1f-491d-ad7a-cf3236b5f3ae",
+          "id": "e84762c2-fde5-4cf8-8259-0235aa965353",
           "filename": "marble.png",
           "mt": "image/png",
           "w": 1200,
           "h": 1800,
           "alpha": true,
           "bytes": 37581,
-          "path": "assets/dbfa65cd-5b1f-491d-ad7a-cf3236b5f3ae.png"
+          "path": "assets/e84762c2-fde5-4cf8-8259-0235aa965353.png"
         }
       ]
     },
@@ -35,14 +35,14 @@
       "name": "3b metadata: 1200x1800, png, alpha true, size, hash path inside assets/",
       "ok": true,
       "detail": {
-        "id": "dbfa65cd-5b1f-491d-ad7a-cf3236b5f3ae",
+        "id": "e84762c2-fde5-4cf8-8259-0235aa965353",
         "filename": "marble.png",
         "mt": "image/png",
         "w": 1200,
         "h": 1800,
         "alpha": true,
         "bytes": 37581,
-        "path": "assets/dbfa65cd-5b1f-491d-ad7a-cf3236b5f3ae.png"
+        "path": "assets/e84762c2-fde5-4cf8-8259-0235aa965353.png"
       }
     },
     {
@@ -62,7 +62,7 @@
       "ok": true,
       "detail": {
         "marbleLayer": {
-          "id": "10cb4c3a-7283-4ac9-bbb2-abfca832b572",
+          "id": "124ce4fb-0282-4b9b-86e7-e3e7881ef36e",
           "type": "image",
           "name": "marble",
           "x": 600,
@@ -72,7 +72,7 @@
           "rotation": 0,
           "z": 0,
           "locked": false,
-          "assetId": "dbfa65cd-5b1f-491d-ad7a-cf3236b5f3ae",
+          "assetId": "e84762c2-fde5-4cf8-8259-0235aa965353",
           "role": "graphic",
           "fit": "contain"
         },
@@ -83,7 +83,7 @@
       "name": "5b initial size: native 1200x1800 (fits within 80%: 2400x3600 → 1920x2880), centred, no upscale",
       "ok": true,
       "detail": {
-        "id": "10cb4c3a-7283-4ac9-bbb2-abfca832b572",
+        "id": "124ce4fb-0282-4b9b-86e7-e3e7881ef36e",
         "type": "image",
         "name": "marble",
         "x": 600,
@@ -93,7 +93,7 @@
         "rotation": 0,
         "z": 0,
         "locked": false,
-        "assetId": "dbfa65cd-5b1f-491d-ad7a-cf3236b5f3ae",
+        "assetId": "e84762c2-fde5-4cf8-8259-0235aa965353",
         "role": "graphic",
         "fit": "contain"
       }
@@ -111,26 +111,26 @@
       "ok": true,
       "detail": {
         "from": [600, 900],
-        "to": [794.07, 1045.553],
+        "to": [807.493, 1055.62],
         "center": {
-          "x": 711.5,
-          "y": 447
+          "x": 609.5,
+          "y": 471
         },
-        "dbg0": "{\"vp\":{\"width\":815,\"height\":790},\"view\":{\"mode\":\"fit\"},\"sel\":[\"10cb4c3a-7283-4ac9-bbb2-abfca832b572\"],\"canv\":3,\"host\":{\"x\":304,\"y\":52,\"width\":815,\"height\":790,\"top\":52,\"right\":1119,\"bottom\":842,\"left\":304},\"focus\":true}"
+        "dbg0": "{\"vp\":{\"width\":1059,\"height\":742},\"view\":{\"mode\":\"fit\"},\"sel\":[\"124ce4fb-0282-4b9b-86e7-e3e7881ef36e\"],\"canv\":3,\"host\":{\"x\":80,\"y\":100,\"width\":1059,\"height\":742,\"top\":100,\"right\":1139,\"bottom\":842,\"left\":80},\"focus\":true}"
       }
     },
     {
       "name": "6b resize by handle shrinks the layer",
       "ok": true,
       "detail": {
-        "w": 1051.139,
-        "h": 1576.709
+        "w": 1040.88,
+        "h": 1561.32
       }
     },
     {
       "name": "6c rotate by handle changes rotation",
       "ok": true,
-      "detail": 25.138000000000034
+      "detail": 26.78200000000004
     },
     {
       "name": "7 role set to Overlay via the inspector",
@@ -140,7 +140,7 @@
     {
       "name": "7b inspector shows asset filename, source, displayed size and a DPI readout, no paths",
       "ok": true,
-      "detail": "Asset\nmarble.png\nSource\n1200×1800 px\nDisplayed\n1051×1577 px · 1.75×2.63 in\nPrint quality\n685 DPI · Good for print\nType\nimage/png"
+      "detail": "Asset\nmarble.png\nSource\n1200×1800 px\nDisplayed\n1041×1561 px · 1.73×2.6 in\nPrint quality\n692 DPI · Good for print\nType\nimage/png"
     },
     {
       "name": "8 saved into a .boothproject",
@@ -149,7 +149,7 @@
     {
       "name": "8b package contains project.json and exactly the referenced asset",
       "ok": true,
-      "detail": ["project.json", "assets/dbfa65cd-5b1f-491d-ad7a-cf3236b5f3ae.png"]
+      "detail": ["project.json", "assets/e84762c2-fde5-4cf8-8259-0235aa965353.png"]
     },
     {
       "name": "9 closed (no project)",
@@ -184,7 +184,7 @@
       "name": "12b large JPEG metadata read from headers (6000x4000) and import time recorded",
       "ok": true,
       "detail": {
-        "importMs": 210,
+        "importMs": 205,
         "bytes": 17365500
       }
     },
@@ -217,7 +217,7 @@
       "name": "14 Set as background: ONE locked role=background layer 0,0,2400x3600 cover, at the very back",
       "ok": true,
       "detail": {
-        "id": "38712013-3361-40ca-a160-8675734faaea",
+        "id": "dcf2dc8b-7fcb-4019-8cd7-ee909c7f29b3",
         "type": "image",
         "name": "Background",
         "x": 0,
@@ -227,7 +227,7 @@
         "rotation": 0,
         "z": 0,
         "locked": true,
-        "assetId": "dbfa65cd-5b1f-491d-ad7a-cf3236b5f3ae",
+        "assetId": "e84762c2-fde5-4cf8-8259-0235aa965353",
         "role": "background",
         "fit": "cover"
       }
@@ -246,7 +246,7 @@
       "name": "15b background Fit inside → fit=contain, still full canvas box, still one background layer",
       "ok": true,
       "detail": {
-        "id": "38712013-3361-40ca-a160-8675734faaea",
+        "id": "dcf2dc8b-7fcb-4019-8cd7-ee909c7f29b3",
         "type": "image",
         "name": "Background",
         "x": 0,
@@ -256,7 +256,7 @@
         "rotation": 0,
         "z": 0,
         "locked": true,
-        "assetId": "dbfa65cd-5b1f-491d-ad7a-cf3236b5f3ae",
+        "assetId": "e84762c2-fde5-4cf8-8259-0235aa965353",
         "role": "background",
         "fit": "contain"
       }
@@ -307,19 +307,22 @@
         {
           "label": "fit",
           "cx": 1498,
-          "cy": 699,
+          "cy": 695,
+          "tol": 6,
           "ok": true
         },
         {
           "label": "100%",
           "cx": 1500,
           "cy": 700,
+          "tol": 3,
           "ok": true
         },
         {
           "label": "zoomed-out + panned",
           "cx": 1500,
           "cy": 698,
+          "tol": 3,
           "ok": true
         }
       ]
@@ -350,12 +353,12 @@
       "ok": true,
       "detail": [
         {
-          "sessionId": "6602dbb5-3e07-4a7b-8375-f3899236c129",
+          "sessionId": "7ee9d2db-a5ee-4dd1-8848-bb5c4c9ce644",
           "projectName": "Assets Test",
           "originalFileName": "Assets Test.boothproject",
           "neverSaved": false,
-          "lastWorkingSaveAt": "2026-11-19T13:42:27.608Z",
-          "lastPortableSaveAt": "2026-11-19T13:42:14.095Z",
+          "lastWorkingSaveAt": "2026-11-20T00:09:25.349Z",
+          "lastPortableSaveAt": "2026-11-20T00:09:11.548Z",
           "conflict": "none",
           "missingAssets": 0
         }

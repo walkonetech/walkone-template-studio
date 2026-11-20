@@ -99,16 +99,17 @@ async function session(opts, fn) {
         (await c.ev('typeof require + typeof process')) === 'undefinedundefined'
       )
       const w = await a.S(
-        `{h1: document.querySelector('#welcome-title')?.textContent, rail: !!document.querySelector('.toolrail'), side: !!document.querySelector('.sidebar'), canvas: document.querySelectorAll('canvas').length, newBtn: !!(${a.btn('New project')}), openBtn: !!(${a.btn('Open project…')}), recentEmpty: !!document.querySelector('.welcome-empty'), saveDisabled: (${a.btn('Save')}).disabled, sample: !!(${a.btn('New sample project')})}`
+        `{h1: document.querySelector('#welcome-title')?.textContent, rail: !!document.querySelector('.toolrail'), side: !!document.querySelector('.sidebar'), canvas: document.querySelectorAll('canvas').length, newBtn: !!document.getElementById('start-blank'), importBtn: !!document.getElementById('start-import'), openBtn: !!(${a.btn('Open project…')}), recentEmpty: !!document.querySelector('.welcome-empty'), noDocActions: !document.getElementById('save-button') && !document.getElementById('export-button'), guided: /guided/i.test(document.querySelector('.welcome').textContent), sample: !!(${a.btn('New sample project')})}`
       )
       check(
         'welcome appears with no project (no rail, no side panels, no canvas)',
-        w.h1 === 'WalkOne Template Studio' && !w.rail && !w.side && w.canvas === 0,
+        w.h1 === 'Start a template' && !w.rail && !w.side && w.canvas === 0,
         w
       )
       check(
-        'welcome offers New and Open, empty recents message, Save disabled',
-        w.newBtn && w.openBtn && w.recentEmpty && w.saveDisabled
+        'Start screen (B3) offers Blank design, Import dslrBooth and Open project…, an empty recents message, no Guided Design, and no document actions in the top bar',
+        w.newBtn && w.importBtn && w.openBtn && w.recentEmpty && w.noDocActions && !w.guided,
+        w
       )
       await a.shot('4c-01-welcome')
 
@@ -151,8 +152,8 @@ async function session(opts, fn) {
       await c.key('Escape', { code: 'Escape', vk: 27 })
       await sleep(250)
 
-      // New project dialog
-      await a.press('New project')
+      // New project dialog (the Start screen's Blank design card)
+      await a.clickEl(`document.getElementById('start-blank')`)
       await sleep(400)
       const dlg = await a.S(
         `(()=>{const d=document.querySelector('[role=dialog]'); return d&&{modal:d.getAttribute('aria-modal'), title:d.querySelector('h2').textContent, focus:document.activeElement.id!=='' && document.activeElement.tagName, labelled:!!d.getAttribute('aria-labelledby')}})()`
@@ -169,7 +170,7 @@ async function session(opts, fn) {
         'Escape closes the dialog without creating a project',
         (await a.state()).has === false && !(await a.S(`!!document.querySelector('[role=dialog]')`))
       )
-      await a.press('New project')
+      await a.clickEl(`document.getElementById('start-blank')`)
       await sleep(300)
       await c.send('Input.dispatchKeyEvent', {
         type: 'keyDown',
@@ -246,7 +247,7 @@ async function session(opts, fn) {
         'recent project card appears with a relative time and no path',
         card.length === 1 &&
           /Studio Test/.test(card[0].t) &&
-          /Opened (just now|\d+ minutes? ago)/.test(card[0].t) &&
+          /2×6 strip · opened (just now|\d+ minutes? ago)/.test(card[0].t) &&
           !card[0].t.includes(tmp),
         card
       )
@@ -269,11 +270,11 @@ async function session(opts, fn) {
   fs.renameSync(savePath, savePath + '.moved')
   await session({ size: { width: 1440, height: 900 } }, async (a) => {
     const card = await a.S(
-      `[...document.querySelectorAll('.recent-card')].map(x=>({t:x.textContent, dis:x.disabled}))`
+      `[...document.querySelectorAll('.recent-grid > li')].map(x=>({t:x.textContent, dis:x.querySelector('.recent-card').disabled, locate:!!x.querySelector('[aria-label^="Locate"]')}))`
     )
     check(
-      'missing recent file shows "File not found" and is disabled',
-      card.length === 1 && /File not found/.test(card[0].t) && card[0].dis,
+      'missing recent file stays listed with "File not found", is disabled and offers Locate…',
+      card.length === 1 && /File not found/.test(card[0].t) && card[0].dis && card[0].locate,
       card
     )
     await a.shot('4c-04-welcome-missing-recent')
@@ -294,13 +295,21 @@ async function session(opts, fn) {
       await a.press('New sample project')
       await sleep(1200)
       check(
-        'sample project: tool drawer open at 1440 width',
-        await a.S(`!!document.querySelector('.tooldrawer')`)
+        'sample project at 1440 (floating tier, B3): the tool drawer starts closed so the canvas keeps its room',
+        await a.S(`!document.querySelector('.tooldrawer')`)
       )
       check(
-        'tool rail: Design active, Assets enabled (Phase 5A), Templates/Photos disabled with honest tooltips',
+        'labelled rail (B3): Elements, Text, Photos, Uploads, Colors; all real, none pressed while closed',
         await a.S(
-          `(()=>{const b=[...document.querySelectorAll('.toolrail-btn')]; return b.length===4 && b[0].getAttribute('aria-pressed')==='true' && b[3].getAttribute('aria-disabled')!=='true' && b.slice(1,3).every(x=>x.getAttribute('aria-disabled')==='true')})()`
+          `(()=>{const b=[...document.querySelectorAll('.toolrail-btn')]; return b.map(x=>x.textContent.trim()).join()==='Elements,Text,Photos,Uploads,Colors' && b.every(x=>x.getAttribute('aria-pressed')==='false' && !x.hasAttribute('aria-disabled'))})()`
+        )
+      )
+      await c.ev(`document.querySelector('[data-tool=elements]').click(); 1`)
+      await sleep(300)
+      check(
+        'Elements opens the drawer floating over the canvas; the rail button shows it pressed',
+        await a.S(
+          `document.querySelector('.tooldrawer')?.dataset.mode==='floating' && document.querySelector('[data-tool=elements]').getAttribute('aria-pressed')==='true'`
         )
       )
       await a.shot('4c-05-editor-1440')
@@ -442,9 +451,11 @@ async function session(opts, fn) {
         `document.querySelector('#layer-row-${p2.id} [aria-label="Unlock layer Photo 2"]')`
       )
       let n0 = (await a.state()).layers
-      await a.press('Duplicate')
+      await a.press('More layer actions')
       await sleep(250)
-      check('Duplicate (panel action) adds a layer', (await a.state()).layers === n0 + 1)
+      await a.clickEl(a.menuItem('Duplicate'))
+      await sleep(250)
+      check('Duplicate (Layers › More menu) adds a layer', (await a.state()).layers === n0 + 1)
       n0 = (await a.state()).layers
       await c.key('z', { code: 'KeyZ', vk: 90, modifiers: h.MOD_BIT })
       await sleep(250)
@@ -504,15 +515,19 @@ async function session(opts, fn) {
         )
       )
       await a.shot('4c-08-multi-selection')
-      await a.press('Group')
+      await a.press('More layer actions')
+      await sleep(250)
+      await a.clickEl(a.menuItem('Group'))
       await sleep(300)
       check(
-        'Group works from the panel header',
+        'Group works from the Layers › More menu',
         await a.S(
           `__wts.store.getState().project.layers.some(l=>l.type==='group' && l.name!=='Corner ornament')`
         )
       )
-      await a.press('Ungroup')
+      await a.press('More layer actions')
+      await sleep(250)
+      await a.clickEl(a.menuItem('Ungroup'))
       await sleep(250)
 
       // Top bar: undo / redo icons, history
@@ -524,9 +539,9 @@ async function session(opts, fn) {
       await sleep(200)
       check('Redo (icon button) steps history forward', (await a.state()).past === pa)
       check(
-        'icon buttons have accessible names (Undo, Redo, Duplicate, Group, Delete)',
+        'shell buttons have accessible names (Undo, Redo, Save, Export, Add layer, More layer actions, Snap)',
         await a.S(
-          `['Undo','Redo','Duplicate','Group','Ungroup','Delete','Add layer','Arrange'].every(n=>!!document.querySelector('[aria-label="'+n+'"]'))`
+          `['Undo','Redo','Save','Export','See how it prints','Add layer','More layer actions','Snap to guides','Sample photos','Overflow'].every(n=>!!document.querySelector('[aria-label="'+n+'"]'))`
         )
       )
 
@@ -568,13 +583,13 @@ async function session(opts, fn) {
       )
       await a.press('Snap to guides')
       check('status bar Snap button toggles it back', (await a.state()).snapping === true)
-      await a.press('Preview photos')
+      await a.press('Sample photos')
       await sleep(300)
       check(
-        'status bar Preview photos toggles photo display (live since Phase 5C)',
+        'canvas-state bar Sample photos toggles photo display (moved from the status bar in B3)',
         (await a.state()).preview === 'preview'
       )
-      await a.press('Preview photos')
+      await a.press('Sample photos')
 
       // Zoom
       const z0 = await a.S(`document.querySelector('#zoom-label').textContent`)
@@ -858,10 +873,17 @@ async function session(opts, fn) {
         m.ws.w >= 500 && m.side.r <= m.iw + 1,
         { ws: Math.round(m.ws.w), drawer: m.drawer }
       )
+      // B3: at ≥ 860 px tall Properties sits above Layers (both ≥ 150 px); shorter windows show them as tabs, so the
+      // one on screen gets the full column instead of two squeezed panes.
+      const tabs = await a.S(`document.querySelector('.sidebar')?.dataset.layout === 'tabs'`)
       check(
-        `${width}×${height}: Layers and Properties each ≥ 150 px tall`,
-        m.layers.h >= 150 && m.props.h >= 150,
-        { layers: Math.round(m.layers.h), props: Math.round(m.props.h) }
+        tabs
+          ? `${width}×${m.ih}: Properties | Layers tabs; the visible panel is ≥ 300 px tall`
+          : `${width}×${m.ih}: Properties above Layers, each ≥ 150 px tall`,
+        tabs
+          ? (m.props?.h ?? m.layers?.h ?? 0) >= 300 && !(m.props && m.layers)
+          : m.layers.h >= 150 && m.props.h >= 150 && m.props.t < m.layers.t,
+        { layers: m.layers && Math.round(m.layers.h), props: m.props && Math.round(m.props.h) }
       )
       check(`${width}×${height}: top bar does not clip`, !m.clippedTop)
       await a.shot(`4c-14-size-${width}x${height}`)

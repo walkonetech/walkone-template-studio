@@ -27,17 +27,17 @@ Key shortcuts to know: ⌘Z / ⇧⌘Z undo/redo, ⌘S save, ⌘O open, ⌘E expo
 Mark each item `[x]` when passed. Add a note line for any failure.
 
 ### A. Launch, welcome, projects
-- [ ] App opens to the Welcome screen without errors; window can resize, minimum size sane.
+- [ ] App opens to the **Start screen** ("Start a template") without errors; window can resize, minimum size sane.
 - [ ] New Project dialog: choose 2×6 strip, 4×6, custom size/DPI; project opens with correct size readout.
 - [ ] A 2×6 strip shows one design; **Print Preview** shows two copies and cut lines.
 - [ ] Save (⌘S) to a `.boothproject`; title/status shows Saved. Edit → shows Modified.
 - [ ] Close and reopen the file: everything identical (layers, assets, palette, fonts).
-- [ ] Recent projects list works; missing file is handled gracefully.
+- [ ] Recent projects show as cards (format drawing, name, "2×6 strip · opened …"); a moved file shows **File not found** + **Locate…** (opens the file picker; nothing is deleted).
 - [ ] Quit/close with unsaved changes shows Save / Don't Save / Cancel; each choice behaves correctly.
 - [ ] Force-quit (Activity Monitor) mid-edit, relaunch: Recovery dialog offers the work; Recover and Discard both work.
 
 ### B. Canvas and layers
-- [ ] Add photo, text, shape layers from the tool rail; select, move, resize, rotate.
+- [ ] Add photo slots, text and shapes from the **Elements** drawer (rail); select, move, resize, rotate.
 - [ ] **Photo placeholders keep their shape**: only corner handles; drag scales uniformly; inspector W/H keep ratio.
 - [ ] Shapes and images resize as expected (images keep ratio; shapes free).
 - [ ] Shift-drag locks to an axis; snapping guides appear and can be toggled.
@@ -56,7 +56,7 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] Save/reopen keeps assets; undo/redo of import works.
 
 ### D. Photo preview and cropping
-- [ ] Preview Photos toggle shows sample photos by photo number; Shuffle photos; Choose photo… with your own image.
+- [ ] **Sample photos** (canvas-state bar or the Photos drawer) shows sample photos by photo number; Shuffle; Choose photo… with your own image.
 - [ ] Reposition/crop a photo: zoom and drag inside the frame; reset crop.
 - [ ] Frame styling (thickness, colour, corner radius) updates live.
 - [ ] Samples/crops never mark the project Modified and are not saved.
@@ -87,7 +87,7 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] Both copies identical; artwork clipped to each cell; cut lines correct.
 
 ### G2. Export (Phase 6A)
-- [ ] Export is disabled on the welcome screen; enabled with a project (button, File → Export…, ⌘E).
+- [ ] The Start screen shows no Export button and File → Export… is disabled; with a project Export works from the top bar (primary, always visible), File → Export… and ⌘E.
 - [ ] 2×6 strip: Print sheet PNG + Design PNG ticked; Proof offered (unticked); no Layer package; sizes shown (e.g. 1200 × 1800 px · 4 × 6 in · 300 DPI).
 - [ ] Open the print PNG: both strips identical, photo areas empty, frames drawn, artwork clipped at the strip edge, no "PHOTO n" labels.
 - [ ] Preview / Get Info shows the DPI (300 or 600).
@@ -134,6 +134,23 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] Safe areas (G5): the trim hatch is a muted amber, the keep-safe line teal, the same in both themes.
 - [ ] Windows at 125 % display scaling: text is crisp, and the Export dialog's Export button stays visible on a short window.
 
+### H1. Editor shell (Phase 7B B3) — compare with the B1 mockups (`design/phase-7b-b1/png/`)
+- [ ] Start screen: **Blank design** (format drawings) opens New project; **Import dslrBooth** opens the import; **Open project…** shows ⌘O / Ctrl+O; no Guided Design anywhere.
+- [ ] After **Decide later** in the recovery dialog, the Start screen shows a banner: **Review** brings the same choices back, **Not now** hides it.
+- [ ] Top bar: File, Edit, **Arrange**, View, **Help**; the project name ellipsizes before any button is squeezed; Undo/Redo (words on a roomy window), **Checks** (count; opens a list; Escape closes it), **See how it prints** (becomes **Preview** on a narrow window, never just an icon), Save (greyed while saved), **Export** (blue, always visible).
+- [ ] Rail: **Elements, Text, Photos, Uploads, Colors**, each with a word; the open one is highlighted in indigo with a bar on its left.
+- [ ] Window ≥ 1600 px wide: the drawer sits beside the canvas and pushes it. Narrower (e.g. 1426×779): the drawer floats over the canvas, stays open while you add several items, and closes when you click the canvas, choose another category, press its ✕ or press Esc.
+- [ ] Drag the drawer's right edge: it stays between 240 and 360 px and keeps its width after a restart. The project stays **Saved**.
+- [ ] Canvas-state bar: **Design | Print Preview** (strips only), **Sample photos: On/Off**, **Safe areas** ("No profile" until you choose an output profile in the status bar, then On/Off), **Overflow: Show/Hide**. None of them changes Saved/Modified. Print Preview says "read only" with **Edit in Design**.
+- [ ] Tall window (≥ 860 px): Properties above Layers with a draggable divider. Short window (e.g. 1426×779): **Properties | Layers** tabs; picking a layer in Layers then switching to Properties shows that layer.
+- [ ] Layers header: **+** and **⋯** only; ⋯ has Duplicate, Group, Ungroup, the four stacking moves, Delete, Keyboard shortcuts…
+- [ ] Status bar: format, selection, Output, Snap, zoom; no sample/safe/overflow toggles there any more.
+- [ ] **F6** / Shift+F6 moves focus between top bar, rail, drawer, canvas-state bar, canvas, right column and status bar. Esc closes a popover first, then a floating drawer, then clears the selection.
+- [ ] Windows only: **F10** focuses the menus; **Alt+F/E/A/V/H** opens them and holding Alt underlines the letters.
+- [ ] Help › Keyboard shortcuts… shows ⌘ on macOS and Ctrl on Windows.
+- [ ] Every tooltip stays fully inside the window, including at the right edge, the status bar and inside a floating drawer.
+- [ ] Repeat the main checks in **Dark** and **Compact** (View menu) and at 1100×650.
+
 ### H. UI, accessibility, polish
 - [ ] Tooltips on icon-only controls, with shortcut hints.
 - [ ] Everything reachable by keyboard; visible focus ring; labels on fields.
@@ -146,7 +163,7 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] No client data appears in `git status`.
 
 ### J. Not built yet (expect absent)
-Design Guide and the Canva-style redesign, one-click fixes and custom output profiles (the safe-area check itself exists, G5), event themes, bundled font library, company profile, asset library, client approval, Settings › Appearance (theme and size are in the View menu for now), the 7B screen redesigns (labelled rail, view bar, selection toolbar, Checks panel, new Export/Printer & cutting/Import dialogs, first-run tips), installer, Windows installer/packaging, font embedding, image palette extraction, badge builder, templates/recipes.
+Design Guide, one-click fixes and custom output profiles (the safe-area check itself exists, G5), event themes, bundled font library, company profile, asset library, client approval, Settings › Appearance (theme and size are in the View menu for now), the later 7B redesigns (selection toolbar, Checks panel, new Export/Printer & cutting/Import dialogs, first-run tips, full Properties content, Learn links, recent-project thumbnails, drawer Pin), installer, Windows installer/packaging, font embedding, image palette extraction, badge builder, templates/recipes.
 
 ## 3. Automated suites (optional cross-check)
 

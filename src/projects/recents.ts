@@ -1,14 +1,21 @@
 import { promises as fs } from 'node:fs'
 import { resolve } from 'node:path'
 import { z } from 'zod'
-import { IsoTimestampSchema, nowIso } from '../domain'
+import {
+  IsoTimestampSchema,
+  PrintConfigurationSchema,
+  nowIso,
+  type PrintConfiguration
+} from '../domain'
 import { writeFileAtomic } from './atomicFile'
 
 const RecentItemSchema = z.strictObject({
   path: z.string().min(1),
   projectId: z.string().min(1).optional(),
   name: z.string().min(1).max(200),
-  lastOpenedAt: IsoTimestampSchema
+  lastOpenedAt: IsoTimestampSchema,
+  /** The design's print size (Start screen card: "2×6 strip"). Optional: entries written before Phase 7B B3 lack it. */
+  print: PrintConfigurationSchema.optional()
 })
 export type RecentProject = z.infer<typeof RecentItemSchema>
 
@@ -55,14 +62,20 @@ export class RecentProjectsStore {
   }
 
   /** Adds or moves a project to the top; the list is capped at `max`. */
-  async add(entry: { path: string; projectId?: string; name: string }): Promise<void> {
+  async add(entry: {
+    path: string
+    projectId?: string
+    name: string
+    print?: PrintConfiguration
+  }): Promise<void> {
     const path = resolve(entry.path)
     const items = (await this.read()).filter((i) => i.path !== path)
     const item: RecentProject = {
       path,
       name: entry.name,
       lastOpenedAt: nowIso(),
-      ...(entry.projectId !== undefined ? { projectId: entry.projectId } : {})
+      ...(entry.projectId !== undefined ? { projectId: entry.projectId } : {}),
+      ...(entry.print !== undefined ? { print: entry.print } : {})
     }
     await this.write([item, ...items].slice(0, this.max))
   }

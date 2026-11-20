@@ -332,7 +332,7 @@
   --h-row: calc(var(--d-row) * var(--ui-scale));
   --h-menuitem: calc(var(--d-menuitem) * var(--ui-scale));
   --w-rail: calc(var(--d-rail) * var(--ui-scale));
-  --w-drawer: calc(224px * var(--ui-scale));
+  --w-drawer: calc(264px * var(--ui-scale));
   --h-topbar: calc(var(--d-topbar) * var(--ui-scale));
   --h-viewbar: calc(var(--d-viewbar) * var(--ui-scale));
   --h-section: calc(var(--d-section) * var(--ui-scale));

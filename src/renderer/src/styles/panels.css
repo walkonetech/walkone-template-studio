@@ -18,12 +18,10 @@
   align-items: center;
   gap: 1px;
 }
-/* The Layers header holds a full row of icon actions in the narrowest (320 px) right column: they stay compact
-   (26 px, never under the 24 px minimum hit target) while rows and fields carry the larger Comfortable sizes.
-   B3 redesigns this header (actions move to the selection toolbar / More). */
+/* B3: the Layers header keeps only Add and More (lower-frequency actions live in the More menu). */
 .panel-actions .ui-iconbtn {
-  width: max(24px, calc(var(--h-control-sm) - 2px));
-  height: max(24px, calc(var(--h-control-sm) - 2px));
+  width: var(--h-control-sm);
+  height: var(--h-control-sm);
 }
 .panel-actions .ui-divider {
   height: 14px;
@@ -140,12 +138,38 @@
   color: var(--c-text-2);
   font-size: var(--fs-meta);
 }
+/* Element-kind chip (B1): a small tinted square in the kind's restrained colour. */
 .type-icon {
+  --kind: var(--c-text-3);
   display: inline-flex;
-  color: var(--c-text-3);
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  color: var(--kind);
+  background: color-mix(in srgb, var(--kind) 13%, transparent);
 }
-.layer-row.selected .type-icon {
-  color: var(--c-text);
+.layer-row[data-kind='photo'] .type-icon {
+  --kind: var(--c-kind-photo);
+}
+.layer-row[data-kind='text'] .type-icon {
+  --kind: var(--c-kind-text);
+}
+.layer-row[data-kind='image'] .type-icon {
+  --kind: var(--c-kind-image);
+}
+.layer-row[data-kind='shape'] .type-icon {
+  --kind: var(--c-kind-shape);
+}
+.layer-row[data-kind='group'] .type-icon {
+  --kind: var(--c-kind-group);
+}
+.row-warning {
+  display: inline-flex;
+  flex: none;
+  color: var(--c-status-attention-fg);
 }
 .row-chevron,
 .row-chevron-spacer {
@@ -539,33 +563,37 @@
   color: var(--c-safe);
 }
 /* Design / Print Preview switch */
+/* Design | Print Preview: a segmented control in the canvas-state bar (B1). */
 .workspace-mode {
-  position: absolute;
-  top: var(--sp-3);
-  left: var(--sp-4);
-  z-index: 5;
   display: inline-flex;
+  flex: none;
   padding: 2px;
   gap: 2px;
-  border: 1px solid var(--c-border);
   border-radius: var(--r-md);
-  background: var(--c-panel);
+  background: var(--c-surface-input);
+  box-shadow: inset 0 0 0 1px var(--c-border);
 }
 .workspace-mode button {
-  height: 26px;
-  padding: 0 var(--sp-4);
+  height: calc(var(--h-control-sm) - 4px);
+  padding: 0 calc(var(--sp-3) + 4px);
   border: 0;
   border-radius: var(--r-sm);
   background: transparent;
   color: var(--c-text-2);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  white-space: nowrap;
   cursor: pointer;
 }
-.workspace-mode button[aria-checked='true'] {
-  background: var(--c-selected);
+.workspace-mode button:hover {
   color: var(--c-text);
 }
-.workspace-mode button:hover {
-  background: var(--c-hover);
+.workspace-mode button[aria-checked='true'] {
+  background: var(--c-surface-raised);
+  color: var(--c-text);
+  box-shadow:
+    inset 0 0 0 1px var(--c-border-strong),
+    var(--shadow-1);
 }
 .sheet-info {
   margin-top: var(--sp-3);

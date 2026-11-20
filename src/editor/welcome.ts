@@ -80,3 +80,43 @@ export function describeNewProject(
     note: 'The design is printed as is: one copy per 4×6 print.'
   }
 }
+
+/**
+ * The print format of a recent project in Start-screen words: "2×6 strip", "4×6 portrait", "6×4 landscape",
+ * "5×5 square". Null when the entry predates Phase 7B B3 (no size recorded).
+ */
+export function recentFormatLabel(
+  print: { width: number; height: number } | undefined
+): string | null {
+  if (!print) return null
+  const n = (v: number): string => String(Math.round(v * 100) / 100)
+  const size = `${n(print.width)}×${n(print.height)}`
+  if (Math.min(print.width, print.height) === 2 && Math.max(print.width, print.height) === 6)
+    return `${size} strip`
+  if (print.width === print.height) return `${size} square`
+  return `${size} ${print.width < print.height ? 'portrait' : 'landscape'}`
+}
+
+/**
+ * The Start screen's format placeholder (B3: there is no thumbnail store yet, so recent cards draw the format's shape
+ * instead of the artwork). Width/height in CSS px inside a box of `box` px, keeping the print's aspect ratio.
+ */
+export function formatPlaceholderSize(
+  print: { width: number; height: number } | undefined,
+  box = 104
+): { width: number; height: number } {
+  const w = print?.width ?? 4
+  const h = print?.height ?? 6
+  const scale = box / Math.max(w, h)
+  return { width: Math.round(w * scale), height: Math.round(h * scale) }
+}
+
+/** "edited 2 hours ago" style meta for a recent card: "2×6 strip · opened yesterday". */
+export function recentMeta(
+  item: { lastOpenedAt: string; print?: { width: number; height: number } },
+  now: Date = new Date()
+): string {
+  const format = recentFormatLabel(item.print)
+  const when = describeWhen(item.lastOpenedAt, now)
+  return [format, when ? `opened ${when}` : ''].filter(Boolean).join(' · ')
+}

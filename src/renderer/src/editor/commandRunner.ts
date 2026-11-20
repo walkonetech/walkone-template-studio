@@ -109,6 +109,21 @@ export function runCommand(id: CommandId): void {
     case 'arrange.distributeV':
       s.distributeSelection('vertical')
       return
+    case 'arrange.bringToFront':
+      s.stackSelection('front')
+      return
+    case 'arrange.bringForward':
+      s.stackSelection('forward')
+      return
+    case 'arrange.sendBackward':
+      s.stackSelection('backward')
+      return
+    case 'arrange.sendToBack':
+      s.stackSelection('back')
+      return
+    case 'help.shortcuts':
+      layoutStore.getState().setShortcutsOpen(true)
+      return
     case 'view.showOverflow':
       s.setShowOverflow(!s.showOverflow)
       return

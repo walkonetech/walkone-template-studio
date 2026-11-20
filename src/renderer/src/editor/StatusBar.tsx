@@ -1,14 +1,4 @@
-import {
-  Crop,
-  ImageIcon,
-  Magnet,
-  Maximize2,
-  Minus,
-  Plus,
-  Printer,
-  Shuffle,
-  SquareDashed
-} from 'lucide-react'
+import { Magnet, Minus, Plus, Printer } from 'lucide-react'
 import { describeWorkspace } from '@editor/describe'
 import { selectOutputProfile, selectViewMode, selectViewTransform } from '@editor/store'
 import { profileStatusLabel } from '@output'
@@ -23,26 +13,26 @@ import { commandTipProps, tipProps } from './tips'
 
 const st = editorStore.getState
 
+/**
+ * Status bar (B1): facts and state only (format, selection, recovery copy, Output profile, snapping, zoom). The view
+ * toggles (sample photos, safe areas, overflow, Design/Print Preview) live in the canvas-state bar above the canvas.
+ */
 export function StatusBar(): React.JSX.Element {
   const project = useEditor((s) => s.project)
   const viewMode = useEditor(selectViewMode)
   const scale = useEditor((s) => selectViewTransform(s)?.scale ?? null)
   const selectionCount = useEditor((s) => s.selectedIds.length)
   const snapping = useEditor((s) => s.snapping.enabled)
-  const photoDisplay = useEditor((s) => s.photoDisplay)
-  const showOverflow = useEditor((s) => s.showOverflow)
   const message = useEditor((s) => s.lastMessage)
   const autosave = useEditor((s) => s.autosave)
   const dirty = useEditor((s) => s.project !== null && s.project !== s.savedProject)
-  const profile = useEditor(selectOutputProfile)
-  const showSafeAreas = useEditor((s) => s.showSafeAreas)
   // Healthy autosave is quiet: the recovery-copy time only appears while there is unsaved work it protects.
   const recoveryNote =
     dirty && autosave.state === 'saved' && autosave.lastSavedAt
       ? `Recovery copy ${new Date(autosave.lastSavedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`
       : ''
   return (
-    <footer className="statusbar" aria-label="Status bar">
+    <footer className="statusbar" aria-label="Status bar" data-region="statusbar">
       <span id="print-info" className="status-item">
         {project ? describeWorkspace(project, viewMode) : 'No project open'}
       </span>
@@ -53,7 +43,9 @@ export function StatusBar(): React.JSX.Element {
       )}
       {message && (
         <span id="project-message" className="status-message" role="alert">
-          {message}
+          <span className="status-message-text" title={message}>
+            {message}
+          </span>
           <button type="button" className="link" onClick={() => st().setMessage(null)}>
             Dismiss
           </button>
@@ -66,52 +58,18 @@ export function StatusBar(): React.JSX.Element {
       </span>
       {project && (
         <div className="status-controls" role="group" aria-label="View">
-          <IconButton
-            size="sm"
-            icon={Magnet}
-            label="Snap to guides"
-            {...commandTipProps('view.snap')}
-            pressed={snapping}
-            onClick={() => runCommand('view.snap')}
-            placement="top"
-          />
-          <IconButton
-            size="sm"
-            icon={showOverflow ? Maximize2 : Crop}
-            label={showOverflow ? 'Show overflow' : 'Clipped view'}
-            {...commandTipProps('view.showOverflow')}
-            pressed={showOverflow}
-            onClick={() => runCommand('view.showOverflow')}
-            placement="top"
-          />
-          <IconButton
-            size="sm"
-            icon={SquareDashed}
-            label="Safe areas"
-            {...commandTipProps('view.safeAreas')}
-            pressed={profile !== null && showSafeAreas}
-            disabled={profile === null}
-            onClick={() => runCommand('view.safeAreas')}
-            placement="top"
-          />
-          <IconButton
-            size="sm"
-            icon={ImageIcon}
-            label="Preview photos"
-            {...commandTipProps('view.previewPhotos')}
-            pressed={photoDisplay === 'preview'}
-            onClick={() => runCommand('view.previewPhotos')}
-            placement="top"
-          />
-          <IconButton
-            size="sm"
-            icon={Shuffle}
-            label="Shuffle photos"
-            {...commandTipProps('view.shufflePhotos')}
-            disabled={photoDisplay !== 'preview'}
-            onClick={() => runCommand('view.shufflePhotos')}
-            placement="top"
-          />
+          <Tooltip label="Snap to guides" {...commandTipProps('view.snap')} placement="top">
+            <button
+              type="button"
+              className={`status-toggle${snapping ? ' on' : ''}`}
+              aria-label="Snap to guides"
+              aria-pressed={snapping}
+              onClick={() => runCommand('view.snap')}
+            >
+              <Magnet size={14} aria-hidden="true" />
+              Snap
+            </button>
+          </Tooltip>
           <span className="ui-divider" aria-hidden="true" />
           <IconButton
             size="sm"
@@ -177,8 +135,10 @@ function OutputStatus(): React.JSX.Element {
         onClick={() => layoutStore.getState().setOutputProfileOpen(true)}
       >
         <Printer size={13} aria-hidden="true" />
-        Output: {profile ? profileStatusLabel(profile) : 'none'}
-        {extra}
+        <span className="chip-text">
+          Output: {profile ? profileStatusLabel(profile) : 'none'}
+          {extra}
+        </span>
       </button>
     </Tooltip>
   )

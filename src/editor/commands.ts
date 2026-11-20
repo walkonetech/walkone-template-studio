@@ -43,6 +43,11 @@ export type CommandId =
   | 'arrange.alignBottom'
   | 'arrange.distributeH'
   | 'arrange.distributeV'
+  | 'arrange.bringToFront'
+  | 'arrange.bringForward'
+  | 'arrange.sendBackward'
+  | 'arrange.sendToBack'
+  | 'help.shortcuts'
 
 /** Platform-neutral shortcut: `mod` is Command on macOS and Ctrl elsewhere. */
 export interface Shortcut {
@@ -261,6 +266,40 @@ export const COMMANDS: Readonly<Record<CommandId, CommandDef>> = {
     needsProject: true,
     needsSelection: true
   },
+  // Stacking order (B3: moved out of the Layers header into the Arrange menu and the Layers "More" menu). The keys
+  // themselves are handled by the canvas keyboard (they use KeyboardEvent.code); these entries only label them.
+  'arrange.bringToFront': {
+    label: 'Bring to front',
+    hint: 'Move the selected layers in front of everything else',
+    shortcut: { key: ']', mod: true, shift: true },
+    needsProject: true,
+    needsSelection: true
+  },
+  'arrange.bringForward': {
+    label: 'Bring forward',
+    hint: 'Move the selected layers one step toward the front',
+    shortcut: { key: ']', mod: true },
+    needsProject: true,
+    needsSelection: true
+  },
+  'arrange.sendBackward': {
+    label: 'Send backward',
+    hint: 'Move the selected layers one step toward the back',
+    shortcut: { key: '[', mod: true },
+    needsProject: true,
+    needsSelection: true
+  },
+  'arrange.sendToBack': {
+    label: 'Send to back',
+    hint: 'Move the selected layers behind everything else',
+    shortcut: { key: '[', mod: true, shift: true },
+    needsProject: true,
+    needsSelection: true
+  },
+  'help.shortcuts': {
+    label: 'Keyboard shortcuts…',
+    hint: 'List the keyboard shortcuts for the editor and the Layers panel'
+  },
   'view.showOverflow': {
     label: 'Show overflow',
     hint: 'Show artwork that extends beyond the printable artboard (off = clipped view, as printed)',
@@ -273,8 +312,8 @@ export const COMMANDS: Readonly<Record<CommandId, CommandDef>> = {
     needsProject: true
   },
   'view.previewPhotos': {
-    label: 'Preview photos',
-    hint: 'Show sample photos inside photo placeholders',
+    label: 'Sample photos',
+    hint: 'Show sample photos of guests inside the photo slots (view only: never saved or exported)',
     needsProject: true,
     checked: (c) => c.previewPhotos
   },
@@ -370,9 +409,14 @@ export const MENUS: readonly { id: string; label: string; items: readonly (Comma
       ]
     },
     {
-      id: 'align',
-      label: 'Align',
+      id: 'arrange',
+      label: 'Arrange',
       items: [
+        'arrange.bringToFront',
+        'arrange.bringForward',
+        'arrange.sendBackward',
+        'arrange.sendToBack',
+        '-',
         'arrange.alignLeft',
         'arrange.alignCenter',
         'arrange.alignRight',
@@ -413,7 +457,8 @@ export const MENUS: readonly { id: string; label: string; items: readonly (Comma
         'view.densityComfortable',
         'view.densityCompact'
       ]
-    }
+    },
+    { id: 'help', label: 'Help', items: ['help.shortcuts'] }
   ]
 
 /** The command a key press maps to, or null. `mod` = the platform's primary modifier is held. */

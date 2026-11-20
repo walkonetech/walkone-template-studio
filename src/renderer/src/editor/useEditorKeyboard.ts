@@ -3,7 +3,11 @@ import { nudgeDelta } from '@editor/nudge'
 import { editorStore } from './editorStore'
 import { commandForKey } from '@editor/commands'
 import { runCommand } from './commandRunner'
-import { isPrimaryModifier } from './platform'
+import { isMac, isPrimaryModifier } from './platform'
+import { drawerMode, escapeTarget } from '@editor/layout'
+import { layoutStore } from './layoutStore'
+import { cycleRegion } from './regionNav'
+import { focusMenuBar } from '../ui/Menu'
 
 const isTypingTarget = (t: EventTarget | null): boolean => {
   if (!(t instanceof HTMLElement)) return false
@@ -30,6 +34,18 @@ export function useEditorKeyboard(): void {
       if (document.querySelector('[role=dialog][aria-modal=true]')) return
       const s = editorStore.getState()
       const mod = isPrimaryModifier(e)
+      // F6 / Shift+F6 move between the window's regions (also from inside fields).
+      if (e.key === 'F6' && !mod && !e.altKey) {
+        e.preventDefault()
+        cycleRegion(e.shiftKey)
+        return
+      }
+      // Windows / Linux: F10 focuses the menu bar (Alt + a menu's letter is handled by the menu bar itself).
+      if (e.key === 'F10' && !isMac() && !e.shiftKey && !mod) {
+        e.preventDefault()
+        focusMenuBar()
+        return
+      }
       // New / Open work from anywhere, including the welcome screen and inside text fields.
       if (mod) {
         const global = commandForKey(e, true)
@@ -40,6 +56,23 @@ export function useEditorKeyboard(): void {
         }
       }
       if (!s.project || isTypingTarget(e.target) || s.editingTextId) return
+      // Escape closes ONE thing, in the 7A order: popover (handled by the popover itself), floating drawer,
+      // Reposition, selection.
+      if (e.key === 'Escape') {
+        const l = layoutStore.getState()
+        const target = escapeTarget({
+          popoverOpen: document.querySelector('[data-popover], [role=menu]') !== null,
+          floatingDrawerOpen: l.drawerOpen && drawerMode(l.viewport.width) === 'floating',
+          repositioning: s.cropSession !== null,
+          hasSelection: s.selectedIds.length > 0
+        })
+        if (target === 'floating-drawer') {
+          e.preventDefault()
+          l.closeDrawer()
+          return
+        }
+        if (target === 'popover') return
+      }
       if (mod) {
         const view = commandForKey(e, true)
         if (view?.startsWith('view.')) {

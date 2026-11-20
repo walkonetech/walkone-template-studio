@@ -172,15 +172,27 @@ export function MenuButton({
   )
 }
 
-/** File / Edit / View style bar: one menu open at a time; hovering another title switches; Left/Right move between. */
+/** Focuses the first title of the application menu bar (F10 on Windows / Linux). */
+export function focusMenuBar(): void {
+  document.querySelector<HTMLButtonElement>('[role=menubar] button.menubar-btn')?.focus()
+}
+
+/**
+ * File / Edit / View style bar: one menu open at a time; hovering another title switches; Left/Right move between.
+ * With `accessKeys` (Windows / Linux), Alt + a title's first letter opens that menu and holding Alt underlines the
+ * letters, as in native Windows menus.
+ */
 export function MenuBar({
   menus,
-  label
+  label,
+  accessKeys = false
 }: {
   menus: readonly { id: string; label: string; entries: readonly MenuEntry[] }[]
   label: string
+  accessKeys?: boolean
 }): React.JSX.Element {
   const [open, setOpen] = useState<{ id: string; anchor: HTMLElement } | null>(null)
+  const [altHeld, setAltHeld] = useState(false)
   const bar = useRef<HTMLDivElement>(null)
   const close = useCallback(() => setOpen(null), [])
   const buttons = (): HTMLButtonElement[] => [
@@ -196,8 +208,40 @@ export function MenuBar({
     openAt(list[(i + dir + list.length) % list.length])
   }
   const current = menus.find((m) => m.id === open?.id)
+  useEffect(() => {
+    if (!accessKeys) return
+    const down = (e: KeyboardEvent): void => {
+      if (e.key === 'Alt') return setAltHeld(true)
+      if (!e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
+      if (document.querySelector('[role=dialog][aria-modal=true]')) return
+      const letter = e.key.toLowerCase()
+      const el = buttons().find((b) => b.textContent?.trim().toLowerCase().startsWith(letter))
+      if (!el) return
+      e.preventDefault()
+      setAltHeld(false)
+      el.focus()
+      openAt(el)
+    }
+    const up = (e: KeyboardEvent): void => {
+      if (e.key === 'Alt') setAltHeld(false)
+    }
+    const blur = (): void => setAltHeld(false)
+    window.addEventListener('keydown', down)
+    window.addEventListener('keyup', up)
+    window.addEventListener('blur', blur)
+    return () => {
+      window.removeEventListener('keydown', down)
+      window.removeEventListener('keyup', up)
+      window.removeEventListener('blur', blur)
+    }
+  }, [accessKeys])
   return (
-    <div role="menubar" aria-label={label} className="menubar" ref={bar}>
+    <div
+      role="menubar"
+      aria-label={label}
+      className={`menubar${altHeld ? ' show-access-keys' : ''}`}
+      ref={bar}
+    >
       {menus.map((m) => (
         <span key={m.id} className="menubar-item">
           <button
@@ -220,7 +264,14 @@ export function MenuBar({
               }
             }}
           >
-            {m.label}
+            {accessKeys ? (
+              <>
+                <u className="access-key">{m.label.slice(0, 1)}</u>
+                {m.label.slice(1)}
+              </>
+            ) : (
+              m.label
+            )}
           </button>
         </span>
       ))}

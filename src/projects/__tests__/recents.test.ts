@@ -59,6 +59,30 @@ describe('recent projects', () => {
     ])
   })
 
+  it('may record the design print size for the Start screen card (B3); older entries without it still load', async () => {
+    const { store, dir, file } = await setup()
+    const print = { width: 2, height: 6, unit: 'in' as const, dpi: 600 }
+    await store.add({ path: join(dir, 'a.boothproject'), name: 'A', print })
+    expect((await store.list())[0]?.print).toEqual(print)
+    // An entry written before B3 (no print) is still valid.
+    await writeFile(
+      file,
+      JSON.stringify({
+        version: 1,
+        items: [
+          {
+            path: join(dir, 'old.boothproject'),
+            name: 'Old',
+            lastOpenedAt: '2026-01-01T00:00:00.000Z'
+          }
+        ]
+      })
+    )
+    const list = await store.list()
+    expect(list).toHaveLength(1)
+    expect(list[0]?.print).toBeUndefined()
+  })
+
   it.each([
     ['not json at all'],
     ['{"version":2,"items":[]}'],

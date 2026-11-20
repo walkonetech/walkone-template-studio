@@ -118,16 +118,18 @@ const fixtures = fs.existsSync(FIXTURES)
     await waitFor(c, `!!document.querySelector('.welcome')`, 15000)
     // ---- 1: entry points
     const welcome = await J(c)(
-      `[...document.querySelectorAll('.welcome-actions button')].map(b=>b.textContent.trim())`
+      `[...document.querySelectorAll('.welcome .start-card, .welcome-actions button')].map(b=>b.getAttribute('aria-label')||b.querySelector('.start-card-title')?.textContent.trim()||b.textContent.trim())`
     )
     check(
-      '1 start screen offers “Import from dslrBooth…” next to New and Open',
-      welcome.includes('Import from dslrBooth…'),
+      '1 start screen (B3) offers the “Import dslrBooth” card next to Blank design and Open project…',
+      welcome.includes('Import dslrBooth') &&
+        welcome.includes('Blank design') &&
+        welcome.includes('Open project…'),
       welcome
     )
 
     // ---- 2: a ZIP that is not a template → clear error, nothing opened
-    await clickButton('Import from dslrBooth…')
+    await c.ev(`document.getElementById('start-import').click(); 1`)
     await waitFor(c, `!!document.querySelector('[role=dialog]')`, 10000)
     const err = await J(c)(
       `({title:document.querySelector('[role=dialog] h2')?.textContent, msg:document.querySelector('[role=dialog] [role=alert]')?.textContent})`

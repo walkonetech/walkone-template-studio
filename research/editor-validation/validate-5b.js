@@ -126,8 +126,8 @@ const setInput = async (c, ctxSel, label, value) => {
     size: { width: 1440, height: 900 }
   })
   try {
-    // ---- 1: New Project dialog (real clicks)
-    await clickText(c, 'New project')
+    // ---- 1: New Project dialog (real clicks: the Start screen's Blank design card, B3)
+    await c.ev(`document.getElementById('start-blank').click(); 1`)
     await sleep(400)
     check(
       '1 New project dialog offers Print type radios (4×6 Photo / 2×6 Photo Strip)',
@@ -225,11 +225,9 @@ const setInput = async (c, ctxSel, label, value) => {
     )
 
     // ---- 5-6: import + place one transparent graphic
-    await c.ev(
-      `[...document.querySelectorAll('button')].find(b=>b.getAttribute('aria-label')==='Assets').click(); 1`
-    )
+    await c.ev(`document.querySelector('[data-tool=uploads]').click(); 1`)
     await sleep(300)
-    await clickText(c, 'Import files…')
+    await clickText(c, 'Upload images…')
     await sleep(900)
     await clickLabel(c, 'Add graphic.png to canvas')
     await sleep(500)

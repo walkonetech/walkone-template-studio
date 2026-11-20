@@ -4,7 +4,7 @@
   "failed": [],
   "results": [
     {
-      "name": "0 Export button disabled on the welcome screen",
+      "name": "0 no project: the Start screen shows no Export button (B3) and File › Export… is disabled",
       "ok": true
     },
     {
@@ -60,13 +60,13 @@
         "before": {
           "dirty": true,
           "past": 13,
-          "ref": "2026-11-19T13:44:34.197Z",
+          "ref": "2026-11-20T00:11:32.264Z",
           "layers": 6
         },
         "after": {
           "dirty": true,
           "past": 13,
-          "ref": "2026-11-19T13:44:34.197Z",
+          "ref": "2026-11-20T00:11:32.264Z",
           "layers": 6
         }
       }

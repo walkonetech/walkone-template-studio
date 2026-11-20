@@ -88,6 +88,8 @@ export interface RecentProjectItem {
   name: string
   lastOpenedAt: string
   exists: boolean
+  /** The design's print size in inches, when known (entries from before Phase 7B B3 do not have it). */
+  print?: { width: number; height: number; dpi: number }
 }
 export interface AssetRequest {
   sessionId: string

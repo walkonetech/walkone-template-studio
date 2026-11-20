@@ -7,20 +7,35 @@
     "name": "welcome appears with no project (no rail, no side panels, no canvas)",
     "ok": true,
     "detail": {
-      "h1": "WalkOne Template Studio",
+      "h1": "Start a template",
       "rail": false,
       "side": false,
       "canvas": 0,
       "newBtn": true,
+      "importBtn": true,
       "openBtn": true,
       "recentEmpty": true,
-      "saveDisabled": true,
+      "noDocActions": true,
+      "guided": false,
       "sample": true
     }
   },
   {
-    "name": "welcome offers New and Open, empty recents message, Save disabled",
-    "ok": true
+    "name": "Start screen (B3) offers Blank design, Import dslrBooth and Open project…, an empty recents message, no Guided Design, and no document actions in the top bar",
+    "ok": true,
+    "detail": {
+      "h1": "Start a template",
+      "rail": false,
+      "side": false,
+      "canvas": 0,
+      "newBtn": true,
+      "importBtn": true,
+      "openBtn": true,
+      "recentEmpty": true,
+      "noDocActions": true,
+      "guided": false,
+      "sample": true
+    }
   },
   {
     "name": "File menu lists New, Open, Save, Save As, Close",
@@ -115,7 +130,7 @@
     "ok": true,
     "detail": [
       {
-        "t": "Studio TestOpened just now",
+        "t": "Studio Test2×6 strip · opened just now",
         "dis": false
       }
     ]
@@ -137,21 +152,26 @@
     }
   },
   {
-    "name": "missing recent file shows \"File not found\" and is disabled",
+    "name": "missing recent file stays listed with \"File not found\", is disabled and offers Locate…",
     "ok": true,
     "detail": [
       {
-        "t": "Studio Test File not found",
-        "dis": true
+        "t": "Studio Test2×6 strip · opened just now File not foundLocate…",
+        "dis": true,
+        "locate": true
       }
     ]
   },
   {
-    "name": "sample project: tool drawer open at 1440 width",
+    "name": "sample project at 1440 (floating tier, B3): the tool drawer starts closed so the canvas keeps its room",
     "ok": true
   },
   {
-    "name": "tool rail: Design active, Assets enabled (Phase 5A), Templates/Photos disabled with honest tooltips",
+    "name": "labelled rail (B3): Elements, Text, Photos, Uploads, Colors; all real, none pressed while closed",
+    "ok": true
+  },
+  {
+    "name": "Elements opens the drawer floating over the canvas; the rail button shows it pressed",
     "ok": true
   },
   {
@@ -235,7 +255,7 @@
     "ok": true
   },
   {
-    "name": "Duplicate (panel action) adds a layer",
+    "name": "Duplicate (Layers › More menu) adds a layer",
     "ok": true
   },
   {
@@ -267,7 +287,7 @@
     "ok": true
   },
   {
-    "name": "Group works from the panel header",
+    "name": "Group works from the Layers › More menu",
     "ok": true
   },
   {
@@ -279,7 +299,7 @@
     "ok": true
   },
   {
-    "name": "icon buttons have accessible names (Undo, Redo, Duplicate, Group, Delete)",
+    "name": "shell buttons have accessible names (Undo, Redo, Save, Export, Add layer, More layer actions, Snap)",
     "ok": true
   },
   {
@@ -305,17 +325,17 @@
     "ok": true
   },
   {
-    "name": "status bar Preview photos toggles photo display (live since Phase 5C)",
+    "name": "canvas-state bar Sample photos toggles photo display (moved from the status bar in B3)",
     "ok": true
   },
   {
     "name": "zoom controls: in changes, 100% = 100%, Fit returns to fit",
     "ok": true,
     "detail": {
-      "z0": "21%",
-      "z1": "26%",
+      "z0": "19%",
+      "z1": "24%",
       "z100": "100%",
-      "zfit": "21%"
+      "zfit": "19%"
     }
   },
   {
@@ -323,8 +343,8 @@
     "ok": true,
     "detail": {
       "zk1": "100%",
-      "zk0": "21%",
-      "zkp": "26%"
+      "zk0": "19%",
+      "zkp": "24%"
     }
   },
   {
@@ -339,8 +359,8 @@
     "name": "sidebar resizes from the keyboard (ArrowLeft grows it) within limits",
     "ok": true,
     "detail": {
-      "w0": 320,
-      "w1": 352
+      "w0": 300,
+      "w1": 332
     }
   },
   {
@@ -351,8 +371,8 @@
     "name": "Layers/Properties splitter drags (mouse)",
     "ok": true,
     "detail": {
-      "split0": 315.6015625,
-      "split1": 395.5
+      "split0": 433.953125,
+      "split1": 513.84375
     }
   },
   {
@@ -458,16 +478,16 @@
     "name": "1100×680: canvas workspace ≥ 500 px wide, sidebar fully on screen",
     "ok": true,
     "detail": {
-      "ws": 699,
+      "ws": 739,
       "drawer": false
     }
   },
   {
-    "name": "1100×680: Layers and Properties each ≥ 150 px tall",
+    "name": "1100×652: Properties | Layers tabs; the visible panel is ≥ 300 px tall",
     "ok": true,
     "detail": {
-      "layers": 228,
-      "props": 341
+      "layers": null,
+      "props": 530
     }
   },
   {
@@ -488,16 +508,16 @@
     "name": "1280×800: canvas workspace ≥ 500 px wide, sidebar fully on screen",
     "ok": true,
     "detail": {
-      "ws": 879,
+      "ws": 899,
       "drawer": false
     }
   },
   {
-    "name": "1280×800: Layers and Properties each ≥ 150 px tall",
+    "name": "1280×772: Properties | Layers tabs; the visible panel is ≥ 300 px tall",
     "ok": true,
     "detail": {
-      "layers": 276,
-      "props": 413
+      "layers": null,
+      "props": 650
     }
   },
   {
@@ -518,16 +538,16 @@
     "name": "1440×900: canvas workspace ≥ 500 px wide, sidebar fully on screen",
     "ok": true,
     "detail": {
-      "ws": 815,
-      "drawer": true
+      "ws": 1059,
+      "drawer": false
     }
   },
   {
-    "name": "1440×900: Layers and Properties each ≥ 150 px tall",
+    "name": "1440×872: Properties above Layers, each ≥ 150 px tall",
     "ok": true,
     "detail": {
-      "layers": 316,
-      "props": 473
+      "layers": 355,
+      "props": 434
     }
   },
   {
@@ -540,24 +560,24 @@
     "detail": {
       "sw": 1728,
       "iw": 1728,
-      "sh": 1005,
-      "ih": 1005
+      "sh": 1006,
+      "ih": 1006
     }
   },
   {
     "name": "1920×1080: canvas workspace ≥ 500 px wide, sidebar fully on screen",
     "ok": true,
     "detail": {
-      "ws": 1103,
+      "ws": 1043,
       "drawer": true
     }
   },
   {
-    "name": "1920×1080: Layers and Properties each ≥ 150 px tall",
+    "name": "1920×1006: Properties above Layers, each ≥ 150 px tall",
     "ok": true,
     "detail": {
-      "layers": 369,
-      "props": 553
+      "layers": 415,
+      "props": 508
     }
   },
   {
