@@ -225,7 +225,7 @@ export function checkSafeAreas(
       code: 'output-profile-none',
       severity: 'info',
       message:
-        'No output profile selected, so printer safe areas are not checked. Choose one in View › Output profile….',
+        'No output profile selected, so printer safe areas are not checked. Choose one in View › Printer & cutting….',
       layerIds: []
     })
     return { resolution, items, flagged }

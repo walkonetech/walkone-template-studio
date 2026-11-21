@@ -336,7 +336,7 @@
     }
   },
   {
-    "name": "14 Checks opens a read-only list with its headline inside the window; Escape closes it and returns focus to Checks",
+    "name": "14 Checks opens the Checks panel (B4) with its headline inside the window; from the keyboard focus moves in; Escape closes it and returns focus to Checks",
     "ok": true,
     "detail": {
       "pop": {
@@ -515,7 +515,7 @@
       },
       "propsTab": {
         "props": true,
-        "sel": ["ea380fda-dbdf-4fb8-a1a1-74c5eea22a67"],
+        "sel": ["a18431a8-96a9-40fa-bcb5-b84955c93a2b"],
         "badge": "Text"
       }
     }
@@ -536,7 +536,7 @@
     "name": "B31-2 no Sample photos anywhere: view bar, Photos drawer, Properties, View menu, canvas (no Shuffle, Reset samples, Choose photo or Reposition)",
     "ok": true,
     "detail": {
-      "viewItems": "Design view | Print Preview | Fit to window⌘0 | Actual size (100%)⌘1 | Zoom in⌘+ | Zoom out⌘− | Snap to guides | Show overflow | Safe areas | Output profile… | Light theme | Dark theme | Match system theme | Comfortable size | Compact size",
+      "viewItems": "Design view | Print Preview | Fit to window⌘0 | Actual size (100%)⌘1 | Zoom in⌘+ | Zoom out⌘− | Snap to guides | Show overflow | Safe areas | Printer & cutting… | Light theme | Dark theme | Match system theme | Comfortable size | Compact size",
       "everywhere": false
     }
   },
@@ -545,7 +545,7 @@
     "ok": true,
     "detail": {
       "slot": {
-        "id": "d7cbd023-4c80-4bc4-b6fa-57e3c04a2093",
+        "id": "d33f75a8-67a1-475b-846d-cee26916386c",
         "type": "photo",
         "n": 4
       },

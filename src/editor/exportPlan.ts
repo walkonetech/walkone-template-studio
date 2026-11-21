@@ -76,7 +76,8 @@ export function exportOutputs(project: TemplateProject): ExportOutput[] {
       fileName: exportFileName(name, 'print'),
       ...sheetSize,
       production: true,
-      defaultSelected: true
+      // First use (B4, owner decision R2): only the dslrBooth template is selected.
+      defaultSelected: false
     }
   ]
   if (composed) {
@@ -88,7 +89,8 @@ export function exportOutputs(project: TemplateProject): ExportOutput[] {
       fileName: exportFileName(name, 'design'),
       ...designSize,
       production: true,
-      defaultSelected: true
+      // First use (B4, owner decision R2): only the dslrBooth template is selected.
+      defaultSelected: false
     })
   }
   outputs.push({

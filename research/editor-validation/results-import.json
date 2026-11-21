@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-20T07:45:45.514Z",
+  "when": "2026-11-21T08:43:44.983Z",
   "fixtures": 5,
   "pass": 29,
   "total": 29,
@@ -47,23 +47,23 @@
       "name": "3c notes: two-up, unknown setting kept, machine name dropped; dslrBooth preview shown",
       "ok": true,
       "detail": [
+        "locked",
+        "flattened-artwork",
         "unknown-attributes",
         "two-up",
         "two-up-offset",
-        "locked",
-        "original-device",
-        "flattened-artwork"
+        "original-device"
       ]
     },
     {
       "name": "3d choosing “as is” shows that layout’s notes",
       "ok": true,
       "detail": [
+        "locked",
+        "flattened-artwork",
         "unknown-attributes",
         "two-up-sheet",
-        "locked",
-        "original-device",
-        "flattened-artwork"
+        "original-device"
       ]
     },
     {
@@ -297,7 +297,7 @@
     {
       "name": "10i the over-long line (T13) gets its own warning: dslrBooth cuts it off, here it wraps onto about N lines, nothing removed",
       "ok": true,
-      "detail": "warning: Text “THIS IS A VERY LONG SINGLE LINE THAT SHO…” is wider than its 400 px box. dslrBooth cuts the line off at the box edge; Template Studio keeps all of the text and wraps it, here onto about 8 lines running below the box and under photo slot 2, “TEXT BELOW ART”. The guest photo covers the part under the photo slot in the print. Nothing was removed. Widen the box, shorten the text or make it smaller before exporting."
+      "detail": "Needs attention: Text “THIS IS A VERY LONG SINGLE LINE THAT SHO…” is wider than its 400 px box. dslrBooth cuts the line off at the box edge; Template Studio keeps all of the text and wraps it, here onto about 8 lines running below the box and under photo slot 2, “TEXT BELOW ART”. The guest photo covers the part under the photo slot in the print. Nothing was removed. Widen the box, shorten the text or make it smaller before exporting."
     },
     {
       "name": "10 live-text fixture: notes say the text came in editable (Auto size, overflow, shadow, fonts); nothing “missing”, no unknown element",
@@ -308,12 +308,12 @@
         "shadow",
         "print-2-per-page",
         "live-text",
+        "flattened-artwork",
         "text-fonts",
         "text-box-widened",
         "text-bold-italic",
         "photo-keep-aspect",
-        "original-device",
-        "flattened-artwork"
+        "original-device"
       ]
     },
     {
@@ -461,12 +461,12 @@
         "codes": [
           "text-align",
           "text-size",
+          "live-text",
+          "flattened-artwork",
           "two-up",
           "two-up-offset",
-          "live-text",
           "text-fonts",
-          "original-device",
-          "flattened-artwork"
+          "original-device"
         ]
       }
     },

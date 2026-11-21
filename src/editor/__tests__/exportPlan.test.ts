@@ -57,9 +57,9 @@ describe('exportOutputs', () => {
     expect(outs.map((o) => o.kind)).toEqual(['print', 'proof'])
     expect(outs[0]).toMatchObject({ label: 'Print PNG', width: 2400, height: 3600, dpi: 600 })
   })
-  it('the layer package is not offered; production outputs are ticked by default, the proof is not', () => {
+  it('the layer package is not offered; no image file is ticked on first use (B4, R2: only the dslrBooth template is)', () => {
     const outs = exportOutputs(makeProject([], 'strip-2x6-300'))
-    expect(outs.filter((o) => o.defaultSelected).map((o) => o.kind)).toEqual(['print', 'design'])
+    expect(outs.filter((o) => o.defaultSelected).map((o) => o.kind)).toEqual([])
   })
   it('every file name is accepted by the main process', () => {
     const p = makeProject()

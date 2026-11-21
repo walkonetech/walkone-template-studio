@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-20T08:15:05.114Z",
+  "when": "2026-11-21T08:45:18.748Z",
   "pass": 27,
   "total": 27,
   "results": [
@@ -310,12 +310,12 @@
         "ih": 640,
         "htier": "very-short",
         "wtier": "narrow",
-        "dlgBottom": 628,
-        "headerTop": 12,
-        "footerBottom": 628,
-        "goBottom": 612,
-        "scrolls": true,
-        "below": true,
+        "dlgBottom": 582,
+        "headerTop": 58,
+        "footerBottom": 582,
+        "goBottom": 566,
+        "scrolls": false,
+        "below": false,
         "overflowY": "auto"
       }
     },

@@ -158,9 +158,9 @@ print(json.dumps({'roots': sorted(roots), 'orders': sorted(orders)}))`
       `[...document.querySelectorAll('.export-output')].map(e=>({kind:e.dataset.kind, checked:e.querySelector('input').checked, file:e.querySelector('.file').textContent}))`
     )
     check(
-      '2 outputs: dslrBooth strip (ticked), dslrBooth 4×6, then print, design, proof',
+      '2 outputs: dslrBooth strip (ticked; since B4 the only first-use choice), dslrBooth 4×6, then print, design, proof',
       outs.map((o) => `${o.kind}:${o.checked}`).join() ===
-        'dslrbooth:true,dslrbooth-4x6:false,print:true,design:true,proof:false',
+        'dslrbooth:true,dslrbooth-4x6:false,print:false,design:false,proof:false',
       outs.map((o) => `${o.kind}:${o.checked}`)
     )
     check(
@@ -190,7 +190,7 @@ print(json.dumps({'roots': sorted(roots), 'orders': sorted(orders)}))`
 
     // ---- 3: export strip + 4×6 + print + design
     await c.ev(
-      `(()=>{const e=document.querySelector('.export-output[data-kind="dslrbooth-4x6"] input'); if(!e.checked) e.click(); return 1})()`
+      `(()=>{for (const k of ['dslrbooth-4x6','print','design']){const e=document.querySelector('.export-output[data-kind="'+k+'"] input'); if(!e.checked) e.click()} return 1})()`
     )
     await sleep(200)
     await c.ev(`document.getElementById('export-start').click(); 1`)
@@ -367,14 +367,14 @@ print(json.dumps({'roots': sorted(roots), 'orders': sorted(orders)}))`
       b13
     )
     await c.ev(
-      `(()=>{for (const k of ['dslrbooth','dslrbooth-4x6']){const e=document.querySelector('.export-output[data-kind="'+k+'"] input'); if(e.checked) e.click()} return 1})()`
+      `(()=>{for (const k of ['dslrbooth','dslrbooth-4x6']){const e=document.querySelector('.export-output[data-kind="'+k+'"] input'); if(e.checked) e.click()} const p=document.querySelector('.export-output[data-kind="print"] input'); if(!p.checked) p.click(); return 1})()`
     )
     await sleep(200)
     const unblocked = await J(c)(
       `({codes:[...document.querySelectorAll('.preflight-item')].map(e=>e.dataset.code), disabled:document.getElementById('export-start').disabled})`
     )
     check(
-      '6b unticking the dslrBooth templates hides their checks and allows the PNG export',
+      '6b unticking the dslrBooth templates (and ticking the print PNG, since B4 starts with the template only) hides their checks and allows the PNG export',
       !unblocked.codes.some((k) => k.startsWith('dslr-')) && !unblocked.disabled,
       unblocked
     )

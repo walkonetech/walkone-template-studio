@@ -111,8 +111,8 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] Export the imported project for dslrBooth; **on the booth PC (6C)** import that ZIP into dslrBooth and compare.
 
 ### G5. Output profile and safe areas (ADR-053)
-- [ ] New 2×6 strip: the status bar shows **Output: none**; the Safe areas button is greyed out; nothing extra is drawn.
-- [ ] Click the chip (or View › Output profile…), pick **DNP DS-RX1 · 6×4 PC · 2-inch cut · borderless**, Done. The title still shows the same Saved/Modified state as before (choosing a profile never changes the project).
+- [ ] New 2×6 strip: the status bar shows **No printer** ("Output: none" before B4); the Safe areas button is greyed out; nothing extra is drawn.
+- [ ] Click the chip (or View › Printer & cutting…, called Output profile… before B4), pick **DNP DS-RX1 · 6×4 PC · 2-inch cut · borderless**, Done. The title still shows the same Saved/Modified state as before (choosing a profile never changes the project).
 - [ ] The dialog shows each value with a badge: driver/driver page/cut **Observed on test laptop**, trim **Inferred**, 3 mm **Provisional**, cut trim **Unknown**, finishing (auto-cut, cut on seam, gutter) **Observed on test laptop** (owner's test print, 2026-11-19), Verified "Not yet verified". Status: **Observed on test laptop**.
 - [ ] The strip shows an amber hatched edge band, a teal dashed line 3 mm inside every edge and a legend under the artboard. Toggle View › Safe areas (or the dashed-square button): it hides and shows.
 - [ ] Put a text near the left edge and a photo slot nearly touching the right edge: both get red dashed outlines and the chip says "2 safe-area warnings". A full-bleed background shows no outline.
@@ -158,6 +158,18 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] Open Export, close it with the mouse (Cancel or ✕) and move the mouse away: no Export tooltip stays on screen. Same with Esc. Tabbing onto Export, or hovering it, still shows its tooltip.
 - [ ] Windows: the window cannot be made narrower than 1100 DIP; at 1920×1080 125 % a half-screen Snap docks the minimum-size window at the left (expected, owner decision). F10 focuses the menus without underlines (holding Alt shows them) — known, B6.
 
+### H3. B4 workflow surfaces (Phase 7B B4)
+- [ ] **Checks:** the top-bar **Checks** button shows a green check when nothing needs fixing, otherwise its icon and separate red (errors) / amber (needs attention) counts. Clicking it opens the Checks panel on the LEFT (where drawers open); Properties stays visible. Groups **Error · Needs attention · Good to know**; Good to know starts collapsed. With only notes the panel says **Ready · n notes**.
+- [ ] Two texts in a missing font show as ONE card ("2 texts use a font that isn't installed") with **Select all 2** and **Details** (their names). **Select** picks the layer; the panel stays open. There is no Fix / Move inside / Later button anywhere.
+- [ ] At 1426×779 and 1100×650 the Checks header stays visible, the list scrolls, and no button hides under the status bar. Esc (with focus in the panel, or when it floats) closes it and focus returns to Checks.
+- [ ] **Export:** three picture cards. First time: **For the booth** on, **Print files** off, **Client proof** off. Turn cards on/off: "Creates n files" and the button "Export n files…" follow. **More options** has the 4×6 dslrBooth template and single files. The readiness line reads Ready / Almost ready (+ **Review**) / Fix n errors (checks open by themselves, Export disabled). The printer chip reads "DNP DS-RX1 · Tested" and opens Printer & cutting.
+- [ ] The Export button and Cancel stay visible at 1426×779 and 1100×650 (the middle scrolls; the summary and footer do not). No drawing shows a photo or a person; the proof drawing shows numbered slots.
+- [ ] Export works as before: the dslrBooth ZIP, print/design PNGs and the proof (numbered placeholders) open correctly.
+- [ ] **Printer & cutting** (View menu, status chip, Export chip): title "Printer & cutting · DNP DS-RX1" with **Ready to use**; the corner drawing (striped "May be cut off · about 1.6–1.8 mm (estimate)", dashed "Keep names and logos inside · 3 mm") is visible without scrolling; **How sure are we?** marks **Tested on a print** and says the production booth is not yet verified; three setup tiles in plain words; **How do we know?** lists every value with its evidence (trim Inferred, safe line Provisional, cut loss Unknown). No file paths or developer notes.
+- [ ] **dslrBooth import** (a two-strip 4×6 template): "We found a 2×6 design printed twice on a 4×6 sheet"; **One 2×6 strip, printed two per sheet** is first, Recommended and selected; **The 4×6 sheet exactly as it is** is the other choice; **For you** explains the choice and lists what needs attention; **Compatibility details** starts closed. Import gives the same project as before.
+- [ ] **Safe-area warning:** put text near the edge of a red background with Safe areas on: the red dashed warning outline has a dark edge around it and stays readable; it is the same box as before, and it never appears in exports.
+- [ ] Repeat the dialogs in **Dark** and **Compact**.
+
 ### H. UI, accessibility, polish
 - [ ] Tooltips on icon-only controls, with shortcut hints.
 - [ ] Everything reachable by keyboard; visible focus ring; labels on fields.
@@ -170,7 +182,7 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] No client data appears in `git status`.
 
 ### J. Not built yet (expect absent)
-Design Guide, one-click fixes and custom output profiles (the safe-area check itself exists, G5), event themes, bundled font library, company profile, asset library, client approval, Settings › Appearance (theme and size are in the View menu for now), the later 7B redesigns (selection toolbar, Checks panel, new Export/Printer & cutting/Import dialogs, first-run tips, full Properties content, Learn links, recent-project thumbnails, drawer Pin), installer, Windows installer/packaging, font embedding, image palette extraction, badge builder, templates/recipes.
+Design Guide, one-click fixes and custom output profiles (the safe-area check itself exists, G5), event themes, bundled font library, company profile, asset library, client approval, Settings › Appearance (theme and size are in the View menu for now), the later 7B redesigns (selection toolbar, first-run tips, full Properties content, Settings, Learn links, recent-project thumbnails, drawer Pin, Elements search; the Checks panel and the Export / Printer & cutting / Import dialogs arrived in B4), installer, Windows installer/packaging, font embedding, image palette extraction, badge builder, templates/recipes.
 
 ## 3. Automated suites (optional cross-check)
 

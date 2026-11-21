@@ -94,8 +94,8 @@ const stagePixelsDiffer = async (c, fn) => {
     await c.ev(`${S}.createProject({name:'Output Strip', preset:'strip-2x6-600'}).then(()=>1)`)
     await sleep(900)
     check(
-      '1 a new 2×6 @600 project starts with no output profile',
-      (await chip(c)) === 'Output: none',
+      '1 a new 2×6 @600 project starts with no output profile (status chip "No printer", B4 wording)',
+      (await chip(c)) === 'No printer',
       await chip(c)
     )
     const safeBtn = await J(c)(
@@ -118,7 +118,7 @@ const stagePixelsDiffer = async (c, fn) => {
       `[...document.querySelectorAll('.profile-choices .export-output')].map(e=>({id:e.dataset.profile, title:e.querySelector('.title').textContent, checked:e.querySelector('input').checked}))`
     )
     check(
-      '2 Output profile dialog lists "No profile" (selected) and the DS-RX1 profile',
+      '2 Printer & cutting dialog (the Output profile, B4) lists "No printer" (selected) and the DS-RX1 profile',
       choices.length === 2 &&
         choices[0].id === 'none' &&
         choices[0].checked &&
@@ -136,7 +136,7 @@ const stagePixelsDiffer = async (c, fn) => {
     check(
       '2b details: status Observed on test laptop; driver 1.1.1.0 observed on test laptop; driver page 156.1 × 105 mm; cut 2 in',
       facts &&
-        /^Observed on test laptop/.test(row('Status')) &&
+        /^Observed on test laptop/.test(row('Overall')) &&
         /1\.1\.1\.0 Observed on test laptop/.test(row('Driver')) &&
         /156\.1 × 105 mm/.test(row('Driver page')) &&
         /2-inch centre cut: 2 in from the left edge/.test(row('Cut')),
@@ -147,13 +147,13 @@ const stagePixelsDiffer = async (c, fn) => {
       /1\.8 mm Inferred/.test(row('Trim, top edge')) &&
         /1\.6 mm Inferred/.test(row('Trim, left edge')) &&
         /Unknown Unknown/.test(row('Trim at the cut')) &&
-        /3 mm Provisional/.test(row('Keep-safe, edges')) &&
-        /3 mm Provisional/.test(row('Keep-safe, cut')) &&
+        /3 mm Provisional/.test(row('Safe line, edges')) &&
+        /3 mm Provisional/.test(row('Safe line, cut')) &&
         /Observed on test laptop/.test(row('Cut on seam')) &&
-        /Not yet verified/.test(row('Verified')) &&
+        /Not yet verified/.test(row('Production booth')) &&
         !facts.badges.includes('verified-production') &&
         !facts.badges.includes('owner-measured'),
-      facts && facts.rows.filter((r) => /Trim|Keep|Cut on|Verified/.test(r[0]))
+      facts && facts.rows.filter((r) => /Trim|Safe|Cut on|Production/.test(r[0]))
     )
     await sleep(500)
     await c.shot(path.join(shotsDir, 'output-01-profile-dialog.png'))
@@ -171,8 +171,8 @@ const stagePixelsDiffer = async (c, fn) => {
       { profile: after.profile, dirty: after.dirty, past: after.past }
     )
     check(
-      '2e status bar shows "Output: DNP DS-RX1 · 2×6 · Observed on test laptop"',
-      (await chip(c)) === 'Output: DNP DS-RX1 · 2×6 · Observed on test laptop',
+      '2e status bar shows "DNP DS-RX1 · Tested" (B4: the friendly step of Observed on test laptop)',
+      (await chip(c)) === 'DNP DS-RX1 · Tested',
       await chip(c)
     )
 
@@ -271,7 +271,7 @@ const stagePixelsDiffer = async (c, fn) => {
     const chipText = await chip(c)
     check(
       '5 text 0.8 mm from the side and a photo slot 1.7 mm from the side are flagged (red outlines); the full-bleed shape and the inset photo are not',
-      o.flags.length === 2 && /· 2 safe-area warnings$/.test(chipText),
+      o.flags.length === 2 && /· 2 near an edge$/.test(chipText),
       { flags: o.flags, chipText, textId, edgePhoto }
     )
     await c.shot(path.join(shotsDir, 'output-03-design-warnings.png'))
@@ -318,17 +318,26 @@ const stagePixelsDiffer = async (c, fn) => {
     const exp = await J(c)(
       `({row:(document.querySelector('[data-testid=export-output-profile]')||{}).textContent||null, items:[...document.querySelectorAll('.preflight-item')].map(e=>({code:e.dataset.code, tag:(e.querySelector('.preflight-tag')||{}).textContent||null, text:e.textContent})), disabled:document.getElementById('export-start').disabled})`
     )
-    const codesOut = exp.items.filter((i) => i.tag === 'Output').map((i) => i.code)
+    // B4: one Checks model; printer findings carry the topics "Printer" / "Safe area", and repeats of one finding are
+    // merged into one card whose Details keep every message (data-count = how many findings).
+    const exp2 = await J(c)(
+      `[...document.querySelectorAll('[data-testid=export-dialog] .check-card')].map(e=>({code:e.dataset.code, count:+e.dataset.count, topic:e.querySelector('.check-topic').textContent}))`
+    )
+    const codesOut = exp.items
+      .filter((i) => i.tag === 'Printer' || i.tag === 'Safe area')
+      .map((i) => i.code)
+    const safeFindings = exp2
+      .filter((k) => k.code.startsWith('safe-area-'))
+      .reduce((n, k) => n + k.count, 0)
     const textItem = exp.items.find(
       (i) => i.code === 'safe-area-trim' && /Sarah & John/.test(i.text)
     )
     check(
-      '7 Export dialog shows the profile ("DNP DS-RX1 · 2×6 · Observed on test laptop", 2 items outside) and its checks tagged Output',
-      /DNP DS-RX1 · 2×6 · Observed on test laptop/.test(exp.row) &&
-        /2 critical items are outside the safe area/.test(exp.row) &&
+      '7 Export dialog shows the printer ("DNP DS-RX1 · Tested") and its checks (Printer / Safe area topics; 2 findings outside the safe line)',
+      exp.row === 'DNP DS-RX1 · Tested' &&
         codesOut.includes('output-profile-provisional') &&
-        codesOut.filter((k) => k.startsWith('safe-area-')).length === 2,
-      { row: exp.row, codesOut }
+        safeFindings === 2,
+      { row: exp.row, codesOut, exp2 }
     )
     check(
       '7b the text warning gives the distance in mm and the edge; safe-area warnings never block the export',
@@ -387,7 +396,7 @@ const stagePixelsDiffer = async (c, fn) => {
     const s300 = MM(3, 300)
     check(
       '8 a new 2×6 @300 project keeps the profile; keep-safe is 35.43 px (the same 3 mm) on the 600×1800 strip',
-      (await chip(c)) === 'Output: DNP DS-RX1 · 2×6 · Observed on test laptop' &&
+      (await chip(c)) === 'DNP DS-RX1 · Tested' &&
         o.lines.length === 1 &&
         close(o.lines[0].x, s300) &&
         close(o.lines[0].w, 600 - 2 * s300) &&
@@ -427,7 +436,7 @@ const stagePixelsDiffer = async (c, fn) => {
     o = await overlay(c)
     check(
       '10 after a restart the DS-RX1 profile is still selected and Safe areas are on',
-      (await chip(c)) === 'Output: DNP DS-RX1 · 2×6 · Observed on test laptop' && o.groups === 1,
+      (await chip(c)) === 'DNP DS-RX1 · Tested' && o.groups === 1,
       { chip: await chip(c), groups: o.groups }
     )
 
@@ -438,8 +447,9 @@ const stagePixelsDiffer = async (c, fn) => {
       `document.querySelector('.profile-choices .export-output[data-profile="none"] label').click(); 1`
     )
     await sleep(300)
+    // B4: with no printer the dialog is the printer choice, and "No printer" says the guides are not shown or checked.
     const noneNote = await c.ev(
-      `[...document.querySelectorAll('[role=dialog] .preflight-item')].map(e=>e.dataset.code).join()`
+      `(()=>{const d=document.querySelector('[data-testid=printer-dialog]'); const o=d.querySelector('.export-output[data-profile="none"]'); return o.querySelector('input').checked && /not shown or checked/.test(o.textContent) && !d.querySelector('[data-testid=printer-diagram]') ? 'none-explained' : 'missing'})()`
     )
     await c.ev(
       `[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent==='Done').click(); 1`
@@ -452,11 +462,11 @@ const stagePixelsDiffer = async (c, fn) => {
       `({row:(document.querySelector('[data-testid=export-output-profile]')||{}).textContent||'', codes:[...document.querySelectorAll('.preflight-item')].map(e=>e.dataset.code)})`
     )
     check(
-      '11 "No profile": no overlay, status "Output: none", one info note in the profile dialog; the Export dialog row says safe areas are not checked (no extra check item)',
+      '11 "No printer": no overlay, status "No printer", the dialog says the guides are not shown or checked; the Export printer chip says "No printer chosen" (no extra check item)',
       o.groups === 0 &&
-        (await chip(c)) === 'Output: none' &&
-        noneNote === 'output-profile-none' &&
-        /None · Printer safe areas are not checked/.test(expNone.row) &&
+        (await chip(c)) === 'No printer' &&
+        noneNote === 'none-explained' &&
+        expNone.row === 'No printer chosen' &&
         !expNone.codes.includes('output-profile-none') &&
         !expNone.codes.some((k) => k.startsWith('safe-area-')),
       { noneNote, expNone }

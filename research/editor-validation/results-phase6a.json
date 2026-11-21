@@ -21,7 +21,7 @@
       "ok": true
     },
     {
-      "name": "2c strip offers Print sheet / Design / Proof (no layer package); print + design ticked",
+      "name": "2c strip offers Print sheet / Design / Proof (no layer package); print + design ticked (by this script since B4), proof not",
       "ok": true,
       "detail": ["print:true", "design:true", "proof:false"]
     },
@@ -39,9 +39,9 @@
       "ok": true
     },
     {
-      "name": "2g preflight: repeated photo number 1 is not reported; no problems found",
+      "name": "2g preflight: repeated photo number 1 is not reported; nothing to fix (\"Ready\", B4 wording)",
       "ok": true,
-      "detail": "No problems found."
+      "detail": "Ready"
     },
     {
       "name": "3 export finishes and reports the result",
@@ -60,13 +60,13 @@
         "before": {
           "dirty": true,
           "past": 13,
-          "ref": "2026-11-20T07:55:18.567Z",
+          "ref": "2026-11-21T08:53:18.954Z",
           "layers": 6
         },
         "after": {
           "dirty": true,
           "past": 13,
-          "ref": "2026-11-20T07:55:18.567Z",
+          "ref": "2026-11-21T08:53:18.954Z",
           "layers": 6
         }
       }
@@ -247,7 +247,7 @@
       "name": "8c a missing font is a warning; export stays allowed",
       "ok": true,
       "detail": {
-        "s": "1 warning",
+        "s": "1 needs attention",
         "codes": ["font-missing"],
         "disabled": false
       }
@@ -258,7 +258,7 @@
       "detail": {
         "committed": true,
         "blocked": {
-          "s": "1 error · 1 warning Fix the errors before exporting.",
+          "s": "1 error · 1 needs attention · Fix the errors before exporting.",
           "codes": ["palette-broken", "font-missing"],
           "disabled": true
         }

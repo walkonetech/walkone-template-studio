@@ -138,6 +138,13 @@
   --c-edge-shadow: rgb(20 24 40 / 0.16);
   --c-welcome-glow: var(--p-n-0);
 
+  /* B4 workflow illustrations (Export cards, Printer & cutting, Import): paper, numbered photo slots, ink marks. */
+  --c-art-well: #eceef2;
+  --c-art-paper: #fffdf8;
+  --c-art-slot: #dcd8cf;
+  --c-art-slot-text: #6d685e;
+  --c-art-ink: #b39b74;
+
   --shadow-1: 0 1px 2px rgb(20 24 40 / 0.08);
   --shadow-2: 0 10px 28px rgb(20 24 40 / 0.14), 0 0 0 1px rgb(20 24 40 / 0.08);
   --shadow-3: 0 28px 70px rgb(20 24 40 / 0.22), 0 0 0 1px rgb(20 24 40 / 0.08);
@@ -210,6 +217,12 @@
   --c-swatch-ring: rgb(255 255 255 / 0.25);
   --c-edge-shadow: rgb(0 0 0 / 0.45);
   --c-welcome-glow: #1b1d27;
+
+  --c-art-well: #24262e;
+  --c-art-paper: #efebe3;
+  --c-art-slot: #c9c5bc;
+  --c-art-slot-text: #5f5a50;
+  --c-art-ink: #a48a5f;
 
   --shadow-1: 0 1px 2px rgb(0 0 0 / 0.35);
   --shadow-2: 0 8px 24px rgb(0 0 0 / 0.45), 0 0 0 1px rgb(255 255 255 / 0.06);

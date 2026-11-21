@@ -16,5 +16,10 @@ export const CANVAS_THEME = {
   safeLine: '#3ec7c0',
   trimFill: 'rgba(220, 162, 78, 0.16)',
   trimHatch: 'rgba(220, 162, 78, 0.7)',
-  flagged: '#f27d78'
+  flagged: '#f27d78',
+  /**
+   * Contrast understroke for overlay marks drawn over arbitrary artwork (B4): the safe-area warning outline sits on
+   * this dark halo so it stays visible over red, light and busy artwork. Visual contrast only, never geometry.
+   */
+  halo: 'rgba(0, 0, 0, 0.6)'
 } as const

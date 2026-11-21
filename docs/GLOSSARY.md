@@ -16,6 +16,8 @@
 - **Library Asset** — An asset in the user's reusable local library; copied into a project when used.
 - **Palette** — A set of colors assigned to semantic roles (primary, secondary, accent, background, text, …).
 - **Preflight** — Validation run before export producing errors and warnings.
+- **Checks / Checks panel** — (7B B4) the one presentation of preflight and safe-area findings: groups **Error** (blocks export), **Needs attention** (allowed) and **Good to know** (notes, collapsed; never counted as problems — "Ready · n notes"). Repeats are merged into one card; only working actions (Select, Select all, Printer & cutting…, Details). Opens on the left from the top-bar Checks button; Export shows the same cards.
+- **Printer & cutting** — (7B B4) the user-facing name of the Output Profile dialog: what the printer may trim, the safe line, "How sure are we?" (Estimated · Tested on a print · Measured; "Measured" is not "verified on the production booth"), setup tiles and the evidence under "How do we know?".
 - **Fixture** — A real DSLR Booth template export stored in `tests/fixtures/dslrbooth/source/` as a compatibility reference (private client data: local only, never committed).
 - **Round Trip** — Converting DSLR Booth → internal → DSLR Booth (or reverse) and checking nothing is lost.
 - **DSLR Booth Adapter** — The importer/exporter pair that converts between the internal model and DSLR Booth's format.

@@ -104,6 +104,8 @@ Import PNG, JPG/JPEG, WebP, SVG, PDF where practical. Categories: Background, Te
 ## 17. Exports
 A. DSLR Booth Template ZIP — **built (6B, ADR-047)**: native 2×6 strip by default (`print_2_per_page`), 4×6 sheet fallback, artwork/text flattened, photo slots native; real-booth validation pending (6C). B. Layer package — **withdrawn from the Export dialog** (owner, ADR-041 §8: clients should not need Canva/Photoshop). C. Flattened PNG — **built (6A)**: Print, Design and Proof PNGs. D. Native editable project — **built** (`.boothproject`).
 
+**Export dialog (Phase 7B B4):** three picture cards — **For the booth** (dslrBooth template; selected on first use), **Print files** (sheet + single design PNGs) and **Client proof** (numbered placeholders, never pictures) — with a pinned readiness line, the same Checks as the Checks panel, More options for the 4×6 template and single files, and a sticky footer. The choice is never stored in the project.
+
 ## 18. DSLR Booth compatibility
 Critical requirement. DSLR Booth's format must never become the internal model; use `DSLRBoothImporter`/`DSLRBoothExporter` adapters. Existing owner-supplied exports act as fixtures. All behavior is **Needs Validation** until fixtures are analyzed. See [DSLRBOOTH_COMPATIBILITY.md](DSLRBOOTH_COMPATIBILITY.md).
 

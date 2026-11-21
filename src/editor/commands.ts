@@ -206,13 +206,13 @@ export const COMMANDS: Readonly<Record<CommandId, CommandDef>> = {
   },
   'view.safeAreas': {
     label: 'Safe areas',
-    hint: 'Show the output profile’s expected trim, keep-safe lines and cut (guides only, never printed)',
+    hint: 'Show what the printer may trim, the safe line and the cut (guides only, never printed)',
     needsProject: true,
     checked: (c) => c.hasOutputProfile && c.showSafeAreas
   },
   'view.outputProfile': {
-    label: 'Output profile…',
-    hint: 'Choose the printer and media profile used for safe areas and checks (not saved in the project)',
+    label: 'Printer & cutting…',
+    hint: 'What the printer may trim, the safe line, how sure we are, and how to set up the booth (not saved in the project)',
     needsProject: true
   },
   'arrange.alignLeft': {

@@ -32,10 +32,12 @@ interface LayoutState extends LayoutPrefs {
   viewport: { width: number; height: number }
   tool: ToolId
   drawerOpen: boolean
+  /** The Checks panel (B4): opens in the drawer's place on the left, so Properties stays visible. */
+  checksOpen: boolean
   collapsedSections: string[]
   newProjectOpen: boolean
   exportOpen: boolean
-  /** View › Output profile… (choose the profile and read its evidence). */
+  /** View › Printer & cutting… (B4; the Output Profile underneath: choose it and read its evidence). */
   outputProfileOpen: boolean
   /** Help › Keyboard shortcuts… */
   shortcutsOpen: boolean
@@ -47,6 +49,7 @@ interface LayoutState extends LayoutPrefs {
   setRightTab(tab: RightTab): void
   clickTool(id: ToolId): void
   closeDrawer(): void
+  setChecksOpen(open: boolean): void
   toggleSection(id: string): void
   setNewProjectOpen(open: boolean): void
   setExportOpen(open: boolean): void
@@ -80,6 +83,7 @@ export const layoutStore = createStore<LayoutState>((set, get) => ({
   viewport: initialViewport,
   tool: 'elements',
   drawerOpen: drawerStartsOpen(initialViewport.width),
+  checksOpen: false,
   collapsedSections: [],
   newProjectOpen: false,
   exportOpen: false,
@@ -92,9 +96,13 @@ export const layoutStore = createStore<LayoutState>((set, get) => ({
   setRightTab: (rightTab) => set({ rightTab }),
   clickTool(id) {
     const next = nextToolState({ tool: get().tool, open: get().drawerOpen }, id)
-    set({ tool: next.tool, drawerOpen: next.open })
+    // A rail category takes the left zone back from the Checks panel.
+    set({ tool: next.tool, drawerOpen: next.open, checksOpen: false })
   },
   closeDrawer: () => set({ drawerOpen: false }),
+  // Checks and the tool drawer share the left zone: opening one closes the other.
+  setChecksOpen: (checksOpen) =>
+    set(checksOpen ? { checksOpen, drawerOpen: false } : { checksOpen }),
   toggleSection: (id) =>
     set((s) => ({
       collapsedSections: s.collapsedSections.includes(id)

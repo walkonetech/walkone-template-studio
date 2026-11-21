@@ -1,113 +1,117 @@
-import { useCallback, useMemo, useState } from 'react'
-import { CircleCheck, CircleX, TriangleAlert } from 'lucide-react'
-import { runExportPreflight } from '@editor/exportPreflight'
-import { checksHeadline } from '@editor/severity'
-import { useEditor } from './editorStore'
-import { fontEnvironment, useFontCatalog } from './fontCatalog'
-import { useSafeAreaReport } from './SafeAreaOverlay'
-import { PreflightRow, SEVERITY_ORDER, type CheckItem } from './CheckList'
-import { runCommand } from './commandRunner'
+import { X } from 'lucide-react'
+import { checksButtonState } from '@editor/checks'
+import type { DrawerMode } from '@editor/layout'
+import { CheckCounts, CheckGroups, TONE_ICON, useProjectChecks } from './CheckList'
 import { tipProps } from './tips'
-import { Button } from '../ui/Button'
-import { Popover } from '../ui/Popover'
+import { layoutStore, useLayout } from './layoutStore'
+import { IconButton } from '../ui/IconButton'
 import { Tooltip } from '../ui/Tooltip'
+import { restoreFocus } from '../ui/restoreFocus'
 
 /**
- * The project's checks as the Export dialog lists them before a dslrBooth format is chosen: the design preflight plus
- * the Output Profile's safe-area findings. Read only; computing them never changes the project.
+ * Closes the Checks panel. When keyboard focus was inside it, focus goes back to the top-bar Checks button (never
+ * stranded on the page), using programmatic focus restoration so no stale tooltip appears.
  */
-export function useProjectChecks(): {
-  items: CheckItem[]
-  errors: number
-  warnings: number
-  infos: number
-} | null {
-  const project = useEditor((s) => s.project)
-  const safe = useSafeAreaReport()
-  const catalog = useFontCatalog()
-  return useMemo(() => {
-    // `catalog` is read so the checks re-run when installed fonts arrive after launch.
-    if (!project || !catalog) return null
-    const pre = runExportPreflight(project, { fonts: fontEnvironment() })
-    const items: CheckItem[] = [
-      ...pre.items,
-      ...(safe?.items ?? [])
-        .filter((i) => i.code !== 'output-profile-none')
-        .map((i) => ({ ...i, tag: 'Output' }))
-    ].sort((a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity])
-    const count = (s: CheckItem['severity']): number => items.filter((i) => i.severity === s).length
-    return { items, errors: count('error'), warnings: count('warning'), infos: count('info') }
-  }, [project, safe, catalog])
+export function closeChecksReturningFocus(): void {
+  const inside = document.activeElement?.closest('#checks-panel') != null
+  layoutStore.getState().setChecksOpen(false)
+  if (inside) restoreFocus(document.getElementById('checks-button'))
+}
+
+/** Focus the Checks panel's first control (its first group, else its Close button). */
+export function focusChecksPanel(): void {
+  document
+    .querySelector<HTMLElement>(
+      '#checks-panel .check-groups summary, #checks-panel .drawer-header button'
+    )
+    ?.focus()
 }
 
 /**
- * Top-bar Checks (B3 shell access). Opens a small read-only list of the current checks; the full Checks panel is a
- * later (B4) redesign. The count shows errors + items that need attention; notes never count as problems.
+ * Top-bar Checks (B4): opens the Checks panel on the left. The button reads its state with an icon, a tone and
+ * counts: errors and items that need attention are counted separately; Good to know notes are never counted as
+ * problems, so a project with only notes shows the green Ready check.
  */
 export function ChecksButton(): React.JSX.Element | null {
   const checks = useProjectChecks()
-  const [anchor, setAnchor] = useState<HTMLElement | null>(null)
-  const close = useCallback(() => setAnchor(null), [])
+  const open = useLayout((s) => s.checksOpen)
   if (!checks) return null
-  const problems = checks.errors + checks.warnings
-  const head = checksHeadline(checks)
-  const Icon = checks.errors > 0 ? CircleX : problems > 0 ? TriangleAlert : CircleCheck
+  const state = checksButtonState(checks)
+  const Icon = TONE_ICON[state.tone]
   return (
-    <>
-      <Tooltip label="Checks" {...tipProps('checks')}>
-        <button
-          type="button"
-          id="checks-button"
-          className={`ui-btn ghost checks-btn tone-${head.tone}${anchor ? ' open' : ''}`}
-          aria-haspopup="dialog"
-          aria-expanded={anchor !== null}
-          aria-label={`Checks: ${head.text}`}
-          onClick={(e) => setAnchor(anchor ? null : e.currentTarget)}
-        >
-          <Icon size={16} strokeWidth={1.9} aria-hidden="true" className="checks-icon" />
-          <span className="label">Checks</span>
-          {problems > 0 && (
-            <span className="ui-count" aria-hidden="true">
-              {problems}
-            </span>
-          )}
-        </button>
-      </Tooltip>
-      {anchor && (
-        <Popover
-          anchor={anchor}
-          label="Checks"
-          onClose={close}
-          className="checks-popover"
-          testId="checks-popover"
-        >
-          <div className="checks-popover-head">
-            <strong>Checks</strong>
-            <span className={`checks-headline tone-${head.tone}`}>{head.text}</span>
-          </div>
-          {checks.items.length === 0 ? (
-            <p className="checks-empty">No problems found.</p>
-          ) : (
-            <ul className="preflight-list" aria-label="Checks">
-              {checks.items.map((item, i) => (
-                <PreflightRow key={`${item.code}-${i}`} item={item} />
-              ))}
-            </ul>
-          )}
-          <div className="checks-popover-foot">
-            <span className="muted">The Export dialog checks again for the format you choose.</span>
-            <Button
-              size="sm"
-              onClick={() => {
-                close()
-                runCommand('file.export')
-              }}
-            >
-              Export…
-            </Button>
-          </div>
-        </Popover>
-      )}
-    </>
+    <Tooltip label={`Checks · ${checks.headline.text}`} {...tipProps('checks')}>
+      <button
+        type="button"
+        id="checks-button"
+        className={`ui-btn ghost checks-btn tone-${state.tone}${open ? ' open' : ''}`}
+        aria-expanded={open}
+        aria-controls={open ? 'checks-panel' : undefined}
+        aria-label={`Checks: ${checks.headline.text}`}
+        data-state={state.text}
+        onClick={(e) => {
+          layoutStore.getState().setChecksOpen(!open)
+          // Opened from the keyboard (Enter / Space: no pointer click count): move focus into the panel so Tab
+          // continues there. A mouse click leaves focus where it is.
+          if (!open && e.detail === 0) requestAnimationFrame(focusChecksPanel)
+        }}
+      >
+        <Icon size={16} strokeWidth={1.9} aria-hidden="true" className="checks-icon" />
+        <span className="label">Checks</span>
+        {checks.errors > 0 && (
+          <span className="ui-count tone-error" aria-hidden="true" data-count="error">
+            {checks.errors}
+          </span>
+        )}
+        {checks.warnings > 0 && (
+          <span className="ui-count tone-attention" aria-hidden="true" data-count="attention">
+            {checks.warnings}
+          </span>
+        )}
+      </button>
+    </Tooltip>
+  )
+}
+
+/** Checks panel width (CSS px before the interface scale): wide enough for a card with two actions. */
+export const CHECKS_PANEL_WIDTH = 320
+
+/**
+ * The Checks panel (B1 mockup 07): the left zone (where tool drawers open), so Properties stays visible while a
+ * selected layer is fixed. Docked on roomy windows, floating over the canvas on narrower ones. The header stays put
+ * and the body scrolls, so no action is lost below the status bar at short window heights. It stays open while the
+ * user selects and edits layers; it closes on its Close button, the Checks button, Escape or a rail category.
+ */
+export function ChecksPanel({ mode }: { mode: DrawerMode }): React.JSX.Element | null {
+  const open = useLayout((s) => s.checksOpen)
+  const checks = useProjectChecks()
+  if (!open || !checks) return null
+  return (
+    <aside
+      id="checks-panel"
+      className={`tooldrawer checks-panel ${mode}`}
+      aria-label="Checks"
+      data-editor-panel
+      data-region="drawer"
+      data-mode={mode}
+      style={{ width: `calc(${CHECKS_PANEL_WIDTH}px * var(--ui-scale))` }}
+    >
+      <header className="drawer-header">
+        <h2 className="drawer-title">Checks</h2>
+        <IconButton
+          size="sm"
+          icon={X}
+          label="Close"
+          hint="Close the Checks panel"
+          onClick={closeChecksReturningFocus}
+        />
+      </header>
+      <div className="checks-panel-summary" id="checks-summary" role="status">
+        <CheckCounts model={checks} />
+      </div>
+      <div className="drawer-body checks-panel-body">
+        <CheckGroups model={checks} emptyText="Ready. Nothing needs fixing." />
+        <p className="drawer-note">Export checks again for the files you choose.</p>
+      </div>
+    </aside>
   )
 }

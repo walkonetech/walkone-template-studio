@@ -76,12 +76,14 @@ const waitFor = async (c, expr, ms = 30000) => {
   }
   return false
 }
-// Phase 6B added dslrBooth templates (ticked by default) to the same dialog; this script covers the vendor-neutral
-// outputs only (validate-6b.js covers dslrBooth), so it unticks them whenever the dialog opens.
+// Phase 6B added dslrBooth templates to the same dialog; this script covers the vendor-neutral outputs only
+// (validate-6b.js covers dslrBooth), so it unticks them whenever the dialog opens. Since B4 (owner decision R2) first use
+// selects ONLY the dslrBooth template, so the script also ticks the production images it covers (print + design, the
+// pre-B4 default) through the same checkboxes under More options. B4's own defaults are checked by validate-7b-b4.js.
 const untickDslr = async (c) => {
   await waitFor(c, `!!document.querySelector('.export-output')`, 5000)
   await c.ev(
-    `[...document.querySelectorAll('.export-output[data-kind^="dslrbooth"] input')].filter(i=>i.checked).forEach(i=>i.click()); 1`
+    `[...document.querySelectorAll('.export-output[data-kind^="dslrbooth"] input')].filter(i=>i.checked).forEach(i=>i.click()); [...document.querySelectorAll('.export-output[data-kind="print"] input, .export-output[data-kind="design"] input')].filter(i=>!i.checked).forEach(i=>i.click()); 1`
   )
   await sleep(150)
 }
@@ -204,7 +206,7 @@ const RED = [255, 0, 0, 255]
       `[...document.querySelectorAll('.export-output:not([data-kind^="dslrbooth"])')].map(e=>({kind:e.dataset.kind, checked:e.querySelector('input').checked, file:e.querySelector('.file').textContent, text:e.textContent}))`
     )
     check(
-      '2c strip offers Print sheet / Design / Proof (no layer package); print + design ticked',
+      '2c strip offers Print sheet / Design / Proof (no layer package); print + design ticked (by this script since B4), proof not',
       outs.map((o) => `${o.kind}:${o.checked}`).join() === 'print:true,design:true,proof:false',
       outs.map((o) => `${o.kind}:${o.checked}`)
     )
@@ -223,8 +225,8 @@ const RED = [255, 0, 0, 255]
     await waitFor(c, `!!document.getElementById('preflight-summary')`, 10000)
     const summary = await c.ev(`document.getElementById('preflight-summary').textContent`)
     check(
-      '2g preflight: repeated photo number 1 is not reported; no problems found',
-      summary === 'No problems found.',
+      '2g preflight: repeated photo number 1 is not reported; nothing to fix ("Ready", B4 wording)',
+      summary === 'Ready',
       summary
     )
     await c.shot(path.join(shotsDir, '6a-01-export-dialog.png'))
@@ -426,7 +428,7 @@ const RED = [255, 0, 0, 255]
     )
     check(
       '8c a missing font is a warning; export stays allowed',
-      warn.codes.includes('font-missing') && !warn.disabled && /1 warning/.test(warn.s),
+      warn.codes.includes('font-missing') && !warn.disabled && /1 needs attention/.test(warn.s),
       warn
     )
     await c.shot(path.join(shotsDir, '6a-04-preflight-warning.png'))

@@ -182,6 +182,15 @@ describe('canvas overlays are theme-independent', () => {
     expect(CANVAS_THEME.trimHatch).toBe(`rgba(${r}, ${g}, ${b}, 0.7)`)
     expect(CANVAS_THEME.trimFill).toBe(`rgba(${r}, ${g}, ${b}, 0.16)`)
   })
+
+  it('the safe-area warning has a contrast halo from the overlay halo primitive (B4), same in both themes', () => {
+    const halo = PRIMITIVES.get('--p-ov-halo')!
+    const m = /rgb\((\d+) (\d+) (\d+) \/ ([\d.]+)\)/.exec(halo)
+    expect(m).not.toBeNull()
+    expect(CANVAS_THEME.halo).toBe(`rgba(${m![1]}, ${m![2]}, ${m![3]}, ${m![4]})`)
+    expect(LIGHT.has('--c-overlay-halo')).toBe(false)
+    expect(DARK.has('--c-overlay-halo')).toBe(false)
+  })
 })
 
 describe('density: one structure, two sizes', () => {

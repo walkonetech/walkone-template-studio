@@ -27,6 +27,7 @@ import { PropertiesInspector } from './PropertiesInspector'
 import { RecoveryDialog } from './RecoveryDialog'
 import { StatusBar } from './StatusBar'
 import { ToolDrawer, ToolRail } from './ToolRail'
+import { ChecksPanel } from './ChecksButton'
 import { TopBar } from './TopBar'
 import { Welcome } from './Welcome'
 import { useEditorKeyboard } from './useEditorKeyboard'
@@ -207,6 +208,7 @@ export function EditorScreen(): React.JSX.Element {
       <div className="editor-body">
         {project && <ToolRail />}
         {project && mode === 'docked' && <ToolDrawer mode="docked" />}
+        {project && mode === 'docked' && <ChecksPanel mode="docked" />}
         <div className="canvas-column">
           {project && <CanvasStateBar />}
           <main className="workspace" aria-label="Canvas workspace" data-region="canvas">
@@ -220,6 +222,7 @@ export function EditorScreen(): React.JSX.Element {
               <Welcome />
             )}
             {project && mode === 'floating' && <ToolDrawer mode="floating" />}
+            {project && mode === 'floating' && <ChecksPanel mode="floating" />}
           </main>
         </div>
         {project && <Sidebar />}

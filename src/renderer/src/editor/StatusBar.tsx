@@ -1,7 +1,13 @@
 import { Magnet, Minus, Plus, Printer } from 'lucide-react'
 import { describeWorkspace } from '@editor/describe'
 import { selectOutputProfile, selectViewMode, selectViewTransform } from '@editor/store'
-import { profileStatusLabel } from '@output'
+import { confidenceStep, type ConfidenceStep } from '@output'
+
+const STEP_WORD: Record<ConfidenceStep, string> = {
+  estimated: 'Estimated',
+  tested: 'Tested',
+  measured: 'Measured'
+}
 import { layoutStore } from './layoutStore'
 import { useSafeAreaReport } from './SafeAreaOverlay'
 import { runCommand } from './commandRunner'
@@ -109,8 +115,9 @@ export function StatusBar(): React.JSX.Element {
 }
 
 /**
- * Compact Output Profile status (ADR-053), e.g. "Output: DNP DS-RX1 · 2×6 · Provisional · 2 safe-area warnings".
- * Opens View › Output profile…. Never part of the project.
+ * Compact printer status (ADR-053; B4 wording), e.g. "DNP DS-RX1 · Tested · 2 near an edge". The friendly step comes
+ * from the profile's evidence (Estimated · Tested · Measured; never "verified"). Opens View › Printer & cutting….
+ * Never part of the project.
  */
 function OutputStatus(): React.JSX.Element {
   const report = useSafeAreaReport()
@@ -123,11 +130,11 @@ function OutputStatus(): React.JSX.Element {
     extra = ' · does not match this project'
     tone = ' warn'
   } else if (flagged > 0) {
-    extra = ` · ${flagged} safe-area ${flagged === 1 ? 'warning' : 'warnings'}`
+    extra = ` · ${flagged} near an edge`
     tone = ' warn'
   }
   return (
-    <Tooltip label="Output profile" {...commandTipProps('view.outputProfile')} placement="top">
+    <Tooltip label="Printer & cutting" {...commandTipProps('view.outputProfile')} placement="top">
       <button
         type="button"
         id="output-status"
@@ -136,7 +143,9 @@ function OutputStatus(): React.JSX.Element {
       >
         <Printer size={13} aria-hidden="true" />
         <span className="chip-text">
-          Output: {profile ? profileStatusLabel(profile) : 'none'}
+          {profile
+            ? `${profile.shortName} · ${STEP_WORD[confidenceStep(profile.confidence)]}`
+            : 'No printer'}
           {extra}
         </span>
       </button>

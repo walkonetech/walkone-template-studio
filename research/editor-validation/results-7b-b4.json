@@ -1,0 +1,760 @@
+[
+  {
+    "name": "1 Checks opens from the top bar (a clean project reads Ready, no problem counts)",
+    "ok": true,
+    "detail": {
+      "btn0": {
+        "state": "Ready",
+        "label": "Checks: Ready",
+        "counts": 0
+      },
+      "panel": {
+        "left": 80,
+        "railRight": 80,
+        "wsCentre": 990,
+        "right": 400,
+        "props": true,
+        "region": "drawer",
+        "mode": "docked",
+        "expanded": "true",
+        "drawer": false,
+        "text": "Ready"
+      }
+    }
+  },
+  {
+    "name": "2 the Checks panel opens on the LEFT (drawer zone, beside the rail) and Properties stays visible",
+    "ok": true,
+    "detail": {
+      "left": 80,
+      "railRight": 80,
+      "wsCentre": 990,
+      "right": 400,
+      "props": true,
+      "region": "drawer",
+      "mode": "docked",
+      "expanded": "true",
+      "drawer": false,
+      "text": "Ready"
+    }
+  },
+  {
+    "name": "2b a clean project reads \"Ready\" in the panel",
+    "ok": true,
+    "detail": {
+      "left": 80,
+      "railRight": 80,
+      "wsCentre": 990,
+      "right": 400,
+      "props": true,
+      "region": "drawer",
+      "mode": "docked",
+      "expanded": "true",
+      "drawer": false,
+      "text": "Ready"
+    }
+  },
+  {
+    "name": "3 groups read Error → Needs attention → Good to know (plain words, no check codes in titles)",
+    "ok": true,
+    "detail": [
+      ["Error", ["A colour points to a deleted palette colour"]],
+      ["Needs attention", ["2 texts use a font that isn’t installed", "2 items may be trimmed"]],
+      [
+        "Good to know",
+        [
+          "2 layers are cut at the design edge",
+          "1 hidden layer won’t be exported",
+          "The safe line is guidance, not a measurement"
+        ]
+      ]
+    ]
+  },
+  {
+    "name": "4 Good to know starts collapsed; Error and Needs attention start open",
+    "ok": true,
+    "detail": [
+      ["error", true],
+      ["warning", true],
+      ["info", false]
+    ]
+  },
+  {
+    "name": "4b a repeated finding is merged: \"2 texts use a font that isn’t installed\" with Select all 2 and Details",
+    "ok": true,
+    "detail": {
+      "code": "font-missing",
+      "count": 1,
+      "topic": "Font",
+      "title": "2 texts use a font that isn’t installed",
+      "actions": ["Select all 2"],
+      "details": true
+    }
+  },
+  {
+    "name": "6 only working actions: no Fix / Move inside / Later, no disabled buttons in the panel",
+    "ok": true,
+    "detail": [
+      "",
+      "Select",
+      "Select all 2",
+      "Select all 2",
+      "Printer & cutting…",
+      "Select all 2",
+      "Select",
+      "Printer & cutting…"
+    ]
+  },
+  {
+    "name": "6b Select all selects exactly the merged layers; Details opens with their names; the panel stays open",
+    "ok": true,
+    "detail": {
+      "sel": ["bfd34cf9-95f4-4fe3-8914-647e5a760b4e", "f1d199cc-baf9-48d2-b6c7-0e83d34e165a"],
+      "det": "Layers JUNE 14 · 2027, Hashtag"
+    }
+  },
+  {
+    "name": "6c the top-bar Checks button reads the worst problem with an icon, tone and separate counts",
+    "ok": true,
+    "detail": {
+      "state": "1 error",
+      "counts": ["error:1", "attention:2"],
+      "tone": "error"
+    }
+  },
+  {
+    "name": "6d Escape closes the Checks panel (one level); focus returns to the Checks button without a stale tooltip",
+    "ok": true,
+    "detail": {
+      "open": false,
+      "focus": "checks-button",
+      "tip": false
+    }
+  },
+  {
+    "name": "5 only notes → the panel reads \"Ready · n notes\", the button \"Ready\"; notes stay collapsed and never look like problems",
+    "ok": true,
+    "detail": {
+      "summary": "Ready · 3 notes",
+      "state": "Ready",
+      "groups": ["info:false"]
+    }
+  },
+  {
+    "name": "31/32 Checks panel at 1426×779 and 1100×650: header visible, body scrolls, the last action is reachable above the status bar, no horizontal scroll",
+    "ok": true,
+    "detail": [
+      {
+        "w": 1426,
+        "h": 779,
+        "mode": "floating",
+        "headerTop": 107,
+        "headerVisible": true,
+        "scrolls": true,
+        "lastBottom": 742,
+        "panelBottom": 743,
+        "statusTop": 749,
+        "hScroll": false
+      },
+      {
+        "w": 1100,
+        "h": 650,
+        "mode": "floating",
+        "headerTop": 107,
+        "headerVisible": true,
+        "scrolls": true,
+        "lastBottom": 613,
+        "panelBottom": 614,
+        "statusTop": 620,
+        "hScroll": false
+      }
+    ]
+  },
+  {
+    "name": "7 three picture cards: For the booth · Print files · Client proof (drawings, no images)",
+    "ok": true,
+    "detail": [
+      {
+        "id": "booth",
+        "checked": "true",
+        "role": "checkbox",
+        "title": "For the booth",
+        "art": true,
+        "img": false
+      },
+      {
+        "id": "print",
+        "checked": "false",
+        "role": "checkbox",
+        "title": "Print files",
+        "art": true,
+        "img": false
+      },
+      {
+        "id": "proof",
+        "checked": "false",
+        "role": "checkbox",
+        "title": "Client proof",
+        "art": true,
+        "img": false
+      }
+    ]
+  },
+  {
+    "name": "8 first use: For the booth is selected",
+    "ok": true,
+    "detail": [
+      {
+        "id": "booth",
+        "checked": "true",
+        "role": "checkbox",
+        "title": "For the booth",
+        "art": true,
+        "img": false
+      },
+      {
+        "id": "print",
+        "checked": "false",
+        "role": "checkbox",
+        "title": "Print files",
+        "art": true,
+        "img": false
+      },
+      {
+        "id": "proof",
+        "checked": "false",
+        "role": "checkbox",
+        "title": "Client proof",
+        "art": true,
+        "img": false
+      }
+    ]
+  },
+  {
+    "name": "9 Print files starts off",
+    "ok": true,
+    "detail": [
+      {
+        "id": "booth",
+        "checked": "true",
+        "role": "checkbox",
+        "title": "For the booth",
+        "art": true,
+        "img": false
+      },
+      {
+        "id": "print",
+        "checked": "false",
+        "role": "checkbox",
+        "title": "Print files",
+        "art": true,
+        "img": false
+      },
+      {
+        "id": "proof",
+        "checked": "false",
+        "role": "checkbox",
+        "title": "Client proof",
+        "art": true,
+        "img": false
+      }
+    ]
+  },
+  {
+    "name": "10 Client proof starts off",
+    "ok": true,
+    "detail": [
+      {
+        "id": "booth",
+        "checked": "true",
+        "role": "checkbox",
+        "title": "For the booth",
+        "art": true,
+        "img": false
+      },
+      {
+        "id": "print",
+        "checked": "false",
+        "role": "checkbox",
+        "title": "Print files",
+        "art": true,
+        "img": false
+      },
+      {
+        "id": "proof",
+        "checked": "false",
+        "role": "checkbox",
+        "title": "Client proof",
+        "art": true,
+        "img": false
+      }
+    ]
+  },
+  {
+    "name": "11 the files line and the Export button follow the cards (1 → 3 → 4 files)",
+    "ok": true,
+    "detail": {
+      "f1": {
+        "line": "Creates 1 file: Ava & Theo.zip",
+        "btn": "Export 1 file…"
+      },
+      "f3": {
+        "line": "Creates 3 files: Ava & Theo.zip · Ava & Theo-print.png · Ava & Theo-design.png",
+        "btn": "Export 3 files…"
+      },
+      "f4": {
+        "line": "Creates 4 files: Ava & Theo.zip · Ava & Theo-print.png · Ava & Theo-design.png · Ava & Theo-proof.png",
+        "btn": "Export 4 files…"
+      }
+    }
+  },
+  {
+    "name": "11b pinned summary: \"Almost ready · n things to look at\" with Review and the printer (DNP DS-RX1 · Tested); checks stay quiet until asked",
+    "ok": true,
+    "detail": {
+      "text": "Almost ready · 2 things to look at",
+      "review": true,
+      "printer": "DNP DS-RX1 · Tested",
+      "checksOpen": false,
+      "pf": "2 need attention · 5 notes"
+    }
+  },
+  {
+    "name": "11c Review opens the same Checks (same groups and cards as the panel; Good to know still collapsed)",
+    "ok": true,
+    "detail": {
+      "open": true,
+      "groups": ["warning:true", "info:false"],
+      "codes": [
+        "font-missing",
+        "safe-area-trim",
+        "dslr-flattened",
+        "dslr-two-up",
+        "artwork-clipped",
+        "hidden-layers",
+        "output-profile-provisional"
+      ]
+    }
+  },
+  {
+    "name": "12 the summary stays pinned and the footer (with Export) stays visible while the body scrolls",
+    "ok": true,
+    "detail": {
+      "summaryStill": true,
+      "footerIn": true,
+      "goIn": true
+    }
+  },
+  {
+    "name": "13/31/32 Export at 1426×779 and 1100×650: Export and Cancel visible and clickable, no horizontal scroll",
+    "ok": true,
+    "detail": [
+      {
+        "w": 1426,
+        "ht": 779,
+        "go": {
+          "found": true,
+          "inView": true,
+          "top": true,
+          "b": 708,
+          "ih": 779,
+          "sw": 1426,
+          "iw": 1426
+        },
+        "cancel": {
+          "found": true,
+          "inView": true,
+          "top": true,
+          "b": 708,
+          "ih": 779,
+          "sw": 1426,
+          "iw": 1426
+        },
+        "h": {
+          "page": true,
+          "dialog": true,
+          "body": true
+        },
+        "cardsIn": true
+      },
+      {
+        "w": 1100,
+        "ht": 650,
+        "go": {
+          "found": true,
+          "inView": true,
+          "top": true,
+          "b": 622,
+          "ih": 650,
+          "sw": 1100,
+          "iw": 1100
+        },
+        "cancel": {
+          "found": true,
+          "inView": true,
+          "top": true,
+          "b": 622,
+          "ih": 650,
+          "sw": 1100,
+          "iw": 1100
+        },
+        "h": {
+          "page": true,
+          "dialog": true,
+          "body": true
+        },
+        "cardsIn": true
+      }
+    ]
+  },
+  {
+    "name": "K1 Escape closes Export; focus returns to the Export button with no stale tooltip",
+    "ok": true,
+    "detail": {
+      "open": false,
+      "focus": "export-button",
+      "tip": false
+    }
+  },
+  {
+    "name": "11d an error opens the checks by itself (\"Fix 1 error before exporting\") and blocks Export",
+    "ok": true,
+    "detail": {
+      "text": "Fix 1 error before exporting",
+      "open": true,
+      "disabled": true,
+      "first": "error"
+    }
+  },
+  {
+    "name": "14 the existing outputs still export: both dslrBooth ZIPs, print, design and proof PNGs at their sizes; no sample in any file",
+    "ok": true,
+    "detail": {
+      "files": [
+        "Ava & Theo 4x6.zip",
+        "Ava & Theo-design.png",
+        "Ava & Theo-print.png",
+        "Ava & Theo-proof.png",
+        "Ava & Theo.zip"
+      ],
+      "more": ["dslrbooth:true", "dslrbooth-4x6:true", "print:true", "design:true", "proof:true"],
+      "z": "[\"artwork-1.png\", \"artwork-2.png\", \"artwork-3.png\", \"background.png\", \"preview.png\", \"template.xml\"]\n [\"artwork-1.png\", \"artwork-2.png\", \"artwork-3.png\", \"background.png\", \"preview.png\", \"template.xml"
+    }
+  },
+  {
+    "name": "14b exporting never changes the project or its history",
+    "ok": true,
+    "detail": {
+      "before": 15,
+      "after": 15
+    }
+  },
+  {
+    "name": "15 the dialog is \"Printer & cutting · DNP DS-RX1\" (View menu item renamed; no \"Output profile\" wording)",
+    "ok": true,
+    "detail": {
+      "title": "Printer & cutting · DNP DS-RX1",
+      "viewItems": [
+        "Design view",
+        "Print Preview",
+        "Fit to window",
+        "Actual size (100%)",
+        "Zoom in",
+        "Zoom out",
+        "Snap to guides",
+        "Show overflow",
+        "Safe areas",
+        "Printer & cutting…",
+        "Light theme",
+        "Dark theme",
+        "Match system theme",
+        "Comfortable size",
+        "Compact size"
+      ]
+    }
+  },
+  {
+    "name": "16 the strip-corner diagram is visible without scrolling at 1426×779",
+    "ok": true,
+    "detail": true
+  },
+  {
+    "name": "17 the diagram shows the amber trim band (\"May be cut off · about 1.6–1.8 mm (estimate)\") and the dashed teal safe line (\"… inside · 3 mm\")",
+    "ok": true,
+    "detail": {
+      "trim": "May be cut off · about 1.6–1.8 mm (estimate)",
+      "safe": "Keep names and logos inside · 3 mm"
+    }
+  },
+  {
+    "name": "18 the 3-step meter: Estimated · Tested on a print · Measured",
+    "ok": true,
+    "detail": ["estimated", "tested*", "measured"]
+  },
+  {
+    "name": "19 DS-RX1 reads \"Tested on a print\" and \"Ready to use\"",
+    "ok": true,
+    "detail": {
+      "current": "Tested on a print",
+      "ready": "Ready to use"
+    }
+  },
+  {
+    "name": "19b setup tiles in plain words: dslrBooth (2×6, Print 2 per page) · Printer settings (2-inch cut, margin off) · Paper (6×4 PC)",
+    "ok": true,
+    "detail": [
+      "dslrbooth|1dslrBoothUse the 2×6 template, with “Print 2 per page” on.",
+      "printer|2Printer settings2-inch centre cut on, print margin off (borderless).",
+      "paper|3PaperLoad 6×4 (PC) media."
+    ]
+  },
+  {
+    "name": "19c no developer notes or repository paths in the dialog; no pictures of people",
+    "ok": true,
+    "detail": 0
+  },
+  {
+    "name": "20 \"How do we know?\" opens the per-value evidence (overall: Observed on test laptop)",
+    "ok": true,
+    "detail": [
+      "Overall",
+      "Production booth",
+      "Tested on",
+      "Printer",
+      "Driver",
+      "Media",
+      "Driver page",
+      "Layout",
+      "Borderless",
+      "Cut",
+      "Trim, top edge",
+      "Trim, bottom edge",
+      "Trim, left edge",
+      "Trim, right edge",
+      "Trim at the cut",
+      "Safe line, edges",
+      "Safe line, cut",
+      "Auto-cut",
+      "Cut on seam",
+      "Gap at the cut"
+    ]
+  },
+  {
+    "name": "21 trim stays an estimate (Inferred; cut loss Unknown) and the safe line stays Provisional",
+    "ok": true,
+    "detail": {
+      "Trim, top edge": {
+        "text": "1.8 mm InferredEstimated from the driver page size against the paper; not measured. The owner's test print (2026-11-19) showed no visible trim problem.",
+        "ev": "inferred"
+      },
+      "Trim, bottom edge": {
+        "text": "1.8 mm Inferred",
+        "ev": "inferred"
+      },
+      "Trim, left edge": {
+        "text": "1.6 mm Inferred",
+        "ev": "inferred"
+      },
+      "Trim, right edge": {
+        "text": "1.6 mm Inferred",
+        "ev": "inferred"
+      },
+      "Trim at the cut": {
+        "text": "Unknown UnknownLoss at the cut is not measured. The owner's test print (2026-11-19) showed no visible cut or spacing discrepancy.",
+        "ev": "unknown"
+      },
+      "Safe line, edges": {
+        "text": "3 mm ProvisionalKeep critical content at least 3 mm from the strip edges. Kept as a conservative margin after the owner's test print (2026-11-19) showed no visible problem; trim is not measured exactly.",
+        "ev": "provisional"
+      },
+      "Safe line, cut": {
+        "text": "3 mm Provisional",
+        "ev": "provisional"
+      }
+    }
+  },
+  {
+    "name": "22 the production booth stays unverified (meter line and evidence row)",
+    "ok": true,
+    "detail": {
+      "prod": "Not yet verified on the production booth PC.",
+      "row": {
+        "text": "Not yet verified on a production booth Unknown",
+        "ev": "unknown"
+      }
+    }
+  },
+  {
+    "name": "32b Printer & cutting at 1100×650: the diagram is visible without scrolling and Done is reachable; no horizontal scroll",
+    "ok": true,
+    "detail": {
+      "prShort": {
+        "diagramIn": true
+      },
+      "prDone": {
+        "found": true,
+        "inView": true,
+        "top": true,
+        "b": 622,
+        "ih": 650,
+        "sw": 1100,
+        "iw": 1100
+      }
+    }
+  },
+  {
+    "name": "29 the warning outline stays visible over red artwork: a dark halo understroke sits beside the red dashed line",
+    "ok": true,
+    "detail": {
+      "flags": 1,
+      "halos": 1,
+      "same": true,
+      "haloStroke": "rgba(0, 0, 0, 0.6)",
+      "haloWidth": 4.5,
+      "flagWidth": 1.5,
+      "dark": 2,
+      "flag": 9,
+      "n": 13,
+      "bg": [208, 32, 28],
+      "bgLum": 69
+    }
+  },
+  {
+    "name": "30 the halo is the same rectangle as the warning (no new geometry)",
+    "ok": true,
+    "detail": {
+      "same": true,
+      "haloWidth": 4.5,
+      "flagWidth": 1.5
+    }
+  },
+  {
+    "name": "30b safe areas (and the halo) never reach a render or an export: renders are identical with safe areas on and off",
+    "ok": true,
+    "detail": {
+      "r1": "689614:1301670",
+      "r2": "689614:1301670",
+      "renders": {}
+    }
+  },
+  {
+    "name": "23 the import begins with a plain-language summary: \"We found a 2×6 design printed twice on a 4×6 sheet.\"",
+    "ok": true,
+    "detail": "We found a 2×6 design printed twice on a 4×6 sheet."
+  },
+  {
+    "name": "24 \"One 2×6 strip, printed two per sheet\" is first and marked Recommended (with a drawing)",
+    "ok": true,
+    "detail": [
+      {
+        "v": "strip",
+        "checked": true,
+        "rec": "Recommended",
+        "title": "One 2×6 strip, printed two per sheet",
+        "art": true
+      },
+      {
+        "v": "as-is",
+        "checked": false,
+        "rec": null,
+        "title": "The 4×6 sheet exactly as it is",
+        "art": true
+      }
+    ]
+  },
+  {
+    "name": "25 the as-is option is offered: \"The 4×6 sheet exactly as it is\"",
+    "ok": true,
+    "detail": {
+      "v": "as-is",
+      "checked": false,
+      "rec": null,
+      "title": "The 4×6 sheet exactly as it is",
+      "art": true
+    }
+  },
+  {
+    "name": "26 the recommended one-strip option is selected by default",
+    "ok": true,
+    "detail": [
+      {
+        "v": "strip",
+        "checked": true,
+        "rec": "Recommended",
+        "title": "One 2×6 strip, printed two per sheet",
+        "art": true
+      },
+      {
+        "v": "as-is",
+        "checked": false,
+        "rec": null,
+        "title": "The 4×6 sheet exactly as it is",
+        "art": true
+      }
+    ]
+  },
+  {
+    "name": "27 Compatibility details start collapsed and hold the facts and the technical notes (nothing dropped)",
+    "ok": true,
+    "detail": {
+      "forYou": ["locked", "flattened-artwork"],
+      "technical": ["unknown-attributes", "two-up", "two-up-offset", "original-device"]
+    }
+  },
+  {
+    "name": "32c dslrBooth import at 1100×650: both layout choices visible without scrolling, Import reachable, no horizontal scroll",
+    "ok": true,
+    "detail": [
+      {
+        "go": {
+          "found": true,
+          "inView": true,
+          "top": true,
+          "b": 622,
+          "ih": 650,
+          "sw": 1100,
+          "iw": 1100
+        },
+        "h": {
+          "page": true,
+          "dialog": true,
+          "body": true
+        },
+        "cards": true
+      }
+    ]
+  },
+  {
+    "name": "28 the import result is unchanged: one 2×6 strip printed two per sheet (4×6), 3 photo slots",
+    "ok": true,
+    "detail": {
+      "design": [2, 6],
+      "sheet": [4, 6],
+      "slots": 3,
+      "name": "Synthetic Two Strips"
+    }
+  },
+  {
+    "name": "33 Dark and Compact: Export stays reachable at 1100×650 in Compact; the dialogs keep their structure in Dark",
+    "ok": true,
+    "detail": {
+      "found": true,
+      "inView": true,
+      "top": true,
+      "b": 566,
+      "ih": 650,
+      "sw": 1100,
+      "iw": 1100
+    }
+  },
+  {
+    "name": "S no Sample Photos anywhere (top bar, panel, dialogs, menus): no Sample photos / Shuffle / Reset samples / Choose photo / Reposition",
+    "ok": true,
+    "detail": null
+  },
+  {
+    "name": "E no console errors",
+    "ok": true,
+    "detail": []
+  }
+]

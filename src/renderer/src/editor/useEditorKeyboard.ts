@@ -8,6 +8,7 @@ import { controlOwnsKey, drawerMode, escapeTarget } from '@editor/layout'
 import { layoutStore } from './layoutStore'
 import { cycleRegion } from './regionNav'
 import { closeDrawerReturningFocus } from './ToolRail'
+import { closeChecksReturningFocus } from './ChecksButton'
 import { focusMenuBar } from '../ui/Menu'
 
 /** Keys the focused control keeps for itself (see `controlOwnsKey`). */
@@ -68,14 +69,21 @@ export function useEditorKeyboard(): void {
       // selection.
       if (e.key === 'Escape') {
         const l = layoutStore.getState()
+        const floating = drawerMode(l.viewport.width) === 'floating'
+        // The Checks panel sits in the drawer's place: Escape closes it like a floating drawer, and also when docked
+        // if focus is inside it (one level, then focus returns to the Checks button).
+        const checksPanel =
+          l.checksOpen &&
+          (floating || (e.target instanceof Element && e.target.closest('#checks-panel') !== null))
         const target = escapeTarget({
           popoverOpen: document.querySelector('[data-popover], [role=menu]') !== null,
-          floatingDrawerOpen: l.drawerOpen && drawerMode(l.viewport.width) === 'floating',
+          floatingDrawerOpen: (l.drawerOpen && floating) || checksPanel,
           hasSelection: s.selectedIds.length > 0
         })
         if (target === 'floating-drawer') {
           e.preventDefault()
-          closeDrawerReturningFocus()
+          if (checksPanel) closeChecksReturningFocus()
+          else closeDrawerReturningFocus()
           return
         }
         if (target === 'popover') return

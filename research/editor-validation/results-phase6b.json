@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-20T07:44:45.952Z",
+  "when": "2026-11-21T08:54:49.330Z",
   "pass": 26,
   "total": 26,
   "results": [
@@ -9,13 +9,13 @@
       "detail": ["shape:", "photo:1", "photo:2", "photo:3", "text:", "shape:"]
     },
     {
-      "name": "2 outputs: dslrBooth strip (ticked), dslrBooth 4×6, then print, design, proof",
+      "name": "2 outputs: dslrBooth strip (ticked; since B4 the only first-use choice), dslrBooth 4×6, then print, design, proof",
       "ok": true,
       "detail": [
         "dslrbooth:true",
         "dslrbooth-4x6:false",
-        "print:true",
-        "design:true",
+        "print:false",
+        "design:false",
         "proof:false"
       ]
     },
@@ -76,8 +76,8 @@
         "BackgroundColor": "#FFFFFFFF",
         "print_2_per_page": "True",
         "PrintToSecondaryPrinter": "False",
-        "LastSavedDate": "11/20/2026 02:44:43",
-        "Id": "vXzce9n0XdZY9qbUMLQbCP9qK",
+        "LastSavedDate": "11/21/2026 03:54:47",
+        "Id": "Pd75pt1HC2LiwjHEABAtCrNTF",
         "IsLegacy": "True",
         "OriginalDevice": "WalkOneTemplateStudio"
       }
@@ -173,8 +173,8 @@
         "BackgroundColor": "#FFFFFFFF",
         "print_2_per_page": "False",
         "PrintToSecondaryPrinter": "False",
-        "LastSavedDate": "11/20/2026 02:44:43",
-        "Id": "BZ4uMNpeLSKZBIdkzBG8fBjH4",
+        "LastSavedDate": "11/21/2026 03:54:47",
+        "Id": "LXfREtRgJSj9LBmDnu7Vvzzg1",
         "IsLegacy": "True",
         "OriginalDevice": "WalkOneTemplateStudio"
       }
@@ -228,7 +228,7 @@
       }
     },
     {
-      "name": "6b unticking the dslrBooth templates hides their checks and allows the PNG export",
+      "name": "6b unticking the dslrBooth templates (and ticking the print PNG, since B4 starts with the template only) hides their checks and allows the PNG export",
       "ok": true,
       "detail": {
         "codes": ["photo-number-gap"],

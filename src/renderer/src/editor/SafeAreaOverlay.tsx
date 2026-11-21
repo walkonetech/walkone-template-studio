@@ -115,6 +115,10 @@ function SafeLines({ rects }: { rects: ZoneRect[] }): React.JSX.Element {
   )
 }
 
+/** Screen-pixel widths of the safe-area warning outline and its contrast halo. */
+export const FLAG_WIDTH = 1.5
+export const FLAG_HALO_WIDTH = 4.5
+
 function Flagged({
   flagged,
   offsets
@@ -125,21 +129,37 @@ function Flagged({
   return (
     <>
       {offsets.flatMap((o, c) =>
-        flagged.map((f) => (
-          <Rect
-            key={`${c}-${f.layerId}`}
-            name="safe-flag"
-            listening={false}
-            x={f.bounds.x + o.x}
-            y={f.bounds.y + o.y}
-            width={f.bounds.width}
-            height={f.bounds.height}
-            stroke={CANVAS_THEME.flagged}
-            strokeWidth={1.5}
-            dash={[4, 3]}
-            strokeScaleEnabled={false}
-          />
-        ))
+        flagged.map((f) => {
+          const box = {
+            x: f.bounds.x + o.x,
+            y: f.bounds.y + o.y,
+            width: f.bounds.width,
+            height: f.bounds.height
+          }
+          // The warning keeps its exact bounds; the halo is a wider dark understroke on the SAME rectangle (visual
+          // contrast over red / light / busy artwork, B4). It adds no geometry and is never exported.
+          return (
+            <Group key={`${c}-${f.layerId}`} listening={false}>
+              <Rect
+                name="safe-flag-halo"
+                listening={false}
+                {...box}
+                stroke={CANVAS_THEME.halo}
+                strokeWidth={FLAG_HALO_WIDTH}
+                strokeScaleEnabled={false}
+              />
+              <Rect
+                name="safe-flag"
+                listening={false}
+                {...box}
+                stroke={CANVAS_THEME.flagged}
+                strokeWidth={FLAG_WIDTH}
+                dash={[4, 3]}
+                strokeScaleEnabled={false}
+              />
+            </Group>
+          )
+        })
       )}
     </>
   )

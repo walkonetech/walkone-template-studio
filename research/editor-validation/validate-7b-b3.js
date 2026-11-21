@@ -610,19 +610,22 @@ async function tooltipsInside(c, sel, height) {
         ].every((x) => more.includes(x)),
       { layersHeader, more }
     )
-    // Checks popover
-    await realClick(c, '#checks-button')
-    await waitFor(c, `!!document.querySelector('[data-testid=checks-popover]')`, 3000)
+    // Checks: since B4 the top-bar button opens the Checks PANEL in the left zone (the B3 popover was its stand-in).
+    // Opened from the keyboard, focus moves into the panel; Escape closes it and returns focus to Checks.
+    await c.ev(`document.getElementById('checks-button').focus(); 1`)
+    await c.key('Enter', { code: 'Enter', vk: 13, text: '\r' })
+    await waitFor(c, `!!document.getElementById('checks-panel')`, 3000)
+    await sleep(200)
     const pop = await J(c)(
-      `(()=>{const p=document.querySelector('[data-testid=checks-popover]'); const r=p.getBoundingClientRect(); return {head:p.querySelector('.checks-headline').textContent, items:p.querySelectorAll('.preflight-item').length, inside:r.left>=7&&r.top>=7&&r.right<=innerWidth-7&&r.bottom<=innerHeight-7, focusIn:p.contains(document.activeElement)}})()`
+      `(()=>{const p=document.getElementById('checks-panel'); const r=p.getBoundingClientRect(); return {head:p.querySelector('#checks-summary').textContent, items:p.querySelectorAll('.preflight-item').length, inside:r.left>=0&&r.top>=0&&r.right<=innerWidth&&r.bottom<=innerHeight, focusIn:p.contains(document.activeElement)}})()`
     )
     await press(c, 'Escape', 'Escape', 27)
     await sleep(200)
     const popClosed = await J(c)(
-      `({open:!!document.querySelector('[data-testid=checks-popover]'), focus:document.activeElement.id})`
+      `({open:!!document.getElementById('checks-panel'), focus:document.activeElement.id})`
     )
     check(
-      '14 Checks opens a read-only list with its headline inside the window; Escape closes it and returns focus to Checks',
+      '14 Checks opens the Checks panel (B4) with its headline inside the window; from the keyboard focus moves in; Escape closes it and returns focus to Checks',
       pop.head.length > 0 &&
         pop.inside &&
         pop.focusIn &&

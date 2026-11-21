@@ -1,7 +1,14 @@
-import { CircleX, Info, TriangleAlert } from 'lucide-react'
+import { ChevronRight, CircleX, Info, TriangleAlert } from 'lucide-react'
 import { useId, useMemo, useState } from 'react'
 import type { DslrImportCheck, DslrImportLayout, DslrImportPreview } from '@shared/ipc'
+import {
+  importFoundSummary,
+  importLayoutChoices,
+  layoutMeaning,
+  splitImportNotes
+} from '@editor/importView'
 import { guarded } from './commandRunner'
+import { OneStripArt, WholeSheetArt } from './illustrations'
 import { chooseDslrTemplate } from './dslrImportActions'
 import { editorStore } from './editorStore'
 import { layoutStore, useLayout } from './layoutStore'
@@ -11,19 +18,6 @@ import { Dialog, DialogActions } from '../ui/Dialog'
 const ICONS = { error: CircleX, warning: TriangleAlert, info: Info } as const
 
 const inches = (n: number): string => String(Math.round(n * 100) / 100)
-
-function CheckRow({ item }: { item: DslrImportCheck }): React.JSX.Element {
-  const Icon = ICONS[item.severity]
-  return (
-    <li className={`preflight-item ${item.severity}`} data-code={item.code}>
-      <Icon size={14} aria-hidden="true" />
-      <span>
-        <span className="sr-only">{item.severity}: </span>
-        {item.message}
-      </span>
-    </li>
-  )
-}
 
 function pngDataUrl(bytes: Uint8Array): string {
   let bin = ''
@@ -47,8 +41,32 @@ function OriginalPreview({
       ) : (
         <div className="dslr-import-nopreview">No preview in this ZIP</div>
       )}
-      <figcaption>dslrBooth’s preview</figcaption>
+      <figcaption>As found in the file</figcaption>
     </figure>
+  )
+}
+
+function NoteRow({ item }: { item: DslrImportCheck }): React.JSX.Element {
+  const Icon = ICONS[item.severity]
+  const tone = item.severity === 'info' ? 'info' : item.severity === 'error' ? 'error' : 'attention'
+  return (
+    <li
+      className={`import-note preflight-item ${item.severity} tone-${tone}`}
+      data-code={item.code}
+    >
+      <Icon size={15} aria-hidden="true" />
+      <span>
+        <span className="sr-only">
+          {item.severity === 'info'
+            ? 'Good to know'
+            : item.severity === 'error'
+              ? 'Error'
+              : 'Needs attention'}
+          :{' '}
+        </span>
+        {item.message}
+      </span>
+    </li>
   )
 }
 
@@ -59,6 +77,9 @@ function ImportForm({ p }: { p: DslrImportPreview }): React.JSX.Element {
   const id = useId()
   const close = (): void => layoutStore.getState().setDslrImport(null)
   const checks = p.checks[layout] ?? []
+  const found = importFoundSummary(p)
+  const choices = importLayoutChoices(p)
+  const notes = splitImportNotes(checks)
 
   const doImport = async (): Promise<void> => {
     setBusy(true)
@@ -83,20 +104,15 @@ function ImportForm({ p }: { p: DslrImportPreview }): React.JSX.Element {
   return (
     <Dialog
       title="Import dslrBooth template"
-      description={
-        <>
-          <span className="dslr-import-file">{p.fileName}</span> becomes a new Template Studio
-          project. The ZIP itself is not changed.
-        </>
-      }
-      size="lg"
+      description={<span className="dslr-import-file">{p.fileName}</span>}
+      size="xl"
       testId="dslr-import-dialog"
       onEscape={() => !busy && close()}
       footer={
         <DialogActions
           start={
             <Button variant="ghost" disabled={busy} onClick={() => void chooseDslrTemplate()}>
-              Choose another…
+              Choose another file…
             </Button>
           }
           cancel={
@@ -120,62 +136,79 @@ function ImportForm({ p }: { p: DslrImportPreview }): React.JSX.Element {
       <div className="dslr-import">
         <OriginalPreview preview={p.preview} />
         <div className="dslr-import-body">
-          <dl className="dslr-import-facts">
-            <dt>Template</dt>
-            <dd>{p.templateName}</dd>
-            <dt>Size</dt>
-            <dd>{sizeLine}</dd>
-            <dt>Photos</dt>
-            <dd>{photosLine}</dd>
-            <dt>Pictures</dt>
-            <dd>{p.images}</dd>
-          </dl>
-          {p.twoUp && (
+          <p className="import-found" data-testid="import-found">
+            <Info size={16} aria-hidden="true" />
+            <span>
+              <strong>{found.headline}</strong> <span className="muted">{found.detail}</span>
+            </span>
+          </p>
+          {choices.length > 0 && (
             <fieldset className="dslr-import-layouts" disabled={busy}>
-              <legend>This sheet holds two strips side by side</legend>
-              {(
-                [
-                  [
-                    'strip',
-                    `One ${inches(p.twoUp.stripWidthIn)}×${inches(p.twoUp.stripHeightIn)} strip, printed two per sheet`,
-                    'Edit one strip; Template Studio and dslrBooth print the copy for you. Exports a native strip.'
-                  ],
-                  [
-                    'as-is',
-                    `The ${inches(p.widthIn)}×${inches(p.heightIn)} sheet exactly as it is`,
-                    'Both strips stay separate layers; a change to one is not copied to the other.'
-                  ]
-                ] as const
-              ).map(([value, title, hint]) => (
-                <label key={value} className="dslr-import-layout" data-layout={value}>
+              <legend>Open it as</legend>
+              {choices.map((c) => (
+                <label key={c.value} className="dslr-import-layout" data-layout={c.value}>
                   <input
                     type="radio"
                     name={`${id}-layout`}
-                    value={value}
-                    checked={layout === value}
-                    onChange={() => setLayout(value)}
+                    value={c.value}
+                    checked={layout === c.value}
+                    onChange={() => setLayout(c.value)}
                   />
+                  {c.value === 'strip' ? <OneStripArt /> : <WholeSheetArt />}
                   <span>
                     <span className="title">
-                      {title}
-                      {p.recommendedLayout === value && (
-                        <span className="ui-badge">Recommended</span>
-                      )}
+                      {c.title}
+                      {c.recommended && <span className="ui-badge tone-accent">Recommended</span>}
                     </span>
-                    <span className="muted">{hint}</span>
+                    <span className="muted">{c.hint}</span>
                   </span>
                 </label>
               ))}
             </fieldset>
           )}
-          <section className="export-checks" aria-labelledby={`${id}-checks`}>
-            <h3 id={`${id}-checks`}>What to know</h3>
-            <ul className="preflight-list">
-              {checks.map((item) => (
-                <CheckRow key={item.code} item={item} />
-              ))}
-            </ul>
+          <section className="import-for-you" aria-labelledby={`${id}-for-you`}>
+            <h3 id={`${id}-for-you`} className="import-heading">
+              For you
+            </h3>
+            {choices.length > 0 && <p className="import-meaning">{layoutMeaning(layout)}</p>}
+            {notes.forYou.length > 0 && (
+              <ul className="import-notes preflight-list">
+                {notes.forYou.map((item) => (
+                  <NoteRow key={item.code} item={item} />
+                ))}
+              </ul>
+            )}
           </section>
+          <details className="export-disclosure import-compat" id="import-compat">
+            <summary>
+              <ChevronRight size={15} aria-hidden="true" className="chev" />
+              <span className="export-disclosure-title">Compatibility details</span>
+              <span className="muted">
+                {notes.technical.length === 1
+                  ? '1 technical note'
+                  : `${notes.technical.length} technical notes`}
+              </span>
+            </summary>
+            <div className="export-disclosure-body">
+              <dl className="dslr-import-facts">
+                <dt>Template</dt>
+                <dd>{p.templateName}</dd>
+                <dt>Size</dt>
+                <dd>{sizeLine}</dd>
+                <dt>Photos</dt>
+                <dd>{photosLine}</dd>
+                <dt>Pictures</dt>
+                <dd>{p.images}</dd>
+              </dl>
+              {notes.technical.length > 0 && (
+                <ul className="import-notes preflight-list">
+                  {notes.technical.map((item) => (
+                    <NoteRow key={item.code} item={item} />
+                  ))}
+                </ul>
+              )}
+            </div>
+          </details>
           {error && (
             <p className="export-error" role="alert">
               <CircleX size={14} aria-hidden="true" /> {error}
