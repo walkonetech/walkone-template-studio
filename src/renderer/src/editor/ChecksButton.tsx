@@ -1,6 +1,7 @@
+import { useEffect } from 'react'
 import { X } from 'lucide-react'
 import { checksButtonState } from '@editor/checks'
-import type { DrawerMode } from '@editor/layout'
+import { panelReturnsFocus, type DrawerMode } from '@editor/layout'
 import { CheckCounts, CheckGroups, TONE_ICON, useProjectChecks } from './CheckList'
 import { tipProps } from './tips'
 import { layoutStore, useLayout } from './layoutStore'
@@ -9,23 +10,40 @@ import { Tooltip } from '../ui/Tooltip'
 import { restoreFocus } from '../ui/restoreFocus'
 
 /**
- * Closes the Checks panel. When keyboard focus was inside it, focus goes back to the top-bar Checks button (never
- * stranded on the page), using programmatic focus restoration so no stale tooltip appears.
+ * Closes the Checks panel and hands focus back to the top-bar Checks button when the panel owned it: focus inside
+ * the panel (a control, or the panel itself after a click on its heading, text or blank space, since the panel is
+ * focusable), or focus stranded on the page with nothing focused. Focus the user moved to another control is left
+ * there. Uses the shared programmatic restoration (B3.1), so no stale tooltip appears and the ring shows when the
+ * user is on the keyboard.
  */
 export function closeChecksReturningFocus(): void {
-  const inside = document.activeElement?.closest('#checks-panel') != null
+  const active = document.activeElement
+  const owned = panelReturnsFocus({
+    focusInPanel: active?.closest('#checks-panel') != null,
+    focusOnPage: active === null || active === document.body || active === document.documentElement
+  })
   layoutStore.getState().setChecksOpen(false)
-  if (inside) restoreFocus(document.getElementById('checks-button'))
+  if (owned) restoreFocus(document.getElementById('checks-button'))
 }
 
-/** Focus the Checks panel's first control (its first group, else its Close button). */
+/**
+ * Keyboard entry into the Checks panel: its first actionable control (a group heading or a card action), else the
+ * panel itself (a labelled landmark: a Ready panel has no actions to land on). The header's Close button is not the
+ * entry point, so Enter on the Checks button never lands on a control that closes the panel again.
+ */
 export function focusChecksPanel(): void {
-  document
-    .querySelector<HTMLElement>(
-      '#checks-panel .check-groups summary, #checks-panel .drawer-header button'
-    )
-    ?.focus()
+  const panel = document.getElementById('checks-panel')
+  if (!panel) return
+  const first = panel.querySelector<HTMLElement>(
+    '.checks-panel-body summary, .checks-panel-body button:not(:disabled)'
+  )
+  ;(first ?? panel).focus()
 }
+
+/** Set when the Checks button is activated from the keyboard; the panel consumes it once it has mounted. */
+let focusPanelOnOpen = false
+/** Enter / Space pressed on the Checks button (cleared by any pointer press). */
+let keyboardActivation = false
 
 /**
  * Top-bar Checks (B4): opens the Checks panel on the left. The button reads its state with an icon, a tone and
@@ -48,11 +66,20 @@ export function ChecksButton(): React.JSX.Element | null {
         aria-controls={open ? 'checks-panel' : undefined}
         aria-label={`Checks: ${checks.headline.text}`}
         data-state={state.text}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') keyboardActivation = true
+        }}
+        onPointerDown={() => {
+          keyboardActivation = false
+        }}
         onClick={(e) => {
+          // Opened from the keyboard (Enter / Space, or an assistive-technology click with no pointer click count):
+          // focus moves into the panel once it has mounted, so Tab continues there. A mouse click leaves focus on
+          // the button.
+          const fromKeyboard = keyboardActivation || e.detail === 0
+          keyboardActivation = false
+          focusPanelOnOpen = !open && fromKeyboard
           layoutStore.getState().setChecksOpen(!open)
-          // Opened from the keyboard (Enter / Space: no pointer click count): move focus into the panel so Tab
-          // continues there. A mouse click leaves focus where it is.
-          if (!open && e.detail === 0) requestAnimationFrame(focusChecksPanel)
         }}
       >
         <Icon size={16} strokeWidth={1.9} aria-hidden="true" className="checks-icon" />
@@ -84,12 +111,22 @@ export const CHECKS_PANEL_WIDTH = 320
 export function ChecksPanel({ mode }: { mode: DrawerMode }): React.JSX.Element | null {
   const open = useLayout((s) => s.checksOpen)
   const checks = useProjectChecks()
-  if (!open || !checks) return null
+  const shown = open && checks !== null
+  useEffect(() => {
+    if (shown && focusPanelOnOpen) {
+      focusPanelOnOpen = false
+      focusChecksPanel()
+    }
+  }, [shown])
+  if (!shown) return null
   return (
     <aside
       id="checks-panel"
       className={`tooldrawer checks-panel ${mode}`}
       aria-label="Checks"
+      // Focusable (not a Tab stop): a click on the heading, text or blank space keeps focus in the panel, so Escape
+      // still knows the panel owns focus; it is also the keyboard entry point when there is no action to land on.
+      tabIndex={-1}
       data-editor-panel
       data-region="drawer"
       data-mode={mode}

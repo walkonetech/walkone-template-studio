@@ -43,4 +43,32 @@ describe('B4 source guards', () => {
     expect(src.match(/\{\.\.\.box\}/g)).toHaveLength(2)
     expect(readdirSync(root)).toContain('illustrations.tsx')
   })
+
+  // B4.1: Checks keyboard focus (the built-app behaviour is covered by validate-7b-b4.js B4.1-1..8).
+  it('the Checks panel is focusable but not a Tab stop, so a click on its static content keeps focus in it', () => {
+    expect(read('ChecksButton.tsx')).toMatch(/id="checks-panel"[\s\S]*?tabIndex=\{-1\}/)
+  })
+
+  it('keyboard open is detected from Enter / Space, not only the click count, and enters the panel after it mounts', () => {
+    const src = read('ChecksButton.tsx')
+    expect(src).toMatch(/e\.key === 'Enter' \|\| e\.key === ' '/)
+    expect(src).toMatch(/useEffect\([\s\S]*?focusChecksPanel\(\)/)
+    expect(src).not.toMatch(/requestAnimationFrame\(focusChecksPanel\)/)
+  })
+
+  it('keyboard entry lands on the panel body (a group or an action), never the header Close button', () => {
+    const src = read('ChecksButton.tsx')
+    const fn = src.slice(
+      src.indexOf('export function focusChecksPanel'),
+      src.indexOf('let focusPanelOnOpen')
+    )
+    expect(fn).toMatch(/\.checks-panel-body summary/)
+    expect(fn).not.toMatch(/drawer-header/)
+  })
+
+  it('closing Checks restores focus through the shared restoreFocus (no Checks-specific tooltip hack)', () => {
+    const src = read('ChecksButton.tsx')
+    expect(src).toMatch(/panelReturnsFocus\(/)
+    expect(src).toMatch(/restoreFocus\(document\.getElementById\('checks-button'\)\)/)
+  })
 })

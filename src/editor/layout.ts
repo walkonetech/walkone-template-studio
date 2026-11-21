@@ -181,6 +181,15 @@ export function escapeTarget(s: {
   return null
 }
 
+/**
+ * When a non-modal panel (the Checks panel) closes, does focus go back to its trigger? Yes when the panel owned focus:
+ * focus inside it (a control, or the focusable panel itself after a click on its heading, text or blank space), or
+ * focus stranded on the page with nothing focused. No when the user moved focus to another control on purpose: that
+ * control keeps it (B4.1).
+ */
+export const panelReturnsFocus = (s: { focusInPanel: boolean; focusOnPage: boolean }): boolean =>
+  s.focusInPanel || s.focusOnPage
+
 /** F6 / Shift+F6 cycle through these landmarks, skipping the ones not on screen (7A). */
 export const REGION_ORDER = [
   'topbar',

@@ -169,6 +169,7 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] **dslrBooth import** (a two-strip 4×6 template): "We found a 2×6 design printed twice on a 4×6 sheet"; **One 2×6 strip, printed two per sheet** is first, Recommended and selected; **The 4×6 sheet exactly as it is** is the other choice; **For you** explains the choice and lists what needs attention; **Compatibility details** starts closed. Import gives the same project as before.
 - [ ] **Safe-area warning:** put text near the edge of a red background with Safe areas on: the red dashed warning outline has a dark edge around it and stays readable; it is the same box as before, and it never appears in exports.
 - [ ] Repeat the dialogs in **Dark** and **Compact**.
+- [ ] **Checks focus (B4.1):** Tab to the Checks button and press Enter: focus moves into the panel (a group heading, with a ring). Tab walks Select / Select all / Printer & cutting… / Details and then leaves the panel; Shift+Tab goes back. Esc returns focus to the Checks button (ring, no tooltip). Open Checks with the mouse, click its heading, a card's text or the empty header space, press Esc: the panel closes and focus is on the Checks button. Open Checks, click a rail tool: focus stays on that tool.
 
 ### H. UI, accessibility, polish
 - [ ] Tooltips on icon-only controls, with shortcut hints.

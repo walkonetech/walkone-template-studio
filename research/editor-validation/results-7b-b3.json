@@ -515,7 +515,7 @@
       },
       "propsTab": {
         "props": true,
-        "sel": ["a18431a8-96a9-40fa-bcb5-b84955c93a2b"],
+        "sel": ["30a89d1e-a1c4-4d0c-94ea-df6ce86566fc"],
         "badge": "Text"
       }
     }
@@ -545,7 +545,7 @@
     "ok": true,
     "detail": {
       "slot": {
-        "id": "d33f75a8-67a1-475b-846d-cee26916386c",
+        "id": "2d424e6d-a7f5-4356-878f-ed16c3d2332a",
         "type": "photo",
         "n": 4
       },

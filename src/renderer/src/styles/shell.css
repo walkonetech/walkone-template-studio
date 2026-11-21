@@ -1568,6 +1568,11 @@
 .checks-panel {
   max-width: calc(100% - 16px);
 }
+/* The panel itself takes focus only as the keyboard entry point of a Ready panel (the ring is drawn inside it) or
+   after a click on its static content (no ring: a pointer focus is not :focus-visible). */
+.checks-panel:focus-visible {
+  outline-offset: calc(var(--focus-width) * -1);
+}
 .checks-panel-summary {
   flex: none;
   padding: 0 var(--sp-4) var(--sp-3);

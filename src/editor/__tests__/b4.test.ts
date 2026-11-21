@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { panelReturnsFocus } from '../layout'
 import {
   actionLabel,
   buildChecks,
@@ -310,5 +311,17 @@ describe('dslrBooth import presentation (B1 mockup 10)', () => {
     ])
     expect(s.forYou.length + s.technical.length).toBe(notes.length)
     expect(FOR_YOU_NOTES).toContain('flattened-artwork')
+  })
+})
+
+describe('B4.1: closing the Checks panel returns focus to its trigger only when the panel owned focus', () => {
+  it('focus inside the panel (a control, or the panel after a click on its heading, text or blank space) returns', () => {
+    expect(panelReturnsFocus({ focusInPanel: true, focusOnPage: false })).toBe(true)
+  })
+  it('focus stranded on the page (nothing focused) returns, so the keyboard user is never left on <body>', () => {
+    expect(panelReturnsFocus({ focusInPanel: false, focusOnPage: true })).toBe(true)
+  })
+  it('focus the user moved to another control stays there (no theft back to Checks)', () => {
+    expect(panelReturnsFocus({ focusInPanel: false, focusOnPage: false })).toBe(false)
   })
 })

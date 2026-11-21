@@ -109,7 +109,7 @@
     "name": "6b Select all selects exactly the merged layers; Details opens with their names; the panel stays open",
     "ok": true,
     "detail": {
-      "sel": ["bfd34cf9-95f4-4fe3-8914-647e5a760b4e", "f1d199cc-baf9-48d2-b6c7-0e83d34e165a"],
+      "sel": ["73ae58df-06ef-46e4-803d-f1545c08bb47", "74752c19-3895-4173-b731-53beefff9621"],
       "det": "Layers JUNE 14 · 2027, Hashtag"
     }
   },
@@ -129,6 +129,206 @@
       "open": false,
       "focus": "checks-button",
       "tip": false
+    }
+  },
+  {
+    "name": "B4.1-1 Enter on the Checks button opens the panel and moves keyboard focus into it (first group heading, with a ring)",
+    "ok": true,
+    "detail": {
+      "open": true,
+      "inside": true,
+      "id": "",
+      "tag": "SUMMARY",
+      "text": "Error1",
+      "action": null,
+      "close": false,
+      "ring": true,
+      "tip": false
+    }
+  },
+  {
+    "name": "B4.1-2 Tab reaches the Checks actions (Select, Select all, Printer & cutting…, Details) in order, then leaves the panel (no trap)",
+    "ok": true,
+    "detail": {
+      "reached": [
+        "Error1",
+        "select",
+        "Details",
+        "Needs attention2",
+        "select-all",
+        "Details",
+        "select-all",
+        "printer",
+        "Details",
+        "Good to know3"
+      ],
+      "left": {
+        "open": true,
+        "inside": false,
+        "id": "",
+        "tag": "BUTTON",
+        "text": "Design",
+        "action": null,
+        "close": false,
+        "ring": true,
+        "tip": false
+      }
+    }
+  },
+  {
+    "name": "B4.1-3 Shift+Tab reverses: back into the panel at its last control, then the one before it",
+    "ok": true,
+    "detail": {
+      "back1": "Good to know3",
+      "back2": "Details"
+    }
+  },
+  {
+    "name": "B4.1-4 Escape from a focused panel control closes Checks and returns focus to the Checks button (ring, no stale tooltip)",
+    "ok": true,
+    "detail": {
+      "open": false,
+      "inside": false,
+      "id": "checks-button",
+      "tag": "BUTTON",
+      "text": "Checks12",
+      "action": null,
+      "close": false,
+      "ring": true,
+      "tip": false
+    }
+  },
+  {
+    "name": "B4.1-5 pointer click on the Checks heading, card text or blank space, then Escape: closes and focus returns to the Checks button (docked + floating)",
+    "ok": true,
+    "detail": [
+      {
+        "size": "1920x1000",
+        "what": "heading",
+        "pointerOpenKeptFocus": true,
+        "staticHit": true,
+        "focusAfterClick": "checks-panel",
+        "closed": true,
+        "focus": "checks-button",
+        "ring": true,
+        "tip": false
+      },
+      {
+        "size": "1920x1000",
+        "what": "card text",
+        "pointerOpenKeptFocus": true,
+        "staticHit": true,
+        "focusAfterClick": "checks-panel",
+        "closed": true,
+        "focus": "checks-button",
+        "ring": true,
+        "tip": false
+      },
+      {
+        "size": "1920x1000",
+        "what": "blank space",
+        "pointerOpenKeptFocus": true,
+        "staticHit": true,
+        "focusAfterClick": "checks-panel",
+        "closed": true,
+        "focus": "checks-button",
+        "ring": true,
+        "tip": false
+      },
+      {
+        "size": "1426x779",
+        "what": "heading",
+        "pointerOpenKeptFocus": true,
+        "staticHit": true,
+        "focusAfterClick": "checks-panel",
+        "closed": true,
+        "focus": "checks-button",
+        "ring": true,
+        "tip": false
+      },
+      {
+        "size": "1426x779",
+        "what": "card text",
+        "pointerOpenKeptFocus": true,
+        "staticHit": true,
+        "focusAfterClick": "checks-panel",
+        "closed": true,
+        "focus": "checks-button",
+        "ring": true,
+        "tip": false
+      },
+      {
+        "size": "1426x779",
+        "what": "blank space",
+        "pointerOpenKeptFocus": true,
+        "staticHit": true,
+        "focusAfterClick": "checks-panel",
+        "closed": true,
+        "focus": "checks-button",
+        "ring": true,
+        "tip": false
+      }
+    ]
+  },
+  {
+    "name": "B4.1-6 restored Checks-button focus shows no stale tooltip; a mouse open does not pull focus into the panel",
+    "ok": true,
+    "detail": [
+      {
+        "tip": false,
+        "kept": true
+      },
+      {
+        "tip": false,
+        "kept": true
+      },
+      {
+        "tip": false,
+        "kept": true
+      },
+      {
+        "tip": false,
+        "kept": true
+      },
+      {
+        "tip": false,
+        "kept": true
+      },
+      {
+        "tip": false,
+        "kept": true
+      }
+    ]
+  },
+  {
+    "name": "B4.1-7 a click on another shell control (a rail tool) closes Checks and keeps focus on that control; a second Checks click closes it, focus stays on the button",
+    "ok": true,
+    "detail": {
+      "moved": {
+        "checks": false,
+        "drawer": true,
+        "focusTool": "text",
+        "focus": ""
+      },
+      "toggled": {
+        "open": false,
+        "inside": false,
+        "id": "checks-button",
+        "tag": "BUTTON",
+        "text": "Checks12",
+        "action": null,
+        "close": false,
+        "ring": false,
+        "tip": false
+      }
+    }
+  },
+  {
+    "name": "B4.1-8 Checks focus handling changes nothing in the project: not Modified, no new undo step",
+    "ok": true,
+    "detail": {
+      "past": [11, 11],
+      "dirty": [true, true]
     }
   },
   {
@@ -632,8 +832,8 @@
     "name": "30b safe areas (and the halo) never reach a render or an export: renders are identical with safe areas on and off",
     "ok": true,
     "detail": {
-      "r1": "689614:1301670",
-      "r2": "689614:1301670",
+      "r1": "689614:1301730",
+      "r2": "689614:1301730",
       "renders": {}
     }
   },

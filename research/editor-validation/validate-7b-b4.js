@@ -7,7 +7,10 @@
 // we know?, trim still estimated, production booth unverified, no developer paths); dslrBooth import (found summary,
 // one-strip Recommended + selected, as-is option, Compatibility details collapsed, import result); the safe-area
 // warning halo over red artwork (same rectangle, no export impact); Dark + Compact; no Sample Photos anywhere; owner
-// screenshots. Uses a SYNTHETIC two-strip template made by inspect-import.py; no private fixtures.
+// screenshots. B4.1: Checks keyboard focus (Enter moves focus into the panel, Tab / Shift+Tab through its actions
+// without a trap, Escape after a control OR after a pointer click on static panel content returns focus to the
+// Checks button with a ring and no stale tooltip, a click on another shell control keeps its focus).
+// Uses a SYNTHETIC two-strip template made by inspect-import.py; no private fixtures.
 // Run: npm run build && node research/editor-validation/validate-7b-b4.js
 const fs = require('fs')
 const path = require('path')
@@ -242,6 +245,165 @@ const SAMPLE_WORDS = /sample photo|shuffle|reset samples|choose photo|reposition
       !esc.open && esc.focus === 'checks-button' && !esc.tip,
       esc
     )
+
+    // ---------------------------------------------------------------- B4.1: Checks keyboard focus
+    // Real key and pointer input (Input.dispatch*), so the focus behaviour is the browser's own, not .focus() calls.
+    const docBefore41 = await doc(c)
+    const tab = (shift = false) => c.key('Tab', { code: 'Tab', vk: 9, modifiers: shift ? 8 : 0 })
+    const focusInfo = () =>
+      J(c)(
+        `(()=>{const a=document.activeElement; const p=document.getElementById('checks-panel'); return {open:!!p, inside:!!p&&p.contains(a), id:a.id, tag:a.tagName, text:(a.textContent||'').trim().slice(0,40), action:a.dataset?.action??null, close:!!a.closest('#checks-panel .drawer-header'), ring:a.matches(':focus-visible'), tip:!!document.querySelector('.ui-tip')}})()`
+      )
+    const centre = (sel) =>
+      J(c)(
+        `(()=>{const e=document.querySelector(${JSON.stringify(sel)}); if(!e) return null; const r=e.getBoundingClientRect(); return {x:Math.round(r.left+Math.min(12,r.width/2)), y:Math.round(r.top+r.height/2)}})()`
+      )
+    const pointerOpenChecks = async () => {
+      if (await c.ev(`!!document.getElementById('checks-panel')`)) return
+      await c.click(await centre('#checks-button'))
+      await sleep(350)
+    }
+    // K41a: Enter on the keyboard-focused Checks button moves focus INTO the panel (first group heading, not Close).
+    await c.ev(`document.getElementById('checks-button').focus(); 1`)
+    await c.key('Enter', { code: 'Enter', vk: 13, text: '\r' })
+    await sleep(400)
+    const kOpen = await focusInfo()
+    check(
+      'B4.1-1 Enter on the Checks button opens the panel and moves keyboard focus into it (first group heading, with a ring)',
+      kOpen.open && kOpen.inside && kOpen.tag === 'SUMMARY' && !kOpen.close && kOpen.ring,
+      kOpen
+    )
+    // K41b: Tab walks the panel's actions in order; Shift+Tab goes back; Tab eventually leaves (not a trap).
+    const walk = [kOpen]
+    for (let i = 0; i < 40; i++) {
+      await tab()
+      const f = await focusInfo()
+      walk.push(f)
+      if (!f.inside) break
+    }
+    const reached = walk.filter((f) => f.inside).map((f) => f.action || f.text)
+    const hasActions = ['select', 'select-all', 'printer'].every((a) =>
+      walk.some((f) => f.inside && f.action === a)
+    )
+    const detailsReached = walk.some(
+      (f) => f.inside && f.tag === 'SUMMARY' && /^Details/.test(f.text)
+    )
+    const left = walk[walk.length - 1]
+    check(
+      'B4.1-2 Tab reaches the Checks actions (Select, Select all, Printer & cutting…, Details) in order, then leaves the panel (no trap)',
+      hasActions && detailsReached && !left.inside && left.open,
+      { reached, left }
+    )
+    // Shift+Tab from outside comes back to the panel's last control; once more goes to the one before it.
+    await tab(true)
+    const back1 = await focusInfo()
+    await tab(true)
+    const back2 = await focusInfo()
+    const insideWalk = walk.filter((f) => f.inside)
+    check(
+      'B4.1-3 Shift+Tab reverses: back into the panel at its last control, then the one before it',
+      back1.inside &&
+        back2.inside &&
+        back1.text === insideWalk[insideWalk.length - 1].text &&
+        back2.text === insideWalk[insideWalk.length - 2].text,
+      { back1: back1.text, back2: back2.text }
+    )
+    await escape(c)
+    await sleep(250)
+    const kEsc = await focusInfo()
+    check(
+      'B4.1-4 Escape from a focused panel control closes Checks and returns focus to the Checks button (ring, no stale tooltip)',
+      !kEsc.open && kEsc.id === 'checks-button' && kEsc.ring && !kEsc.tip,
+      kEsc
+    )
+    // K41c: the Windows defect. Pointer-open, then a pointer click on static content (heading / card text / blank
+    // space), then Escape: focus must return to the Checks button. Docked (1920×1000) and floating (1426×779).
+    const staticResults = []
+    for (const [w, ht] of [
+      [1920, 1000],
+      [1426, 779]
+    ]) {
+      await size(c, w, ht)
+      for (const [what, sel] of [
+        ['heading', '#checks-panel .drawer-title'],
+        ['card text', '#checks-panel .check-card .check-title'],
+        ['blank space', '#checks-panel .drawer-header']
+      ]) {
+        await pointerOpenChecks()
+        const pOpen = await focusInfo()
+        let p = await centre(sel)
+        if (what === 'blank space') {
+          // The header's empty stretch between the title and the Close button: no text, no control.
+          const b = await J(c)(
+            `(()=>{const t=document.querySelector('#checks-panel .drawer-title').getBoundingClientRect(); const x=document.querySelector('#checks-panel .drawer-header button').getBoundingClientRect(); return {x:Math.round((t.right+x.left)/2), y:Math.round(t.top+t.height/2)}})()`
+          )
+          p = b
+        }
+        await c.click(p)
+        await sleep(200)
+        const hit = await J(c)(
+          `(()=>{const e=document.elementFromPoint(${p.x},${p.y}); return {ok:!!e&&!!e.closest('#checks-panel')&&!e.closest('button,summary,a,input'), focus:document.activeElement.id||document.activeElement.tagName}})()`
+        )
+        await escape(c)
+        await sleep(250)
+        const after = await focusInfo()
+        staticResults.push({
+          size: `${w}x${ht}`,
+          what,
+          pointerOpenKeptFocus: !pOpen.inside,
+          staticHit: hit.ok,
+          focusAfterClick: hit.focus,
+          closed: !after.open,
+          focus: after.id,
+          ring: after.ring,
+          tip: after.tip
+        })
+      }
+    }
+    check(
+      'B4.1-5 pointer click on the Checks heading, card text or blank space, then Escape: closes and focus returns to the Checks button (docked + floating)',
+      staticResults.every((r) => r.staticHit && r.closed && r.focus === 'checks-button' && r.ring),
+      staticResults
+    )
+    check(
+      'B4.1-6 restored Checks-button focus shows no stale tooltip; a mouse open does not pull focus into the panel',
+      staticResults.every((r) => !r.tip && r.pointerOpenKeptFocus),
+      staticResults.map((r) => ({ tip: r.tip, kept: r.pointerOpenKeptFocus }))
+    )
+    // K41d: the user intentionally moves to another shell control: focus stays there (no theft back to Checks).
+    await pointerOpenChecks()
+    await c.click(await centre('#checks-panel .drawer-title'))
+    await sleep(150)
+    await c.click(await centre('.toolrail [data-tool="text"]'))
+    await sleep(400)
+    const moved = await J(c)(
+      `({checks:!!document.getElementById('checks-panel'), drawer:!!document.getElementById('tool-drawer'), focusTool:document.activeElement.dataset?.tool??null, focus:document.activeElement.id})`
+    )
+    // Clicking the Checks button again (mouse) closes it and focus stays on the button.
+    await c.click(await centre('.toolrail [data-tool="text"]'))
+    await sleep(300)
+    await pointerOpenChecks()
+    await c.click(await centre('#checks-button'))
+    await sleep(300)
+    const toggled = await focusInfo()
+    check(
+      'B4.1-7 a click on another shell control (a rail tool) closes Checks and keeps focus on that control; a second Checks click closes it, focus stays on the button',
+      !moved.checks &&
+        moved.drawer &&
+        moved.focusTool === 'text' &&
+        !toggled.open &&
+        toggled.id === 'checks-button',
+      { moved, toggled }
+    )
+    const docAfter41 = await doc(c)
+    check(
+      'B4.1-8 Checks focus handling changes nothing in the project: not Modified, no new undo step',
+      docAfter41.json === docBefore41.json &&
+        docAfter41.past === docBefore41.past &&
+        docAfter41.dirty === docBefore41.dirty,
+      { past: [docBefore41.past, docAfter41.past], dirty: [docBefore41.dirty, docAfter41.dirty] }
+    )
+    await size(c, 1920, 1000)
     // Ready with notes only: fix the colour and the font, keep the hidden layer and the provisional-profile note.
     await c.ev(`${S}.undo(); 1`)
     await c.ev(
