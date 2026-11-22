@@ -103,6 +103,14 @@ const setInput = async (c, ctxSel, label, value) => {
   return true
 }
 
+/** B5: secondary Properties sections start closed; open them (by data-section id) before using their fields. */
+const openSections = async (c, ids) => {
+  await c.ev(
+    `(()=>{for(const id of ${JSON.stringify(ids)}){const t=document.querySelector('.inspector-panel [data-section="'+id+'"] .psection-toggle'); if(t&&t.getAttribute('aria-expanded')==='false') t.click()} return 1})()`
+  )
+  await new Promise((r) => setTimeout(r, 200))
+}
+
 ;(async () => {
   const work = h.tmpDir('wts-5b-')
   const A = path.join(work, 'src')
@@ -194,6 +202,7 @@ const setInput = async (c, ctxSel, label, value) => {
         `(()=>{const g=document.querySelector('[data-testid=workspace-mode]'); return g.getAttribute('role')==='radiogroup' && g.querySelectorAll('[role=radio]').length===2 && g.getAttribute('aria-label')==='Workspace view'})()`
       )
     )
+    await openSections(c, ['printing-notes'])
     check(
       '2e printer guidance is shown in Properties (project summary)',
       await c.ev(
@@ -403,6 +412,7 @@ const setInput = async (c, ctxSel, label, value) => {
     const before = await state(c)
     const ph = (s2) => s2.layers.filter((l) => l.type === 'photo')
     const pastB = before.past
+    await openSections(c, ['selection-position', 'position'])
     const okX = await setInput(c, '.inspector-panel', 'X', 200)
     st = await state(c)
     const dx = ph(st)[0].x - ph(before)[0].x
@@ -481,6 +491,7 @@ const setInput = async (c, ctxSel, label, value) => {
       .filter((l) => l.type === 'photo')
       .slice(0, 2)
       .map((l) => [l.x, l.y])
+    await openSections(c, ['position'])
     await setInput(c, '.inspector-panel', 'X', 500)
     const gAfter = await state(c)
     const g2 = gAfter.layers.find((l) => l.type === 'group')

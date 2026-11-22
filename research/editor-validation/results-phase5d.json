@@ -1,268 +1,364 @@
 {
-  "passed": 41,
-  "total": 41,
-  "failed": [],
-  "results": [
-    {
-      "name": "1 clicking the Font field opens a searchable list (combobox + listbox), showing installed fonts",
-      "ok": true,
-      "detail": {
-        "rows": 60,
-        "openMs": 763
-      }
+ "passed": 41,
+ "total": 41,
+ "failed": [],
+ "results": [
+  {
+   "name": "1 clicking the Font field opens a searchable list (combobox + listbox), showing installed fonts",
+   "ok": true,
+   "detail": {
+    "rows": 60,
+    "openMs": 758
+   }
+  },
+  {
+   "name": "2 typing searches case-insensitively by substring (all rows contain \"did\"; Didot is offered)",
+   "ok": true,
+   "detail": [
+    "Didot",
+    "Use “did”type to request"
+   ]
+  },
+  {
+   "name": "3 browsing and typing never change the layer or history",
+   "ok": true
+  },
+  {
+   "name": "3b Escape closes the list without changing the font",
+   "ok": true
+  },
+  {
+   "name": "4 choosing an installed font with the keyboard sets it (one history entry)",
+   "ok": true,
+   "detail": {
+    "fontNow": "Didot"
+   }
+  },
+  {
+   "name": "4b the canvas draws the requested family first, then the fallback stack",
+   "ok": true,
+   "detail": "Didot, Helvetica, Arial, sans-serif"
+  },
+  {
+   "name": "4c an installed font shows no missing warning",
+   "ok": true
+  },
+  {
+   "name": "5 a font that is not installed can still be requested by typing its name (manual entry)",
+   "ok": true,
+   "detail": [
+    "Use “Bickham Script Pro”type to request"
+   ]
+  },
+  {
+   "name": "5b the missing font shows a clear, non-destructive warning and the requested family is preserved",
+   "ok": true
+  },
+  {
+   "name": "5c the canvas renders with the fallback stack while the project keeps the requested name",
+   "ok": true,
+   "detail": "Bickham Script Pro, Helvetica, Arial, sans-serif"
+  },
+  {
+   "name": "6 project font inventory lists the fonts used and flags the missing one",
+   "ok": true,
+   "detail": {
+    "inv": {
+     "summary": "1 font used, 1 missing",
+     "rows": [
+      "Bickham Script Promissing · 1×Replace…"
+     ]
     },
-    {
-      "name": "2 typing searches case-insensitively by substring (all rows contain \"did\"; Didot is offered)",
-      "ok": true,
-      "detail": ["Didot", "Use “did”type to request"]
-    },
-    {
-      "name": "3 browsing and typing never change the layer or history",
-      "ok": true
-    },
-    {
-      "name": "3b Escape closes the list without changing the font",
-      "ok": true
-    },
-    {
-      "name": "4 choosing an installed font with the keyboard sets it (one history entry)",
-      "ok": true,
-      "detail": {
-        "fontNow": "Didot"
-      }
-    },
-    {
-      "name": "4b the canvas draws the requested family first, then the fallback stack",
-      "ok": true,
-      "detail": "Didot, Helvetica, Arial, sans-serif"
-    },
-    {
-      "name": "4c an installed font shows no missing warning",
-      "ok": true
-    },
-    {
-      "name": "5 a font that is not installed can still be requested by typing its name (manual entry)",
-      "ok": true,
-      "detail": ["Use “Bickham Script Pro”type to request"]
-    },
-    {
-      "name": "5b the missing font shows a clear, non-destructive warning and the requested family is preserved",
-      "ok": true
-    },
-    {
-      "name": "5c the canvas renders with the fallback stack while the project keeps the requested name",
-      "ok": true,
-      "detail": "Bickham Script Pro, Helvetica, Arial, sans-serif"
-    },
-    {
-      "name": "6 project font inventory lists the fonts used and flags the missing one",
-      "ok": true,
-      "detail": {
-        "inv": {
-          "summary": "1 font used, 1 missing",
-          "rows": ["Bickham Script Promissing · 1×Replace…"]
-        },
-        "invDbg": {
-          "drawer": true,
-          "bg": false,
-          "invHtml": "<section aria-label=\"Project fonts\" data-testid=\"font-inventory\"><h3 class=\"section-heading\">Fonts in this project</h3><p class=\"field-note\" data-testid=\"font-summary\">1 font used, 1 missing</p><ul class=\"font-inventory\"><li class=\"font-inv-row missing\"><span class=\"font-inv-state\"><svg xmlns=\"http:",
-          "tool": ["Text"]
-        }
-      }
-    },
-    {
-      "name": "7 Replace all uses swaps every matching layer (any spelling) in ONE undo step, keeps their other properties, leaves other fonts alone",
-      "ok": true,
-      "detail": ["Georgia", "Georgia"]
-    },
-    {
-      "name": "7b undo restores the requested (missing) fonts exactly",
-      "ok": true
-    },
-    {
-      "name": "8 Fit height to content: 3 lines × 100 px × 1.2 → 360; width, position, size kept; one history entry",
-      "ok": true,
-      "detail": {
-        "h": 360
-      }
-    },
-    {
-      "name": "8b after changing the font size the fit follows (3 × 200 × 1.2 = 720)",
-      "ok": true,
-      "detail": 720
-    },
-    {
-      "name": "8c a narrow width wraps to more lines and the box grows to match (multiples of 120)",
-      "ok": true,
-      "detail": 1920
-    },
-    {
-      "name": "9 \"Add basic colors\" creates the semantic roles in one step (neutral values; Background matches the canvas)",
-      "ok": true
-    },
-    {
-      "name": "10 text colour linked to Accent through the UI (reference, not a copy)",
-      "ok": true
-    },
-    {
-      "name": "10b a linked colour field names the palette entry and still offers \"Use fixed color\"",
-      "ok": true
-    },
-    {
-      "name": "11 shape fill, photo frame colour, shape stroke and canvas background can all be linked to a palette entry",
-      "ok": true,
-      "detail": {
-        "labels": [
-          "Link Fill color to an Event Palette color",
-          "Link Stroke color to an Event Palette color"
-        ],
-        "pl": ["Link Frame color to an Event Palette color"]
-      }
-    },
-    {
-      "name": "11b the palette shows how many properties use Accent",
-      "ok": true,
-      "detail": "Used by 4"
-    },
-    {
-      "name": "12 editing Accent (typed hex + Enter) is ONE history entry, marks Modified, and updates the palette value",
-      "ok": true
-    },
-    {
-      "name": "12b every property linked to Accent updates at once (rectangle fill, photo frame) while the canvas background, linked to the Background entry, stays white",
-      "ok": true,
-      "detail": {
-        "before": [
-          [198, 164, 93, 255],
-          [198, 164, 93, 255],
-          [255, 255, 255, 255]
-        ],
-        "after": [
-          [211, 167, 78, 255],
-          [211, 167, 78, 255],
-          [255, 255, 255, 255]
-        ],
-        "photo": {
-          "id": "0cee0d0f-21d6-44f2-89fd-2aa2274a5f13",
-          "type": "photo",
-          "name": "Photo 1",
-          "x": 100,
-          "y": 1300,
-          "width": 1000,
-          "height": 700,
-          "frame": {
-            "style": "solid",
-            "thickness": 40,
-            "color": {
-              "kind": "palette",
-              "paletteColorId": "f3163471-0a26-4ea2-a91a-58f768a650b8"
-            }
-          },
-          "locked": false
-        }
-      }
-    },
-    {
-      "name": "13 undo restores the old Accent everywhere; redo reapplies",
-      "ok": true
-    },
-    {
-      "name": "13b typing a partial HEX commits nothing (no history entry per keystroke)",
-      "ok": true
-    },
-    {
-      "name": "13c Escape restores the field and still commits nothing",
-      "ok": true
-    },
-    {
-      "name": "14 Print Preview: both derived copies use the same new palette colour (no per-copy palette)",
-      "ok": true,
-      "detail": [
-        [211, 167, 78, 255],
-        [211, 167, 78, 255],
-        [211, 167, 78, 255],
-        [211, 167, 78, 255],
-        [255, 255, 255, 255],
-        [255, 255, 255, 255]
-      ]
-    },
-    {
-      "name": "14c entering Print Preview closed the Colors drawer (B3.1)",
-      "ok": true
-    },
-    {
-      "name": "15 \"Use fixed color\" resolves the current palette value into a literal (appearance unchanged)",
-      "ok": true,
-      "detail": {
-        "kind": "literal",
-        "value": "#d3a74e"
-      }
-    },
-    {
-      "name": "16 after changing Accent again: the detached rectangle stays #d3a74e while the still-linked frame follows (#aa3355)",
-      "ok": true,
-      "detail": [
-        [211, 167, 78, 255],
-        [170, 51, 85, 255],
-        [255, 255, 255, 255]
-      ]
-    },
-    {
-      "name": "16b canvas background linked to Accent shows the current Accent (#aa3355)",
-      "ok": true,
-      "detail": [[170, 51, 85, 255]]
-    },
-    {
-      "name": "17 \"Add color\" creates a custom palette entry with a stable id",
-      "ok": true,
-      "detail": {
-        "id": "f37d2ed7-d2f2-48d4-9771-3c1a4f393bc8",
-        "role": "custom",
-        "name": "Color 1",
-        "value": "#b76e79"
-      }
-    },
-    {
-      "name": "18 renaming a custom colour keeps its id and every reference (and the appearance)",
-      "ok": true
-    },
-    {
-      "name": "19 removing a USED colour is refused with an explanation; nothing changes",
-      "ok": true,
-      "detail": "\"Champagne\" is used by 1 property. Change those to a fixed color or another palette color first."
-    },
-    {
-      "name": "20 after detaching the use, the unused colour can be removed",
-      "ok": true
-    },
-    {
-      "name": "21 new typography/palette controls have hover tooltips (purpose in one sentence)",
-      "ok": true,
-      "detail": []
-    },
-    {
-      "name": "22 save → reopen: palette entries, palette references and the missing font REQUEST all survive (nothing rewritten)",
-      "ok": true
-    },
-    {
-      "name": "22b the missing-font warning is shown again after reopening",
-      "ok": true
-    },
-    {
-      "name": "23 crash recovery restores the palette edit and the font replacement",
-      "ok": true,
-      "detail": {
-        "accent": "#445566"
-      }
-    },
-    {
-      "name": "S1 renderer still has no Node access; CSP unchanged; local-fonts is the only permission granted",
-      "ok": true
-    },
-    {
-      "name": "S2 other permissions are not granted (geolocation is not \"granted\")",
-      "ok": true,
-      "detail": "denied"
+    "invDbg": {
+     "drawer": true,
+     "bg": false,
+     "invHtml": "<section aria-label=\"Project fonts\" data-testid=\"font-inventory\"><h3 class=\"section-heading\">Fonts in this project</h3><p class=\"field-note\" data-testid=\"font-summary\">1 font used, 1 missing</p><ul class=\"font-inventory\"><li class=\"font-inv-row missing\"><span class=\"font-inv-state\"><svg xmlns=\"http:",
+     "tool": [
+      "Text"
+     ]
     }
-  ]
+   }
+  },
+  {
+   "name": "7 Replace all uses swaps every matching layer (any spelling) in ONE undo step, keeps their other properties, leaves other fonts alone",
+   "ok": true,
+   "detail": [
+    "Georgia",
+    "Georgia"
+   ]
+  },
+  {
+   "name": "7b undo restores the requested (missing) fonts exactly",
+   "ok": true
+  },
+  {
+   "name": "8 Fit height to content: 3 lines × 100 px × 1.2 → 360; width, position, size kept; one history entry",
+   "ok": true,
+   "detail": {
+    "h": 360
+   }
+  },
+  {
+   "name": "8b after changing the font size the fit follows (3 × 200 × 1.2 = 720)",
+   "ok": true,
+   "detail": 720
+  },
+  {
+   "name": "8c a narrow width wraps to more lines and the box grows to match (multiples of 120)",
+   "ok": true,
+   "detail": 1920
+  },
+  {
+   "name": "9 \"Add basic colors\" creates the semantic roles in one step (neutral values; Background matches the canvas)",
+   "ok": true
+  },
+  {
+   "name": "10 text colour linked to Accent through the UI (reference, not a copy)",
+   "ok": true
+  },
+  {
+   "name": "10b a linked colour field names the palette entry and still offers \"Use fixed color\"",
+   "ok": true
+  },
+  {
+   "name": "11 shape fill, photo frame colour, shape stroke and canvas background can all be linked to a palette entry",
+   "ok": true,
+   "detail": {
+    "labels": [
+     "Link Fill color to an Event Palette color",
+     "Link Stroke color to an Event Palette color"
+    ],
+    "pl": [
+     "Link Frame color to an Event Palette color"
+    ]
+   }
+  },
+  {
+   "name": "11b the palette shows how many properties use Accent",
+   "ok": true,
+   "detail": "Used by 4"
+  },
+  {
+   "name": "12 editing Accent (typed hex + Enter) is ONE history entry, marks Modified, and updates the palette value",
+   "ok": true
+  },
+  {
+   "name": "12b every property linked to Accent updates at once (rectangle fill, photo frame) while the canvas background, linked to the Background entry, stays white",
+   "ok": true,
+   "detail": {
+    "before": [
+     [
+      198,
+      164,
+      93,
+      255
+     ],
+     [
+      198,
+      164,
+      93,
+      255
+     ],
+     [
+      255,
+      255,
+      255,
+      255
+     ]
+    ],
+    "after": [
+     [
+      211,
+      167,
+      78,
+      255
+     ],
+     [
+      211,
+      167,
+      78,
+      255
+     ],
+     [
+      255,
+      255,
+      255,
+      255
+     ]
+    ],
+    "photo": {
+     "id": "80e85731-fc6d-4902-b3aa-06dfa408aea9",
+     "type": "photo",
+     "name": "Photo 1",
+     "x": 100,
+     "y": 1300,
+     "width": 1000,
+     "height": 700,
+     "frame": {
+      "style": "solid",
+      "thickness": 40,
+      "color": {
+       "kind": "palette",
+       "paletteColorId": "b2b18334-f3b1-437a-b41f-4bac931770d4"
+      }
+     },
+     "locked": false
+    }
+   }
+  },
+  {
+   "name": "13 undo restores the old Accent everywhere; redo reapplies",
+   "ok": true
+  },
+  {
+   "name": "13b typing a partial HEX commits nothing (no history entry per keystroke)",
+   "ok": true
+  },
+  {
+   "name": "13c Escape restores the field and still commits nothing",
+   "ok": true
+  },
+  {
+   "name": "14 Print Preview: both derived copies use the same new palette colour (no per-copy palette)",
+   "ok": true,
+   "detail": [
+    [
+     211,
+     167,
+     78,
+     255
+    ],
+    [
+     211,
+     167,
+     78,
+     255
+    ],
+    [
+     211,
+     167,
+     78,
+     255
+    ],
+    [
+     211,
+     167,
+     78,
+     255
+    ],
+    [
+     255,
+     255,
+     255,
+     255
+    ],
+    [
+     255,
+     255,
+     255,
+     255
+    ]
+   ]
+  },
+  {
+   "name": "14c entering Print Preview closed the Colors drawer (B3.1)",
+   "ok": true
+  },
+  {
+   "name": "15 \"Use fixed color\" resolves the current palette value into a literal (appearance unchanged)",
+   "ok": true,
+   "detail": {
+    "kind": "literal",
+    "value": "#d3a74e"
+   }
+  },
+  {
+   "name": "16 after changing Accent again: the detached rectangle stays #d3a74e while the still-linked frame follows (#aa3355)",
+   "ok": true,
+   "detail": [
+    [
+     211,
+     167,
+     78,
+     255
+    ],
+    [
+     170,
+     51,
+     85,
+     255
+    ],
+    [
+     255,
+     255,
+     255,
+     255
+    ]
+   ]
+  },
+  {
+   "name": "16b canvas background linked to Accent shows the current Accent (#aa3355)",
+   "ok": true,
+   "detail": [
+    [
+     170,
+     51,
+     85,
+     255
+    ]
+   ]
+  },
+  {
+   "name": "17 \"Add color\" creates a custom palette entry with a stable id",
+   "ok": true,
+   "detail": {
+    "id": "9a1222fa-cfc8-483d-8c4c-e44a8479717a",
+    "role": "custom",
+    "name": "Color 1",
+    "value": "#b76e79"
+   }
+  },
+  {
+   "name": "18 renaming a custom colour keeps its id and every reference (and the appearance)",
+   "ok": true
+  },
+  {
+   "name": "19 removing a USED colour is refused with an explanation; nothing changes",
+   "ok": true,
+   "detail": "\"Champagne\" is used by 1 property. Change those to a fixed color or another palette color first."
+  },
+  {
+   "name": "20 after detaching the use, the unused colour can be removed",
+   "ok": true
+  },
+  {
+   "name": "21 new typography/palette controls have hover tooltips (purpose in one sentence)",
+   "ok": true,
+   "detail": []
+  },
+  {
+   "name": "22 save → reopen: palette entries, palette references and the missing font REQUEST all survive (nothing rewritten)",
+   "ok": true
+  },
+  {
+   "name": "22b the missing-font warning is shown again after reopening",
+   "ok": true
+  },
+  {
+   "name": "23 crash recovery restores the palette edit and the font replacement",
+   "ok": true,
+   "detail": {
+    "accent": "#445566"
+   }
+  },
+  {
+   "name": "S1 renderer still has no Node access; CSP unchanged; local-fonts is the only permission granted",
+   "ok": true
+  },
+  {
+   "name": "S2 other permissions are not granted (geolocation is not \"granted\")",
+   "ok": true,
+   "detail": "denied"
+  }
+ ]
 }

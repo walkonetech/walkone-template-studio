@@ -1,6 +1,8 @@
 import {
   Clock,
   FolderOpen,
+  Search,
+  Settings,
   Plus,
   TriangleAlert,
   Upload,
@@ -9,7 +11,13 @@ import {
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import type { RecentProjectItem } from '@shared/ipc'
-import { describeWhen, formatPlaceholderSize, recentMeta } from '@editor/welcome'
+import {
+  describeWhen,
+  filterRecents,
+  formatPlaceholderSize,
+  isStripFormat,
+  recentMeta
+} from '@editor/welcome'
 import { guarded, runCommand } from './commandRunner'
 import { isDebugSession } from './debugFlag'
 import { editorStore, useEditor } from './editorStore'
@@ -57,12 +65,24 @@ function ImportArt(): React.JSX.Element {
   )
 }
 
-/** A recent project's format, drawn (there is no thumbnail store yet: B3 shows the shape, not the artwork). */
+/**
+ * A recent project's format, drawn as it prints (B5): the paper on a neutral tile, a 2×6 strip shown as its two
+ * copies side by side on the sheet. There is no thumbnail store (that needs app-side image persistence; deferred), so
+ * the card shows the format, never artwork or sample photos.
+ */
 function RecentArt({ item }: { item: RecentProjectItem }): React.JSX.Element {
-  const size = formatPlaceholderSize(item.print)
+  const size = formatPlaceholderSize(item.print, 88)
+  const strip = isStripFormat(item.print)
   return (
     <span className="recent-art" aria-hidden="true">
-      <span className={`recent-shape${item.print ? '' : ' unknown'}`} style={size} />
+      {strip ? (
+        <span className="recent-sheet">
+          <span className="recent-shape" style={size} />
+          <span className="recent-shape" style={size} />
+        </span>
+      ) : (
+        <span className={`recent-shape${item.print ? '' : ' unknown'}`} style={size} />
+      )}
     </span>
   )
 }
@@ -119,6 +139,8 @@ export function Welcome(): React.JSX.Element {
     }
   }, [])
   const openKeys = shortcutFor('file.open')
+  const [query, setQuery] = useState('')
+  const shown = recents ? filterRecents(recents, query) : null
   return (
     <section className="welcome" aria-labelledby="welcome-title">
       <div className="welcome-inner">
@@ -128,6 +150,20 @@ export function Welcome(): React.JSX.Element {
             <p>Design a print template for dslrBooth, or pick up where you left off.</p>
           </div>
           <div className="welcome-actions">
+            <Tooltip
+              label="Settings"
+              hint="Theme, button size, interface scale and editor helpers"
+              shortcut={shortcutFor('app.settings')}
+            >
+              <Button
+                variant="ghost"
+                icon={Settings}
+                id="start-settings"
+                onClick={() => runCommand('app.settings')}
+              >
+                Settings
+              </Button>
+            </Tooltip>
             {isDebugSession() && (
               <Button
                 variant="ghost"
@@ -192,12 +228,30 @@ export function Welcome(): React.JSX.Element {
             </span>
           </button>
         </div>
-        <h2 className="start-heading">Recent</h2>
-        {recents === null ? null : recents.length === 0 ? (
+        <div className="start-recent-head">
+          <h2 className="start-heading">Recent</h2>
+          {recents && recents.length > 0 && (
+            <label className="recent-search">
+              <Search size={15} aria-hidden="true" />
+              <span className="sr-only">Search recent projects</span>
+              <input
+                type="search"
+                className="ui-input"
+                placeholder="Search recent"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                data-testid="recent-search"
+              />
+            </label>
+          )}
+        </div>
+        {recents === null || shown === null ? null : recents.length === 0 ? (
           <p className="welcome-empty">Projects you open or save will appear here.</p>
+        ) : shown.length === 0 ? (
+          <p className="welcome-empty">No recent project matches “{query}”.</p>
         ) : (
           <ul className="recent-grid" aria-label="Recent projects">
-            {recents.map((r) => (
+            {shown.map((r) => (
               <li key={r.path} className={r.exists ? '' : 'missing'}>
                 <button
                   type="button"

@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-21T19:36:43.709Z",
+  "when": "2026-11-22T03:42:48.569Z",
   "pass": 23,
   "total": 23,
   "results": [
@@ -55,22 +55,34 @@
           "Overall",
           "Observed on test laptop Observed on test laptopSeen at runtime on the Windows research laptop, not the production booth PC."
         ],
-        ["Production booth", "Not yet verified on a production booth Unknown"],
+        [
+          "Production booth",
+          "Not yet verified on a production booth Unknown"
+        ],
         [
           "Tested on",
           "Windows 11 research laptop with dslrBooth 7.48 and the DNP DS-RX1 (Phase 6C Stage 1 and the owner's test print); not the production booth PC. (2026-11-19) "
         ],
-        ["Printer", "DNP DS-RX1 "],
+        [
+          "Printer",
+          "DNP DS-RX1 "
+        ],
         [
           "Driver",
           "1.1.1.0 Observed on test laptopDriver installed on the research laptop; the production booth PC's driver is not yet recorded."
         ],
-        ["Media", "6×4 (PC): 152.4 × 101.6 mm Nominal"],
+        [
+          "Media",
+          "6×4 (PC): 152.4 × 101.6 mm Nominal"
+        ],
         [
           "Driver page",
           "156.1 × 105 mm Observed on test laptopPage size of the one borderless page dslrBooth sent for the _2x sheet; larger than the paper, so the excess is expected to be lost at the edges."
         ],
-        ["Layout", "2 copies of one 2×6 design on a 4×6 in sheet "],
+        [
+          "Layout",
+          "2 copies of one 2×6 design on a 4×6 in sheet "
+        ],
         [
           "Borderless",
           "Yes Observed on test laptopdslrBooth sent the _2x sheet as one borderless page; the saved print settings had the print margin off."
@@ -81,14 +93,26 @@
       "name": "2c trim is Inferred (1.8 / 1.6 mm), the cut trim is Unknown, finishing is Observed (test print), keep-safe 3 mm is Provisional, not verified",
       "ok": true,
       "detail": [
-        ["Production booth", "Not yet verified on a production booth Unknown"],
+        [
+          "Production booth",
+          "Not yet verified on a production booth Unknown"
+        ],
         [
           "Trim, top edge",
           "1.8 mm InferredEstimated from the driver page size against the paper; not measured. The owner's test print (2026-11-19) showed no visible trim problem."
         ],
-        ["Trim, bottom edge", "1.8 mm Inferred"],
-        ["Trim, left edge", "1.6 mm Inferred"],
-        ["Trim, right edge", "1.6 mm Inferred"],
+        [
+          "Trim, bottom edge",
+          "1.8 mm Inferred"
+        ],
+        [
+          "Trim, left edge",
+          "1.6 mm Inferred"
+        ],
+        [
+          "Trim, right edge",
+          "1.6 mm Inferred"
+        ],
         [
           "Trim at the cut",
           "Unknown UnknownLoss at the cut is not measured. The owner's test print (2026-11-19) showed no visible cut or spacing discrepancy."
@@ -97,7 +121,10 @@
           "Safe line, edges",
           "3 mm ProvisionalKeep critical content at least 3 mm from the strip edges. Kept as a conservative margin after the owner's test print (2026-11-19) showed no visible problem; trim is not measured exactly."
         ],
-        ["Safe line, cut", "3 mm Provisional"],
+        [
+          "Safe line, cut",
+          "3 mm Provisional"
+        ],
         [
           "Cut on seam",
           "Yes: no visible cut or spacing discrepancy; both strips match Observed on test laptop"
@@ -186,8 +213,8 @@
           }
         ],
         "chipText": "DNP DS-RX1 · Tested · 2 near an edge",
-        "textId": "3fdbeb12-0075-4df7-a652-610239c8f208",
-        "edgePhoto": "afdc3f7f-d766-4b42-a596-7e9179520ea9"
+        "textId": "974b7d0f-00b6-48ac-b360-3b61f39e0005",
+        "edgePhoto": "3c382a49-f28a-43d0-a03a-8555de324a7b"
       }
     },
     {
@@ -250,7 +277,11 @@
       "ok": true,
       "detail": {
         "row": "DNP DS-RX1 · Tested",
-        "codesOut": ["safe-area-trim", "safe-area-margin", "output-profile-provisional"],
+        "codesOut": [
+          "safe-area-trim",
+          "safe-area-margin",
+          "output-profile-provisional"
+        ],
         "exp2": [
           {
             "code": "safe-area-trim",
@@ -298,7 +329,9 @@
       "ok": true,
       "detail": {
         "done": true,
-        "files": ["Output Strip.zip"]
+        "files": [
+          "Output Strip.zip"
+        ]
       }
     },
     {
@@ -336,7 +369,11 @@
         "noneNote": "none-explained",
         "expNone": {
           "row": "No printer chosen",
-          "codes": ["dslr-no-photo-slots", "no-photo-slots", "dslr-two-up"]
+          "codes": [
+            "dslr-no-photo-slots",
+            "no-photo-slots",
+            "dslr-two-up"
+          ]
         }
       }
     }

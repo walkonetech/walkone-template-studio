@@ -129,6 +129,11 @@ DSLR Booth packages (workflow K) are Phase 6B; workflow L (layer package) was bu
 **Edge:** no photo slots or a photo number above 12 → blocked with the reason; Fit/Stretch slots, faded photos, unusual DPI → warnings. Validated in dslrBooth 7.48 in Phase 6C (both versions import and print correctly).
 **Updating a template already in dslrBooth (observed in 6C):** dslrBooth never replaces a template on Import; importing a newer export always adds a copy ("… Copy1") with its own Id. Select the new copy for the event, then delete the old one in dslrBooth if it is no longer needed.
 
+## AB. Start a blank design with tips, edit with the toolbar, adjust Settings (Phase 7B B5, implemented)
+1. Start › **Blank design** › choose a size › Create. A "Three steps to a template" card appears beside the artboard: **Add photo slot**, **Add text** (opens the Text drawer's ready-made styles), **Open Colors** (Event Palette). Each step ticks when done. × hides the card for this project; **Hide these tips** hides it on this computer (Settings › Editor brings it back).
+2. Select a layer: a small toolbar appears next to it (e.g. Edit text, palette colours, Arrange, Duplicate, More). Properties shows the most-used fields first; Position & size and the other sections open on demand and show their values while closed.
+3. File › **Settings…** (Ctrl/⌘+,) or Start › Settings: theme, button and text size, interface scale; this computer's printer; the selection toolbar and tips switches. Nothing here changes the project.
+
 ## X. Design Guide (planned; owner direction, mockups first)
 Architecture defined in Phase 7A ([PHASE_7A_UX_ARCHITECTURE.md](PHASE_7A_UX_ARCHITECTURE.md) §38, Appendix B flows A–E; ADR-054): the project is created at the format step and each step is one undoable change to the same project; build is Phase 7C.
 Print size → event type → style → colours/background → photos (count, orientation, size) → logo/monogram → words → company branding → layout → done (export, client proof, open in the editor). Conditional steps per event type; automatic safe-area / 2-inch-cut check; "Save as event theme" for the next similar event. Clients never use it; the main client approves the proof.

@@ -55,10 +55,10 @@ export function useEditorKeyboard(): void {
         focusMenuBar()
         return
       }
-      // New / Open work from anywhere, including the welcome screen and inside text fields.
+      // New / Open / Settings work from anywhere, including the welcome screen and inside text fields.
       if (mod) {
         const global = commandForKey(e, true)
-        if (global === 'file.new' || global === 'file.open') {
+        if (global === 'file.new' || global === 'file.open' || global === 'app.settings') {
           e.preventDefault()
           if (!e.repeat) runCommand(global)
           return

@@ -45,6 +45,8 @@ import { isPrimaryModifier } from './platform'
 import { selectDesignSize, selectViewTransform } from '@editor/store'
 import { editorStore, useEditor, useViewTransform } from './editorStore'
 import { useProjectImages } from './useProjectImages'
+import { SelectionToolbar } from './SelectionToolbar'
+import { FirstRunTips } from './FirstRunTips'
 import { TextEditOverlay } from './TextEditOverlay'
 import { registerCanvasDebug } from './debugHooks'
 import {
@@ -680,6 +682,8 @@ export function EditorCanvas(): React.JSX.Element | null {
         </div>
       )}
       <TextEditOverlay />
+      <SelectionToolbar />
+      <FirstRunTips />
     </div>
   )
 }

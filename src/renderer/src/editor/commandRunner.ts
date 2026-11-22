@@ -41,6 +41,9 @@ export function runCommand(id: CommandId): void {
     case 'file.export':
       layoutStore.getState().setExportOpen(true)
       return
+    case 'app.settings':
+      layoutStore.getState().setSettingsPage('appearance')
+      return
     case 'file.close':
       void guarded('close-project', () => s.closeProject())()
       return

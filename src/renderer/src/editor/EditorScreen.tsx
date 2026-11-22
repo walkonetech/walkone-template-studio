@@ -14,6 +14,7 @@ import { EditorCanvas } from './EditorCanvas'
 import { PrintPreviewCanvas } from './PrintPreviewCanvas'
 import { CanvasStateBar } from './CanvasStateBar'
 import { ShortcutsDialog } from './ShortcutsDialog'
+import { SettingsDialog } from './SettingsDialog'
 import { loadFontCatalog } from './fontCatalog'
 import { editorStore, imageCache, useEditor } from './editorStore'
 import { installDebug } from './debugHooks'
@@ -204,6 +205,7 @@ export function EditorScreen(): React.JSX.Element {
       <DslrImportDialog />
       <OutputProfileDialog />
       <ShortcutsDialog />
+      <SettingsDialog />
       <TopBar />
       <div className="editor-body">
         {project && <ToolRail />}

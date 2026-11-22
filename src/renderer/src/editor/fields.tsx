@@ -175,6 +175,41 @@ export function NumberField({
   )
 }
 
+/** A labelled-elsewhere number input with a unit tag ("200 px"), for rows that pair it with another control (B5). */
+export function NumberInputBare({
+  id,
+  value,
+  onCommit,
+  rule,
+  unit,
+  disabled
+}: {
+  id: string
+  value: number
+  onCommit: (value: number) => void
+  rule?: NumberRule
+  unit?: string
+  disabled?: boolean
+}): React.JSX.Element {
+  return (
+    <span className="unit-input">
+      <NumberInput
+        id={id}
+        value={value}
+        onCommit={onCommit}
+        rule={rule}
+        disabled={disabled}
+        mixed={false}
+      />
+      {unit && (
+        <span className="unit" aria-hidden="true">
+          {unit}
+        </span>
+      )}
+    </span>
+  )
+}
+
 /**
  * Compact transform cell: a short visible tag ("X", "W", "°") inside the field, the full name for assistive tech
  * ("Width (px)"). Two of these sit side by side (X | Y, W | H).

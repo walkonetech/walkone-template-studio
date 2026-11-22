@@ -135,6 +135,14 @@ const sessionAssetFiles = (ud, sid) => {
   return fs.existsSync(dir) ? fs.readdirSync(dir) : []
 }
 
+/** B5: secondary Properties sections start closed; open them (by data-section id) before using their fields. */
+const openSections = async (c, ids) => {
+  await c.ev(
+    `(()=>{for(const id of ${JSON.stringify(ids)}){const t=document.querySelector('.inspector-panel [data-section="'+id+'"] .psection-toggle'); if(t&&t.getAttribute('aria-expanded')==='false') t.click()} return 1})()`
+  )
+  await new Promise((r) => setTimeout(r, 200))
+}
+
 ;(async () => {
   const work = h.tmpDir('wts-5a-')
   const A = path.join(work, 'src')
@@ -297,6 +305,7 @@ const sessionAssetFiles = (ud, sid) => {
       st.layers[0].role === 'overlay',
       st.layers[0].role
     )
+    await openSections(c, ['image-details'])
     const info = await c.ev(`document.querySelector('[data-testid=image-info]').innerText`)
     check(
       '7b inspector shows asset filename, source, displayed size and a DPI readout, no paths',

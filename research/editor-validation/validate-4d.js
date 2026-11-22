@@ -104,6 +104,11 @@ const check = (name, ok, detail) => {
     // Polish facts via computed style
     await c.send('Emulation.clearDeviceMetricsOverride')
     await sleep(300)
+    // B5: X/Y/W/H live in the closed "Position & size" section; open it so the transform tags exist.
+    await S(
+      `(()=>{const t=document.querySelector('.inspector-panel [data-section=position] .psection-toggle'); if(t&&t.getAttribute('aria-expanded')==='false') t.click(); return 1})()`
+    )
+    await sleep(200)
     const f =
       await S(`(()=>{const cs=(sel,p)=>{const e=document.querySelector(sel); return e?getComputedStyle(e)[p]:null}; return {
       railDisabledCount: document.querySelectorAll(".toolrail-btn[aria-disabled=true], .toolrail-btn:disabled").length,

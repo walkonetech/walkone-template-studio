@@ -1,6 +1,15 @@
 import { createId, getPixelSize, literalColor, type Layer, type TemplateProject } from '@domain'
 import { uniqueName } from './naming'
 
+/**
+ * The family a NEW text layer asks for (B5 default-font policy). Arial ships with macOS and Windows, so a fresh text
+ * never starts with a missing-font check on either; dslrBooth exports draw text as pictures, so the booth PC needs no
+ * fonts at all. Only new layers use it: existing and imported text keeps the family it stores (ADR-039). The bundled
+ * interface font (Inter) is NOT used for designs: it is not installed on the computer, so the font check would call
+ * it missing, and exports do not wait for web fonts to load (see docs/DECISIONS.md ADR-057).
+ */
+export const DEFAULT_TEXT_FONT = 'Arial'
+
 export type NewLayerKind = 'photo' | 'text' | 'rectangle' | 'ellipse' | 'line'
 
 export const NEW_LAYER_KINDS: readonly { kind: NewLayerKind; label: string }[] = [
@@ -77,7 +86,7 @@ export function createNewLayer(
         name: uniqueName('Text', project.layers),
         ...centered(Math.round(W * 0.7), Math.round(fontSize * 1.2)),
         content: 'Text',
-        fontFamily: 'Helvetica',
+        fontFamily: DEFAULT_TEXT_FONT,
         fontSize,
         fontWeight: 400,
         fontStyle: 'normal',

@@ -26,7 +26,12 @@ function Form(): React.JSX.Element {
   const close = (): void => layoutStore.getState().setNewProjectOpen(false)
   const create = async (): Promise<void> => {
     close()
-    await editorStore.getState().createProject({ name: name.trim() || 'Untitled', preset })
+    const r = await editorStore
+      .getState()
+      .createProject({ name: name.trim() || 'Untitled', preset })
+    // A new BLANK project gets the getting-started tips (B5; the tips themselves check the app preference).
+    const sessionId = editorStore.getState().session?.sessionId
+    if (r.status === 'ok' && sessionId) layoutStore.getState().startTips(sessionId)
   }
   return (
     <Dialog

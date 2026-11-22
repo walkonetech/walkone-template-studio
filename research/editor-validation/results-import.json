@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-21T19:37:43.329Z",
+  "when": "2026-11-22T03:42:30.349Z",
   "fixtures": 5,
   "pass": 29,
   "total": 29,
@@ -7,7 +7,13 @@
     {
       "name": "1 start screen (B3) offers the “Import dslrBooth” card next to Blank design and Open project…",
       "ok": true,
-      "detail": ["New sample project", "Open project…", "Blank design", "Import dslrBooth"]
+      "detail": [
+        "Settings",
+        "New sample project",
+        "Open project…",
+        "Blank design",
+        "Import dslrBooth"
+      ]
     },
     {
       "name": "2 a ZIP without template.xml shows “could not be imported” with the reason",
@@ -119,8 +125,14 @@
       "name": "5 print sheet vs the template’s preview.png outside photo boxes: the kept strip is identical (mean < 0.1, no pixel off by > 32) except 4 px at the strip edge",
       "ok": true,
       "detail": {
-        "previewSize": [1200, 1800],
-        "renderSize": [1200, 1800],
+        "previewSize": [
+          1200,
+          1800
+        ],
+        "renderSize": [
+          1200,
+          1800
+        ],
         "photos": 6,
         "compared": 1018314,
         "meanDiff": 2.051,
@@ -168,11 +180,33 @@
       "name": "8 export back: native strip 600×1800, print 2 per page, photo boxes = the original left strip",
       "ok": true,
       "detail": {
-        "root": ["600", "1800", "True"],
+        "root": [
+          "600",
+          "1800",
+          "True"
+        ],
         "photos": [
-          [1, 37, 84, 526, 350],
-          [2, 37, 520, 526, 350],
-          [3, 37, 956, 526, 350]
+          [
+            1,
+            37,
+            84,
+            526,
+            350
+          ],
+          [
+            2,
+            37,
+            520,
+            526,
+            350
+          ],
+          [
+            3,
+            37,
+            956,
+            526,
+            350
+          ]
         ]
       }
     },
@@ -320,22 +354,134 @@
       "name": "10b 16 editable text layers: weights, italic, alignment, rotation, colour text and special characters kept",
       "ok": true,
       "detail": [
-        ["REGULAR TEXT 2026", 48, 400, "normal", "left", 0],
-        ["BOLD TEXT", 48, 700, "normal", "left", 0],
-        ["ITALIC TEXT", 48, 400, "italic", "left", 0],
-        ["BOLD ITALIC", 48, 400, "italic", "left", 0],
-        ["CENTERED RED", 48, 400, "normal", "center", 0],
-        ["RIGHT ALIGNED", 48, 400, "normal", "right", 0],
-        ["ROTATED 15", 48, 400, "normal", "center", 15],
-        ["SEGOE UI TEST", 48, 400, "normal", "left", 0],
-        ["LINE ONELINE TWO", 48, 400, "normal", "left", 0],
-        ["AUTO", 135, 400, "normal", "center", 0],
-        ["AUTO", 86.5, 400, "normal", "center", 0],
-        ["Tom & Jerry's \"Par", 48, 400, "normal", "left", 0],
-        ["THIS IS A VERY LON", 48, 400, "normal", "left", 0],
-        ["TEXT ABOVE PHOTO", 48, 700, "normal", "center", 0],
-        ["TEXT BELOW ART", 48, 400, "normal", "left", 0],
-        ["DROP SHADOW TEST", 48, 400, "normal", "center", 0]
+        [
+          "REGULAR TEXT 2026",
+          48,
+          400,
+          "normal",
+          "left",
+          0
+        ],
+        [
+          "BOLD TEXT",
+          48,
+          700,
+          "normal",
+          "left",
+          0
+        ],
+        [
+          "ITALIC TEXT",
+          48,
+          400,
+          "italic",
+          "left",
+          0
+        ],
+        [
+          "BOLD ITALIC",
+          48,
+          400,
+          "italic",
+          "left",
+          0
+        ],
+        [
+          "CENTERED RED",
+          48,
+          400,
+          "normal",
+          "center",
+          0
+        ],
+        [
+          "RIGHT ALIGNED",
+          48,
+          400,
+          "normal",
+          "right",
+          0
+        ],
+        [
+          "ROTATED 15",
+          48,
+          400,
+          "normal",
+          "center",
+          15
+        ],
+        [
+          "SEGOE UI TEST",
+          48,
+          400,
+          "normal",
+          "left",
+          0
+        ],
+        [
+          "LINE ONELINE TWO",
+          48,
+          400,
+          "normal",
+          "left",
+          0
+        ],
+        [
+          "AUTO",
+          135,
+          400,
+          "normal",
+          "center",
+          0
+        ],
+        [
+          "AUTO",
+          86.5,
+          400,
+          "normal",
+          "center",
+          0
+        ],
+        [
+          "Tom & Jerry's \"Par",
+          48,
+          400,
+          "normal",
+          "left",
+          0
+        ],
+        [
+          "THIS IS A VERY LON",
+          48,
+          400,
+          "normal",
+          "left",
+          0
+        ],
+        [
+          "TEXT ABOVE PHOTO",
+          48,
+          700,
+          "normal",
+          "center",
+          0
+        ],
+        [
+          "TEXT BELOW ART",
+          48,
+          400,
+          "normal",
+          "left",
+          0
+        ],
+        [
+          "DROP SHADOW TEST",
+          48,
+          400,
+          "normal",
+          "center",
+          0
+        ]
       ]
     },
     {
@@ -350,38 +496,158 @@
       "name": "10d no text is missing: every live-text box outside the photo slots shows text (ink ≥ 60 % of dslrBooth’s; ≥ 30 % for Auto size, whose letters are not stretched here)",
       "ok": true,
       "detail": [
-        ["DROP SHADOW TEST", "shadow", 0.813, 18.7],
-        ["TEXT BELOW ART", "fixed", 0.981, 5.87],
-        ["TEXT ABOVE PHOTO", "fixed", null, 0],
-        ["THIS IS A VERY LON", "overflow", 0.996, 31.06],
-        ["Tom & Jerry's \"Par", "fixed", 1.115, 6.29],
-        ["AUTO", "auto", 0.684, 42.53],
-        ["AUTO", "auto", 0.404, 53.76],
-        ["LINE ONELINE TWO", "fixed", 1.097, 8.03],
-        ["SEGOE UI TEST", "fallback", 1.302, 64.89],
-        ["ROTATED 15", "fixed", 1.079, 2.3],
-        ["RIGHT ALIGNED", "fixed", 1.109, 9.23],
-        ["CENTERED RED", "fixed", 1.119, 1.69],
-        ["BOLD ITALIC", "fixed", 1.102, 6.13],
-        ["ITALIC TEXT", "fixed", 1.112, 5.8],
-        ["BOLD TEXT", "fixed", 1.058, 6],
-        ["REGULAR TEXT 2026", "fixed", 1.113, 12.73]
+        [
+          "DROP SHADOW TEST",
+          "shadow",
+          0.813,
+          18.7
+        ],
+        [
+          "TEXT BELOW ART",
+          "fixed",
+          0.981,
+          5.87
+        ],
+        [
+          "TEXT ABOVE PHOTO",
+          "fixed",
+          null,
+          0
+        ],
+        [
+          "THIS IS A VERY LON",
+          "overflow",
+          0.996,
+          31.06
+        ],
+        [
+          "Tom & Jerry's \"Par",
+          "fixed",
+          1.115,
+          6.29
+        ],
+        [
+          "AUTO",
+          "auto",
+          0.684,
+          42.53
+        ],
+        [
+          "AUTO",
+          "auto",
+          0.404,
+          53.76
+        ],
+        [
+          "LINE ONELINE TWO",
+          "fixed",
+          1.097,
+          8.03
+        ],
+        [
+          "SEGOE UI TEST",
+          "fallback",
+          1.302,
+          64.89
+        ],
+        [
+          "ROTATED 15",
+          "fixed",
+          1.079,
+          2.3
+        ],
+        [
+          "RIGHT ALIGNED",
+          "fixed",
+          1.109,
+          9.23
+        ],
+        [
+          "CENTERED RED",
+          "fixed",
+          1.119,
+          1.69
+        ],
+        [
+          "BOLD ITALIC",
+          "fixed",
+          1.102,
+          6.13
+        ],
+        [
+          "ITALIC TEXT",
+          "fixed",
+          1.112,
+          5.8
+        ],
+        [
+          "BOLD TEXT",
+          "fixed",
+          1.058,
+          6
+        ],
+        [
+          "REGULAR TEXT 2026",
+          "fixed",
+          1.113,
+          12.73
+        ]
       ]
     },
     {
       "name": "10e fixed-size text matches dslrBooth’s preview inside its box (ink 0.8–1.25 ×, mean < 15)",
       "ok": true,
       "detail": [
-        ["TEXT BELOW ART", 0.981, 5.87],
-        ["Tom & Jerry's \"Par", 1.115, 6.29],
-        ["LINE ONELINE TWO", 1.097, 8.03],
-        ["ROTATED 15", 1.079, 2.3],
-        ["RIGHT ALIGNED", 1.109, 9.23],
-        ["CENTERED RED", 1.119, 1.69],
-        ["BOLD ITALIC", 1.102, 6.13],
-        ["ITALIC TEXT", 1.112, 5.8],
-        ["BOLD TEXT", 1.058, 6],
-        ["REGULAR TEXT 2026", 1.113, 12.73]
+        [
+          "TEXT BELOW ART",
+          0.981,
+          5.87
+        ],
+        [
+          "Tom & Jerry's \"Par",
+          1.115,
+          6.29
+        ],
+        [
+          "LINE ONELINE TWO",
+          1.097,
+          8.03
+        ],
+        [
+          "ROTATED 15",
+          1.079,
+          2.3
+        ],
+        [
+          "RIGHT ALIGNED",
+          1.109,
+          9.23
+        ],
+        [
+          "CENTERED RED",
+          1.119,
+          1.69
+        ],
+        [
+          "BOLD ITALIC",
+          1.102,
+          6.13
+        ],
+        [
+          "ITALIC TEXT",
+          1.112,
+          5.8
+        ],
+        [
+          "BOLD TEXT",
+          1.058,
+          6
+        ],
+        [
+          "REGULAR TEXT 2026",
+          1.113,
+          12.73
+        ]
       ]
     },
     {
@@ -417,29 +683,112 @@
         "photos": 2,
         "images": 2,
         "twoUp": true,
-        "size": ["1200", "3600"]
+        "size": [
+          "1200",
+          "3600"
+        ]
       }
     },
     {
       "name": "10g the exported artwork carries every text as drawn in Template Studio, including the edit (ink 0.9–1.1 ×, mean < 3 outside photo slots)",
       "ok": true,
       "detail": [
-        ["DROP SHADOW TEST", 56056, 1, 0],
-        ["TEXT BELOW ART", 23240, 1, 0],
-        ["TEXT ABOVE PHOTO", 0, null, 0],
-        ["THIS IS A VERY LON", 22456, 1, 0],
-        ["Tom & Jerry's \"Par", 46200, 1, 0],
-        ["AUTO", 37901, 1, 0],
-        ["AUTO", 151151, 1, 0],
-        ["LINE ONELINE TWO", 25536, 1, 0],
-        ["SEGOE UI TEST", 20224, 1, 0],
-        ["ROTATED 15", 55396, 1, 0],
-        ["RIGHT ALIGNED", 56056, 1, 0],
-        ["CENTERED RED", 56056, 1, 0],
-        ["BOLD ITALIC", 16240, 1, 0],
-        ["ITALIC TEXT", 15792, 1, 0],
-        ["BOLD TEXT", 15232, 1, 0],
-        ["REGULAR TEXT 2026", 27272, 1, 0]
+        [
+          "DROP SHADOW TEST",
+          56056,
+          1,
+          0
+        ],
+        [
+          "TEXT BELOW ART",
+          23240,
+          1,
+          0
+        ],
+        [
+          "TEXT ABOVE PHOTO",
+          0,
+          null,
+          0
+        ],
+        [
+          "THIS IS A VERY LON",
+          22456,
+          1,
+          0
+        ],
+        [
+          "Tom & Jerry's \"Par",
+          46200,
+          1,
+          0
+        ],
+        [
+          "AUTO",
+          37901,
+          1,
+          0
+        ],
+        [
+          "AUTO",
+          151151,
+          1,
+          0
+        ],
+        [
+          "LINE ONELINE TWO",
+          25536,
+          1,
+          0
+        ],
+        [
+          "SEGOE UI TEST",
+          20224,
+          1,
+          0
+        ],
+        [
+          "ROTATED 15",
+          55396,
+          1,
+          0
+        ],
+        [
+          "RIGHT ALIGNED",
+          56056,
+          1,
+          0
+        ],
+        [
+          "CENTERED RED",
+          56056,
+          1,
+          0
+        ],
+        [
+          "BOLD ITALIC",
+          16240,
+          1,
+          0
+        ],
+        [
+          "ITALIC TEXT",
+          15792,
+          1,
+          0
+        ],
+        [
+          "BOLD TEXT",
+          15232,
+          1,
+          0
+        ],
+        [
+          "REGULAR TEXT 2026",
+          27272,
+          1,
+          0
+        ]
       ]
     },
     {
@@ -482,8 +831,16 @@
         },
         "out": "grid",
         "texts": [
-          ["11.07.2026", "Poppins", 230],
-          ["SAM & ALEX", "Poppins", 130]
+          [
+            "11.07.2026",
+            "Poppins",
+            230
+          ],
+          [
+            "SAM & ALEX",
+            "Poppins",
+            130
+          ]
         ],
         "photos": 2
       }

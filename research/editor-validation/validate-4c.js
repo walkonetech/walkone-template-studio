@@ -88,6 +88,13 @@ async function session(opts, fn) {
     await c.key('Enter', { code: 'Enter', vk: 13 })
     await sleep(150)
   }
+  /** B5: secondary Properties sections start closed; open one by its title before using its fields. */
+  api.openSection = async (title) => {
+    await c.ev(
+      `(()=>{const t=[...document.querySelectorAll('.inspector-panel .psection-toggle')].find(x=>x.querySelector('.psection-title')?.textContent===${JSON.stringify(title)}); if(t&&t.getAttribute('aria-expanded')==='false') t.click(); return 1})()`
+    )
+    await sleep(150)
+  }
   api.selectByName = async (name) => {
     const id = (await api.layer(name)).id
     await c.ev(`__wts.store.getState().selectLayer(${JSON.stringify(id)}); 1`)
@@ -150,7 +157,8 @@ async function session(opts, fn) {
         items
           .filter((i) => !i.d)
           .map((i) => i.t)
-          .join() === 'New project…,Open…,Import dslrBooth template…'
+          // B5: Settings… is a setting of this computer, so it works without a project too.
+          .join() === 'New project…,Open…,Import dslrBooth template…,Settings…'
       )
       check('menu exposes no diagnostic entries', !labels.some((l) => /sample|debug|dev/i.test(l)))
       await c.key('Escape', { code: 'Escape', vk: 27 })
@@ -345,14 +353,16 @@ async function session(opts, fn) {
       let s = await a.state()
       check('Layers: clicking a row selects it', s.sel.length === 1 && s.sel[0] === titleId.id)
       check(
-        'Properties: shows Transform / Appearance / Text sections for text',
+        // B5: text Essentials (Content, Font, Style, Color, Align) then Position & size / Spacing & box / Appearance / Layer.
+        'Properties: shows text Essentials and the Position & size / Spacing & box / Appearance / Layer sections',
         await a.S(
-          `['Layer','Transform','Appearance','Text'].every(t=>[...document.querySelectorAll('.psection-toggle')].some(x=>x.textContent.trim()===t))`
+          `!!document.querySelector('.inspector-panel [data-essentials=text]') && ['Layer','Position & size','Spacing & box','Appearance'].every(t=>[...document.querySelectorAll('.psection-title')].some(x=>x.textContent.trim()===t))`
         )
       )
       await a.shot('4c-06-text-selected')
 
       // numeric edit: X
+      await a.openSection('Position & size')
       await a.type('X (px)', '321')
       check('inspector numeric edit: X commits on Enter', (await a.layer('Event title')).x === 321)
       s = await a.state()
@@ -367,12 +377,14 @@ async function session(opts, fn) {
         (await a.layer('Event title')).y === titleId.y
       )
       // opacity slider + numeric
+      await a.openSection('Appearance')
       await a.type('Opacity (%)', '50')
       check(
         'opacity numeric field commits (50%)',
         Math.abs((await a.layer('Event title')).opacity - 0.5) < 1e-6
       )
       // rename in inspector
+      await a.openSection('Layer')
       await a.type('Name', 'Headline')
       check('rename via inspector name field', !!(await a.layer('Headline')))
       // rename in panel by double-click
@@ -428,24 +440,25 @@ async function session(opts, fn) {
       // section collapse state survives selection change and is UI-only
       const pastBefore = (await a.state()).past
       await a.clickEl(
-        `[...document.querySelectorAll('.psection-toggle')].find(x=>x.textContent.trim()==='Appearance')`
+        `[...document.querySelectorAll('.psection-toggle')].find(x=>x.querySelector('.psection-title')?.textContent==='Appearance')`
       )
       check(
         'inspector section collapses (aria-expanded false)',
         await a.S(
-          `[...document.querySelectorAll('.psection-toggle')].find(x=>x.textContent.trim()==='Appearance').getAttribute('aria-expanded')==='false'`
+          `[...document.querySelectorAll('.psection-toggle')].find(x=>x.querySelector('.psection-title')?.textContent==='Appearance').getAttribute('aria-expanded')==='false'`
         )
       )
       await a.selectByName('Photo 1')
       check(
-        'collapse state persists across selection; photo sections (Photo, Frame) shown and no Sample photo section (removed in B3.1)',
+        // B5: photo Essentials (Photo number, Fit, Frame) + the Frame details section; Position & size stays open.
+        'collapse state persists across selection; photo Essentials and Frame details shown; no Sample photo section (removed in B3.1)',
         await a.S(
-          `(()=>{const t=[...document.querySelectorAll('.psection-toggle')]; return t.find(x=>x.textContent.trim()==='Appearance').getAttribute('aria-expanded')==='false' && t.some(x=>x.textContent.trim()==='Photo') && !t.some(x=>/Sample/.test(x.textContent)) && t.some(x=>x.textContent.trim()==='Frame')})()`
+          `(()=>{const t=[...document.querySelectorAll('.psection-toggle')]; const ti=(x)=>x.querySelector('.psection-title')?.textContent; return t.find(x=>ti(x)==='Appearance').getAttribute('aria-expanded')==='false' && t.find(x=>ti(x)==='Position & size').getAttribute('aria-expanded')==='true' && !!document.querySelector('.inspector-panel [data-essentials=photo]') && !t.some(x=>/Sample/.test(x.textContent)) && t.some(x=>ti(x)==='Frame details')})()`
         )
       )
       check('collapsing a section does not touch history', (await a.state()).past === pastBefore)
       await a.clickEl(
-        `[...document.querySelectorAll('.psection-toggle')].find(x=>x.textContent.trim()==='Appearance')`
+        `[...document.querySelectorAll('.psection-toggle')].find(x=>x.querySelector('.psection-title')?.textContent==='Appearance')`
       )
       await a.type('Photo number', '7')
       check('photo number edit', (await a.layer('Photo 1')).photoNumber === 7)

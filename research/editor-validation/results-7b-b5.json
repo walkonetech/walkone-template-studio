@@ -1,0 +1,639 @@
+[
+  {
+    "name": "15 a new blank project shows the getting-started tips beside the artboard (three steps, Hide these tips, not modal, inside the canvas area)",
+    "ok": true,
+    "detail": {
+      "steps": [
+        "photo",
+        "text",
+        "colors"
+      ],
+      "inside": true,
+      "placement": "beside",
+      "hide": true,
+      "modal": false
+    }
+  },
+  {
+    "name": "15b a tip step’s button does exactly that step (Add photo slot: one slot, one history entry) and ticks itself off",
+    "ok": true,
+    "detail": {
+      "photos": 1,
+      "past": 1,
+      "done": "true"
+    }
+  },
+  {
+    "name": "21 new text asks for the cross-platform default font (Arial)",
+    "ok": true,
+    "detail": {
+      "family": "Arial",
+      "alert": false,
+      "checks": "Ready"
+    }
+  },
+  {
+    "name": "22 a brand-new text raises no missing-font check (no Properties alert; the Checks button stays Ready)",
+    "ok": true,
+    "detail": {
+      "family": "Arial",
+      "alert": false,
+      "checks": "Ready"
+    }
+  },
+  {
+    "name": "21b the new default font is installed and the exact render (the export path) draws the new text",
+    "ok": true,
+    "detail": {
+      "n": 6578,
+      "arial": true
+    }
+  },
+  {
+    "name": "1 selecting a layer shows the contextual toolbar next to it, inside the canvas area",
+    "ok": true,
+    "detail": {
+      "kind": "text",
+      "side": "top",
+      "words": [
+        "Edit text",
+        "Event colors…",
+        "Arrange",
+        "Duplicate",
+        "More actions"
+      ],
+      "actions": [
+        "edit-text",
+        "colors",
+        "arrange",
+        "duplicate",
+        "more"
+      ],
+      "inside": true,
+      "visible": true,
+      "w": 456,
+      "h": 42
+    }
+  },
+  {
+    "name": "2 text actions in words: Edit text · Event colors… (no palette yet) · Arrange · Duplicate · More",
+    "ok": true,
+    "detail": [
+      "Edit text",
+      "Event colors…",
+      "Arrange",
+      "Duplicate",
+      "More actions"
+    ]
+  },
+  {
+    "name": "2b Duplicate in the toolbar is the existing Duplicate: one new layer on top, same size and font, selected, one history step",
+    "ok": true,
+    "detail": {
+      "n": 5,
+      "past": 5,
+      "sel": 1,
+      "same": true,
+      "top": true
+    }
+  },
+  {
+    "name": "2c Event Palette dots are the project’s real palette colours; a dot links the text colour to that palette entry",
+    "ok": true,
+    "detail": {
+      "dots": [
+        "Gold (#b39b74)",
+        "Ink (#1f2430)"
+      ],
+      "linked": {
+        "fill": {
+          "kind": "palette",
+          "paletteColorId": "46b8d026-7089-4c0b-bbd3-85ba490eb47f"
+        },
+        "checked": "true"
+      }
+    }
+  },
+  {
+    "name": "2d photo slot actions: Photo number (− n +) · Frame · Arrange · Duplicate · More; + changes the slot’s photo number",
+    "ok": true,
+    "detail": {
+      "actions": [
+        "photo-number",
+        "frame",
+        "arrange",
+        "duplicate",
+        "more"
+      ],
+      "pBefore": 2,
+      "pAfter": 3
+    }
+  },
+  {
+    "name": "2e several layers: Align (align/distribute popover) · Group · Arrange · Duplicate · More",
+    "ok": true,
+    "detail": {
+      "actions": [
+        "align",
+        "group",
+        "arrange",
+        "duplicate",
+        "more"
+      ],
+      "alignPop": true
+    }
+  },
+  {
+    "name": "2f Arrange offers the four stacking commands and Bring to front puts the slot on top",
+    "ok": true,
+    "detail": [
+      "Bring to front",
+      "Bring forward",
+      "Send backward",
+      "Send to back"
+    ]
+  },
+  {
+    "name": "3 the toolbar never appears in Print Preview",
+    "ok": true
+  },
+  {
+    "name": "3b a locked layer gets no toolbar (Properties says it is locked instead)",
+    "ok": true,
+    "detail": {
+      "lockedTb": false,
+      "lockedNote": true
+    }
+  },
+  {
+    "name": "5 text Properties: pinned header (name + kind), Essentials Content · Font · Style · Color · Align, then closed sections with summaries",
+    "ok": true,
+    "detail": {
+      "head": "TextText",
+      "essentials": "text",
+      "labels": [
+        "Content",
+        "Font",
+        "Style",
+        "Color",
+        "Align"
+      ],
+      "sections": [
+        {
+          "id": "position",
+          "title": "Position & size",
+          "open": false,
+          "summary": "X 180 · Y 1725 · 840 × 151"
+        },
+        {
+          "id": "spacing",
+          "title": "Spacing & box",
+          "open": false,
+          "summary": "Line 1.2 · Letter 0"
+        },
+        {
+          "id": "appearance",
+          "title": "Appearance",
+          "open": false,
+          "summary": "Opacity 100 %"
+        },
+        {
+          "id": "align",
+          "title": "Align to canvas",
+          "open": false,
+          "summary": null
+        },
+        {
+          "id": "layer",
+          "title": "Layer",
+          "open": false,
+          "summary": "Visible · Unlocked"
+        }
+      ]
+    }
+  },
+  {
+    "name": "6 photo slot Properties: header \"Photo slot #n\"; Essentials Photo number · Fit (Cover/Contain/Stretch) · Frame · Corner radius; no sample section",
+    "ok": true,
+    "detail": {
+      "pPhoto": {
+        "head": "Photo 1Photo slot #1",
+        "essentials": "photo",
+        "labels": [
+          "Photo number",
+          "Fit",
+          "Frame",
+          "Frame color",
+          "Corner radius (px)"
+        ],
+        "sections": [
+          {
+            "id": "position",
+            "title": "Position & size",
+            "open": false,
+            "summary": "X 180 · Y 1520 · 840 × 560"
+          },
+          {
+            "id": "frame-details",
+            "title": "Frame details",
+            "open": false,
+            "summary": "Solid · 6 px"
+          },
+          {
+            "id": "appearance",
+            "title": "Appearance",
+            "open": false,
+            "summary": "Opacity 100 %"
+          },
+          {
+            "id": "align",
+            "title": "Align to canvas",
+            "open": false,
+            "summary": null
+          },
+          {
+            "id": "layer",
+            "title": "Layer",
+            "open": false,
+            "summary": "Visible · Unlocked"
+          }
+        ]
+      },
+      "fitRadios": [
+        "Cover:true",
+        "Contain:false",
+        "Stretch:false"
+      ]
+    }
+  },
+  {
+    "name": "6b Fit → Contain is a real slot property edit (one history step)",
+    "ok": true,
+    "detail": {
+      "fit": "contain",
+      "past": 8
+    }
+  },
+  {
+    "name": "7 a section opens (its fields appear) and closes again",
+    "ok": true,
+    "detail": {
+      "opened": {
+        "open": "true",
+        "x": true
+      },
+      "closed": "false"
+    }
+  },
+  {
+    "name": "8 opening or closing a section never edits the project (no Modified change, no history entry)",
+    "ok": true
+  },
+  {
+    "name": "8b a closed section’s summary follows the values (\"X 321 · …\")",
+    "ok": true,
+    "detail": "X 321 · Y 1520 · 840 × 560"
+  },
+  {
+    "name": "8c several layers: \"2 layers selected · 2 photo slots\"; different opacities show Mixed, not one misleading value",
+    "ok": true,
+    "detail": {
+      "head": "2 layers selected2 photo slots",
+      "opacity": {
+        "value": "",
+        "placeholder": "Mixed"
+      }
+    }
+  },
+  {
+    "name": "4 toolbar contained at 1426×779 (windows), also for a layer at the very top edge; no horizontal scroll",
+    "ok": true,
+    "detail": {
+      "t": {
+        "kind": "text",
+        "side": "top",
+        "words": [
+          "Edit text",
+          "Color from the Event Palette",
+          "Arrange",
+          "Duplicate",
+          "More actions"
+        ],
+        "actions": [
+          "edit-text",
+          "colors",
+          "arrange",
+          "duplicate",
+          "more"
+        ],
+        "inside": true,
+        "visible": true,
+        "w": 387,
+        "h": 42
+      },
+      "tTop": {
+        "kind": "photo",
+        "side": "bottom",
+        "words": [
+          "Photo 1",
+          "Frame",
+          "Arrange",
+          "Duplicate",
+          "More actions"
+        ],
+        "actions": [
+          "photo-number",
+          "frame",
+          "arrange",
+          "duplicate",
+          "more"
+        ],
+        "inside": true,
+        "visible": true,
+        "w": 462,
+        "h": 42
+      }
+    }
+  },
+  {
+    "name": "25 Properties usable at 1426×779: header pinned, body scrolls, the last section reachable above the status bar",
+    "ok": true,
+    "detail": {
+      "scrolls": "auto",
+      "headVisible": true,
+      "lastVisible": true,
+      "lastHit": true
+    }
+  },
+  {
+    "name": "4 toolbar contained at 1087×643 (minimum), also for a layer at the very top edge; no horizontal scroll",
+    "ok": true,
+    "detail": {
+      "t": {
+        "kind": "text",
+        "side": "top",
+        "words": [
+          "Edit text",
+          "Color from the Event Palette",
+          "Arrange",
+          "Duplicate",
+          "More actions"
+        ],
+        "actions": [
+          "edit-text",
+          "colors",
+          "arrange",
+          "duplicate",
+          "more"
+        ],
+        "inside": true,
+        "visible": true,
+        "w": 387,
+        "h": 42
+      },
+      "tTop": {
+        "kind": "photo",
+        "side": "bottom",
+        "words": [
+          "Photo 1",
+          "Frame",
+          "Arrange",
+          "Duplicate",
+          "More actions"
+        ],
+        "actions": [
+          "photo-number",
+          "frame",
+          "arrange",
+          "duplicate",
+          "more"
+        ],
+        "inside": true,
+        "visible": true,
+        "w": 462,
+        "h": 42
+      }
+    }
+  },
+  {
+    "name": "25 Properties usable at 1087×643: header pinned, body scrolls, the last section reachable above the status bar",
+    "ok": true,
+    "detail": {
+      "scrolls": "auto",
+      "headVisible": true,
+      "lastVisible": true,
+      "lastHit": true
+    }
+  },
+  {
+    "name": "9 Ctrl/⌘+, opens Settings (this computer, never stored in a project): Appearance · Printing · Editor",
+    "ok": true,
+    "detail": {
+      "title": "Settings",
+      "desc": "Settings for this computer. They are never stored in a project.",
+      "pages": [
+        "Appearance",
+        "Printing",
+        "Editor"
+      ],
+      "current": "appearance",
+      "themes": [
+        "Light · default",
+        "Dark",
+        "Match system"
+      ],
+      "done": true
+    }
+  },
+  {
+    "name": "10 Theme → Dark applies right away",
+    "ok": true,
+    "detail": "dark"
+  },
+  {
+    "name": "11 Button and text size → Compact applies right away",
+    "ok": true,
+    "detail": "compact"
+  },
+  {
+    "name": "12 Interface scale → 125 % scales the interface through the app’s own scale, not page zoom (window width and zoom unchanged)",
+    "ok": true,
+    "detail": {
+      "scale": "1.25",
+      "iw": 1920,
+      "zoom": "",
+      "dpr": 1,
+      "topbar": 55
+    }
+  },
+  {
+    "name": "9b Printing shows this computer’s printer; Editor has the Selection toolbar and getting-started tips switches",
+    "ok": true,
+    "detail": {
+      "printing": true,
+      "editorPage": [
+        "Selection toolbar:true",
+        "Show getting-started tips for new blank projects:true"
+      ]
+    }
+  },
+  {
+    "name": "9c Escape closes Settings; Selection toolbar off hides the toolbar",
+    "ok": true,
+    "detail": {
+      "settingsClosed": true,
+      "offTb": false
+    }
+  },
+  {
+    "name": "26 Dark + Compact + 125 % at 1426×779: Settings footer visible, toolbar contained, Properties header visible, no horizontal scroll",
+    "ok": true,
+    "detail": {
+      "footer": {
+        "inView": true,
+        "sw": true
+      },
+      "dc": {
+        "kind": "text",
+        "side": "top",
+        "words": [
+          "Edit text",
+          "Color from the Event Palette",
+          "Arrange",
+          "Duplicate",
+          "More actions"
+        ],
+        "actions": [
+          "edit-text",
+          "colors",
+          "arrange",
+          "duplicate",
+          "more"
+        ],
+        "inside": true,
+        "visible": true,
+        "w": 433,
+        "h": 43
+      },
+      "dcProps": {
+        "head": true,
+        "sw": true
+      }
+    }
+  },
+  {
+    "name": "14 Settings never touch the project (same content, same history, same Saved/Modified state)",
+    "ok": true
+  },
+  {
+    "name": "13 Settings persist across a restart (Dark, Compact, 125 %), as settings of this computer",
+    "ok": true,
+    "detail": {
+      "theme": "dark",
+      "density": "compact",
+      "scale": "1.25"
+    }
+  },
+  {
+    "name": "13b the saved .boothproject holds no Settings (theme, density, scale, tips, toolbar)",
+    "ok": true
+  },
+  {
+    "name": "9d the Start screen’s Settings button opens the same Settings (reset to Light, Comfortable, 100 %)",
+    "ok": true,
+    "detail": {
+      "theme": "light",
+      "density": "comfortable",
+      "scale": "1"
+    }
+  },
+  {
+    "name": "19 recent card: the strip drawn as its two copies on the sheet, the name and \"2×6 strip · opened …\" (no path); Search recent filters",
+    "ok": true,
+    "detail": {
+      "card": [
+        {
+          "t": "Untitled2×6 strip · opened just now",
+          "sheet": 2,
+          "dis": false
+        }
+      ],
+      "noMatch": true,
+      "match": 1
+    }
+  },
+  {
+    "name": "20 a missing recent file stays listed (\"File not found\", not clickable) and Locate… opens it from its new place",
+    "ok": true,
+    "detail": {
+      "missing": [
+        {
+          "t": "Untitled2×6 strip · opened just now File not foundLocate…",
+          "dis": true,
+          "locate": true
+        }
+      ],
+      "located": {
+        "name": "Untitled",
+        "font": "Helvetica",
+        "tips": false
+      }
+    }
+  },
+  {
+    "name": "23 an existing project’s text keeps its stored font after save and reopen (Helvetica stays Helvetica); opened projects show no tips",
+    "ok": true,
+    "detail": {
+      "name": "Untitled",
+      "font": "Helvetica",
+      "tips": false
+    }
+  },
+  {
+    "name": "23b new text in that project uses Arial; the old text is unchanged",
+    "ok": true,
+    "detail": [
+      "Helvetica",
+      "Arial"
+    ]
+  },
+  {
+    "name": "16 Hide these tips hides them and turns the preference off on this computer",
+    "ok": true,
+    "detail": {
+      "tipsA": true,
+      "hidden": {
+        "tips": false,
+        "stored": false
+      }
+    }
+  },
+  {
+    "name": "17 the next new blank project shows no tips",
+    "ok": true
+  },
+  {
+    "name": "18 Settings › Editor turns the tips back on: the next new blank project shows them",
+    "ok": true
+  },
+  {
+    "name": "24 imported text keeps its dslrBooth fonts exactly (Arial and Segoe UI; never replaced by the new default); no tips on an import",
+    "ok": true,
+    "detail": {
+      "fonts": [
+        "Arial",
+        "Segoe UI"
+      ],
+      "tips": false
+    }
+  },
+  {
+    "name": "27 no Sample photos, Shuffle, Reset samples, Choose photo or Reposition anywhere in B5 surfaces",
+    "ok": true
+  },
+  {
+    "name": "28 no console errors or uncaught exceptions",
+    "ok": true,
+    "detail": []
+  }
+]

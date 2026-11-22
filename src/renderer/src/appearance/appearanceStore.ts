@@ -29,6 +29,7 @@ interface AppearanceState extends AppearancePrefs {
   setDensity(density: Density): void
   setUiScale(scale: UiScale): void
   setShowGettingStartedTips(show: boolean): void
+  setShowSelectionToolbar(show: boolean): void
 }
 
 const storage = (): Storage | null => {
@@ -54,7 +55,8 @@ export const appearanceStore = createStore<AppearanceState>((set) => ({
   setUiScale: (uiScale) => {
     if (isUiScale(uiScale)) set({ uiScale })
   },
-  setShowGettingStartedTips: (show) => set({ showGettingStartedTips: show === true })
+  setShowGettingStartedTips: (show) => set({ showGettingStartedTips: show === true }),
+  setShowSelectionToolbar: (show) => set({ showSelectionToolbar: show === true })
 }))
 
 export const useAppearance = <T>(selector: (s: AppearanceState) => T): T =>
@@ -64,7 +66,8 @@ export const prefsOf = (s: AppearancePrefs): AppearancePrefs => ({
   theme: s.theme,
   density: s.density,
   uiScale: s.uiScale,
-  showGettingStartedTips: s.showGettingStartedTips
+  showGettingStartedTips: s.showGettingStartedTips,
+  showSelectionToolbar: s.showSelectionToolbar
 })
 
 export const resolvedTheme = (s: AppearanceState = appearanceStore.getState()): ResolvedTheme =>
@@ -119,7 +122,8 @@ export function startAppearance(): void {
       s.theme !== prev.theme ||
       s.density !== prev.density ||
       s.uiScale !== prev.uiScale ||
-      s.showGettingStartedTips !== prev.showGettingStartedTips
+      s.showGettingStartedTips !== prev.showGettingStartedTips ||
+      s.showSelectionToolbar !== prev.showSelectionToolbar
     if (changed) saveAppearancePrefs(storage(), prefsOf(s))
     if (s.theme !== prev.theme) syncNativeTheme(s.theme)
   })

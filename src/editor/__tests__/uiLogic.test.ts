@@ -103,7 +103,7 @@ describe('drawer auto-collapse', () => {
 })
 
 describe('command model', () => {
-  it('only New, Open, Import dslrBooth template and the app appearance choices work without a project', () => {
+  it('only New, Open, Import dslrBooth template, Settings and the app appearance choices work without a project', () => {
     const enabled = (Object.keys(COMMANDS) as CommandId[]).filter((id) =>
       isCommandEnabled(
         id,
@@ -111,6 +111,8 @@ describe('command model', () => {
       )
     )
     expect(enabled.sort()).toEqual([
+      // Settings are of this computer (B5), not of a project.
+      'app.settings',
       'file.importDslr',
       'file.new',
       'file.open',

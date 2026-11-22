@@ -1,272 +1,351 @@
 {
-  "passed": 39,
-  "total": 39,
-  "failed": [],
-  "results": [
-    {
-      "name": "1 New project dialog offers Print type radios (4×6 Photo / 2×6 Photo Strip)",
-      "ok": true
+ "passed": 39,
+ "total": 39,
+ "failed": [],
+ "results": [
+  {
+   "name": "1 New project dialog offers Print type radios (4×6 Photo / 2×6 Photo Strip)",
+   "ok": true
+  },
+  {
+   "name": "1b 4×6 shows Orientation + Resolution; info says one copy per print",
+   "ok": true
+  },
+  {
+   "name": "1c 2×6 strip: orientation hidden; info explains design once → two identical copies on a 4×6 sheet + 2-inch center cut (printer guidance)",
+   "ok": true,
+   "detail": "Design size: 2×6 in (1200×3600 px), verticalPrint sheet: 4×6 in (2400×3600 px), 2 copies side by sideDesign one 2×6 strip. Template Studio will place two identical copies on the 4×6 print sheet. Printer finishing: configure DSLR Booth and your printer for the 2-inch center cut."
+  },
+  {
+   "name": "2 2×6 @600 project: design 1200×3600, output = 4×6 two-up grid (2 columns, 1 row, no gap)",
+   "ok": true,
+   "detail": {
+    "canvas": {
+     "width": 2,
+     "height": 6,
+     "unit": "in",
+     "dpi": 600
     },
-    {
-      "name": "1b 4×6 shows Orientation + Resolution; info says one copy per print",
-      "ok": true
-    },
-    {
-      "name": "1c 2×6 strip: orientation hidden; info explains design once → two identical copies on a 4×6 sheet + 2-inch center cut (printer guidance)",
-      "ok": true,
-      "detail": "Design size: 2×6 in (1200×3600 px), verticalPrint sheet: 4×6 in (2400×3600 px), 2 copies side by sideDesign one 2×6 strip. Template Studio will place two identical copies on the 4×6 print sheet. Printer finishing: configure DSLR Booth and your printer for the 2-inch center cut."
-    },
-    {
-      "name": "2 2×6 @600 project: design 1200×3600, output = 4×6 two-up grid (2 columns, 1 row, no gap)",
-      "ok": true,
-      "detail": {
-        "canvas": {
-          "width": 2,
-          "height": 6,
-          "unit": "in",
-          "dpi": 600
-        },
-        "output": {
-          "print": {
-            "width": 4,
-            "height": 6,
-            "unit": "in",
-            "dpi": 600
-          },
-          "layout": {
-            "kind": "grid",
-            "columns": 2,
-            "rows": 1,
-            "gap": 0
-          }
-        }
-      }
-    },
-    {
-      "name": "2b status bar: \"2×6 Strip • 600 DPI • Design 1200×3600 px\"",
-      "ok": true,
-      "detail": "2×6 Strip • 600 DPI • Design 1200×3600 px"
-    },
-    {
-      "name": "2c no printer fields in the project (no DS-RX1 / cut flags): output has only print + layout",
-      "ok": true
-    },
-    {
-      "name": "2d Design / Print Preview is a labelled radiogroup",
-      "ok": true
-    },
-    {
-      "name": "2e printer guidance is shown in Properties (project summary)",
-      "ok": true
-    },
-    {
-      "name": "3 three PhotoLayers numbered 1,2,3 (authored once)",
-      "ok": true,
-      "detail": [1, 2, 3]
-    },
-    {
-      "name": "5 one graphic layer, one asset, project has 4 authored layers",
-      "ok": true
-    },
-    {
-      "name": "7 Print Preview selected: status \"4×6 Output • 2-up • 2400×3600 px\"; dirty and history unchanged",
-      "ok": true,
-      "detail": {
-        "mode": "preview",
-        "status": "4×6 Output • 2-up • 2400×3600 px"
-      }
-    },
-    {
-      "name": "7b preview shows copy labels and the cut guide label (editor-only chips)",
-      "ok": true
-    },
-    {
-      "name": "7c the sheet is centred in the workspace (cut-line chip sits on the workspace centre line)",
-      "ok": true
-    },
-    {
-      "name": "8 sheet render is 2400×3600; graphic appears in BOTH copies (red right half), transparent left half stays background",
-      "ok": true,
-      "detail": [
-        [220, 20, 40, 255],
-        [220, 20, 40, 255],
-        [255, 255, 255, 255],
-        [255, 255, 255, 255],
-        [255, 255, 255, 255]
-      ]
-    },
-    {
-      "name": "8b the cut guide is NOT in the rendered pixels (not artwork)",
-      "ok": true,
-      "detail": [255, 255, 255, 255]
-    },
-    {
-      "name": "9 left and right halves are identical translations of the same design (all 8.6M pixels compared; only ≤1/255 canvas gradient rounding allowed), with real content",
-      "ok": true,
-      "detail": {
-        "w": 2400,
-        "h": 3600,
-        "diff": 1,
-        "maxDelta": 1,
-        "at": [980, 1609, 1],
-        "nonWhite": 2247900
-      }
-    },
-    {
-      "name": "9b three placeholders per copy: project still authors exactly photoNumbers 1,2,3 once and no copy layers",
-      "ok": true
-    },
-    {
-      "name": "9c Print Preview is read-only: nudging does nothing and explains why; no history",
-      "ok": true
-    },
-    {
-      "name": "10 back in Design: artboard is the 1200×3600 strip; Layers lists the 4 authored layers only",
-      "ok": true,
-      "detail": {
-        "rows": 4
-      }
-    },
-    {
-      "name": "11 editing the source artwork moves it in BOTH preview copies (and away from the old spot)",
-      "ok": true,
-      "detail": [
-        [220, 20, 40, 255],
-        [220, 20, 40, 255],
-        [255, 255, 255, 255]
-      ]
-    },
-    {
-      "name": "11b still pixel-identical halves after the edit",
-      "ok": true
-    },
-    {
-      "name": "14 Arrow = 1 design px and Shift+Arrow = 10 design px at fit, 100%, ~25% and 400% zoom",
-      "ok": true,
-      "detail": [
-        {
-          "label": "fit",
-          "scale": -1,
-          "arrow": 1,
-          "shift": 10
-        },
-        {
-          "label": "100%",
-          "scale": 1,
-          "arrow": 1,
-          "shift": 10
-        },
-        {
-          "label": "25%-ish",
-          "scale": 0.32768000000000014,
-          "arrow": 1,
-          "shift": 10
-        },
-        {
-          "label": "400%",
-          "scale": 4,
-          "arrow": 1,
-          "shift": 10
-        }
-      ]
-    },
-    {
-      "name": "15 multi-selection X=200 moves the whole selection; relative spacing preserved; ONE history step",
-      "ok": true,
-      "detail": {
-        "x": [200, 200, 200],
-        "past": 12
-      }
-    },
-    {
-      "name": "15b multi-selection Y=100: top of the selection at 100, spacing between photos preserved",
-      "ok": true,
-      "detail": [100, 866, 1636]
-    },
-    {
-      "name": "16 Align left (selection): all three photos share the leftmost X (50); one history step",
-      "ok": true,
-      "detail": [50, 50, 50]
-    },
-    {
-      "name": "16b Align horizontal centers: identical widths → identical X",
-      "ok": true
-    },
-    {
-      "name": "17 Distribute vertically: outer photos stay (100 and 2000), the middle one gets equal gaps",
-      "ok": true,
-      "detail": [100, 1050, 2000]
-    },
-    {
-      "name": "18 undo reverts the distribution; redo reapplies it",
-      "ok": true
-    },
-    {
-      "name": "18b distribute buttons are disabled with fewer than three layers; Align items have accessible names",
-      "ok": true
-    },
-    {
-      "name": "19 group X=500 moves the group: derived box x=500, children translated together, rows unchanged",
-      "ok": true,
-      "detail": {
-        "g": 50,
-        "g2": 500,
-        "kids": [
-          [500, 100],
-          [500, 1050]
-        ]
-      }
-    },
-    {
-      "name": "20 reopened: still a 2×6 design with a two-up 4×6 output; layers and asset intact",
-      "ok": true,
-      "detail": {
-        "l": 5
-      }
-    },
-    {
-      "name": "20b reopened in Design mode with the switch available",
-      "ok": true
-    },
-    {
-      "name": "21 reopened Print Preview still renders two identical copies",
-      "ok": true,
-      "detail": {
-        "w": 2400,
-        "h": 3600,
-        "diff": 4,
-        "maxDelta": 1,
-        "at": [957, 352, 1],
-        "nonWhite": 1714300
-      }
-    },
-    {
-      "name": "22 performance: exact 2400×3600 sheet render (incl. decode+readback) averages under 1.5 s",
-      "ok": true,
-      "detail": {
-        "avgMs": 79
-      }
-    },
-    {
-      "name": "23 mode switch is keyboard operable (ArrowRight selects Print Preview, focus follows)",
-      "ok": true
-    },
-    {
-      "name": "23b ArrowLeft returns to Design",
-      "ok": true
-    },
-    {
-      "name": "24 ordinary 4×6 @300 project: single output, no Design/Print Preview switch, status unchanged",
-      "ok": true,
-      "detail": "4×6 Portrait • 300 DPI • 1200×1800 px"
-    },
-    {
-      "name": "24b 2×6 @300: design 600×1800 inside a 1200×1800 sheet",
-      "ok": true
-    },
-    {
-      "name": "S1 renderer still has no Node access and the CSP is unchanged",
-      "ok": true
+    "output": {
+     "print": {
+      "width": 4,
+      "height": 6,
+      "unit": "in",
+      "dpi": 600
+     },
+     "layout": {
+      "kind": "grid",
+      "columns": 2,
+      "rows": 1,
+      "gap": 0
+     }
     }
-  ]
+   }
+  },
+  {
+   "name": "2b status bar: \"2×6 Strip • 600 DPI • Design 1200×3600 px\"",
+   "ok": true,
+   "detail": "2×6 Strip • 600 DPI • Design 1200×3600 px"
+  },
+  {
+   "name": "2c no printer fields in the project (no DS-RX1 / cut flags): output has only print + layout",
+   "ok": true
+  },
+  {
+   "name": "2d Design / Print Preview is a labelled radiogroup",
+   "ok": true
+  },
+  {
+   "name": "2e printer guidance is shown in Properties (project summary)",
+   "ok": true
+  },
+  {
+   "name": "3 three PhotoLayers numbered 1,2,3 (authored once)",
+   "ok": true,
+   "detail": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "name": "5 one graphic layer, one asset, project has 4 authored layers",
+   "ok": true
+  },
+  {
+   "name": "7 Print Preview selected: status \"4×6 Output • 2-up • 2400×3600 px\"; dirty and history unchanged",
+   "ok": true,
+   "detail": {
+    "mode": "preview",
+    "status": "4×6 Output • 2-up • 2400×3600 px"
+   }
+  },
+  {
+   "name": "7b preview shows copy labels and the cut guide label (editor-only chips)",
+   "ok": true
+  },
+  {
+   "name": "7c the sheet is centred in the workspace (cut-line chip sits on the workspace centre line)",
+   "ok": true
+  },
+  {
+   "name": "8 sheet render is 2400×3600; graphic appears in BOTH copies (red right half), transparent left half stays background",
+   "ok": true,
+   "detail": [
+    [
+     220,
+     20,
+     40,
+     255
+    ],
+    [
+     220,
+     20,
+     40,
+     255
+    ],
+    [
+     255,
+     255,
+     255,
+     255
+    ],
+    [
+     255,
+     255,
+     255,
+     255
+    ],
+    [
+     255,
+     255,
+     255,
+     255
+    ]
+   ]
+  },
+  {
+   "name": "8b the cut guide is NOT in the rendered pixels (not artwork)",
+   "ok": true,
+   "detail": [
+    255,
+    255,
+    255,
+    255
+   ]
+  },
+  {
+   "name": "9 left and right halves are identical translations of the same design (all 8.6M pixels compared; only ≤1/255 canvas gradient rounding allowed), with real content",
+   "ok": true,
+   "detail": {
+    "w": 2400,
+    "h": 3600,
+    "diff": 1,
+    "maxDelta": 1,
+    "at": [
+     980,
+     1609,
+     1
+    ],
+    "nonWhite": 2247900
+   }
+  },
+  {
+   "name": "9b three placeholders per copy: project still authors exactly photoNumbers 1,2,3 once and no copy layers",
+   "ok": true
+  },
+  {
+   "name": "9c Print Preview is read-only: nudging does nothing and explains why; no history",
+   "ok": true
+  },
+  {
+   "name": "10 back in Design: artboard is the 1200×3600 strip; Layers lists the 4 authored layers only",
+   "ok": true,
+   "detail": {
+    "rows": 4
+   }
+  },
+  {
+   "name": "11 editing the source artwork moves it in BOTH preview copies (and away from the old spot)",
+   "ok": true,
+   "detail": [
+    [
+     220,
+     20,
+     40,
+     255
+    ],
+    [
+     220,
+     20,
+     40,
+     255
+    ],
+    [
+     255,
+     255,
+     255,
+     255
+    ]
+   ]
+  },
+  {
+   "name": "11b still pixel-identical halves after the edit",
+   "ok": true
+  },
+  {
+   "name": "14 Arrow = 1 design px and Shift+Arrow = 10 design px at fit, 100%, ~25% and 400% zoom",
+   "ok": true,
+   "detail": [
+    {
+     "label": "fit",
+     "scale": -1,
+     "arrow": 1,
+     "shift": 10
+    },
+    {
+     "label": "100%",
+     "scale": 1,
+     "arrow": 1,
+     "shift": 10
+    },
+    {
+     "label": "25%-ish",
+     "scale": 0.32768000000000014,
+     "arrow": 1,
+     "shift": 10
+    },
+    {
+     "label": "400%",
+     "scale": 4,
+     "arrow": 1,
+     "shift": 10
+    }
+   ]
+  },
+  {
+   "name": "15 multi-selection X=200 moves the whole selection; relative spacing preserved; ONE history step",
+   "ok": true,
+   "detail": {
+    "x": [
+     200,
+     200,
+     200
+    ],
+    "past": 12
+   }
+  },
+  {
+   "name": "15b multi-selection Y=100: top of the selection at 100, spacing between photos preserved",
+   "ok": true,
+   "detail": [
+    100,
+    866,
+    1636
+   ]
+  },
+  {
+   "name": "16 Align left (selection): all three photos share the leftmost X (50); one history step",
+   "ok": true,
+   "detail": [
+    50,
+    50,
+    50
+   ]
+  },
+  {
+   "name": "16b Align horizontal centers: identical widths → identical X",
+   "ok": true
+  },
+  {
+   "name": "17 Distribute vertically: outer photos stay (100 and 2000), the middle one gets equal gaps",
+   "ok": true,
+   "detail": [
+    100,
+    1050,
+    2000
+   ]
+  },
+  {
+   "name": "18 undo reverts the distribution; redo reapplies it",
+   "ok": true
+  },
+  {
+   "name": "18b distribute buttons are disabled with fewer than three layers; Align items have accessible names",
+   "ok": true
+  },
+  {
+   "name": "19 group X=500 moves the group: derived box x=500, children translated together, rows unchanged",
+   "ok": true,
+   "detail": {
+    "g": 50,
+    "g2": 500,
+    "kids": [
+     [
+      500,
+      100
+     ],
+     [
+      500,
+      1050
+     ]
+    ]
+   }
+  },
+  {
+   "name": "20 reopened: still a 2×6 design with a two-up 4×6 output; layers and asset intact",
+   "ok": true,
+   "detail": {
+    "l": 5
+   }
+  },
+  {
+   "name": "20b reopened in Design mode with the switch available",
+   "ok": true
+  },
+  {
+   "name": "21 reopened Print Preview still renders two identical copies",
+   "ok": true,
+   "detail": {
+    "w": 2400,
+    "h": 3600,
+    "diff": 4,
+    "maxDelta": 1,
+    "at": [
+     957,
+     352,
+     1
+    ],
+    "nonWhite": 1714300
+   }
+  },
+  {
+   "name": "22 performance: exact 2400×3600 sheet render (incl. decode+readback) averages under 1.5 s",
+   "ok": true,
+   "detail": {
+    "avgMs": 80
+   }
+  },
+  {
+   "name": "23 mode switch is keyboard operable (ArrowRight selects Print Preview, focus follows)",
+   "ok": true
+  },
+  {
+   "name": "23b ArrowLeft returns to Design",
+   "ok": true
+  },
+  {
+   "name": "24 ordinary 4×6 @300 project: single output, no Design/Print Preview switch, status unchanged",
+   "ok": true,
+   "detail": "4×6 Portrait • 300 DPI • 1200×1800 px"
+  },
+  {
+   "name": "24b 2×6 @300: design 600×1800 inside a 1200×1800 sheet",
+   "ok": true
+  },
+  {
+   "name": "S1 renderer still has no Node access and the CSP is unchanged",
+   "ok": true
+  }
+ ]
 }

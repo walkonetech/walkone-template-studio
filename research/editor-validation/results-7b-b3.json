@@ -125,7 +125,13 @@
     "name": "6 labelled rail: Elements, Text, Photos, Uploads, Colors, each icon + word, 80 px wide (Comfortable), none disabled",
     "ok": true,
     "detail": {
-      "labels": ["Elements", "Text", "Photos", "Uploads", "Colors"],
+      "labels": [
+        "Elements",
+        "Text",
+        "Photos",
+        "Uploads",
+        "Colors"
+      ],
       "icons": true,
       "w": 80,
       "disabled": 0
@@ -321,7 +327,10 @@
     "name": "13 Layers header keeps only Add and More; More holds Duplicate, Group, Ungroup, the four stacking moves, Delete and the shortcuts",
     "ok": true,
     "detail": {
-      "layersHeader": ["Add layer", "More layer actions"],
+      "layersHeader": [
+        "Add layer",
+        "More layer actions"
+      ],
       "more": [
         "Duplicate",
         "Group",
@@ -395,7 +404,12 @@
     "name": "19 the bar holds Design | Print Preview, Safe areas and Overflow only (no Sample photos, B3.1); Safe areas \"No profile\" (not clickable) until a profile is chosen then On/Off, Overflow Show/Hide",
     "ok": true,
     "detail": {
-      "items": ["Design", "Print Preview", "Safe areas", "Overflow"],
+      "items": [
+        "Design",
+        "Print Preview",
+        "Safe areas",
+        "Overflow"
+      ],
       "preview": {
         "mode": "preview",
         "ro": "Print Preview · read onlyEdit in Design",
@@ -437,7 +451,12 @@
     "name": "20 the canvas-state bar is view only: none of its controls changed the project, its Modified state or history; the status bar no longer repeats them",
     "ok": true,
     "detail": {
-      "items": ["Design", "Print Preview", "Safe areas", "Overflow"],
+      "items": [
+        "Design",
+        "Print Preview",
+        "Safe areas",
+        "Overflow"
+      ],
       "statusToggles": 0
     }
   },
@@ -504,7 +523,10 @@
     "detail": {
       "tabs": {
         "layout": "tabs",
-        "tabs": ["Properties", "Layers6"],
+        "tabs": [
+          "Properties",
+          "Layers6"
+        ],
         "selected": "Properties",
         "w": 300
       },
@@ -515,8 +537,9 @@
       },
       "propsTab": {
         "props": true,
-        "sel": ["30a89d1e-a1c4-4d0c-94ea-df6ce86566fc"],
-        "badge": "Text"
+        "sel": [
+          "31fdcbad-fc63-4bed-a281-74f21aaf8b18"
+        ]
       }
     }
   },
@@ -545,7 +568,7 @@
     "ok": true,
     "detail": {
       "slot": {
-        "id": "2d424e6d-a7f5-4356-878f-ed16c3d2332a",
+        "id": "d644a6e5-2bbd-49ac-b475-bdd3dd242821",
         "type": "photo",
         "n": 4
       },
@@ -640,8 +663,19 @@
     "name": "26 F6 moves focus through top bar → rail → canvas-state bar → canvas → Properties/Layers → status bar and wraps; Shift+F6 goes back",
     "ok": true,
     "detail": {
-      "regions": ["topbar", "rail", "viewbar", "canvas", "sidebar", "statusbar", "topbar"],
-      "back": ["statusbar", "sidebar"]
+      "regions": [
+        "topbar",
+        "rail",
+        "viewbar",
+        "canvas",
+        "sidebar",
+        "statusbar",
+        "topbar"
+      ],
+      "back": [
+        "statusbar",
+        "sidebar"
+      ]
     }
   },
   {
@@ -739,7 +773,10 @@
         "differing": 0,
         "maxDelta": 0
       },
-      "layers": [6, 6]
+      "layers": [
+        6,
+        6
+      ]
     }
   },
   {
@@ -755,7 +792,9 @@
       ],
       "diffs": [],
       "tolerated": [],
-      "masked": ["template.xml: LastSavedDate"]
+      "masked": [
+        "template.xml: LastSavedDate"
+      ]
     }
   },
   {

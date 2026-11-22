@@ -75,6 +75,14 @@ const drawer = (c, tool) =>
     `(()=>{ if (document.querySelector('.tooldrawer[data-tool=${tool}]')) return 1; document.querySelector('.toolrail-btn[data-tool=${tool}]').click(); return 1})()`
   )
 
+/** B5: secondary Properties sections start closed; open them (by data-section id) before using their fields. */
+const openSections = async (c, ids) => {
+  await c.ev(
+    `(()=>{for(const id of ${JSON.stringify(ids)}){const t=document.querySelector('.inspector-panel [data-section="'+id+'"] .psection-toggle'); if(t&&t.getAttribute('aria-expanded')==='false') t.click()} return 1})()`
+  )
+  await new Promise((r) => setTimeout(r, 200))
+}
+
 ;(async () => {
   const work = h.tmpDir('wts-5d-')
   const ud = path.join(work, 'ud')
@@ -277,6 +285,7 @@ const drawer = (c, tool) =>
     )
     await sleep(500)
     await shot(c, '5d-05-fit-height-before.png')
+    await openSections(c, ['spacing'])
     const p1 = (await state(c)).past
     await click(c, btn('Fit height to content'))
     await sleep(400)
@@ -593,6 +602,7 @@ const drawer = (c, tool) =>
     // ------------------------------------------------------------------ tooltips
     await c.ev(`__wts.store.getState().selectLayer(${JSON.stringify(T.id)}); 1`)
     await sleep(500)
+    await openSections(c, ['spacing'])
     const tips = [
       [
         'fit height',

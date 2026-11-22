@@ -822,3 +822,199 @@
 .tooldrawer .font-picker {
   width: 100%;
 }
+
+/* ---------------------------------------------------------------------------------------------------------------
+   Phase 7B B5 — Properties: pinned header, Essentials, sections with summaries (B1 mockups 03/04)
+   --------------------------------------------------------------------------------------------------------------- */
+.props-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex: none;
+  min-height: calc(48px * var(--ui-scale));
+  padding: var(--sp-2) var(--sp-4);
+  border-bottom: 1px solid var(--c-divider);
+}
+.props-head .ui-kind {
+  flex: none;
+}
+.props-head-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--c-text-3);
+  flex: none;
+  width: calc(26px * var(--ui-scale));
+  height: calc(26px * var(--ui-scale));
+  border-radius: var(--r-sm);
+  background: var(--c-hover);
+}
+.props-head-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  line-height: var(--lh-tight);
+}
+.props-head-title {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.props-head-sub {
+  overflow: hidden;
+  color: var(--c-text-3);
+  font-size: var(--fs-meta);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.props-head-actions {
+  display: flex;
+  flex: none;
+  gap: 2px;
+}
+.essentials {
+  padding: var(--sp-4) 0;
+}
+.essentials + .psection {
+  border-top: 1px solid var(--c-divider);
+}
+.essentials-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.essentials-label {
+  color: var(--c-text-label);
+  font-size: var(--fs-label);
+}
+.essentials-summary {
+  margin-top: var(--sp-3);
+}
+.essentials .button-row {
+  margin-top: var(--sp-3);
+}
+.field-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.locked-note {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  margin: var(--sp-3) 0 0;
+}
+.psection-title {
+  flex: none;
+}
+.psection-summary {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--c-text-3);
+  font-size: var(--fs-meta);
+  font-variant-numeric: tabular-nums;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.style-size {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  width: 100%;
+}
+.style-size select {
+  flex: 1 1 calc(112px * var(--ui-scale));
+  min-width: 0;
+}
+.style-size .unit-input {
+  flex: 0 0 calc(84px * var(--ui-scale));
+}
+.unit-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+.unit-input .ui-input {
+  width: 100%;
+  padding-right: calc(26px * var(--ui-scale));
+}
+.unit-input .unit {
+  position: absolute;
+  right: var(--sp-2);
+  color: var(--c-text-3);
+  font-size: var(--fs-meta);
+  pointer-events: none;
+}
+.stepper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-1);
+}
+.stepper .stepper-value {
+  width: calc(48px * var(--ui-scale));
+  text-align: center;
+}
+.stepper-note {
+  margin-left: var(--sp-2);
+  color: var(--c-text-3);
+  font-size: var(--fs-meta);
+}
+.format-card {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-width: 0;
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+  line-height: var(--lh-tight);
+}
+.format-swatch {
+  flex: none;
+  width: auto;
+  height: calc(34px * var(--ui-scale));
+  border-radius: 2px;
+  background: var(--c-art-paper);
+  box-shadow: 0 0 0 1px var(--c-border-strong);
+}
+.essentials .ui-seg {
+  display: flex;
+  width: 100%;
+}
+.essentials .ui-seg button {
+  flex: 1 1 0;
+  min-width: 0;
+  padding-inline: 4px;
+}
+.format-card strong {
+  display: block;
+  font-weight: 600;
+}
+.format-sub {
+  display: block;
+  margin-top: 2px;
+  color: var(--c-text-3);
+  font-size: var(--fs-meta);
+}
+/* A colour linked to the Event Palette (B5): swatch, the palette choice and "Use fixed color" on tidy lines. */
+.inspector-panel .palette-linked {
+  flex: 1 1 calc(132px * var(--ui-scale));
+}
+.inspector-panel .palette-note {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.inspector-panel .palette-linked .ui-select.compact {
+  width: 100%;
+}

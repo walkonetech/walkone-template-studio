@@ -47,6 +47,7 @@
       "Save",
       "Save As…",
       "Export…",
+      "Settings…",
       "Close project"
     ]
   },
@@ -189,7 +190,7 @@
     "ok": true
   },
   {
-    "name": "Properties: shows Transform / Appearance / Text sections for text",
+    "name": "Properties: shows text Essentials and the Position & size / Spacing & box / Appearance / Layer sections",
     "ok": true
   },
   {
@@ -241,7 +242,7 @@
     "ok": true
   },
   {
-    "name": "collapse state persists across selection; photo sections (Photo, Frame) shown and no Sample photo section (removed in B3.1)",
+    "name": "collapse state persists across selection; photo Essentials and Frame details shown; no Sample photo section (removed in B3.1)",
     "ok": true
   },
   {
@@ -315,7 +316,14 @@
   {
     "name": "Edit menu shows shortcut hints and enablement",
     "ok": true,
-    "detail": ["Undo", "Redo(off)", "Duplicate", "Delete", "Group", "Ungroup"]
+    "detail": [
+      "Undo",
+      "Redo(off)",
+      "Duplicate",
+      "Delete",
+      "Group",
+      "Ungroup"
+    ]
   },
   {
     "name": "Edit > Duplicate routes to the store",
@@ -396,7 +404,7 @@
   {
     "name": "Tab traversal reaches many distinct controls (≥ 25)",
     "ok": true,
-    "detail": 45
+    "detail": 44
   },
   {
     "name": "every keyboard-focused control shows a visible focus ring",
@@ -415,7 +423,11 @@
   {
     "name": "recovery dialog: Recover / Discard / Decide later, focus starts on Recover",
     "ok": true,
-    "detail": ["Discard", "Decide later", "Recover"]
+    "detail": [
+      "Discard",
+      "Decide later",
+      "Recover"
+    ]
   },
   {
     "name": "recovery dialog is not color-only and has no file paths",

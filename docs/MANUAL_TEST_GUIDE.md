@@ -4,7 +4,7 @@ For a **human** pass over the whole app (Phases 1–6A). Scripted suites already
 
 ## 1. Start the app
 
-All commands run from `/Users/walkone/Projects/Apps/walkone-template-studio`.
+All commands run from the repository root.
 
 | Goal | Command |
 |---|---|
@@ -170,6 +170,18 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] **Safe-area warning:** put text near the edge of a red background with Safe areas on: the red dashed warning outline has a dark edge around it and stays readable; it is the same box as before, and it never appears in exports.
 - [ ] Repeat the dialogs in **Dark** and **Compact**.
 - [ ] **Checks focus (B4.1):** Tab to the Checks button and press Enter: focus moves into the panel (a group heading, with a ring). Tab walks Select / Select all / Printer & cutting… / Details and then leaves the panel; Shift+Tab goes back. Esc returns focus to the Checks button (ring, no tooltip). Open Checks with the mouse, click its heading, a card's text or the empty header space, press Esc: the panel closes and focus is on the Checks button. Open Checks, click a rail tool: focus stays on that tool.
+
+### H4. B5 editor experience (Phase 7B B5)
+- [ ] **New blank project** (Start › Blank design › 2×6 › Create): the "Three steps to a template" card appears beside the strip. Add photo slot adds one slot and ticks step 1. × hides the card for this project.
+- [ ] Select a text: a toolbar appears above it with Edit text · Event colors… (or palette dots once the Event Palette has colours) · Arrange · Duplicate · More. A dot recolours the text and links it to the palette. Duplicate adds one copy (Undo removes it).
+- [ ] Select a photo slot: − Photo n + · Frame · Arrange · Duplicate · More; no Reposition. Select two layers: Align · Group · Arrange · Duplicate · More.
+- [ ] The toolbar is never in Print Preview, never for a locked layer, never off-screen (try a layer at the top edge and a small window).
+- [ ] **Properties:** text shows Content, Font, Style + size, Color, Align; then Position & size, Spacing & box, Appearance, Align to canvas, Layer — closed, each with a summary. Opening a section does not mark the project Modified. Two layers with different opacity show "Mixed".
+- [ ] **Settings** (File › Settings… or Ctrl/⌘+,): Theme, Button and text size, Interface scale apply right away; Printing shows the printer; Editor has Selection toolbar and getting-started tips switches. Restart: the choices are kept. The project stays Saved.
+- [ ] Hide these tips → the next new blank project has none → Settings › Editor turns them on → the next one has them again. Opened or imported projects never show tips.
+- [ ] A new text uses **Arial** and shows no missing-font note. An older project's Helvetica text stays Helvetica.
+- [ ] Start: Search recent filters the cards; a 2×6 strip card shows two strips; a moved file shows File not found + Locate….
+- [ ] Repeat in Dark + Compact + 125 % at a short window: toolbar and Properties stay usable; no sideways scrolling. No "Sample photos" anywhere.
 
 ### H. UI, accessibility, polish
 - [ ] Tooltips on icon-only controls, with shortcut hints.

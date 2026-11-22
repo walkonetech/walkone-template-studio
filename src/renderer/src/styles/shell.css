@@ -2180,3 +2180,411 @@
     gap: var(--sp-4);
   }
 }
+
+/* ---------------------------------------------------------------------------------------------------------------
+   Phase 7B B5 — selection toolbar, Settings, getting-started tips, Start recents
+   --------------------------------------------------------------------------------------------------------------- */
+/* Selection toolbar (B1 mockups 03/04): words, light, inside the canvas area. */
+.seltb {
+  position: absolute;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  max-width: calc(100% - 16px);
+  padding: 3px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-lg);
+  background: var(--c-surface-overlay);
+  box-shadow: var(--shadow-2);
+  color: var(--c-text);
+  font-size: var(--fs-body);
+  white-space: nowrap;
+}
+.seltb-item {
+  display: flex;
+  align-items: center;
+}
+.seltb-item[data-sep] {
+  padding-left: 2px;
+  border-left: 1px solid var(--c-divider);
+}
+.seltb-btn,
+.seltb-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  height: var(--h-control);
+  padding: 0 var(--sp-2);
+  border: 0;
+  border-radius: var(--r-md);
+  background: transparent;
+  color: var(--c-text);
+  font: inherit;
+  cursor: pointer;
+}
+.seltb-icon {
+  justify-content: center;
+  width: var(--h-control);
+  padding: 0;
+}
+.seltb-btn:hover:not(:disabled),
+.seltb-icon:hover:not(:disabled),
+.seltb-btn[aria-expanded='true'] {
+  background: var(--c-hover);
+}
+.seltb-btn:disabled,
+.seltb-icon:disabled {
+  color: var(--c-text-disabled);
+  cursor: default;
+}
+.seltb-btn .caret {
+  color: var(--c-text-3);
+}
+.seltb-stepper {
+  display: inline-flex;
+  align-items: center;
+}
+.seltb-value {
+  min-width: calc(58px * var(--ui-scale));
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  text-align: center;
+}
+.seltb-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: 0 var(--sp-2);
+}
+.seltb-dot {
+  width: calc(20px * var(--ui-scale));
+  height: calc(20px * var(--ui-scale));
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px var(--c-swatch-ring);
+  cursor: pointer;
+}
+.seltb-dot[aria-checked='true'] {
+  outline: 2px solid var(--c-selection);
+  outline-offset: 2px;
+}
+.seltb-pop {
+  padding: var(--sp-3);
+}
+/* The Compact density and short windows (< 720 px tall, B1 §5) keep the same actions, slightly tighter. */
+:root[data-density='compact'] .seltb-btn,
+:root[data-height-tier='very-short'] .seltb-btn {
+  padding: 0 6px;
+}
+
+/* Settings (B1 mockups 12a/12b): pages on the left, the page on the right. */
+.settings-layout {
+  display: grid;
+  grid-template-columns: calc(168px * var(--ui-scale)) minmax(0, 1fr);
+  gap: var(--sp-5);
+  min-height: 0;
+}
+.settings-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-right: var(--sp-3);
+  border-right: 1px solid var(--c-divider);
+}
+.settings-nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  height: var(--h-control);
+  padding: 0 var(--sp-3);
+  border: 0;
+  border-radius: var(--r-md);
+  background: transparent;
+  color: var(--c-text-2);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.settings-nav-item:hover {
+  background: var(--c-hover);
+  color: var(--c-text);
+}
+.settings-nav-item[aria-current='page'] {
+  background: var(--c-selection-bg);
+  color: var(--c-text);
+  font-weight: 600;
+}
+.settings-page {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.settings-heading {
+  margin: var(--sp-4) 0 var(--sp-2);
+  color: var(--c-text-label);
+  font-size: var(--fs-section-heading);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.settings-heading:first-child {
+  margin-top: 0;
+}
+.settings-note {
+  margin: var(--sp-2) 0 0;
+  color: var(--c-text-3);
+  font-size: var(--fs-meta);
+  max-width: 60ch;
+}
+.settings-page .ui-seg {
+  align-self: flex-start;
+}
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding: var(--sp-3) 0;
+  border-bottom: 1px solid var(--c-divider);
+}
+.settings-row-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.settings-row-title {
+  font-weight: 500;
+}
+.settings-row-sub {
+  color: var(--c-text-3);
+  font-size: var(--fs-meta);
+}
+.settings-row-value {
+  color: var(--c-text-2);
+  white-space: nowrap;
+}
+.theme-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-3);
+}
+.theme-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-2);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-lg);
+  background: var(--c-surface-raised);
+  color: var(--c-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.theme-card[aria-checked='true'] {
+  border-color: var(--c-selection);
+  box-shadow: 0 0 0 1px var(--c-selection);
+}
+.theme-pic {
+  position: relative;
+  display: block;
+  height: calc(56px * var(--ui-scale));
+  overflow: hidden;
+  border-radius: var(--r-md);
+  background: #e6e7ec;
+}
+.theme-pic.dark {
+  background: #101114;
+}
+.theme-pic.system {
+  background: linear-gradient(90deg, #e6e7ec 50%, #101114 50%);
+}
+.theme-pic .pic-bar {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 22%;
+  background: #ffffff;
+}
+.theme-pic.dark .pic-bar {
+  background: #1d1e24;
+}
+.theme-pic.system .pic-bar {
+  background: linear-gradient(90deg, #ffffff 50%, #1d1e24 50%);
+}
+.theme-pic .pic-paper {
+  position: absolute;
+  left: 50%;
+  top: 32%;
+  width: 12%;
+  height: 56%;
+  transform: translateX(-50%);
+  border-radius: 1px;
+  background: #f6efe4;
+}
+.theme-label {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  font-size: var(--fs-label);
+}
+.radio-dot {
+  width: 12px;
+  height: 12px;
+  margin-right: 2px;
+  border: 1.5px solid var(--c-border-strong);
+  border-radius: 50%;
+}
+.theme-card[aria-checked='true'] .radio-dot {
+  border: 4px solid var(--c-selection);
+}
+.footer-note {
+  color: var(--c-text-3);
+  font-size: var(--fs-meta);
+}
+@media (max-width: 760px) {
+  .settings-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .settings-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 0 0 var(--sp-2);
+    border-right: 0;
+    border-bottom: 1px solid var(--c-divider);
+  }
+}
+
+/* Getting-started tips (B1 mockup 02b): a card beside the artboard; never modal. */
+.first-run {
+  position: absolute;
+  top: 50%;
+  z-index: 15;
+  max-height: calc(100% - 24px);
+  overflow-y: auto;
+  transform: translateY(-50%);
+  padding: var(--sp-4);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-lg);
+  background: var(--c-surface-overlay);
+  box-shadow: var(--shadow-2);
+  animation: first-run-in 160ms ease-out;
+}
+@keyframes first-run-in {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .first-run {
+    animation: none;
+  }
+}
+.first-run-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+.first-run-head h2 {
+  margin: 0;
+  font-size: var(--fs-project-title);
+  font-weight: 600;
+}
+.first-run-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.first-run-step {
+  display: flex;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  border: 1px solid var(--c-border-subtle);
+  border-radius: var(--r-md);
+}
+.first-run-num {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: calc(22px * var(--ui-scale));
+  height: calc(22px * var(--ui-scale));
+  border-radius: 50%;
+  background: var(--c-accent-subtle);
+  color: var(--c-accent);
+  font-size: var(--fs-meta);
+  font-weight: 600;
+}
+.first-run-step[data-done] .first-run-num {
+  background: var(--c-status-ready-bg);
+  color: var(--c-status-ready-fg);
+}
+.first-run-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-1);
+  min-width: 0;
+}
+.first-run-title {
+  font-weight: 600;
+}
+.first-run-text {
+  margin-bottom: var(--sp-1);
+  color: var(--c-text-3);
+  font-size: var(--fs-meta);
+}
+.first-run-foot {
+  margin: var(--sp-3) 0 var(--sp-2);
+  color: var(--c-text-3);
+  font-size: var(--fs-meta);
+}
+.first-run-hide {
+  font-size: var(--fs-meta);
+}
+
+/* Start: Settings, Recent search, recents drawn as they print (B1 mockup 01). */
+.start-recent-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+}
+.start-recent-head .start-heading {
+  margin: 0;
+}
+.recent-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: min(calc(240px * var(--ui-scale)), 45%);
+}
+.recent-search svg {
+  position: absolute;
+  left: var(--sp-2);
+  color: var(--c-text-3);
+  pointer-events: none;
+}
+.recent-search .ui-input {
+  width: 100%;
+  padding-left: calc(28px * var(--ui-scale));
+}
+.recent-sheet {
+  display: flex;
+  gap: 3px;
+  padding: 4px;
+  border-radius: 2px;
+  background: var(--c-surface-raised);
+  box-shadow:
+    0 0 0 1px var(--c-border),
+    var(--shadow-1);
+}
+.recent-sheet .recent-shape {
+  box-shadow: 0 0 0 1px var(--c-border-subtle);
+}

@@ -12,6 +12,7 @@ export type CommandId =
   | 'file.saveAs'
   | 'file.export'
   | 'file.close'
+  | 'app.settings'
   | 'edit.undo'
   | 'edit.redo'
   | 'edit.duplicate'
@@ -122,6 +123,12 @@ export const COMMANDS: Readonly<Record<CommandId, CommandDef>> = {
     needsProject: true
   },
   'file.close': { label: 'Close project', hint: 'Close the project', needsProject: true },
+  // B5: settings of this computer (theme, size, scale, printer, editor helpers). Works with or without a project.
+  'app.settings': {
+    label: 'Settings…',
+    hint: 'Theme, button size, interface scale, printer and editor helpers for this computer',
+    shortcut: { key: ',', mod: true }
+  },
   'edit.undo': {
     label: 'Undo',
     hint: 'Undo the last change',
@@ -303,7 +310,7 @@ export const COMMANDS: Readonly<Record<CommandId, CommandDef>> = {
     needsProject: true,
     checked: (c) => c.showOverflow
   },
-  // Appearance (B2): interim home until Settings › Appearance (B5). Settings of this computer, never the project.
+  // Appearance (B2): quick switches; Settings › Appearance (B5) holds the same choices plus the interface scale.
   'view.themeLight': {
     label: 'Light theme',
     hint: 'Use the light interface (the default). Your designs are never recoloured.',
@@ -375,6 +382,8 @@ export const MENUS: readonly { id: string; label: string; items: readonly (Comma
         'file.saveAs',
         '-',
         'file.export',
+        '-',
+        'app.settings',
         '-',
         'file.close'
       ]

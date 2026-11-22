@@ -38,12 +38,13 @@ const memory = (): PrefStorage & { data: Map<string, string> } => {
 }
 
 describe('appearance preferences (B2, ADR-055)', () => {
-  it('defaults: Light theme, Comfortable density, 100 % scale, getting-started tips on', () => {
+  it('defaults: Light theme, Comfortable density, 100 % scale, getting-started tips on, selection toolbar on (B5)', () => {
     expect(DEFAULT_APPEARANCE).toEqual({
       theme: 'light',
       density: 'comfortable',
       uiScale: 1,
-      showGettingStartedTips: true
+      showGettingStartedTips: true,
+      showSelectionToolbar: true
     })
     expect(loadAppearancePrefs(memory())).toEqual(DEFAULT_APPEARANCE)
     expect(loadAppearancePrefs(null)).toEqual(DEFAULT_APPEARANCE)
@@ -108,10 +109,10 @@ describe('appearance preferences (B2, ADR-055)', () => {
     expect(saveAppearancePrefs(throwing, DEFAULT_APPEARANCE)).toBe(false)
   })
 
-  it('serialises only the four known fields', () => {
+  it('serialises only the known fields', () => {
     const extra = { ...DEFAULT_APPEARANCE, secret: 'x' } as unknown as AppearancePrefs
     expect(Object.keys(JSON.parse(serializeAppearancePrefs(extra))).sort()).toEqual(
-      ['density', 'showGettingStartedTips', 'theme', 'uiScale'].sort()
+      ['density', 'showGettingStartedTips', 'showSelectionToolbar', 'theme', 'uiScale'].sort()
     )
   })
 
@@ -192,7 +193,13 @@ describe('appearance is never project state', () => {
     for (const theme of THEME_PREFS)
       for (const density of DENSITIES)
         for (const uiScale of UI_SCALES) {
-          const prefs = { theme, density, uiScale, showGettingStartedTips: false }
+          const prefs = {
+            theme,
+            density,
+            uiScale,
+            showGettingStartedTips: false,
+            showSelectionToolbar: false
+          }
           saveAppearancePrefs(st, prefs)
           expect(loadAppearancePrefs(st)).toEqual(prefs)
           appearanceAttributes(prefs, true)

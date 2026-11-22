@@ -648,8 +648,13 @@ async function sameExports(c, a, b) {
           theme: 'dark',
           density: 'compact',
           uiScale: 1,
-          showGettingStartedTips: true
-        }) && !/"(theme|density|uiScale|showGettingStartedTips)"/.test(file.toString('latin1')),
+          showGettingStartedTips: true,
+          // B5: the selection-toolbar switch is stored with the other settings of this computer.
+          showSelectionToolbar: true
+        }) &&
+        !/"(theme|density|uiScale|showGettingStartedTips|showSelectionToolbar)"/.test(
+          file.toString('latin1')
+        ),
       stored
     )
     await c.ev(`${S}.closeProject().then(()=>1)`)

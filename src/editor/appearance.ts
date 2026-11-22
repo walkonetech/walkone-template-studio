@@ -27,14 +27,17 @@ export interface AppearancePrefs {
   uiScale: UiScale
   /** Show the getting-started tips on each new blank project until the user chooses "Hide these tips" (B1 R3). */
   showGettingStartedTips: boolean
+  /** Show the contextual selection toolbar over the canvas (B1 D9: it can be turned off in Settings › Editor). */
+  showSelectionToolbar: boolean
 }
 
-/** B1 sign-off: Light, Comfortable, 100 %, tips on. */
+/** B1 sign-off: Light, Comfortable, 100 %, tips on, selection toolbar on. */
 export const DEFAULT_APPEARANCE: Readonly<AppearancePrefs> = Object.freeze({
   theme: 'light',
   density: 'comfortable',
   uiScale: 1,
-  showGettingStartedTips: true
+  showGettingStartedTips: true,
+  showSelectionToolbar: true
 })
 
 /** Browser-storage key in the renderer (versioned so a later shape can migrate). */
@@ -60,7 +63,11 @@ export function parseAppearancePrefs(raw: unknown): AppearancePrefs {
     showGettingStartedTips:
       typeof o['showGettingStartedTips'] === 'boolean'
         ? o['showGettingStartedTips']
-        : DEFAULT_APPEARANCE.showGettingStartedTips
+        : DEFAULT_APPEARANCE.showGettingStartedTips,
+    showSelectionToolbar:
+      typeof o['showSelectionToolbar'] === 'boolean'
+        ? o['showSelectionToolbar']
+        : DEFAULT_APPEARANCE.showSelectionToolbar
   }
 }
 

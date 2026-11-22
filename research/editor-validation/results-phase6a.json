@@ -1,290 +1,503 @@
 {
-  "passed": 37,
-  "total": 37,
-  "failed": [],
-  "results": [
-    {
-      "name": "0 no project: the Start screen shows no Export button (B3) and File › Export… is disabled",
-      "ok": true
+ "passed": 37,
+ "total": 37,
+ "failed": [],
+ "results": [
+  {
+   "name": "0 no project: the Start screen shows no Export button (B3) and File › Export… is disabled",
+   "ok": true
+  },
+  {
+   "name": "1 strip built: band, 3 photo slots (numbers 1,2,1), graphic, text",
+   "ok": true,
+   "detail": [
+    "shape:",
+    "photo:1",
+    "photo:2",
+    "photo:1",
+    "image:",
+    "text:"
+   ]
+  },
+  {
+   "name": "2 Export button enabled with a project",
+   "ok": true
+  },
+  {
+   "name": "2b Export dialog opens",
+   "ok": true
+  },
+  {
+   "name": "2c strip offers Print sheet / Design / Proof (no layer package); print + design ticked (by this script since B4), proof not",
+   "ok": true,
+   "detail": [
+    "print:true",
+    "design:true",
+    "proof:false"
+   ]
+  },
+  {
+   "name": "2d file names derive from the project name",
+   "ok": true,
+   "detail": [
+    "Chaney Test-print.png",
+    "Chaney Test-design.png",
+    "Chaney Test-proof.png"
+   ]
+  },
+  {
+   "name": "2e sizes shown: sheet 1200 × 1800 px · 4 × 6 in · 300 DPI; design 600 × 1800 px · 2 × 6 in",
+   "ok": true
+  },
+  {
+   "name": "2f the proof is labelled \"Not for printing\"",
+   "ok": true
+  },
+  {
+   "name": "2g preflight: repeated photo number 1 is not reported; nothing to fix (\"Ready\", B4 wording)",
+   "ok": true,
+   "detail": "Ready"
+  },
+  {
+   "name": "3 export finishes and reports the result",
+   "ok": true,
+   "detail": " Exported 3 files to “out”."
+  },
+  {
+   "name": "3b exactly the three files were written (no temp files left)",
+   "ok": true,
+   "detail": [
+    "Chaney Test-design.png",
+    "Chaney Test-print.png",
+    "Chaney Test-proof.png"
+   ]
+  },
+  {
+   "name": "3c exporting did not modify the project (Modified state, history and updatedAt unchanged)",
+   "ok": true,
+   "detail": {
+    "before": {
+     "dirty": true,
+     "past": 13,
+     "ref": "2026-11-22T03:41:16.654Z",
+     "layers": 6
     },
-    {
-      "name": "1 strip built: band, 3 photo slots (numbers 1,2,1), graphic, text",
-      "ok": true,
-      "detail": ["shape:", "photo:1", "photo:2", "photo:1", "image:", "text:"]
-    },
-    {
-      "name": "2 Export button enabled with a project",
-      "ok": true
-    },
-    {
-      "name": "2b Export dialog opens",
-      "ok": true
-    },
-    {
-      "name": "2c strip offers Print sheet / Design / Proof (no layer package); print + design ticked (by this script since B4), proof not",
-      "ok": true,
-      "detail": ["print:true", "design:true", "proof:false"]
-    },
-    {
-      "name": "2d file names derive from the project name",
-      "ok": true,
-      "detail": ["Chaney Test-print.png", "Chaney Test-design.png", "Chaney Test-proof.png"]
-    },
-    {
-      "name": "2e sizes shown: sheet 1200 × 1800 px · 4 × 6 in · 300 DPI; design 600 × 1800 px · 2 × 6 in",
-      "ok": true
-    },
-    {
-      "name": "2f the proof is labelled \"Not for printing\"",
-      "ok": true
-    },
-    {
-      "name": "2g preflight: repeated photo number 1 is not reported; nothing to fix (\"Ready\", B4 wording)",
-      "ok": true,
-      "detail": "Ready"
-    },
-    {
-      "name": "3 export finishes and reports the result",
-      "ok": true,
-      "detail": " Exported 3 files to “out”."
-    },
-    {
-      "name": "3b exactly the three files were written (no temp files left)",
-      "ok": true,
-      "detail": ["Chaney Test-design.png", "Chaney Test-print.png", "Chaney Test-proof.png"]
-    },
-    {
-      "name": "3c exporting did not modify the project (Modified state, history and updatedAt unchanged)",
-      "ok": true,
-      "detail": {
-        "before": {
-          "dirty": true,
-          "past": 13,
-          "ref": "2026-11-21T19:36:09.908Z",
-          "layers": 6
-        },
-        "after": {
-          "dirty": true,
-          "past": 13,
-          "ref": "2026-11-21T19:36:09.908Z",
-          "layers": 6
-        }
-      }
-    },
-    {
-      "name": "3d status message names the folder",
-      "ok": true,
-      "detail": "Exported 3 files to “out”."
-    },
-    {
-      "name": "4a print sheet 1200×1800 at 300 DPI",
-      "ok": true,
-      "detail": {
-        "w": 1200,
-        "h": 1800,
-        "mode": "RGBA",
-        "dpi": [300, 300],
-        "px": {
-          "slotL": [32, 48, 74, 255],
-          "slotR": [32, 48, 74, 255],
-          "frameL": [255, 0, 0, 255],
-          "frameR": [255, 0, 0, 255],
-          "band": [200, 160, 64, 255],
-          "graphicClear": [32, 48, 74, 255],
-          "graphicRed": [220, 20, 40, 255]
-        }
-      }
-    },
-    {
-      "name": "4b design 600×1800 at 300 DPI",
-      "ok": true,
-      "detail": {
-        "w": 600,
-        "h": 1800,
-        "mode": "RGBA",
-        "dpi": [300, 300],
-        "px": {
-          "slot": [32, 48, 74, 255],
-          "frame": [255, 0, 0, 255]
-        }
-      }
-    },
-    {
-      "name": "4c proof 1200×1800 at 300 DPI",
-      "ok": true,
-      "detail": {
-        "w": 1200,
-        "h": 1800,
-        "mode": "RGBA",
-        "dpi": [300, 300],
-        "px": {
-          "frameL": [255, 0, 0, 255]
-        }
-      }
-    },
-    {
-      "name": "4d the two copies on the sheet are pixel-identical",
-      "ok": true,
-      "detail": {
-        "max": 0,
-        "over2": 0
-      }
-    },
-    {
-      "name": "4e the left copy equals the Design PNG pixel for pixel",
-      "ok": true,
-      "detail": {
-        "max": 0,
-        "over2": 0
-      }
-    },
-    {
-      "name": "4f production: photo areas empty (canvas colour shows), both copies",
-      "ok": true,
-      "detail": {
-        "slotL": [32, 48, 74, 255],
-        "slotR": [32, 48, 74, 255],
-        "frameL": [255, 0, 0, 255],
-        "frameR": [255, 0, 0, 255],
-        "band": [200, 160, 64, 255],
-        "graphicClear": [32, 48, 74, 255],
-        "graphicRed": [220, 20, 40, 255]
-      }
-    },
-    {
-      "name": "4g production: native frame drawn (red), both copies",
-      "ok": true,
-      "detail": {
-        "slotL": [32, 48, 74, 255],
-        "slotR": [32, 48, 74, 255],
-        "frameL": [255, 0, 0, 255],
-        "frameR": [255, 0, 0, 255],
-        "band": [200, 160, 64, 255],
-        "graphicClear": [32, 48, 74, 255],
-        "graphicRed": [220, 20, 40, 255]
-      }
-    },
-    {
-      "name": "4h production: band, transparent graphic half and opaque half render correctly",
-      "ok": true,
-      "detail": {
-        "slotL": [32, 48, 74, 255],
-        "slotR": [32, 48, 74, 255],
-        "frameL": [255, 0, 0, 255],
-        "frameR": [255, 0, 0, 255],
-        "band": [200, 160, 64, 255],
-        "graphicClear": [32, 48, 74, 255],
-        "graphicRed": [220, 20, 40, 255]
-      }
-    },
-    {
-      "name": "4i the production PNGs contain no pictures and no slot numbers in the photo slots",
-      "ok": true,
-      "detail": {
-        "slot": [32, 48, 74, 255],
-        "frame": [255, 0, 0, 255]
-      }
-    },
-    {
-      "name": "4j proof: numbered placeholders fill every slot (differs from production inside slots; sample photos were removed in B3.1)",
-      "ok": true,
-      "detail": [176800, 176800, 194400, 194400]
-    },
-    {
-      "name": "4k proof: identical to production outside the slots",
-      "ok": true,
-      "detail": [
-        {
-          "max": 0,
-          "over2": 0
-        },
-        {
-          "max": 0,
-          "over2": 0
-        },
-        {
-          "max": 0,
-          "over2": 0
-        }
-      ]
-    },
-    {
-      "name": "4l proof keeps the frame over the placeholder",
-      "ok": true,
-      "detail": {
-        "frameL": [255, 0, 0, 255]
-      }
-    },
-    {
-      "name": "6 exporting again into the same folder asks: Replace / Keep both / Cancel (nothing written yet)",
-      "ok": true,
-      "detail": "Files with these names already exist in “out”:Chaney Test-print.pngChaney Test-design.pngReplace overwrites them. Keep both saves the new files with a number added."
-    },
-    {
-      "name": "6b Keep both writes \"Name (2)\" copies and keeps the originals",
-      "ok": true,
-      "detail": [
-        "Chaney Test-design (2).png",
-        "Chaney Test-design.png",
-        "Chaney Test-print (2).png",
-        "Chaney Test-print.png",
-        "Chaney Test-proof.png"
-      ]
-    },
-    {
-      "name": "7 cancelling the folder picker returns to the dialog quietly (no error, nothing written)",
-      "ok": true
-    },
-    {
-      "name": "8 Escape closes the dialog",
-      "ok": true
-    },
-    {
-      "name": "8b ⌘E opens the Export dialog",
-      "ok": true
-    },
-    {
-      "name": "8c a missing font is a warning; export stays allowed",
-      "ok": true,
-      "detail": {
-        "s": "1 needs attention",
-        "codes": ["font-missing"],
-        "disabled": false
-      }
-    },
-    {
-      "name": "8d a broken palette colour is an error and blocks export",
-      "ok": true,
-      "detail": {
-        "committed": true,
-        "blocked": {
-          "s": "1 error · 1 needs attention · Fix the errors before exporting.",
-          "codes": ["palette-broken", "font-missing"],
-          "disabled": true
-        }
-      }
-    },
-    {
-      "name": "9 a single-up 4×6 offers one Print PNG (no separate design) and the proof",
-      "ok": true,
-      "detail": ["print:Print PNG", "proof:Proof PNGNot for printing"]
-    },
-    {
-      "name": "9b it writes Single Test-print.png into the chosen folder",
-      "ok": true,
-      "detail": ["Single Test-print.png"]
-    },
-    {
-      "name": "9c \"Show in Finder\" runs without error (Finder itself suppressed by the dev override)",
-      "ok": true
-    },
-    {
-      "name": "S1 renderer still has no Node access and the CSP is unchanged",
-      "ok": true
-    },
-    {
-      "name": "S2 the renderer API exposes no path-taking export call",
-      "ok": true
+    "after": {
+     "dirty": true,
+     "past": 13,
+     "ref": "2026-11-22T03:41:16.654Z",
+     "layers": 6
     }
-  ]
+   }
+  },
+  {
+   "name": "3d status message names the folder",
+   "ok": true,
+   "detail": "Exported 3 files to “out”."
+  },
+  {
+   "name": "4a print sheet 1200×1800 at 300 DPI",
+   "ok": true,
+   "detail": {
+    "w": 1200,
+    "h": 1800,
+    "mode": "RGBA",
+    "dpi": [
+     300,
+     300
+    ],
+    "px": {
+     "slotL": [
+      32,
+      48,
+      74,
+      255
+     ],
+     "slotR": [
+      32,
+      48,
+      74,
+      255
+     ],
+     "frameL": [
+      255,
+      0,
+      0,
+      255
+     ],
+     "frameR": [
+      255,
+      0,
+      0,
+      255
+     ],
+     "band": [
+      200,
+      160,
+      64,
+      255
+     ],
+     "graphicClear": [
+      32,
+      48,
+      74,
+      255
+     ],
+     "graphicRed": [
+      220,
+      20,
+      40,
+      255
+     ]
+    }
+   }
+  },
+  {
+   "name": "4b design 600×1800 at 300 DPI",
+   "ok": true,
+   "detail": {
+    "w": 600,
+    "h": 1800,
+    "mode": "RGBA",
+    "dpi": [
+     300,
+     300
+    ],
+    "px": {
+     "slot": [
+      32,
+      48,
+      74,
+      255
+     ],
+     "frame": [
+      255,
+      0,
+      0,
+      255
+     ]
+    }
+   }
+  },
+  {
+   "name": "4c proof 1200×1800 at 300 DPI",
+   "ok": true,
+   "detail": {
+    "w": 1200,
+    "h": 1800,
+    "mode": "RGBA",
+    "dpi": [
+     300,
+     300
+    ],
+    "px": {
+     "frameL": [
+      255,
+      0,
+      0,
+      255
+     ]
+    }
+   }
+  },
+  {
+   "name": "4d the two copies on the sheet are pixel-identical",
+   "ok": true,
+   "detail": {
+    "max": 0,
+    "over2": 0
+   }
+  },
+  {
+   "name": "4e the left copy equals the Design PNG pixel for pixel",
+   "ok": true,
+   "detail": {
+    "max": 0,
+    "over2": 0
+   }
+  },
+  {
+   "name": "4f production: photo areas empty (canvas colour shows), both copies",
+   "ok": true,
+   "detail": {
+    "slotL": [
+     32,
+     48,
+     74,
+     255
+    ],
+    "slotR": [
+     32,
+     48,
+     74,
+     255
+    ],
+    "frameL": [
+     255,
+     0,
+     0,
+     255
+    ],
+    "frameR": [
+     255,
+     0,
+     0,
+     255
+    ],
+    "band": [
+     200,
+     160,
+     64,
+     255
+    ],
+    "graphicClear": [
+     32,
+     48,
+     74,
+     255
+    ],
+    "graphicRed": [
+     220,
+     20,
+     40,
+     255
+    ]
+   }
+  },
+  {
+   "name": "4g production: native frame drawn (red), both copies",
+   "ok": true,
+   "detail": {
+    "slotL": [
+     32,
+     48,
+     74,
+     255
+    ],
+    "slotR": [
+     32,
+     48,
+     74,
+     255
+    ],
+    "frameL": [
+     255,
+     0,
+     0,
+     255
+    ],
+    "frameR": [
+     255,
+     0,
+     0,
+     255
+    ],
+    "band": [
+     200,
+     160,
+     64,
+     255
+    ],
+    "graphicClear": [
+     32,
+     48,
+     74,
+     255
+    ],
+    "graphicRed": [
+     220,
+     20,
+     40,
+     255
+    ]
+   }
+  },
+  {
+   "name": "4h production: band, transparent graphic half and opaque half render correctly",
+   "ok": true,
+   "detail": {
+    "slotL": [
+     32,
+     48,
+     74,
+     255
+    ],
+    "slotR": [
+     32,
+     48,
+     74,
+     255
+    ],
+    "frameL": [
+     255,
+     0,
+     0,
+     255
+    ],
+    "frameR": [
+     255,
+     0,
+     0,
+     255
+    ],
+    "band": [
+     200,
+     160,
+     64,
+     255
+    ],
+    "graphicClear": [
+     32,
+     48,
+     74,
+     255
+    ],
+    "graphicRed": [
+     220,
+     20,
+     40,
+     255
+    ]
+   }
+  },
+  {
+   "name": "4i the production PNGs contain no pictures and no slot numbers in the photo slots",
+   "ok": true,
+   "detail": {
+    "slot": [
+     32,
+     48,
+     74,
+     255
+    ],
+    "frame": [
+     255,
+     0,
+     0,
+     255
+    ]
+   }
+  },
+  {
+   "name": "4j proof: numbered placeholders fill every slot (differs from production inside slots; sample photos were removed in B3.1)",
+   "ok": true,
+   "detail": [
+    176800,
+    176800,
+    194400,
+    194400
+   ]
+  },
+  {
+   "name": "4k proof: identical to production outside the slots",
+   "ok": true,
+   "detail": [
+    {
+     "max": 0,
+     "over2": 0
+    },
+    {
+     "max": 0,
+     "over2": 0
+    },
+    {
+     "max": 0,
+     "over2": 0
+    }
+   ]
+  },
+  {
+   "name": "4l proof keeps the frame over the placeholder",
+   "ok": true,
+   "detail": {
+    "frameL": [
+     255,
+     0,
+     0,
+     255
+    ]
+   }
+  },
+  {
+   "name": "6 exporting again into the same folder asks: Replace / Keep both / Cancel (nothing written yet)",
+   "ok": true,
+   "detail": "Files with these names already exist in “out”:Chaney Test-print.pngChaney Test-design.pngReplace overwrites them. Keep both saves the new files with a number added."
+  },
+  {
+   "name": "6b Keep both writes \"Name (2)\" copies and keeps the originals",
+   "ok": true,
+   "detail": [
+    "Chaney Test-design (2).png",
+    "Chaney Test-design.png",
+    "Chaney Test-print (2).png",
+    "Chaney Test-print.png",
+    "Chaney Test-proof.png"
+   ]
+  },
+  {
+   "name": "7 cancelling the folder picker returns to the dialog quietly (no error, nothing written)",
+   "ok": true
+  },
+  {
+   "name": "8 Escape closes the dialog",
+   "ok": true
+  },
+  {
+   "name": "8b ⌘E opens the Export dialog",
+   "ok": true
+  },
+  {
+   "name": "8c a missing font is a warning; export stays allowed",
+   "ok": true,
+   "detail": {
+    "s": "1 needs attention",
+    "codes": [
+     "font-missing"
+    ],
+    "disabled": false
+   }
+  },
+  {
+   "name": "8d a broken palette colour is an error and blocks export",
+   "ok": true,
+   "detail": {
+    "committed": true,
+    "blocked": {
+     "s": "1 error · 1 needs attention · Fix the errors before exporting.",
+     "codes": [
+      "palette-broken",
+      "font-missing"
+     ],
+     "disabled": true
+    }
+   }
+  },
+  {
+   "name": "9 a single-up 4×6 offers one Print PNG (no separate design) and the proof",
+   "ok": true,
+   "detail": [
+    "print:Print PNG",
+    "proof:Proof PNGNot for printing"
+   ]
+  },
+  {
+   "name": "9b it writes Single Test-print.png into the chosen folder",
+   "ok": true,
+   "detail": [
+    "Single Test-print.png"
+   ]
+  },
+  {
+   "name": "9c \"Show in Finder\" runs without error (Finder itself suppressed by the dev override)",
+   "ok": true
+  },
+  {
+   "name": "S1 renderer still has no Node access and the CSP is unchanged",
+   "ok": true
+  },
+  {
+   "name": "S2 the renderer API exposes no path-taking export call",
+   "ok": true
+  }
+ ]
 }

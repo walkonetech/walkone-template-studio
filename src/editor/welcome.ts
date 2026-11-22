@@ -120,3 +120,13 @@ export function recentMeta(
   const when = describeWhen(item.lastOpenedAt, now)
   return [format, when ? `opened ${when}` : ''].filter(Boolean).join(' · ')
 }
+
+/** A 2×6 strip (either orientation): it prints as two copies side by side on a 4×6 sheet. */
+export const isStripFormat = (print: { width: number; height: number } | undefined): boolean =>
+  !!print && Math.min(print.width, print.height) === 2 && Math.max(print.width, print.height) === 6
+
+/** Start-screen search: recent projects whose name contains the query (case-insensitive); everything for "". */
+export function filterRecents<T extends { name: string }>(items: readonly T[], query: string): T[] {
+  const q = query.trim().toLowerCase()
+  return q === '' ? [...items] : items.filter((i) => i.name.toLowerCase().includes(q))
+}

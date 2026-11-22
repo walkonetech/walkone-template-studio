@@ -879,9 +879,9 @@ const tipText = (c) =>
     await sleep(400)
     await h.showPanel(c, 'properties')
     const fitPast = (await state(c)).past
-    const fitSel = `document.getElementById([...document.querySelectorAll('.inspector-panel label')].find(l=>/Photo fit/.test(l.textContent)).htmlFor)`
+    // B5: Fit is a segmented control (Cover · Contain · Stretch) in the photo slot's Essentials.
     await c.ev(
-      `(()=>{const e=${fitSel}; const set=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set; set.call(e,'contain'); e.dispatchEvent(new Event('change',{bubbles:true})); return 1})()`
+      `[...document.querySelectorAll('.inspector-panel [role=radiogroup][aria-label="Photo fit"] [role=radio]')].find(b=>b.textContent.trim()==='Contain').click(); 1`
     )
     await sleep(300)
     const fitSt = await state(c)

@@ -17,12 +17,15 @@ import {
 import type { DslrImportPreview } from '@shared/ipc'
 import { nextToolState, type ToolId } from '@editor/tools'
 
+/** Settings pages (B5, B1 mockups 12a/12b). */
+export type SettingsPage = 'appearance' | 'printing' | 'editor'
+
 export type DslrImportState =
   | { kind: 'preview'; preview: DslrImportPreview }
   | { kind: 'error'; fileHint: string | null; message: string }
 
 /**
- * UI layout state only: panel sizes, the tool drawer, the right column's tab, collapsed inspector sections and which
+ * UI layout state only: panel sizes, the tool drawer, the right column's tab, Properties sections opened or closed, and which
  * dialogs are open. It is deliberately separate from the editor store: nothing here is part of the project, nothing
  * here marks it Modified, and resizing a panel never touches history or autosave. Panel sizes and the right-column
  * tab are remembered on this computer (localStorage, `walkone.layout.v1`).
@@ -34,7 +37,13 @@ interface LayoutState extends LayoutPrefs {
   drawerOpen: boolean
   /** The Checks panel (B4): opens in the drawer's place on the left, so Properties stays visible. */
   checksOpen: boolean
-  collapsedSections: string[]
+  /** Properties sections the user opened or closed this session (absent = the section's default, B5). */
+  sectionOpen: Readonly<Record<string, boolean>>
+  /** Settings (B5): which page is open, or null when closed. */
+  settingsPage: SettingsPage | null
+  /** The editing session of the NEW BLANK project the getting-started tips belong to (B5), and whether they were closed. */
+  tipsSession: string | null
+  tipsClosed: boolean
   newProjectOpen: boolean
   exportOpen: boolean
   /** View › Printer & cutting… (B4; the Output Profile underneath: choose it and read its evidence). */
@@ -50,7 +59,10 @@ interface LayoutState extends LayoutPrefs {
   clickTool(id: ToolId): void
   closeDrawer(): void
   setChecksOpen(open: boolean): void
-  toggleSection(id: string): void
+  setSectionOpen(id: string, open: boolean): void
+  setSettingsPage(page: SettingsPage | null): void
+  startTips(sessionId: string): void
+  closeTips(): void
   setNewProjectOpen(open: boolean): void
   setExportOpen(open: boolean): void
   setOutputProfileOpen(open: boolean): void
@@ -84,7 +96,10 @@ export const layoutStore = createStore<LayoutState>((set, get) => ({
   tool: 'elements',
   drawerOpen: drawerStartsOpen(initialViewport.width),
   checksOpen: false,
-  collapsedSections: [],
+  sectionOpen: {},
+  settingsPage: null,
+  tipsSession: null,
+  tipsClosed: false,
   newProjectOpen: false,
   exportOpen: false,
   outputProfileOpen: false,
@@ -103,12 +118,11 @@ export const layoutStore = createStore<LayoutState>((set, get) => ({
   // Checks and the tool drawer share the left zone: opening one closes the other.
   setChecksOpen: (checksOpen) =>
     set(checksOpen ? { checksOpen, drawerOpen: false } : { checksOpen }),
-  toggleSection: (id) =>
-    set((s) => ({
-      collapsedSections: s.collapsedSections.includes(id)
-        ? s.collapsedSections.filter((x) => x !== id)
-        : [...s.collapsedSections, id]
-    })),
+  setSectionOpen: (id, open) => set((s) => ({ sectionOpen: { ...s.sectionOpen, [id]: open } })),
+  setSettingsPage: (settingsPage) => set({ settingsPage }),
+  startTips: (tipsSession) => set({ tipsSession, tipsClosed: false }),
+  closeTips: () => set({ tipsClosed: true }),
+
   setNewProjectOpen: (newProjectOpen) => set({ newProjectOpen }),
   setExportOpen: (exportOpen) => set({ exportOpen }),
   setOutputProfileOpen: (outputProfileOpen) => set({ outputProfileOpen }),

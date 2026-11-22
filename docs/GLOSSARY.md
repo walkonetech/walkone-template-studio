@@ -17,6 +17,11 @@
 - **Palette** — A set of colors assigned to semantic roles (primary, secondary, accent, background, text, …).
 - **Preflight** — Validation run before export producing errors and warnings.
 - **Checks / Checks panel** — (7B B4) the one presentation of preflight and safe-area findings: groups **Error** (blocks export), **Needs attention** (allowed) and **Good to know** (notes, collapsed; never counted as problems — "Ready · n notes"). Repeats are merged into one card; only working actions (Select, Select all, Printer & cutting…, Details). Opens on the left from the top-bar Checks button; Export shows the same cards.
+- **Selection toolbar** — (7B B5) the small row of 3–5 actions in words that appears next to the selected layer on the canvas (never in Print Preview); can be turned off in Settings › Editor.
+- **Essentials** — (7B B5) the always-visible top of Properties: the fields an operator changes most for that layer type; everything else sits in closed sections with a one-line summary.
+- **Settings** — (7B B5) settings of this computer (theme, button size, interface scale, printer, editor helpers); never stored in a project.
+- **Getting-started tips** — (7B B5) the three-step card on a new blank project; not the Design Guide.
+- **Custom Format (B5.5, planned)** — what is being designed (size, DPI, orientation, sheet composition); distinct from an Output Profile (how it is produced).
 - **Printer & cutting** — (7B B4) the user-facing name of the Output Profile dialog: what the printer may trim, the safe line, "How sure are we?" (Estimated · Tested on a print · Measured; "Measured" is not "verified on the production booth"), setup tiles and the evidence under "How do we know?".
 - **Fixture** — A real DSLR Booth template export stored in `tests/fixtures/dslrbooth/source/` as a compatibility reference (private client data: local only, never committed).
 - **Round Trip** — Converting DSLR Booth → internal → DSLR Booth (or reverse) and checking nothing is lost.
