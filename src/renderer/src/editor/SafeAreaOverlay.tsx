@@ -48,7 +48,17 @@ export function useSafeAreaOverlay(): SafeOverlayData | null {
   const show = useEditor((s) => s.showSafeAreas)
   if (!show || !report) return null
   const r = report.resolution
-  if (r.status !== 'ok' && r.status !== 'layout-differs') return null
+  if (r.status !== 'ok' && r.status !== 'layout-differs') {
+    // No fitting printer profile: the format's generic safe margin, when it has one (B5.5).
+    const g = report.generic
+    if (!g) return null
+    return {
+      report,
+      design: { ...g.design, boundaries: [], trimRects: [] },
+      sheet: { ...g.sheet, boundaries: [], trimRects: [] },
+      copies: g.cells.map((c) => ({ x: c.x, y: c.y }))
+    }
+  }
   return {
     report,
     design: r.design,
@@ -189,7 +199,10 @@ export function SafeAreaShapes({
 /** One-line legend under the artboard, e.g. "Safe areas · DNP DS-RX1 · Provisional · keep-safe 3 mm · trim ~1.6–1.8 mm (inferred)". */
 export function safeAreaLegend(report: SafeAreaReport): string {
   const r = report.resolution
-  if (r.status !== 'ok' && r.status !== 'layout-differs') return ''
+  if (r.status !== 'ok' && r.status !== 'layout-differs')
+    return report.generic
+      ? `Generic safe margin · ${formatMm(report.generic.marginMm)} · general guidance, not printer-measured`
+      : ''
   const p = r.profile
   const safe = [p.safeMarginMm.edge.value, p.safeMarginMm.cut.value].filter(
     (v): v is number => v !== null

@@ -134,6 +134,13 @@ DSLR Booth packages (workflow K) are Phase 6B; workflow L (layer package) was bu
 2. Select a layer: a small toolbar appears next to it (e.g. Edit text, palette colours, Arrange, Duplicate, More). Properties shows the most-used fields first; Position & size and the other sections open on demand and show their values while closed.
 3. File › **Settings…** (Ctrl/⌘+,) or Start › Settings: theme, button and text size, interface scale; this computer's printer; the selection toolbar and tips switches. Nothing here changes the project.
 
+## AC. Design a custom-size keepsake (Phase 7B B5.5, implemented; ADR-059)
+1. Start › **Custom size** (or File › New project… › Custom size…). Enter the size in inches, millimetres or pixels and choose 300/600 DPI; the pixels show as you type. Choose Portrait or Landscape.
+2. **How should it print?** *Exact size* when the print is this size, *Repeat on a sheet* for several copies on a 4×6 (e.g. four 2×3 magnets), or *Custom sheet layout* for a known production arrangement with gaps and margins. The diagram shows the copies; a layout that does not fit cannot be created (nothing is scaled).
+3. **Safe margin:** keep the recommended 3 mm, choose your own, or none. This is general guidance; a printer profile gives printer-specific safe areas.
+4. **Review**, name the project, optionally **Save to My formats**, then **Create design**: the normal editor opens. Print Preview shows every copy and the cut guides; Export gives the print sheet, single design and proof PNGs (and a dslrBooth template for 4×6/6×4/2×6 sizes).
+5. Next time: Start › **My formats** › the saved card opens the wizard ready to create. Rename or delete saved formats on their cards.
+
 ## X. Design Guide (planned; owner direction, mockups first)
 Architecture defined in Phase 7A ([PHASE_7A_UX_ARCHITECTURE.md](PHASE_7A_UX_ARCHITECTURE.md) §38, Appendix B flows A–E; ADR-054): the project is created at the format step and each step is one undoable change to the same project; build is Phase 7C.
 Print size → event type → style → colours/background → photos (count, orientation, size) → logo/monogram → words → company branding → layout → done (export, client proof, open in the editor). Conditional steps per event type; automatic safe-area / 2-inch-cut check; "Save as event theme" for the next similar event. Clients never use it; the main client approves the proof.

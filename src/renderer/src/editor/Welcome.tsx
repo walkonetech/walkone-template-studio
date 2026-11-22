@@ -7,7 +7,8 @@ import {
   TriangleAlert,
   Upload,
   FileText,
-  ChevronRight
+  ChevronRight,
+  Ruler
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import type { RecentProjectItem } from '@shared/ipc'
@@ -25,6 +26,7 @@ import { shortcutFor } from './TopBar'
 import { isMac } from './platform'
 import { Button } from '../ui/Button'
 import { Tooltip } from '../ui/Tooltip'
+import { MyFormatsSection, openCustomFormat } from './MyFormats'
 
 const st = editorStore.getState
 
@@ -45,6 +47,24 @@ function BlankArt(): React.JSX.Element {
           <span className="format-label">{f.label}</span>
         </span>
       ))}
+    </span>
+  )
+}
+
+/** Custom size (B5.5): a small insert repeated on a sheet, with a ruler edge. Shapes only. */
+function CustomArt(): React.JSX.Element {
+  return (
+    <span className="start-art custom" aria-hidden="true">
+      <span className="custom-sheet">
+        <span />
+        <span />
+        <span />
+        <span />
+      </span>
+      <span className="format">
+        <span className="format-shape" style={{ width: 44, height: 44 }} />
+        <span className="format-label">Any size</span>
+      </span>
     </span>
   )
 }
@@ -214,6 +234,23 @@ export function Welcome(): React.JSX.Element {
           <button
             type="button"
             className="start-card"
+            id="start-custom"
+            aria-describedby="start-custom-desc"
+            onClick={() => openCustomFormat(null)}
+          >
+            <CustomArt />
+            <span className="start-card-title">
+              <Ruler size={20} aria-hidden="true" />
+              Custom size
+            </span>
+            <span className="start-card-desc" id="start-custom-desc">
+              Magnets, keychains, wallet prints, squares: any size, printed as is or repeated on a
+              sheet.
+            </span>
+          </button>
+          <button
+            type="button"
+            className="start-card"
             id="start-import"
             aria-describedby="start-import-desc"
             onClick={() => runCommand('file.importDslr')}
@@ -228,6 +265,7 @@ export function Welcome(): React.JSX.Element {
             </span>
           </button>
         </div>
+        <MyFormatsSection />
         <div className="start-recent-head">
           <h2 className="start-heading">Recent</h2>
           {recents && recents.length > 0 && (

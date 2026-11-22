@@ -29,6 +29,10 @@ export const PERSISTENCE_ERROR_CODES = [
   'export-invalid-output',
   // DSLR Booth importer
   'import-invalid',
+  // My formats (Phase 7B B5.5)
+  'format-invalid',
+  'format-not-found',
+  'format-limit',
   'invalid-request',
   'unexpected'
 ] as const

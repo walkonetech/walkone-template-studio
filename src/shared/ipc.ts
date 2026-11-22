@@ -1,5 +1,5 @@
 /** IPC contract shared by main, preload and renderer. Keep payloads plain, serializable data. */
-import type { AssetReference, PrintPresetId, TemplateProject } from '../domain'
+import type { AssetReference, FormatDefinition, PrintPresetId, TemplateProject } from '../domain'
 import type { IpcResult, SafeError } from './persistence'
 
 export const IpcChannel = {
@@ -10,6 +10,11 @@ export const IpcChannel = {
    */
   AppSetNativeTheme: 'app:setNativeTheme',
   ProjectNew: 'project:new',
+  /** My formats (Phase 7B B5.5): app-local saved format definitions. */
+  FormatsList: 'formats:list',
+  FormatsSave: 'formats:save',
+  FormatsRename: 'formats:rename',
+  FormatsDelete: 'formats:delete',
   /** Development diagnostic: a new project containing one tiny sample asset. */
   ProjectNewSample: 'project:newSample',
   ProjectOpen: 'project:open',
@@ -66,9 +71,16 @@ export interface OpenProjectInfo {
   warnings: string[]
 }
 
-export interface NewProjectRequest {
-  name: string
-  preset: PrintPresetId
+/** A built-in preset, or a format definition from the Custom Size wizard / My formats (Phase 7B B5.5). */
+export type NewProjectRequest =
+  { name: string; preset: PrintPresetId } | { name: string; format: FormatDefinition }
+
+/** A saved format (My formats; app-local, Phase 7B B5.5). */
+export interface FormatPresetItem {
+  id: string
+  createdAt: string
+  updatedAt: string
+  format: FormatDefinition
 }
 export interface SessionProjectRequest {
   sessionId: string
@@ -309,6 +321,12 @@ export interface RendererApi {
     importAssets(req: ImportAssetsRequest): Promise<IpcResult<ImportAssetsResult>>
     /** Imports dropped files from their bytes (the renderer never supplies a filesystem path). */
     importAssetData(req: ImportAssetDataRequest): Promise<IpcResult<ImportAssetsResult>>
+  }
+  formats: {
+    list(): Promise<IpcResult<FormatPresetItem[]>>
+    save(req: { format: FormatDefinition }): Promise<IpcResult<FormatPresetItem>>
+    rename(req: { id: string; name: string }): Promise<IpcResult<FormatPresetItem>>
+    delete(req: { id: string }): Promise<IpcResult<null>>
   }
   dslrImport: {
     /** Shows the native ZIP picker and analyses the chosen dslrBooth template (nothing is created yet). */

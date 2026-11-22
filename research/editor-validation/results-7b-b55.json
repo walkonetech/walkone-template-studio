@@ -1,0 +1,682 @@
+[
+  {
+    "name": "1 Start screen offers Custom size as a first-class card beside Blank design and Import dslrBooth (one row, no horizontal scroll)",
+    "ok": true,
+    "detail": {
+      "titles": ["Blank design", "Custom size", "Import dslrBooth"],
+      "tops": [155, 155, 155],
+      "custom": true,
+      "sw": 1920,
+      "iw": 1920
+    }
+  },
+  {
+    "name": "2 standard formats unchanged: New project keeps 4×6 Photo / 2×6 Photo Strip (+ Custom size…); a 2×6 strip is the same project as before (two-up 4×6, no new fields)",
+    "ok": true,
+    "detail": {
+      "np": {
+        "radios": ["4×6 Photo", "2×6 Photo Strip"],
+        "custom": true,
+        "info": "photo-4x6-portrait-600"
+      },
+      "std": {
+        "canvas": {
+          "print": {
+            "width": 2,
+            "height": 6,
+            "unit": "in",
+            "dpi": 600
+          },
+          "backgroundColor": {
+            "kind": "literal",
+            "value": "#ffffff"
+          }
+        },
+        "output": {
+          "print": {
+            "width": 4,
+            "height": 6,
+            "unit": "in",
+            "dpi": 600
+          },
+          "layout": {
+            "kind": "grid",
+            "columns": 2,
+            "rows": 1,
+            "gap": 0
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "3 inches: 2.25 × 3.25 in at 300 DPI shows 675 × 975 px live (wizard opens on \"What size are you designing?\", first field focused)",
+    "ok": true,
+    "detail": {
+      "step1": {
+        "title": "What size are you designing?",
+        "step": "size",
+        "w": "2",
+        "h": "3",
+        "focus": "cf-width"
+      },
+      "inch": {
+        "px": "675 × 975 px @ 300 DPI",
+        "conv": "Size2.25 × 3.25 inMillimeters57.15 × 82.55 mmPixels675 × 975 px @ 300 DPIShapePortrait"
+      }
+    }
+  },
+  {
+    "name": "4 millimetres: switching shows the same size (57.15 × 82.55 mm); 50 × 70 mm → 591 × 827 px at 300 DPI, 1.969 × 2.756 in",
+    "ok": true,
+    "detail": {
+      "shown": ["57.15", "82.55"],
+      "px": "591 × 827 px @ 300 DPI",
+      "conv": "Size50 × 70 mmInches1.969 × 2.756 inPixels591 × 827 px @ 300 DPIShapePortrait"
+    }
+  },
+  {
+    "name": "5 pixels: switching shows the computed pixels (591 × 827); 1080 × 1350 px typed stays 1080 × 1350 px; units switched 12 times without drift",
+    "ok": true,
+    "detail": {
+      "drift": ["50", "70"],
+      "pxShown": ["591", "827"],
+      "pxA": "1080 × 1350 px @ 300 DPI",
+      "pxB": {
+        "px": "1080 × 1350 px @ 600 DPI",
+        "w": "1080",
+        "conv": "Size1.8 × 2.25 inMillimeters45.72 × 57.15 mmPixels1080 × 1350 px @ 600 DPIShapePortrait"
+      }
+    }
+  },
+  {
+    "name": "6 DPI: in pixels, 600 DPI keeps 1080 × 1350 px and halves the print size (1.8 × 2.25 in); in inches, DPI keeps the size and the pixels follow",
+    "ok": true,
+    "detail": {
+      "px": "1080 × 1350 px @ 600 DPI",
+      "w": "1080",
+      "conv": "Size1.8 × 2.25 inMillimeters45.72 × 57.15 mmPixels1080 × 1350 px @ 600 DPIShapePortrait"
+    }
+  },
+  {
+    "name": "7 orientation: Landscape swaps width and height (3 × 2), Portrait swaps back (2 × 3); inches at 600 → 300 DPI keep the size (1200×1800 → 600×900 px)",
+    "ok": true,
+    "detail": {
+      "at600": "1200 × 1800 px @ 600 DPI",
+      "at300": "600 × 900 px @ 300 DPI",
+      "land": [
+        "3",
+        "2",
+        "Size3 × 2 inMillimeters76.2 × 50.8 mmPixels900 × 600 px @ 300 DPIShapeLandscape"
+      ],
+      "port": ["2", "3"]
+    }
+  },
+  {
+    "name": "7b invalid size: zero and 200 in are refused in plain words (inline + summary, aria-invalid, described-by), Next disabled",
+    "ok": true,
+    "detail": {
+      "zero": {
+        "err": ["The width must be greater than zero."],
+        "invalid": "true",
+        "desc": "_r_n_-w-err",
+        "next": true,
+        "summary": "Fix 1 thing to continue."
+      },
+      "huge": ["The width can be at most 100 in (2540 mm)."]
+    }
+  },
+  {
+    "name": "8 exact size: \"How should it print?\" starts on Exact size: one design per print",
+    "ok": true,
+    "detail": {
+      "title": "How should it print?",
+      "mode": "exact",
+      "caption": "Exact size: one design per print",
+      "exact": true
+    }
+  },
+  {
+    "name": "9 repeat on a sheet: 2 × 3 in on a 4 × 6 in sheet, the diagram shows 4 numbered copies and the cut guides; it fits",
+    "ok": true,
+    "detail": {
+      "caption": "4 copies on a 4 × 6 in sheet · 2 across × 2 down",
+      "copies": 4,
+      "ok": true,
+      "sw": "4",
+      "sh": "6",
+      "cut": 2
+    }
+  },
+  {
+    "name": "10 rows / columns: 1 across × 3 down gives 3 copies; back to 2 × 2",
+    "ok": true,
+    "detail": {
+      "caption": "3 copies on a 4 × 6 in sheet · 1 across × 3 down",
+      "copies": 3
+    }
+  },
+  {
+    "name": "11 gaps: a 0.1 in gap makes two 2 in copies too wide for the 4 in sheet (error in words); without the gap it fits again",
+    "ok": true,
+    "detail": {
+      "gapBad": {
+        "fit": "4 copies need 4.1 in × 6.1 in, but the sheet has 4 in × 6 in. Use fewer copies, smaller gaps or margins, or a larger sheet. The design is never scaled to fit.",
+        "role": "alert",
+        "next": true,
+        "invalid": true
+      },
+      "gapOk": {
+        "ok": true,
+        "next": false
+      }
+    }
+  },
+  {
+    "name": "13 invalid arrangement blocked: the error is announced (role=alert), drawn in the error style and Next is disabled; nothing is scaled",
+    "ok": true,
+    "detail": {
+      "fit": "4 copies need 4.1 in × 6.1 in, but the sheet has 4 in × 6 in. Use fewer copies, smaller gaps or margins, or a larger sheet. The design is never scaled to fit.",
+      "role": "alert",
+      "next": true,
+      "invalid": true
+    }
+  },
+  {
+    "name": "12 margins (custom sheet layout): top 0.5 in / left 0.25 in, placed from the top-left margin; the diagram draws the margin box and the copy at the margin",
+    "ok": true,
+    "detail": {
+      "copies": 1,
+      "margin": true,
+      "cx": 8.3,
+      "cy": 16.7,
+      "sw": 133.33333333333334,
+      "ok": true,
+      "caption": "1 copy on a 4 × 6 in sheet · 1 across × 1 down"
+    }
+  },
+  {
+    "name": "14 generic safe margin: Recommended 3 mm is chosen by default, drawn in the diagram and explained as generic guidance, not a printer measurement",
+    "ok": true,
+    "detail": {
+      "title": "Safe margin",
+      "mode": "recommended",
+      "safeLine": 1,
+      "note": "This is a generic design safe margin: general guidance shown in the editor and Checks. It is not a measurement of any printer. A printer profile, when one matches, gives printer-specific safe areas instead."
+    }
+  },
+  {
+    "name": "15 custom safe margin: 5 mm (59 px at 300 DPI); 40 mm on a 2 in design is refused in words",
+    "ok": true,
+    "detail": {
+      "safe2": {
+        "caption": "5 mm generic safe margin",
+        "hint": "59 px at 300 DPI"
+      },
+      "safeBad": {
+        "err": ["A 40 mm margin on both sides leaves no room on a 50.8 mm side."],
+        "next": true
+      }
+    }
+  },
+  {
+    "name": "16 Review your format: 2 × 3 in · 600 × 900 px @ 300 DPI · 4 copies on a 4 × 6 in sheet · 2 across × 2 down · gaps/margins · 3 mm generic safe margin · No printer profile assigned · Create design",
+    "ok": true,
+    "detail": {
+      "title": "Review your format",
+      "design": "2 × 3 in",
+      "px": "600 × 900 px @ 300 DPI",
+      "output": "4 copies on a 4 × 6 in sheet",
+      "all": "Design2 × 3 in600 × 900 px @ 300 DPIOutput4 copies on a 4 × 6 in sheet2 across × 2 downGaps / marginsGaps 0 in · margins 0 in · centredSafe margin3 mm generic safe marginCut guidesCut guides shown in Print PreviewPrinter profileNo printer profile assignedThat is fine for PNG files. You can choose one later.",
+      "spacing": "Gaps 0 in · margins 0 in · centred",
+      "safe": "3 mm generic safe margin",
+      "printer": "No printer profile assignedThat is fine for PNG files. You can choose one later.",
+      "create": "Create design"
+    }
+  },
+  {
+    "name": "17 Create design makes a normal project: 2 × 3 in @ 300 DPI design, 4 × 6 in sheet with 2 × 2 copies, 3 mm generic safe margin, in memory at the current schema version 2, new and Modified",
+    "ok": true,
+    "detail": {
+      "name": "Magnet Test",
+      "canvas": {
+        "print": {
+          "width": 2,
+          "height": 3,
+          "unit": "in",
+          "dpi": 300
+        },
+        "backgroundColor": {
+          "kind": "literal",
+          "value": "#ffffff"
+        },
+        "safeMarginMm": 3
+      },
+      "output": {
+        "print": {
+          "width": 4,
+          "height": 6,
+          "unit": "in",
+          "dpi": 300
+        },
+        "layout": {
+          "kind": "grid",
+          "columns": 2,
+          "rows": 2,
+          "gap": 0
+        }
+      },
+      "dirty": true,
+      "layers": 0,
+      "schema": 2
+    }
+  },
+  {
+    "name": "18 the normal Full Editor opens (rail, panels, canvas, top bar, status bar); Safe areas shows the generic 3 mm margin without a printer profile",
+    "ok": true,
+    "detail": {
+      "rail": true,
+      "side": true,
+      "canvas": 3,
+      "title": "Magnet Test",
+      "print": "2×3 • 300 DPI • Design 600×900 px",
+      "safeToggle": {
+        "disabled": false,
+        "pressed": "true"
+      },
+      "legend": "Generic safe margin · 3 mm · general guidance, not printer-measured"
+    }
+  },
+  {
+    "name": "18b Checks: the custom format and the generic safe margin speak in the one Checks model (Format note, \"close to the edge\" warning), no errors",
+    "ok": true,
+    "detail": [
+      {
+        "code": "safe-margin-generic",
+        "topic": "Safe margin"
+      },
+      {
+        "code": "format-custom",
+        "topic": "Format"
+      },
+      {
+        "code": "format-no-printer",
+        "topic": "Format"
+      }
+    ]
+  },
+  {
+    "name": "19 save → close → reopen keeps the custom geometry, composition and safe margin exactly (clean, not Modified)",
+    "ok": true,
+    "detail": {
+      "file": true,
+      "dirty": false
+    }
+  },
+  {
+    "name": "19b the saved custom project file is schemaVersion 2 (it uses v2 fields: 3 mm safe margin), with the safe margin in the file (ADR-060)",
+    "ok": true,
+    "detail": {
+      "schemaVersion": 2,
+      "safeMarginMm": 3
+    }
+  },
+  {
+    "name": "20 Print Preview: all 4 copies (Copy 1–4) on the 1200 × 1800 sheet, the generic safe line in every copy, 2 cut guides that the Cut guides toggle hides and shows; read only, nothing selectable, not Modified",
+    "ok": true,
+    "detail": {
+      "pv": {
+        "cutLabel": "✂ Cut line",
+        "guidance": "",
+        "chips": ["Copy 1", "Copy 2", "Copy 3", "Copy 4"],
+        "cut": 2,
+        "toggle": true,
+        "readonly": true,
+        "safeLines": 4
+      },
+      "sheet": "1200x1800",
+      "cutOff": 0,
+      "cutOn": 2,
+      "sel": 0
+    }
+  },
+  {
+    "name": "21 PNG export at the expected geometry: Print sheet 1200 × 1800, Design 600 × 900, Proof 1200 × 1800 (a dslrBooth template is offered: the sheet is 4 × 6)",
+    "ok": true,
+    "detail": {
+      "dims": {
+        "Magnet Test-design.png": [600, 900],
+        "Magnet Test-print.png": [1200, 1800],
+        "Magnet Test-proof.png": [1200, 1800]
+      },
+      "cards": ["booth", "print", "proof"],
+      "outputs": ["dslrbooth", "print", "design", "proof"]
+    }
+  },
+  {
+    "name": "22 Save to My formats stores the format on this computer (name, size, unit, DPI, arrangement, safe margin, cut guides; no artwork or project data)",
+    "ok": true,
+    "detail": [
+      {
+        "name": "2×3 Magnet Insert",
+        "width": 2,
+        "height": 3,
+        "dpi": 300,
+        "unit": "in",
+        "arrangement": {
+          "kind": "repeat",
+          "sheetWidth": 4,
+          "sheetHeight": 6,
+          "columns": 2,
+          "rows": 2,
+          "columnGap": 0,
+          "rowGap": 0,
+          "margins": {
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          },
+          "align": "center"
+        },
+        "safeMarginMm": 3,
+        "cutGuides": true
+      }
+    ]
+  },
+  {
+    "name": "23 My formats → Use: the wizard opens on Review with the saved setup; Create design makes the same geometry again",
+    "ok": true,
+    "detail": {
+      "myf": [
+        {
+          "name": "2×3 Magnet Insert",
+          "meta": ["2 × 3 in", "4 copies on a 4 × 6 in sheet"]
+        }
+      ],
+      "reuse": {
+        "step": "review",
+        "output": "4 copies on a 4 × 6 in sheet",
+        "safe": "3 mm generic safe margin",
+        "name": "2×3 Magnet Insert"
+      }
+    }
+  },
+  {
+    "name": "24 Rename: the saved format is renamed in place (focus returns to its Rename button)",
+    "ok": true,
+    "detail": {
+      "renamed": "Fridge Magnet",
+      "renameFocus": "rename"
+    }
+  },
+  {
+    "name": "25 Delete asks first (\"Keep it\" is focused; Escape keeps the format), then Delete format removes it",
+    "ok": true,
+    "detail": {
+      "confirm": {
+        "title": "Delete “Fridge Magnet”?",
+        "focus": "Keep it"
+      },
+      "kept": 1,
+      "gone": {
+        "section": false,
+        "list": 0
+      }
+    }
+  },
+  {
+    "name": "26 built-in formats cannot be deleted: no delete control on them, and the delete request is refused",
+    "ok": true,
+    "detail": {
+      "builtin": ["format-not-found", "format-not-found"],
+      "npDel": {
+        "del": 0
+      }
+    }
+  },
+  {
+    "name": "27 browsing the wizard (from File › New project… › Custom size…) and cancelling leaves the open project exactly as it was: same content, history and Saved state",
+    "ok": true,
+    "detail": {
+      "dirty": false,
+      "past": 0
+    }
+  },
+  {
+    "name": "28 keychain 50 × 70 mm exact size: 591 × 827 px Print and Proof PNGs; no dslrBooth template for this untested size, with a plain note in the Checks; PNG export still works",
+    "ok": true,
+    "detail": {
+      "kdims": {
+        "Keychain-print.png": [591, 827],
+        "Keychain-proof.png": [591, 827]
+      },
+      "cards": ["print", "proof"],
+      "outputs": ["print", "proof"],
+      "checks": [
+        "safe-margin-generic-clear",
+        "format-custom",
+        "format-no-printer",
+        "format-dslr-unsupported"
+      ]
+    }
+  },
+  {
+    "name": "29 pixel-only 1080 × 1350 px: no generic safe margin by default, no printer profile needed; the project is 1080 × 1350 px",
+    "ok": true,
+    "detail": {
+      "pxSafe": "none",
+      "pxReview": {
+        "design": "1080 × 1350 px",
+        "safe": "No generic safe margin"
+      },
+      "pxProj": {
+        "w": 1080,
+        "h": 1350,
+        "safe": false
+      }
+    }
+  },
+  {
+    "name": "30 keyboard: Tab moves from Width to Height; Escape closes the wizard and focus returns to the Custom size card (no tooltip)",
+    "ok": true,
+    "detail": {
+      "tabbed": "cf-height",
+      "back": {
+        "open": false,
+        "focus": "start-custom",
+        "tip": false
+      }
+    }
+  },
+  {
+    "name": "31 Dark theme: the wizard follows the theme tokens (dark dialog surface), Light restores it",
+    "ok": true,
+    "detail": {
+      "darkBg": "rgb(30, 31, 36)",
+      "lightBg": "rgb(255, 255, 255)"
+    }
+  },
+  {
+    "name": "32 Windows size 1426 × 779: every wizard step fits in the window, no horizontal scrolling",
+    "ok": true,
+    "detail": [
+      {
+        "st": "output",
+        "at": "output",
+        "l": 353,
+        "t": 58,
+        "r": 1073,
+        "b": 721,
+        "iw": 1426,
+        "ih": 779,
+        "sw": 1426,
+        "inside": true,
+        "hscroll": false
+      },
+      {
+        "st": "safe",
+        "at": "safe",
+        "l": 353,
+        "t": 148,
+        "r": 1073,
+        "b": 631,
+        "iw": 1426,
+        "ih": 779,
+        "sw": 1426,
+        "inside": true,
+        "hscroll": false
+      },
+      {
+        "st": "review",
+        "at": "review",
+        "l": 353,
+        "t": 125,
+        "r": 1073,
+        "b": 654,
+        "iw": 1426,
+        "ih": 779,
+        "sw": 1426,
+        "inside": true,
+        "hscroll": false
+      },
+      {
+        "st": "size",
+        "l": 353,
+        "t": 140,
+        "r": 1073,
+        "b": 639,
+        "iw": 1426,
+        "ih": 779,
+        "sw": 1426,
+        "inside": true,
+        "hscroll": false
+      }
+    ]
+  },
+  {
+    "name": "33 minimum window 1087 × 643: every wizard step fits in the window (the body scrolls vertically), no horizontal scrolling",
+    "ok": true,
+    "detail": [
+      {
+        "st": "output",
+        "at": "output",
+        "l": 184,
+        "t": 12,
+        "r": 904,
+        "b": 631,
+        "iw": 1087,
+        "ih": 643,
+        "sw": 1087,
+        "inside": true,
+        "hscroll": false
+      },
+      {
+        "st": "safe",
+        "at": "safe",
+        "l": 184,
+        "t": 80,
+        "r": 904,
+        "b": 563,
+        "iw": 1087,
+        "ih": 643,
+        "sw": 1087,
+        "inside": true,
+        "hscroll": false
+      },
+      {
+        "st": "review",
+        "at": "review",
+        "l": 184,
+        "t": 57,
+        "r": 904,
+        "b": 586,
+        "iw": 1087,
+        "ih": 643,
+        "sw": 1087,
+        "inside": true,
+        "hscroll": false
+      },
+      {
+        "st": "size",
+        "l": 184,
+        "t": 72,
+        "r": 904,
+        "b": 571,
+        "iw": 1087,
+        "ih": 643,
+        "sw": 1087,
+        "inside": true,
+        "hscroll": false
+      }
+    ]
+  },
+  {
+    "name": "34 Start screen at the minimum window: the three cards wrap inside the window, no horizontal scrolling",
+    "ok": true,
+    "detail": {
+      "sw": 1087,
+      "iw": 1087,
+      "cards": [364, 707, 1050]
+    }
+  },
+  {
+    "name": "35 an existing standard project opens unchanged (same JSON, clean, layout keys kind/columns/rows/gap only), keeps both dslrBooth outputs and gets no format notes",
+    "ok": true,
+    "detail": {
+      "dirty": false,
+      "layout": ["columns", "gap", "kind", "rows"],
+      "legacyExport": {
+        "cards": ["booth", "print", "proof"],
+        "outputs": ["dslrbooth", "dslrbooth-4x6", "print", "design", "proof"],
+        "notes": []
+      }
+    }
+  },
+  {
+    "name": "35b a standard 2×6 project saved by this build is still written as schemaVersion 1 (uses no v2 field), so older builds keep opening it",
+    "ok": true,
+    "detail": {
+      "schemaVersion": 1
+    }
+  },
+  {
+    "name": "35c a stored v1 project (written by the last v1-only build) opens: migrated to v2 in memory, every other value identical, clean",
+    "ok": true,
+    "detail": {
+      "open": {
+        "status": "ok"
+      },
+      "schemaVersion": 2,
+      "dirty": false
+    }
+  },
+  {
+    "name": "35d a project from a newer app (schemaVersion 3) is refused safely with \"Update the app\"; the open project stays open",
+    "ok": true,
+    "detail": {
+      "future": {
+        "status": "error",
+        "message": "Project uses schema version 3; this app supports up to 2. Update the app to open it."
+      },
+      "still": "Controlled B5"
+    }
+  },
+  {
+    "name": "35e a file marked v1 that uses a v2 field is refused as invalid (no silent acceptance of a mislabelled file)",
+    "ok": true,
+    "detail": {
+      "status": "error",
+      "message": "The project data is invalid or damaged."
+    }
+  },
+  {
+    "name": "36 no Sample photos, Shuffle, Reset samples, Choose photo or Reposition anywhere in the B5.5 surfaces",
+    "ok": true
+  },
+  {
+    "name": "37 no console errors or uncaught exceptions",
+    "ok": true,
+    "detail": []
+  }
+]

@@ -26,6 +26,12 @@ const api: RendererApi = {
     importAssets: (req) => ipcRenderer.invoke(IpcChannel.ProjectImportAssets, req),
     importAssetData: (req) => ipcRenderer.invoke(IpcChannel.ProjectImportAssetData, req)
   },
+  formats: {
+    list: () => ipcRenderer.invoke(IpcChannel.FormatsList),
+    save: (req) => ipcRenderer.invoke(IpcChannel.FormatsSave, req),
+    rename: (req) => ipcRenderer.invoke(IpcChannel.FormatsRename, req),
+    delete: (req) => ipcRenderer.invoke(IpcChannel.FormatsDelete, req)
+  },
   dslrImport: {
     choose: () => ipcRenderer.invoke(IpcChannel.DslrImportChoose),
     commit: (req) => ipcRenderer.invoke(IpcChannel.DslrImportCommit, req)

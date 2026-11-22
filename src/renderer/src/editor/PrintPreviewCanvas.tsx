@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, type ComponentType } from 
 import { Ellipse, Group, Layer as KLayer, Line, Rect, Shape, Stage, Text } from 'react-konva'
 import type Konva from 'konva'
 import { childrenOf, topLevelLayers, type Layer } from '@domain'
-import { cutLineLabel, cutLines, planOutput } from '@canvas/rendering/composition'
+import { cutLineLabel, cutLines, marginBox, planOutput } from '@canvas/rendering/composition'
 import { resolveColor } from '@canvas/rendering/color'
 import { finalizeTextNode } from '@canvas/rendering/finalize'
 import { specFor, type NodeClass, type RenderEnv } from '@canvas/rendering/nodeSpec'
@@ -63,6 +63,7 @@ export function PrintPreviewCanvas(): React.JSX.Element | null {
   const stageRef = useRef<Konva.Stage>(null)
   const pan = useSpacePan(hostRef)
   const safe = useSafeAreaOverlay()
+  const showCuts = useEditor((s) => s.showCutGuides)
 
   useLayoutEffect(() => {
     const host = hostRef.current
@@ -113,8 +114,11 @@ export function PrintPreviewCanvas(): React.JSX.Element | null {
       </div>
     )
   }
-  const lines = cutLines(project)
+  // Cut guides and the margin box are editor guidance (B5.5): View › Cut guides; never in any render or export.
+  const lines = showCuts ? cutLines(project) : []
+  const margins = showCuts ? marginBox(project) : null
   const label = cutLineLabel(project)
+  const xLines = lines.filter((l) => l.axis === 'x')
   const bg = resolveColor(project.palette, project.canvas.backgroundColor)
   const toScreen = (x: number, y: number): { left: number; top: number } => ({
     left: view.offsetX + x * view.scale,
@@ -190,9 +194,22 @@ export function PrintPreviewCanvas(): React.JSX.Element | null {
               scale={view.scale}
             />
           )}
+          {margins && (
+            <Rect
+              name="margin-box"
+              listening={false}
+              {...margins}
+              stroke={CANVAS_THEME.guide}
+              strokeWidth={1}
+              dash={[3, 5]}
+              strokeScaleEnabled={false}
+              opacity={0.6}
+            />
+          )}
           {lines.map((l) => (
             <Line
               key={`${l.axis}-${l.at}`}
+              name="cut-guide"
               listening={false}
               points={l.axis === 'x' ? [l.at, 0, l.at, plan.height] : [0, l.at, plan.width, l.at]}
               stroke={CANVAS_THEME.guide}
@@ -211,23 +228,23 @@ export function PrintPreviewCanvas(): React.JSX.Element | null {
             className="preview-chip"
             style={{
               ...toScreen(c.cell.x + c.cell.width / 2, c.cell.y),
-              transform: 'translate(-50%, calc(-100% - 8px))'
+              // First row above the sheet; lower rows just inside their copy (B5.5 grids), never over another copy.
+              transform:
+                c.cell.row === 0 ? 'translate(-50%, calc(-100% - 8px))' : 'translate(-50%, 6px)'
             }}
           >
             Copy {c.cell.index + 1}
           </span>
         ))}
-        {lines
-          .filter((l) => l.axis === 'x')
-          .map((l) => (
-            <span
-              key={`cut-${l.at}`}
-              className="preview-chip cut"
-              style={{ ...toScreen(l.at, plan.height), transform: 'translate(-50%, 8px)' }}
-            >
-              ✂ {label}
-            </span>
-          ))}
+        {(xLines.length <= 2 ? xLines : xLines.slice(0, 1)).map((l) => (
+          <span
+            key={`cut-${l.at}`}
+            className="preview-chip cut"
+            style={{ ...toScreen(l.at, plan.height), transform: 'translate(-50%, 8px)' }}
+          >
+            ✂ {label}
+          </span>
+        ))}
         {safe && (
           <span
             className="preview-chip safe"

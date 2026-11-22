@@ -5,6 +5,7 @@ import {
   type PrintConfiguration,
   type TemplateProject
 } from '@domain'
+import { hasDerivedCopies } from '@canvas/rendering/composition'
 import { formatNumber } from './numberInput'
 
 /** e.g. "4×6 Portrait • 600 DPI • 2400×3600 px" (status bar and project summary). */
@@ -32,7 +33,8 @@ export const copiesPerSheet = (project: TemplateProject): number =>
  */
 export function describeWorkspace(project: TemplateProject, mode: 'design' | 'preview'): string {
   const copies = copiesPerSheet(project)
-  if (copies <= 1) return describePrint(project.canvas.print)
+  // B5.5: one copy placed on a larger sheet still has a separate print sheet.
+  if (copies <= 1 && !hasDerivedCopies(project)) return describePrint(project.canvas.print)
   if (mode === 'preview') {
     const px = getPixelSize(project.output.print)
     return `${formatNumber(project.output.print.width)}×${formatNumber(project.output.print.height)} Output • ${copies}-up • ${px.width}×${px.height} px`

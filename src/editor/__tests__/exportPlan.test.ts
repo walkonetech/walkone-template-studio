@@ -191,6 +191,12 @@ describe('package files and manifest', () => {
     const p = project()
     const m = buildPackageManifest(p, classifyLayerPackage(p), { appVersion: '0.1.0', fonts: env })
     expect(m.format).toBe('walkone.layer-package')
+    // The project's FILE schema version (ADR-060): a project using no v2 field is still recorded as v1.
+    expect(m.project.schemaVersion).toBe(1)
+    const v2 = { ...p, canvas: { ...p.canvas, safeMarginMm: 3 } }
+    expect(
+      buildPackageManifest(v2, classifyLayerPackage(v2), { appVersion: '0' }).project.schemaVersion
+    ).toBe(2)
     expect(m.design).toEqual({ widthIn: 2, heightIn: 6, dpi: 300, widthPx: 600, heightPx: 1800 })
     expect(m.print.copies).toEqual([
       { x: 0, y: 0, width: 600, height: 1800 },

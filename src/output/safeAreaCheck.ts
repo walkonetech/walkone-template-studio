@@ -16,6 +16,7 @@ import {
   type SafeAreaResolution
 } from './safeArea'
 import { formatMm, pxToMm } from './units'
+import { resolveGenericSafeArea, type GenericSafeArea } from './genericSafeArea'
 
 /**
  * Output-profile-aware safe-area preflight (pure). Checks only CRITICAL content against the active profile's trim,
@@ -38,6 +39,8 @@ export type SafeAreaCode =
   | 'safe-area-trim'
   | 'safe-area-margin'
   | 'safe-area-clear'
+  | 'safe-margin-generic'
+  | 'safe-margin-generic-clear'
 
 export type SafeAreaSeverity = 'error' | 'warning' | 'info'
 
@@ -63,6 +66,11 @@ export interface SafeAreaReport {
   resolution: SafeAreaResolution
   items: SafeAreaItem[]
   flagged: FlaggedLayer[]
+  /**
+   * The format's GENERIC design safe margin (Phase 7B B5.5), when it applies: the project has one and no fitting Output
+   * Profile is selected (a profile's printer-specific safe areas take precedence). Null otherwise.
+   */
+  generic: GenericSafeArea | null
 }
 
 export interface SafeAreaCheckOptions {
@@ -220,24 +228,26 @@ export function checkSafeAreas(
   const resolution = resolveSafeAreas(project, profile)
   const items: SafeAreaItem[] = []
   const flagged: FlaggedLayer[] = []
-  if (resolution.status === 'none') {
-    items.push({
-      code: 'output-profile-none',
-      severity: 'info',
-      message:
-        'No output profile selected, so printer safe areas are not checked. Choose one in View › Printer & cutting….',
-      layerIds: []
-    })
-    return { resolution, items, flagged }
-  }
-  if (resolution.status === 'mismatch') {
-    items.push({
-      code: 'output-profile-mismatch',
-      severity: 'warning',
-      message: `The “${resolution.profile.name}” output profile does not match this project. ${resolution.reason} Safe areas are not checked; choose a matching profile or none.`,
-      layerIds: []
-    })
-    return { resolution, items, flagged }
+  if (resolution.status === 'none' || resolution.status === 'mismatch') {
+    if (resolution.status === 'none')
+      items.push({
+        code: 'output-profile-none',
+        severity: 'info',
+        message:
+          'No output profile selected, so printer safe areas are not checked. Choose one in View › Printer & cutting….',
+        layerIds: []
+      })
+    else
+      items.push({
+        code: 'output-profile-mismatch',
+        severity: 'warning',
+        message: `The “${resolution.profile.name}” output profile does not match this project. ${resolution.reason} Safe areas are not checked; choose a matching profile or none.`,
+        layerIds: []
+      })
+    // Without printer safe areas, the format's own generic safe margin (if any) is checked instead.
+    const generic = resolveGenericSafeArea(project)
+    if (generic) checkGeneric(project, generic, options, items, flagged)
+    return { resolution, items, flagged, generic }
   }
   const { profile: p, dpi, design } = resolution
   if (resolution.status === 'layout-differs') {
@@ -302,5 +312,56 @@ export function checkSafeAreas(
   }
   const order: Record<SafeAreaSeverity, number> = { error: 0, warning: 1, info: 2 }
   items.sort((a, b) => order[a.severity] - order[b.severity])
-  return { resolution, items, flagged }
+  return { resolution, items, flagged, generic: null }
+}
+
+/** Critical content against the format's generic safe margin (every design edge; no trim, no cuts). */
+function checkGeneric(
+  project: TemplateProject,
+  g: GenericSafeArea,
+  options: SafeAreaCheckOptions,
+  items: SafeAreaItem[],
+  flagged: FlaggedLayer[]
+): void {
+  const { width: W, height: H } = g.design
+  let critical = 0
+  let hits = 0
+  for (const layer of printedLeaves(project)) {
+    const kind = criticalKind(layer)
+    if (!kind) continue
+    const ink = layer.type === 'text' ? options.textInk?.(layer) : undefined
+    if (ink === null) continue
+    const r = clipTo(rotatedBounds(layer, ink), W, H)
+    if (!r) continue
+    critical++
+    const sides: [string, number][] = [
+      ['left side', r.x],
+      ['top', r.y],
+      ['right side', W - (r.x + r.width)],
+      ['bottom', H - (r.y + r.height)]
+    ]
+    const [place, d] = sides.reduce((a, b) => (b[1] < a[1] ? b : a))
+    if (d >= g.marginPx - TOL) continue
+    hits++
+    const distance = Math.max(0, d)
+    flagged.push({
+      layerId: layer.id,
+      problem: 'margin',
+      bounds: r,
+      distanceMm: pxToMm(distance, g.dpi)
+    })
+    items.push({
+      code: 'safe-margin-generic',
+      severity: 'warning',
+      message: `${describe(layer, kind)} is ${formatMm(pxToMm(distance, g.dpi))} from the design edge (${place}); this format's generic safe margin is ${formatMm(g.marginMm)}. That is general guidance, not a measurement of your printer.`,
+      layerIds: [layer.id]
+    })
+  }
+  if (hits === 0 && critical > 0)
+    items.push({
+      code: 'safe-margin-generic-clear',
+      severity: 'info',
+      message: `All critical content (${plural(critical, 'item')}) keeps the format's generic ${formatMm(g.marginMm)} safe margin. It is general guidance; a printer profile can give printer-specific safe areas.`,
+      layerIds: []
+    })
 }

@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { IdSchema, IsoTimestampSchema } from '../primitives'
+import { IdSchema, IsoTimestampSchema, NonNegativeNumberSchema } from '../primitives'
 import { ColorValueSchema } from '../color/color'
 import { PrintConfigurationSchema } from '../print/print'
 import { OutputCompositionSchema } from '../print/composition'
@@ -10,8 +10,15 @@ import { AdapterIdSchema, SourceCompatibilityMetadataSchema } from '../compatibi
 
 /** Marker written into every native project file so unrelated JSON is rejected early. */
 export const PROJECT_FORMAT = 'walkone.template-project'
-/** Current native schema version: a single integer, bumped on any breaking change. */
-export const CURRENT_SCHEMA_VERSION = 1
+/**
+ * Newest native schema version this build reads and writes (ADR-005, schema-version policy in ADR-060).
+ * `schemaVersion` in a FILE is the oldest file-format version whose readers can parse that file: writers stamp the
+ * lowest version that represents the content (`fileSchemaVersion`). In memory a project is always at this version.
+ * - 1: the original format.
+ * - 2 (Phase 7B B5.5, ADR-059): adds optional `output.layout` grid `rowGap` / `margins` / `align` and optional
+ *   `canvas.safeMarginMm`. A v1 file is a valid v2 file (migration only re-labels it).
+ */
+export const CURRENT_SCHEMA_VERSION = 2
 
 const optText = z.string().max(2000).optional()
 
@@ -70,7 +77,13 @@ export type DesignMetadata = z.infer<typeof DesignMetadataSchema>
 /** The authoring surface. Layer geometry lives in this canvas' pixel space at `print.dpi`. */
 export const DesignCanvasSchema = z.strictObject({
   print: PrintConfigurationSchema,
-  backgroundColor: ColorValueSchema
+  backgroundColor: ColorValueSchema,
+  /**
+   * Generic design safe margin in millimetres (Phase 7B B5.5, ADR-059): a format's own "keep important content this
+   * far from every design edge" guidance, set by the Custom Size wizard. It is NOT printer evidence; a matching Output
+   * Profile's safe areas take precedence. Optional: absent = no generic guidance (every project before B5.5).
+   */
+  safeMarginMm: NonNegativeNumberSchema.max(50).optional()
 })
 export type DesignCanvas = z.infer<typeof DesignCanvasSchema>
 

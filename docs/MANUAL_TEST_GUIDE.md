@@ -183,6 +183,20 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] Start: Search recent filters the cards; a 2×6 strip card shows two strips; a moved file shows File not found + Locate…; Locate… → Cancel leaves the card; Locate… → the moved file opens it, and back on Start there is ONE card for it (no stale File not found card) that reopens. File › Settings… → Escape puts focus on the File menu button (B5.1).
 - [ ] Repeat in Dark + Compact + 125 % at a short window: toolbar and Properties stay usable; no sideways scrolling. No "Sample photos" anywhere.
 
+### H5. Custom size and My formats (Phase 7B B5.5)
+- [ ] Start shows **Custom size** as a card between Blank design and Import dslrBooth. Blank design still offers 4×6 Photo / 2×6 Photo Strip exactly as before, plus Other sizes › Custom size….
+- [ ] Custom size: type 2.25 × 3.25 in at 300 DPI → "675 × 975 px @ 300 DPI". Switch to Millimeters → 57.15 × 82.55. Type 50 × 70 mm → 591 × 827 px. Switch to Pixels → 591 × 827; type 1080 × 1350, choose 600 DPI → still 1080 × 1350 px. Landscape swaps width and height.
+- [ ] Width 0 or 200 in: a message in words under the field, "Fix 1 thing to continue.", Next disabled.
+- [ ] 2 × 3 in → Next → Repeat on a sheet: 4 × 6, 2 × 2, diagram shows 1–4 and "Fits". A 0.1 in gap → an error that 4 copies need 4.1 × 6.1 in, Next disabled; back to 0 → fits. Custom sheet layout: margins and "From the top-left margin" move the copies in the diagram.
+- [ ] Safe margin: Recommended 3 mm is chosen (None for a pixel format); Custom 5 mm shows its pixels; the note says it is general guidance, not a printer measurement.
+- [ ] Review lists the design, pixels, output, gaps/margins, safe margin and "No printer profile assigned". Tick Save to My formats, name it, **Create design**: the normal editor opens (Modified).
+- [ ] Safe areas shows the generic 3 mm line without a printer. Put a text near the edge: Checks says it is close to the edge. Print Preview shows four copies, Copy 1–4, the cut lines ("Cut line") and the safe line in each; View › Cut guides hides the lines.
+- [ ] Export: Print sheet 1200 × 1800, Design 600 × 900, Proof; the booth card is offered for a 4×6 sheet. A 50 × 70 mm exact-size project offers no booth card and the Checks explain why; its PNGs are 591 × 827.
+- [ ] Save, close, reopen: same size and copies. Start › My formats: the card opens the wizard on Review; Rename (Enter) and Delete (asks first) work. Built-in formats have no delete.
+- [ ] Schema version (ADR-060): unzip the saved magnet `.boothproject` → `project.json` says `"schemaVersion": 2`; a standard 2×6 project saved by this build says `1`. An older build (e.g. `cb2f75d`) opening the magnet file shows "supports up to 1. Update the app" and still opens the 2×6 file.
+- [ ] With a saved project open: File › New project… › Custom size…, click through the steps, Cancel → the project is unchanged and still Saved.
+- [ ] An older 2×6 or 4×6 project opens unchanged and exports exactly as before. Dark theme, 1426 × 779 and the minimum window: every wizard step fits, no sideways scrolling. No "Sample photos" anywhere.
+
 ### H. UI, accessibility, polish
 - [ ] Tooltips on icon-only controls, with shortcut hints.
 - [ ] Everything reachable by keyboard; visible focus ring; labels on fields.

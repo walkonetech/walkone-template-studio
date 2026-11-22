@@ -109,7 +109,7 @@
     "name": "6b Select all selects exactly the merged layers; Details opens with their names; the panel stays open",
     "ok": true,
     "detail": {
-      "sel": ["c2ad4887-d629-429f-851d-a4b1f408e364", "2f95c1b2-707d-42fc-95d2-f54d5ba436c9"],
+      "sel": ["88c9b03c-4943-48bf-a1bc-24e5f9645e24", "eeb0622e-7ed5-4729-adfe-e4675d0fed4d"],
       "det": "Layers JUNE 14 · 2027, Hashtag"
     }
   },
@@ -664,6 +664,7 @@
         "Snap to guides",
         "Show overflow",
         "Safe areas",
+        "Cut guides",
         "Printer & cutting…",
         "Light theme",
         "Dark theme",
@@ -832,8 +833,8 @@
     "name": "30b safe areas (and the halo) never reach a render or an export: renders are identical with safe areas on and off",
     "ok": true,
     "detail": {
-      "r1": "689614:1301670",
-      "r2": "689614:1301670",
+      "r1": "689614:1301730",
+      "r2": "689614:1301730",
       "renders": {}
     }
   },

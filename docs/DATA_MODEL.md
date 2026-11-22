@@ -2,15 +2,15 @@
 
 Source of truth is the code in `src/domain/` (zod schemas; TypeScript types are inferred from them). This document explains the model and why. It is vendor-neutral: DSLR Booth structures are handled only by adapters ([DSLRBOOTH_COMPATIBILITY.md](DSLRBOOTH_COMPATIBILITY.md), ADR-002/003). Evidence behind the choices: [../research/DSLRBOOTH_FIXTURE_ANALYSIS.md](../research/DSLRBOOTH_FIXTURE_ANALYSIS.md). Decisions: [DECISIONS.md](DECISIONS.md).
 
-## 1. Shape of `TemplateProject` (schemaVersion 1)
+## 1. Shape of `TemplateProject` (schemaVersion 2; files are written at the lowest version that represents them, ADR-060)
 ```
 format: "walkone.template-project"      marker
-schemaVersion: 1                        integer
+schemaVersion: 1 | 2                    integer (file: oldest version that can read it; in memory: 2)
 id                                      project id
 metadata   { name, createdAt, updatedAt, notes? }
 event      { eventName?, eventType?, clientName?, organization?, date? (YYYY-MM-DD), location?, cityState?, subtitle?, sponsor?, hashtag?, notes? }
 design     { styleTags[], brief? }                         (DesignMetadata)
-canvas     { print: PrintConfiguration, backgroundColor }  (DesignCanvas)
+canvas     { print: PrintConfiguration, backgroundColor, safeMarginMm? }  (DesignCanvas; safeMarginMm optional, B5.5)
 output     { print: PrintConfiguration, layout }           (OutputComposition)
 palette    { colors: PaletteColor[] }
 layers     Layer[]                      flat list
@@ -29,8 +29,16 @@ Naming notes: `BackgroundLayer` and `OverlayLayer` from the original plan became
 ## 3. Design canvas vs output composition
 `canvas` is what the operator authors (e.g., 2×6 @600 = 1200×3600). `output` is the print sheet plus how copies of the design are arranged:
 - `{ kind: 'single' }` — output equals the design (same physical size and DPI).
-- `{ kind: 'grid', columns, rows, gap }` — identical, unrotated copies, `gap` inches apart, centered. Two-up strip: `createTwoUpStripOutput(strip)` → 4×6 sheet, 2×1 grid.
-Rules (`checkComposition`): output DPI must equal design DPI; the grid must fit. `resolveCompositionCells` returns each copy's pixel rectangle on the output. DSLR Booth sees only one larger canvas (spatial duplication, repeated `PhotoNumber`s), so duplication happens in the exporter. Photo numbers in the *design* are therefore one set (1, 2, 3).
+- `{ kind: 'grid', columns, rows, gap, rowGap?, margins?, align? }` — identical, unrotated copies. `gap` inches between columns (and rows unless `rowGap`); the block is centred inside the sheet minus `margins` (`align: 'center'`, default) or starts at the top-left margin (`'start'`). Two-up strip: `createTwoUpStripOutput(strip)` → 4×6 sheet, 2×1 grid, no optional fields.
+- **B5.5 (ADR-059):** `rowGap`, `margins {top,right,bottom,left}` (inches, 0–50) and `align` are OPTIONAL; absent = the pre-B5.5 meaning, and writers omit default values, so every existing project reads, renders and saves unchanged. A file that USES any of them (or `canvas.safeMarginMm`) is written as `schemaVersion: 2`; one that uses none stays `1` (ADR-060).
+Rules (`checkComposition`): output DPI must equal design DPI; the grid must fit inside the margins. `resolveCompositionCells` returns each copy's pixel rectangle on the output. DSLR Booth sees only one larger canvas (spatial duplication, repeated `PhotoNumber`s), so duplication happens in the exporter. Photo numbers in the *design* are therefore one set (1, 2, 3).
+
+### 3a. Formats and the generic design safe margin (B5.5, ADR-059)
+A **format** (`FormatDefinition`, `src/domain/print/format.ts`) is what a new project starts from: design size in inches (canonical) + DPI + entered unit + arrangement (exact size / repeat / custom sheet) + generic safe margin + cut-guide preference. Built-in and custom formats create projects through one path (`createProjectFromFormat` → `createProject`). A format is not stored in the project; the project keeps only its result: `canvas.print`, `output` and, when chosen, `canvas.safeMarginMm`.
+- **Units:** inches are canonical (unrounded); mm = in × 25.4; px = round(in × DPI), the only rounding. Display: in 3 decimals, mm 2, px whole. Switching the display unit never rewrites the stored inches. A pixel-entered format keeps its pixels when the DPI changes (DPI is print-size metadata).
+- **Limits:** each side > 0, ≤ 100 in, 10–30 000 px; each canvas (design, sheet) ≤ 64 megapixels; DPI 1–4800; 1–8 copies across/down; gaps ≤ 10 in; margins ≤ 50 in.
+- **`canvas.safeMarginMm` (optional, 0–50 mm):** the format's generic keep-safe distance from every design edge. Generic guidance, never printer evidence; a fitting Output Profile's safe areas supersede it (§11 still holds for printer data).
+- **My formats** (saved custom formats) are app-local (`formats.json`), never in a project.
 
 ## 4. Identity, time, colors
 - **IDs:** opaque strings (1–128 chars), generated with the runtime's `crypto.randomUUID()` (UUIDv4); no dependency. Identity is never the name, array index, `photoNumber` or filename.
@@ -63,9 +71,10 @@ Package rules (implemented in `src/projects/`): asset `path` values must live un
 
 ## 8. Serialization, validation, migrations
 - `serializeProject(project)` → deterministic JSON text (validates first; throws on invalid). `deserializeProject(text)` / `loadProject(unknown)` → `{ok:true, project}` or `{ok:false, errors:[{code,path,message}]}`; never throws on bad input, never drops unknown fields (rejects them).
-- Pipeline: detect `schemaVersion` → reject newer than supported with a clear message → run migrations (registry exists and is empty; version 1 only) → schema validation (zod) → integrity checks → model.
+- Pipeline: detect `schemaVersion` → reject newer than supported with a clear message ("Update the app") → run migrations N → N+1 (1 → 2 only re-labels) → schema validation (zod) → refuse a file whose content needs a newer version than it declares (`schema-version-mismatch`) → integrity checks → model (always at the current version in memory).
 - Integrity (`checkProjectIntegrity`): canvas pixel range, composition validity, unique ids/paths, palette roles, parent existence/type/cycles, sibling zIndex uniqueness, asset and palette references, compatibility entries pointing at real layers. This is structural validity, not export preflight.
-- Adding schema version 2 requires a migration entry, a stored v1 sample and a test, in the same change.
+- **Schema-version policy (ADR-060):** the number in a file is the oldest file-format version whose readers can parse it. Bump `CURRENT_SCHEMA_VERSION` whenever an older reader would reject or misread something the new writer can produce, **including optional fields** (unknown fields are rejected). Writers stamp the lowest version that represents the content (`fileSchemaVersion`), so files without newer features stay readable by older builds. Every bump ships a migration entry, a stored sample at the previous version (`tests/fixtures/projects/schema-vN/`, written by the last build of that version) and tests, in the same change.
+- **Version history:** 1 — original. 2 — B5.5: optional grid `rowGap` / `margins` / `align`, optional `canvas.safeMarginMm` (migration only re-labels).
 
 ## 9. Source compatibility metadata (ADR-017)
 Optional `sourceCompatibility: { [adapterId]: { adapterVersion?, importedAt, project?, layers?, unmapped? } }`. `project` holds project-level vendor fields (e.g. for DSLR Booth: root flags); `layers` is keyed by layer id and used only where round-tripping needs it; `unmapped` holds verbatim leftovers. Values are `JsonValue` only (no functions, no `any`). The editor never reads it; copying a layer must not copy its entry; the exporter decides what is still valid. Populated by the DSLR Booth importer (ADR-048, adapter id `dslrbooth`); every edit prunes `layers` entries whose layer no longer exists (`src/editor/compatibility.ts`).
@@ -76,11 +85,11 @@ The model is plain data produced by schemas: no functions, DOM/canvas/Electron o
 ## 11. What stays out of `TemplateProject` (ADR-049, ADR-043)
 The template source document describes the design only. These belong to other, future stores and must **not** be added as `TemplateProject` fields:
 - **Company Profile** (company name, logos, brand colours, preferred fonts, contacts, default sharing branding, default export settings and output profiles). A template may later *reference* a company element (e.g. "company logo"), resolved from the profile.
-- **Output Profiles / printer finishing**: printer model, driver or PrintTicket settings, media, cut positions (e.g. the 2-inch cut), safe margins, overscan, borderless behaviour. The safe-area check reads the active profile; the template stays vendor-neutral. **v1 exists (ADR-053):** `walkone.output-profile` v1 in `src/output/` (bundled JSON profiles; no PrintTicket data); the selected profile is an app preference, not a project field; no schema change.
+- **Output Profiles / printer finishing**: printer model, driver or PrintTicket settings, media, cut positions (e.g. the 2-inch cut), printer safe margins, overscan, borderless behaviour. (Not to be confused with a format's *generic design* safe margin, `canvas.safeMarginMm`, ADR-059: printer-independent guidance with no evidence claim.) The safe-area check reads the active profile; the template stays vendor-neutral. **v1 exists (ADR-053):** `walkone.output-profile` v1 in `src/output/` (bundled JSON profiles; no PrintTicket data); the selected profile is an app preference, not a project field; no schema change.
 - **Sharing / SMS / email settings and provider credentials** (WalkOne Booth only; credentials in OS-backed secure storage, never in project files, event packages, plain JSON or logs).
 - **Event-runtime state** (sessions, captures, print and share queues) and **approved event revisions** as records (the approval workflow is future; a revision snapshots a template, it is not a template field).
 
 Where these live and how both apps read them is open (docs/PRODUCT_ECOSYSTEM.md §17). Any change to this list needs an ADR and, if it touches the file, a `schemaVersion` decision.
 
 ## 12. Known limitations
-Only inches; no gradients/blend modes/shadows; photo frame styles limited to none/solid; no crop rectangles; groups have no rotation/opacity semantics; layer order is by `zIndex` per parent; no badges, templates, recipes. These are additive and will bump `schemaVersion` when they change existing shapes.
+Only inches are stored (millimetres and pixels are entry/display units, B5.5); no gradients/blend modes/shadows; photo frame styles limited to none/solid; no crop rectangles; groups have no rotation/opacity semantics; layer order is by `zIndex` per parent; no badges, templates, recipes. Adding any of them to the file bumps `schemaVersion` (ADR-060: even optional fields, because older readers reject unknown fields).

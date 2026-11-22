@@ -20,8 +20,13 @@
 - **Selection toolbar** — (7B B5) the small row of 3–5 actions in words that appears next to the selected layer on the canvas (never in Print Preview); can be turned off in Settings › Editor.
 - **Essentials** — (7B B5) the always-visible top of Properties: the fields an operator changes most for that layer type; everything else sits in closed sections with a one-line summary.
 - **Settings** — (7B B5) settings of this computer (theme, button size, interface scale, printer, editor helpers); never stored in a project.
+- **schemaVersion** — the integer in every `.boothproject`'s `project.json` naming the oldest file-format version whose readers can open it (ADR-060). An older app refuses a newer number with "Update the app". Version 2 (B5.5) is used only by projects that have sheet margins, a separate row gap, top-left placement or a generic safe margin; standard projects are still written as version 1.
 - **Getting-started tips** — (7B B5) the three-step card on a new blank project; not the Design Guide.
-- **Custom Format (B5.5, planned)** — what is being designed (size, DPI, orientation, sheet composition); distinct from an Output Profile (how it is produced).
+- **Format / Custom Format (B5.5, ADR-059)** — what is being designed: design size (inches canonical; entered in in/mm/px) + DPI, plus how it is arranged for output and two pieces of editor guidance (generic safe margin, cut guides). Built-in formats (2×6 strip, 4×6, 6×4) and custom ones share one model (`FormatDefinition`). Distinct from an Output Profile (how it is produced).
+- **Output Composition** — how copies of the design are arranged on the print sheet (`project.output`): exact size, or a grid with gaps, optional margins and centred/top-left placement.
+- **My formats** — saved custom formats on this computer (`formats.json`, app-local; never in a project; rename/delete; built-ins cannot be deleted).
+- **Generic design safe margin** — a format's own keep-safe distance from every design edge (e.g. 3 mm; `canvas.safeMarginMm`). General guidance with no printer evidence; a fitting Output Profile's printer safe areas take precedence.
+- **Cut guides** — Print Preview lines where copies are cut apart (and the margin box). Editor guidance only (View › Cut guides); never printed or exported.
 - **Printer & cutting** — (7B B4) the user-facing name of the Output Profile dialog: what the printer may trim, the safe line, "How sure are we?" (Estimated · Tested on a print · Measured; "Measured" is not "verified on the production booth"), setup tiles and the evidence under "How do we know?".
 - **Fixture** — A real DSLR Booth template export stored in `tests/fixtures/dslrbooth/source/` as a compatibility reference (private client data: local only, never committed).
 - **Round Trip** — Converting DSLR Booth → internal → DSLR Booth (or reverse) and checking nothing is lost.

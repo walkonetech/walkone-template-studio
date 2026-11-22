@@ -1,5 +1,6 @@
 import {
   childrenOf,
+  fileSchemaVersion,
   getPixelSize,
   isEffectivelyVisible,
   topLevelLayers,
@@ -71,7 +72,7 @@ export function exportOutputs(project: TemplateProject): ExportOutput[] {
       kind: 'print',
       label: composed ? 'Print sheet PNG' : 'Print PNG',
       description: composed
-        ? `The finished print sheet: ${copies} copies of the design, photo frames drawn, photo areas left empty.`
+        ? `The finished print sheet: ${copies === 1 ? 'the design placed on the sheet' : `${copies} copies of the design`}, photo frames drawn, photo areas left empty.`
         : 'The finished print artwork, photo frames drawn, photo areas left empty.',
       fileName: exportFileName(name, 'print'),
       ...sheetSize,
@@ -85,7 +86,7 @@ export function exportOutputs(project: TemplateProject): ExportOutput[] {
       kind: 'design',
       label: 'Design PNG',
       description:
-        'One copy of the design on its own (for example one 2×6 strip), photo frames drawn, photo areas left empty.',
+        'One copy of the design on its own (for example one 2×6 strip or one magnet insert), photo frames drawn, photo areas left empty.',
       fileName: exportFileName(name, 'design'),
       ...designSize,
       production: true,
@@ -460,7 +461,7 @@ export function buildPackageManifest(
       id: project.id,
       name: project.metadata.name,
       updatedAt: project.metadata.updatedAt,
-      schemaVersion: project.schemaVersion
+      schemaVersion: fileSchemaVersion(project)
     },
     design: {
       widthIn: project.canvas.print.width,

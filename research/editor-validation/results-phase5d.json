@@ -8,7 +8,7 @@
       "ok": true,
       "detail": {
         "rows": 60,
-        "openMs": 744
+        "openMs": 793
       }
     },
     {
@@ -143,7 +143,7 @@
           [255, 255, 255, 255]
         ],
         "photo": {
-          "id": "d717644d-fbc5-4081-a902-dbcfc306ffb0",
+          "id": "f2d69032-1665-4cf0-9fce-495a9221d8ef",
           "type": "photo",
           "name": "Photo 1",
           "x": 100,
@@ -155,7 +155,7 @@
             "thickness": 40,
             "color": {
               "kind": "palette",
-              "paletteColorId": "a5e27e28-6e88-491f-94a0-82250a959045"
+              "paletteColorId": "7b0cb1b4-5e09-4b71-8e71-9924fe1bba6f"
             }
           },
           "locked": false
@@ -216,7 +216,7 @@
       "name": "17 \"Add color\" creates a custom palette entry with a stable id",
       "ok": true,
       "detail": {
-        "id": "ec8aaeb1-96ff-4379-abfb-37430c61454a",
+        "id": "19f0a46c-f029-4076-996a-f74714c9851f",
         "role": "custom",
         "name": "Color 1",
         "value": "#b76e79"

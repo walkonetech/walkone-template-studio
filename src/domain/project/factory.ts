@@ -6,6 +6,7 @@ import {
   type OutputComposition
 } from '../print/composition'
 import { getPrintPreset, type PrintConfiguration, type PrintPresetId } from '../print/print'
+import { formatComposition, formatDesignPrint, type FormatDefinition } from '../print/format'
 import { CURRENT_SCHEMA_VERSION, PROJECT_FORMAT, type TemplateProject } from './project'
 
 export interface CreateProjectOptions {
@@ -46,4 +47,23 @@ export function createProject(options: CreateProjectOptions): TemplateProject {
     assets: [],
     export: { preferredExporterId: null, includePreview: true }
   }
+}
+
+/**
+ * Creates a project from a format definition (Phase 7B B5.5): built-in and custom formats both come through here and
+ * then through `createProject`, so there is one creation path. The generic safe margin is written only when the format
+ * has one (a built-in format creates exactly the same project as `createProject` with its preset id).
+ */
+export function createProjectFromFormat(
+  format: FormatDefinition,
+  options: Omit<CreateProjectOptions, 'design' | 'output'>
+): TemplateProject {
+  const project = createProject({
+    ...options,
+    design: formatDesignPrint(format),
+    output: formatComposition(format)
+  })
+  if (format.safeMarginMm !== null && format.safeMarginMm > 0)
+    project.canvas = { ...project.canvas, safeMarginMm: format.safeMarginMm }
+  return project
 }

@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import { IpcChannel } from '../shared/ipc'
 import { createProjectHandlers } from '../projects/handlers'
 import { RecentProjectsStore } from '../projects/recents'
+import { FormatPresetStore } from '../projects/formatPresets'
 import { ProjectService } from '../projects/service'
 import { PROJECT_EXTENSION } from '../projects/constants'
 import { devValue } from './devOverrides'
@@ -87,6 +88,7 @@ export function registerProjectIpc(
   const handlers = createProjectHandlers({
     service,
     recents,
+    formats: new FormatPresetStore(join(userData, 'formats.json')),
     dialogs: createDialogs(),
     log: (message, detail) => console.error(`[project] ${message}`, detail)
   })
@@ -103,6 +105,22 @@ export function registerProjectIpc(
   ipcMain.handle(
     IpcChannel.ProjectNew,
     guard((_e, p: unknown) => handlers.newProject(p))
+  )
+  ipcMain.handle(
+    IpcChannel.FormatsList,
+    guard(() => handlers.formatsList())
+  )
+  ipcMain.handle(
+    IpcChannel.FormatsSave,
+    guard((_e, p: unknown) => handlers.formatsSave(p))
+  )
+  ipcMain.handle(
+    IpcChannel.FormatsRename,
+    guard((_e, p: unknown) => handlers.formatsRename(p))
+  )
+  ipcMain.handle(
+    IpcChannel.FormatsDelete,
+    guard((_e, p: unknown) => handlers.formatsDelete(p))
   )
   ipcMain.handle(
     IpcChannel.ProjectNewSample,

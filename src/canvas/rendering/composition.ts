@@ -35,10 +35,17 @@ export interface OutputPlan {
   composed: boolean
 }
 
-/** Does the project print more than one copy of its design per sheet? (Design/Print Preview only matter then.) */
+/**
+ * Does the project print on a sheet that differs from its design: several copies per sheet, or (B5.5) a single copy
+ * placed on a larger sheet? Design/Print Preview and the separate Design PNG only matter then. Pre-B5.5 projects only
+ * have the 2×6 two-up grid, so their answer is unchanged.
+ */
 export function hasDerivedCopies(project: TemplateProject): boolean {
   if (project.output.layout.kind === 'single') return false
-  return resolveCompositionCells(project.canvas.print, project.output).length > 1
+  if (resolveCompositionCells(project.canvas.print, project.output).length > 1) return true
+  const d = project.canvas.print
+  const s = project.output.print
+  return Math.abs(d.width - s.width) > 1e-6 || Math.abs(d.height - s.height) > 1e-6
 }
 
 export const translateLayers = (layers: readonly Layer[], dx: number, dy: number): Layer[] =>
@@ -69,31 +76,68 @@ export interface CutLine {
 }
 
 /**
- * Boundaries between adjacent copies (editor-only guide, never artwork). With a gap, the guide sits in the middle of
- * the gap. For a 2-inch strip pair this is the 2-inch centre cut.
+ * Where the copies are cut apart (editor-only guide, never artwork). Copies that touch share one line (for a 2-inch
+ * strip pair, the 2-inch centre cut, as before B5.5). With a gap between copies, each copy's own edge is a cut, so the
+ * gap is shown as waste between two lines. An outer copy edge that does not lie on the sheet edge (margins, or a block
+ * smaller than the sheet) is a cut too. Lines are unique and sorted.
  */
 export function cutLines(project: TemplateProject): CutLine[] {
   if (project.output.layout.kind === 'single') return []
   const cells = resolveCompositionCells(project.canvas.print, project.output)
-  const lines: CutLine[] = []
+  const sheet = getPixelSize(project.output.print)
+  const at = new Map<string, CutLine>()
+  const add = (axis: 'x' | 'y', v: number, size: number): void => {
+    if (v <= 0.5 || v >= size - 0.5) return // on the sheet edge: nothing to cut
+    at.set(`${axis}:${v}`, { axis, at: v })
+  }
   const byColumn = cells.filter((c) => c.row === 0)
-  for (let i = 1; i < byColumn.length; i++) {
-    const prev = byColumn[i - 1] as CompositionCell
-    const cur = byColumn[i] as CompositionCell
-    lines.push({ axis: 'x', at: (prev.x + prev.width + cur.x) / 2 })
-  }
+  byColumn.forEach((cur, i) => {
+    const prev = byColumn[i - 1]
+    if (!prev) add('x', cur.x, sheet.width)
+    else if (prev.x + prev.width === cur.x) add('x', cur.x, sheet.width)
+    else {
+      add('x', prev.x + prev.width, sheet.width)
+      add('x', cur.x, sheet.width)
+    }
+    if (i === byColumn.length - 1) add('x', cur.x + cur.width, sheet.width)
+  })
   const byRow = cells.filter((c) => c.column === 0)
-  for (let i = 1; i < byRow.length; i++) {
-    const prev = byRow[i - 1] as CompositionCell
-    const cur = byRow[i] as CompositionCell
-    lines.push({ axis: 'y', at: (prev.y + prev.height + cur.y) / 2 })
-  }
-  return lines
+  byRow.forEach((cur, i) => {
+    const prev = byRow[i - 1]
+    if (!prev) add('y', cur.y, sheet.height)
+    else if (prev.y + prev.height === cur.y) add('y', cur.y, sheet.height)
+    else {
+      add('y', prev.y + prev.height, sheet.height)
+      add('y', cur.y, sheet.height)
+    }
+    if (i === byRow.length - 1) add('y', cur.y + cur.height, sheet.height)
+  })
+  return [...at.values()].sort((a, b) =>
+    a.axis === b.axis ? a.at - b.at : a.axis === 'x' ? -1 : 1
+  )
 }
 
-/** "2-inch cut" for a 2 in wide strip pair; otherwise a neutral "Cut line". */
+/** The sheet's margin box in sheet pixels (editor-only guide), or null when the layout has no margins. */
+export function marginBox(project: TemplateProject): Rect | null {
+  const layout = project.output.layout
+  if (layout.kind !== 'grid' || !layout.margins) return null
+  const m = layout.margins
+  const dpi = project.output.print.dpi
+  const sheet = getPixelSize(project.output.print)
+  const left = Math.round(m.left * dpi)
+  const top = Math.round(m.top * dpi)
+  return {
+    x: left,
+    y: top,
+    width: sheet.width - left - Math.round(m.right * dpi),
+    height: sheet.height - top - Math.round(m.bottom * dpi)
+  }
+}
+
+/** "2-inch cut" for a 2×6 strip pair; otherwise (custom sheets, B5.5) a neutral "Cut line". */
 export function cutLineLabel(project: TemplateProject): string {
-  return project.canvas.print.width === 2 ? '2-inch cut' : 'Cut line'
+  const d = project.canvas.print
+  return d.width === 2 && d.height === 6 ? '2-inch cut' : 'Cut line'
 }
 
 export interface Rect {

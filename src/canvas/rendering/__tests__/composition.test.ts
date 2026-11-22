@@ -104,7 +104,12 @@ describe('presets and output dimensions', () => {
     }
     const plan = planOutput(gapped)
     expect(plan.copies.map((c) => c.cell.x)).toEqual([0, 630])
-    expect(cutLines(gapped)).toEqual([{ axis: 'x', at: 615 }])
+    // B5.5: with a gap the cuts are each copy's own edge (the 30 px gap between them is waste), no longer one line in
+    // the middle of the gap. Touching copies (no gap, every built-in format) still share one line: see below.
+    expect(cutLines(gapped)).toEqual([
+      { axis: 'x', at: 600 },
+      { axis: 'x', at: 630 }
+    ])
   })
 
   it('rejects a sheet that cannot hold the copies', () => {

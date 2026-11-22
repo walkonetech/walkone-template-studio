@@ -64,8 +64,12 @@ export function exportCards(outputs: readonly ExportOutput[]): ExportCard[] {
 }
 
 /** The first-use selection among the outputs a project offers. */
-export const firstUseSelection = (outputs: readonly ExportOutput[]): ExportKind[] =>
-  outputs.filter((o) => FIRST_USE_KINDS.includes(o.kind)).map((o) => o.kind)
+export function firstUseSelection(outputs: readonly ExportOutput[]): ExportKind[] {
+  const booth = outputs.filter((o) => FIRST_USE_KINDS.includes(o.kind)).map((o) => o.kind)
+  if (booth.length > 0) return booth
+  // No dslrBooth template for this format (B5.5 custom size): the print files are what there is to export.
+  return outputs.filter((o) => o.kind === 'print' || o.kind === 'design').map((o) => o.kind)
+}
 
 export type CardState = 'on' | 'off' | 'mixed'
 

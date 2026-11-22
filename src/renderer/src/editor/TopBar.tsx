@@ -33,8 +33,12 @@ export function useCommandContext(): CommandContext {
   const hasPrintPreview = useEditor((s) => s.project !== null && hasDerivedCopies(s.project))
   const viewMode = useEditor(selectViewMode)
   const showOverflow = useEditor((s) => s.showOverflow)
-  const hasOutputProfile = useEditor((s) => s.outputProfileId !== null)
+  // Safe areas exist with a printer profile, or with a format's generic safe margin (B5.5).
+  const hasOutputProfile = useEditor(
+    (s) => s.outputProfileId !== null || (s.project?.canvas.safeMarginMm ?? 0) > 0
+  )
   const showSafeAreas = useEditor((s) => s.showSafeAreas)
+  const showCutGuides = useEditor((s) => s.showCutGuides)
   const theme = useAppearance((s) => s.theme)
   const density = useAppearance((s) => s.density)
   return {
@@ -48,6 +52,7 @@ export function useCommandContext(): CommandContext {
     viewMode,
     hasOutputProfile,
     showSafeAreas,
+    showCutGuides,
     theme,
     density
   }

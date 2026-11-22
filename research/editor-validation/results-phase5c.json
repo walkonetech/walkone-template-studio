@@ -8,7 +8,7 @@
       "ok": true,
       "detail": {
         "overlay": {
-          "id": "8d89d024-eb87-4870-a4f1-3d352eeba879",
+          "id": "21bf4bc6-b7cf-4ccb-b38f-5fe165365121",
           "type": "image",
           "name": "petals",
           "x": 900,
@@ -411,7 +411,7 @@
       "name": "25 save → reopen: negative X, rotation and oversized extent are preserved exactly",
       "ok": true,
       "detail": {
-        "id": "8d89d024-eb87-4870-a4f1-3d352eeba879",
+        "id": "21bf4bc6-b7cf-4ccb-b38f-5fe165365121",
         "type": "image",
         "name": "petals",
         "x": -120,
@@ -433,7 +433,7 @@
       "name": "26 crash recovery restores the off-artboard asset geometry (x −300) and its image",
       "ok": true,
       "detail": {
-        "id": "8d89d024-eb87-4870-a4f1-3d352eeba879",
+        "id": "21bf4bc6-b7cf-4ccb-b38f-5fe165365121",
         "type": "image",
         "name": "petals",
         "x": -300,

@@ -2,6 +2,7 @@ import type { TemplateProject } from '@domain'
 import type { ExportOutput } from '@editor/exportPlan'
 import { exportFileName, type ExportKind } from '@export/naming'
 import { isNativeStrip, mainVariant, planDslrTemplate, type DslrVariant } from './plan'
+import { dslrSupport } from './compat'
 
 /**
  * The dslrBooth outputs a project offers (Phase 6B), shown above the vendor-neutral files in the Export dialog.
@@ -28,6 +29,8 @@ const LABEL: Record<DslrVariant, string> = {
 }
 
 export function dslrOutputs(project: TemplateProject): ExportOutput[] {
+  // Custom sizes never shown to work in dslrBooth are not offered (B5.5); the Checks say why.
+  if (!dslrSupport(project).supported) return []
   const out: ExportOutput[] = []
   const make = (
     kind: 'dslrbooth' | 'dslrbooth-4x6',

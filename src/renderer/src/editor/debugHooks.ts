@@ -40,6 +40,8 @@ export interface DebugApi {
   /** Client coordinates of a layer node's center. */
   layerCenter: (id: string) => { x: number; y: number } | null
   canvasCount: () => number
+  /** How many nodes with this Konva name the visible stage holds (e.g. 'cut-guide', 'margin-box', 'safe-line'). */
+  countNodes: (name: string) => number
   /** The font-family string the canvas node of a text layer actually draws with (requested family + fallback stack). */
   textFont: (layerId: string) => string | null
   /** The editor stage as the user sees it (workspace pixels) plus its view transform, for pixel checks. */
@@ -60,7 +62,10 @@ declare global {
 }
 
 export function installDebug(
-  api: Omit<DebugApi, 'handlePoint' | 'layerCenter' | 'canvasCount' | 'stageSnapshot' | 'textFont'>
+  api: Omit<
+    DebugApi,
+    'handlePoint' | 'layerCenter' | 'canvasCount' | 'countNodes' | 'stageSnapshot' | 'textFont'
+  >
 ): void {
   if (!window.location.hash.includes('debug')) return
   window.__wts = {
@@ -83,6 +88,7 @@ export function installDebug(
       return { x: r.left + c.x + c.width / 2, y: r.top + c.y + c.height / 2 }
     },
     canvasCount: () => document.querySelectorAll('canvas').length,
+    countNodes: (name) => canvasTargets().stage?.find(`.${name}`).length ?? 0,
     textFont: (id) => {
       const node = canvasTargets().stage?.findOne((n: Konva.Node) => n.id() === id)
       return node && 'fontFamily' in node ? String((node as Konva.Text).fontFamily()) : null

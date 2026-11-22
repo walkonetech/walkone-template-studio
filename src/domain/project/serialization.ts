@@ -7,12 +7,30 @@ export type LoadResult =
   { ok: true; project: TemplateProject } | { ok: false; errors: ProjectIssue[] }
 
 /**
- * Migrations from schema version N to N+1, keyed by N. Empty while only version 1 exists.
- * Add an entry (plus a fixture and test) in the same change that bumps CURRENT_SCHEMA_VERSION.
+ * Migrations from schema version N to N+1, keyed by N (ADR-060). Add an entry, a stored sample file at the previous
+ * version (tests/fixtures/projects/schema-vN/) and a test in the same change that bumps CURRENT_SCHEMA_VERSION.
  */
 const MIGRATIONS: Readonly<
   Record<number, (raw: Record<string, unknown>) => Record<string, unknown>>
-> = {}
+> = {
+  // 1 → 2 (B5.5): v2 only ADDS optional fields whose absence keeps the v1 meaning, so a v1 document is already a
+  // valid v2 document. Nothing is added, defaulted or rewritten; only the label changes.
+  1: (raw) => ({ ...raw, schemaVersion: 2 })
+}
+
+/**
+ * The oldest schema version that can represent this project, i.e. the version written into its file (ADR-060).
+ * A reader that supports that version parses the file; an older reader refuses it with "Update the app".
+ * v2 is needed only when a v2 field is PRESENT (writers omit default values, see `normalizeGridLayout`).
+ */
+export function fileSchemaVersion(project: TemplateProject): number {
+  const layout = project.output.layout
+  const usesV2 =
+    project.canvas.safeMarginMm !== undefined ||
+    (layout.kind === 'grid' &&
+      (layout.rowGap !== undefined || layout.margins !== undefined || layout.align !== undefined))
+  return usesV2 ? 2 : 1
+}
 
 function fail(code: string, path: string, message: string): LoadResult {
   return { ok: false, errors: [{ code, path, message }] }
@@ -60,6 +78,16 @@ export function loadProject(raw: unknown): LoadResult {
   }
   const parsed = TemplateProjectSchema.safeParse(doc)
   if (!parsed.success) return { ok: false, errors: zodIssues(parsed.error) }
+  const needed = fileSchemaVersion(parsed.data)
+  if (needed > version) {
+    // A file never claims an older version than its content needs: an older reader would refuse it with a schema
+    // error instead of "Update the app". Such a file was not written by Template Studio.
+    return fail(
+      'schema-version-mismatch',
+      'schemaVersion',
+      `Project is marked schema version ${version} but uses fields from schema version ${needed}.`
+    )
+  }
   const issues = checkProjectIntegrity(parsed.data)
   if (issues.length > 0) return { ok: false, errors: issues }
   return { ok: true, project: parsed.data }
@@ -81,15 +109,20 @@ function sortJson(value: JsonValue): JsonValue {
 /**
  * Deterministic JSON text for a project: validated, schema key order, two-space indent,
  * trailing newline. Opaque compatibility data has sorted keys. Throws if the project is invalid.
+ * `schemaVersion` is written as `fileSchemaVersion` (the lowest version that represents the content), so a project
+ * that uses no v2 field is still written as v1, exactly as before B5.5.
  */
 export function serializeProject(project: TemplateProject): string {
-  const result = loadProject(project)
+  const result = loadProject({ ...project, schemaVersion: CURRENT_SCHEMA_VERSION })
   if (!result.ok) {
     throw new Error(
       `Cannot serialize invalid project: ${result.errors.map((e) => `${e.path || '<root>'}: ${e.message}`).join('; ')}`
     )
   }
-  const out: Record<string, unknown> = { ...result.project }
+  const out: Record<string, unknown> = {
+    ...result.project,
+    schemaVersion: fileSchemaVersion(result.project)
+  }
   if (result.project.sourceCompatibility) {
     out['sourceCompatibility'] = sortJson(JsonValueSchema.parse(result.project.sourceCompatibility))
   }

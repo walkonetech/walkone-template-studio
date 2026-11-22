@@ -1,4 +1,8 @@
-import { useId, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
+import { Ruler } from 'lucide-react'
+import { summarizeFormat, type FormatDefinition } from '@domain'
+import { formatsStore, useFormats } from './formatsStore'
+import { FormatThumb } from './MyFormats'
 import {
   PRINT_DPIS,
   describeNewProject,
@@ -11,6 +15,67 @@ import { editorStore } from './editorStore'
 import { layoutStore, useLayout } from './layoutStore'
 import { Button } from '../ui/Button'
 import { Dialog, DialogActions } from '../ui/Dialog'
+
+/**
+ * Other sizes (B5.5): Custom size… opens the Custom Size wizard; My formats are saved custom formats. The built-in
+ * formats above stay exactly as they were (2×6 strip, 4×6 portrait / landscape at 300 or 600 DPI).
+ */
+function OtherFormats({ name }: { name: string }): React.JSX.Element {
+  const items = useFormats((s) => s.items)
+  useEffect(() => {
+    void formatsStore.getState().refresh()
+  }, [])
+  const projectName = name.trim() || 'Untitled'
+  const use = (format: FormatDefinition | null): void => {
+    layoutStore.getState().setNewProjectOpen(false)
+    layoutStore
+      .getState()
+      .setCustomFormat({ format, projectName: format ? format.name : projectName })
+  }
+  return (
+    <div className="new-other" data-testid="new-project-other">
+      <span className="cf-label">Other sizes</span>
+      <div className="new-other-list">
+        <button
+          type="button"
+          className="new-format-btn"
+          id="new-custom-size"
+          onClick={() => use(null)}
+        >
+          <Ruler size={16} aria-hidden="true" />
+          <span>
+            <span className="new-format-name">Custom size…</span>
+            <span className="new-format-meta">
+              Any size: magnets, keychains, wallet prints, squares
+            </span>
+          </span>
+        </button>
+        {(items ?? []).map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            className="new-format-btn"
+            data-format-id={item.id}
+            onClick={() => use(item.format)}
+          >
+            <span className="new-format-thumb">
+              <FormatThumb format={item.format} box={28} />
+            </span>
+            <span>
+              <span className="new-format-name">{item.format.name}</span>
+              <span className="new-format-meta">
+                {summarizeFormat(item.format).design} · {summarizeFormat(item.format).output}
+              </span>
+            </span>
+          </button>
+        ))}
+      </div>
+      {items && items.length > 0 && (
+        <span className="field-note">My formats are saved on this computer.</span>
+      )}
+    </div>
+  )
+}
 
 function Form(): React.JSX.Element {
   const nameId = useId()
@@ -131,6 +196,7 @@ function Form(): React.JSX.Element {
           {info.sheet && <div>{info.sheet}</div>}
           <p>{info.note}</p>
         </div>
+        <OtherFormats name={name} />
         <button type="submit" className="sr-only" tabIndex={-1}>
           Create
         </button>

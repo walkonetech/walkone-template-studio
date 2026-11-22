@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-22T07:16:40.133Z",
+  "when": "2026-11-22T16:15:31.142Z",
   "fixtures": 5,
   "pass": 29,
   "total": 29,
@@ -12,6 +12,7 @@
         "New sample project",
         "Open project…",
         "Blank design",
+        "Custom size",
         "Import dslrBooth"
       ]
     },

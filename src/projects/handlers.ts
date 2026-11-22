@@ -1,5 +1,14 @@
 import { z } from 'zod'
-import { createProject, IdSchema, PRINT_PRESET_IDS, type TemplateProject } from '../domain'
+import {
+  FormatDefinitionSchema,
+  IdSchema,
+  PRINT_PRESET_IDS,
+  builtInFormat,
+  createProjectFromFormat,
+  validateFormat,
+  type TemplateProject
+} from '../domain'
+import { FormatPresetError, type FormatPreset, type FormatPresetStore } from './formatPresets'
 import { createSampleTemplate } from './sampleProject'
 import type { IpcResult } from '../shared/persistence'
 import { MAX_IMPORT_FILES } from '../shared/ipc'
@@ -43,14 +52,26 @@ export interface HandlerDeps {
   service: ProjectService
   recents: RecentProjectsStore
   dialogs: ProjectDialogs
+  /** My formats (app-local saved format definitions); optional so older tests need not supply it. */
+  formats?: FormatPresetStore
   /** Receives internal error detail for logging; never sent to the renderer. */
   log?: (message: string, detail?: unknown) => void
 }
 
-const NewSchema = z.strictObject({
-  name: z.string().min(1).max(200),
-  preset: z.enum(PRINT_PRESET_IDS)
-})
+const NewSchema = z.union([
+  z.strictObject({
+    name: z.string().min(1).max(200),
+    preset: z.enum(PRINT_PRESET_IDS)
+  }),
+  // Custom Size wizard / My formats (Phase 7B B5.5): the format is validated again here before a project exists.
+  z.strictObject({
+    name: z.string().min(1).max(200),
+    format: FormatDefinitionSchema
+  })
+])
+const FormatSaveSchema = z.strictObject({ format: FormatDefinitionSchema })
+const FormatRenameSchema = z.strictObject({ id: IdSchema, name: z.string().min(1).max(200) })
+const FormatIdSchema = z.strictObject({ id: IdSchema })
 const SessionSchema = z.strictObject({ sessionId: IdSchema })
 const AssetRequestSchema = z.strictObject({ sessionId: IdSchema, assetId: IdSchema })
 const ImportDialogSchema = z.strictObject({ sessionId: IdSchema, multiple: z.boolean().optional() })
@@ -105,6 +126,27 @@ export function createProjectHandlers(deps: HandlerDeps) {
 
   const ok = <T>(value: T): IpcResult<T> => ({ status: 'ok', value })
 
+  const formatStore = (): FormatPresetStore => {
+    if (!deps.formats) throw new PersistenceError('not-allowed', 'Saved formats are not available.')
+    return deps.formats
+  }
+  async function formatCall<T>(op: () => Promise<T>): Promise<T> {
+    try {
+      return await op()
+    } catch (e) {
+      if (e instanceof FormatPresetError)
+        throw new PersistenceError(
+          e.code === 'invalid'
+            ? 'format-invalid'
+            : e.code === 'full'
+              ? 'format-limit'
+              : 'format-not-found',
+          e.message
+        )
+      throw e
+    }
+  }
+
   async function saveAsFlow(
     ctx: unknown,
     sessionId: string,
@@ -123,7 +165,40 @@ export function createProjectHandlers(deps: HandlerDeps) {
     newProject: (payload: unknown): Promise<IpcResult<OpenProjectInfo>> =>
       run(async () => {
         const req: NewProjectRequest = parse(NewSchema, payload)
-        return ok(await service.createNew(createProject({ name: req.name, design: req.preset })))
+        if ('format' in req) {
+          const issues = validateFormat(req.format)
+          if (issues.length > 0) throw new PersistenceError('format-invalid', issues[0]!.message)
+          return ok(
+            await service.createNew(createProjectFromFormat(req.format, { name: req.name }))
+          )
+        }
+        // Built-in presets go through the same format model as custom sizes (B5.5); the result is identical to
+        // createProject({ design: preset }) (unit-tested), so existing behaviour is unchanged.
+        return ok(
+          await service.createNew(
+            createProjectFromFormat(builtInFormat(req.preset), { name: req.name })
+          )
+        )
+      }),
+
+    /** My formats: list / save / rename / delete (app-local; built-in formats are not stored and cannot be deleted). */
+    formatsList: (): Promise<IpcResult<FormatPreset[]>> =>
+      run(async () => ok(await formatStore().list())),
+    formatsSave: (payload: unknown): Promise<IpcResult<FormatPreset>> =>
+      run(async () => {
+        const req = parse(FormatSaveSchema, payload)
+        return ok(await formatCall(() => formatStore().save(req.format)))
+      }),
+    formatsRename: (payload: unknown): Promise<IpcResult<FormatPreset>> =>
+      run(async () => {
+        const req = parse(FormatRenameSchema, payload)
+        return ok(await formatCall(() => formatStore().rename(req.id, req.name)))
+      }),
+    formatsDelete: (payload: unknown): Promise<IpcResult<null>> =>
+      run(async () => {
+        const req = parse(FormatIdSchema, payload)
+        await formatCall(() => formatStore().remove(req.id))
+        return ok(null)
       }),
 
     /** Development diagnostic only: a realistic 4x6 @600 DPI sample project with one real asset. */

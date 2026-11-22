@@ -28,6 +28,7 @@ export type CommandId =
   | 'view.design'
   | 'view.printPreview'
   | 'view.safeAreas'
+  | 'view.cutGuides'
   | 'view.outputProfile'
   | 'view.themeLight'
   | 'view.themeDark'
@@ -69,9 +70,11 @@ export interface CommandContext {
   /** Artwork beyond the artboard is shown (not the clipped view). */
   showOverflow: boolean
   viewMode: 'design' | 'preview'
-  /** An Output Profile is selected (safe areas exist only then). */
+  /** Safe areas can be shown: an Output Profile is selected, or the format has a generic safe margin (B5.5). */
   hasOutputProfile: boolean
   showSafeAreas: boolean
+  /** Print Preview cut guides (B5.5); optional so older callers default to shown. */
+  showCutGuides?: boolean
   /** App appearance (B2, ADR-055): a per-computer preference, not project state. */
   theme?: 'light' | 'dark' | 'system'
   density?: 'comfortable' | 'compact'
@@ -217,6 +220,12 @@ export const COMMANDS: Readonly<Record<CommandId, CommandDef>> = {
     needsProject: true,
     checked: (c) => c.hasOutputProfile && c.showSafeAreas
   },
+  'view.cutGuides': {
+    label: 'Cut guides',
+    hint: 'In Print Preview, show where the copies are cut apart (guides only, never printed)',
+    needsProject: true,
+    checked: (c) => c.hasPrintPreview && c.showCutGuides !== false
+  },
   'view.outputProfile': {
     label: 'Printer & cutting…',
     hint: 'What the printer may trim, the safe line, how sure we are, and how to set up the booth (not saved in the project)',
@@ -353,6 +362,7 @@ export function isCommandEnabled(id: CommandId, ctx: CommandContext): boolean {
       : ctx.selectionCount >= 1
   }
   if (id === 'view.safeAreas') return ctx.hasOutputProfile
+  if (id === 'view.cutGuides') return ctx.hasPrintPreview
   return true
 }
 
@@ -439,6 +449,7 @@ export const MENUS: readonly { id: string; label: string; items: readonly (Comma
         'view.showOverflow',
         '-',
         'view.safeAreas',
+        'view.cutGuides',
         'view.outputProfile',
         '-',
         'view.themeLight',

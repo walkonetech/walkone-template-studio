@@ -17,6 +17,7 @@ import { describeSize } from '@editor/exportPlan'
 import { runExportPreflight, type ExportPreflight } from '@editor/exportPreflight'
 import { isDslrKind } from '@export/dslrbooth/outputs'
 import { runDslrPreflight } from '@export/dslrbooth/preflight'
+import { formatCheckItems } from '@export/formatChecks'
 import type { ExportKind } from '@export/naming'
 import { profileReadiness } from '@output'
 import { editorStore, useEditor } from './editorStore'
@@ -68,7 +69,8 @@ const inches = (n: number): string => String(Math.round(n * 100) / 100)
 /** "2×6 strip" / "4×6 print": what the project is, for the dialog subtitle. */
 function formatLine(project: TemplateProject): string {
   const d = project.canvas.print
-  return `${inches(d.width)}×${inches(d.height)} ${hasDerivedCopies(project) ? 'strip' : 'print'}`
+  const isStrip = Math.min(d.width, d.height) === 2 && Math.max(d.width, d.height) === 6
+  return `${inches(d.width)}×${inches(d.height)} ${hasDerivedCopies(project) ? (isStrip ? 'strip' : 'design') : 'print'}`
 }
 
 /** Printer chip in the pinned summary: which printer the checks use, and how sure we are. Opens Printer & cutting. */
@@ -217,7 +219,10 @@ function ExportForm({
           ...(dslrSelected ? dslrCheck.items : []),
           ...preflight.items,
           // "No printer chosen" is said by the printer chip; it is not a finding about the design.
-          ...(safeReport?.items ?? []).filter((i) => i.code !== 'output-profile-none')
+          ...(safeReport?.items ?? []).filter((i) => i.code !== 'output-profile-none'),
+          ...formatCheckItems(project, {
+            hasOutputProfile: safeReport?.resolution.status !== 'none'
+          })
         ]
   const checks = buildChecks(inputs)
   const blocked =

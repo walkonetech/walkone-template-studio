@@ -52,21 +52,32 @@ try {
   const saved = JSON.parse(window.localStorage.getItem(OUTPUT_PREFS_KEY) ?? 'null') as {
     profileId?: unknown
     showSafeAreas?: unknown
+    showCutGuides?: unknown
   } | null
   if (saved && typeof saved === 'object') {
     const s = editorStore.getState()
     if (typeof saved.profileId === 'string') s.setOutputProfile(saved.profileId)
     if (typeof saved.showSafeAreas === 'boolean') s.setShowSafeAreas(saved.showSafeAreas)
+    if (typeof saved.showCutGuides === 'boolean') s.setShowCutGuides(saved.showCutGuides)
   }
 } catch {
   // unreadable or unavailable storage: keep the defaults
 }
 editorStore.subscribe((s, prev) => {
-  if (s.outputProfileId === prev.outputProfileId && s.showSafeAreas === prev.showSafeAreas) return
+  if (
+    s.outputProfileId === prev.outputProfileId &&
+    s.showSafeAreas === prev.showSafeAreas &&
+    s.showCutGuides === prev.showCutGuides
+  )
+    return
   try {
     window.localStorage.setItem(
       OUTPUT_PREFS_KEY,
-      JSON.stringify({ profileId: s.outputProfileId, showSafeAreas: s.showSafeAreas })
+      JSON.stringify({
+        profileId: s.outputProfileId,
+        showSafeAreas: s.showSafeAreas,
+        showCutGuides: s.showCutGuides
+      })
     )
   } catch {
     // storage unavailable: the choice lasts for this run only

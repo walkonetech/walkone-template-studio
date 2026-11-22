@@ -500,12 +500,19 @@ async function sameExports(c, a, b) {
           `document.querySelector('[data-testid=new-project-dialog]').contains(document.activeElement)`
         ))
     }
+    // Buttons show the outline ring; text fields and selects show their B2 field focus (accent border + accent
+    // shadow) instead. Which one the 12th Tab lands on depends on how many controls the dialog has (B5.5 added
+    // "Custom size…"), so both focus styles count as visible.
     const ring = await J(c)(
-      `(()=>{const e=document.activeElement, cs=getComputedStyle(e); return {style:cs.outlineStyle, width:cs.outlineWidth, color:cs.outlineColor}})()`
+      `(()=>{const e=document.activeElement, cs=getComputedStyle(e); return {tag:e.tagName, style:cs.outlineStyle, width:cs.outlineWidth, color:cs.outlineColor, border:cs.borderTopColor, shadow:cs.boxShadow}})()`
     )
+    const fieldFocus =
+      (ring.tag === 'INPUT' || ring.tag === 'SELECT' || ring.tag === 'TEXTAREA') &&
+      ring.shadow !== 'none' &&
+      ring.shadow.includes(ring.border)
     check(
-      '9b Tab stays trapped inside the dialog, with a visible focus ring',
-      inside && ring.style !== 'none' && parseFloat(ring.width) >= 2,
+      '9b Tab stays trapped inside the dialog, with a visible focus ring (outline, or the field focus border + shadow)',
+      inside && ((ring.style !== 'none' && parseFloat(ring.width) >= 2) || fieldFocus),
       ring
     )
     await escape(c)

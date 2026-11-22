@@ -8,11 +8,11 @@
         "ht": 1000,
         "h1": "Start a template",
         "blank": {
-          "b": 351,
-          "r": 952
+          "b": 370,
+          "r": 769
         },
         "imp": {
-          "b": 351,
+          "b": 370,
           "r": 1502
         },
         "open": {
@@ -33,11 +33,11 @@
         "ht": 779,
         "h1": "Start a template",
         "blank": {
-          "b": 351,
-          "r": 705
+          "b": 370,
+          "r": 522
         },
         "imp": {
-          "b": 351,
+          "b": 370,
           "r": 1255
         },
         "open": {
@@ -58,11 +58,11 @@
         "ht": 720,
         "h1": "Start a template",
         "blank": {
-          "b": 351,
-          "r": 632
+          "b": 370,
+          "r": 447
         },
         "imp": {
-          "b": 351,
+          "b": 370,
           "r": 1186
         },
         "open": {
@@ -515,7 +515,7 @@
       },
       "propsTab": {
         "props": true,
-        "sel": ["c8c2c109-9a62-40bd-85f5-39afe5e4df79"]
+        "sel": ["5b8e21dd-9871-4b8b-9c84-10227ccd1322"]
       }
     }
   },
@@ -535,7 +535,7 @@
     "name": "B31-2 no Sample photos anywhere: view bar, Photos drawer, Properties, View menu, canvas (no Shuffle, Reset samples, Choose photo or Reposition)",
     "ok": true,
     "detail": {
-      "viewItems": "Design view | Print Preview | Fit to window⌘0 | Actual size (100%)⌘1 | Zoom in⌘+ | Zoom out⌘− | Snap to guides | Show overflow | Safe areas | Printer & cutting… | Light theme | Dark theme | Match system theme | Comfortable size | Compact size",
+      "viewItems": "Design view | Print Preview | Fit to window⌘0 | Actual size (100%)⌘1 | Zoom in⌘+ | Zoom out⌘− | Snap to guides | Show overflow | Safe areas | Cut guides | Printer & cutting… | Light theme | Dark theme | Match system theme | Comfortable size | Compact size",
       "everywhere": false
     }
   },
@@ -544,7 +544,7 @@
     "ok": true,
     "detail": {
       "slot": {
-        "id": "750a1fb1-34e7-483c-89b6-cd7ee0081ee4",
+        "id": "9cddf937-2883-4555-9306-a7f3ca59a7ce",
         "type": "photo",
         "n": 4
       },

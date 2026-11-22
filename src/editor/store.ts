@@ -135,6 +135,11 @@ export interface EditorState {
   outputProfileId: string | null
   /** View › Safe areas: draw the active profile's trim, keep-safe lines and cuts (editor-only, never printed). */
   showSafeAreas: boolean
+  /**
+   * Print Preview: draw where the copies are cut apart (B5.5; on by default, as Print Preview always showed the strip's
+   * centre cut). Editor guidance only: never in any render or export, never project data, history or Modified state.
+   */
+  showCutGuides: boolean
   history: History<TemplateProject>
   lastMessage: string | null
   /** Recovery-copy status for the UI: saved / pending / saving / error (never affects Modified). */
@@ -174,10 +179,8 @@ export type OpResult =
 export interface EditorActions {
   // ---- project lifecycle (via ports)
   adopt(info: OpenProjectInfo): void
-  createProject(req: {
-    name: string
-    preset: Parameters<EditorPorts['create']>[0]['preset']
-  }): Promise<OpResult>
+  /** A built-in preset or a format definition (Custom Size wizard / My formats, B5.5). */
+  createProject(req: Parameters<EditorPorts['create']>[0]): Promise<OpResult>
   createSample(): Promise<OpResult>
   openFromDialog(): Promise<OpResult>
   /** DSLR Booth importer: adopts the project created from an analysed ZIP (new, unsaved). */
@@ -261,6 +264,7 @@ export interface EditorActions {
   /** Selects an Output Profile by id (null = none). An unknown id selects none. Never touches the project. */
   setOutputProfile(id: string | null): void
   setShowSafeAreas(show: boolean): void
+  setShowCutGuides(show: boolean): void
   // ---- selection / interaction (never in history)
   selectLayer(id: string | null): void
   selectLayers(ids: readonly string[]): void
@@ -347,6 +351,7 @@ const initialState = (): EditorState => ({
   showOverflow: true,
   outputProfileId: null,
   showSafeAreas: true,
+  showCutGuides: true,
   history: emptyHistory<TemplateProject>(),
   lastMessage: null,
   autosave: { state: 'idle', lastSavedAt: null, failures: 0, error: null },
@@ -820,6 +825,7 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
       setShowOverflow: (showOverflow) => set({ showOverflow }),
       setOutputProfile: (id) => set({ outputProfileId: findOutputProfile(id)?.id ?? null }),
       setShowSafeAreas: (showSafeAreas) => set({ showSafeAreas }),
+      setShowCutGuides: (showCutGuides) => set({ showCutGuides }),
       fitTextHeight(layerId) {
         const { project } = get()
         const layer = project?.layers.find((l) => l.id === layerId)
@@ -1173,6 +1179,7 @@ function initialStateKeepingUi(s: EditorState): EditorState {
     showOverflow: s.showOverflow,
     outputProfileId: s.outputProfileId,
     showSafeAreas: s.showSafeAreas,
+    showCutGuides: s.showCutGuides,
     viewport: s.viewport,
     recovery: s.recovery
   }

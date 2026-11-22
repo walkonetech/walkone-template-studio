@@ -72,6 +72,8 @@ const ORDER: readonly PreflightSeverity[] = ['error', 'warning', 'info']
 const TOPICS: readonly [RegExp, string][] = [
   [/^dslr-/, 'dslrBooth'],
   [/^safe-area-/, 'Safe area'],
+  [/^safe-margin-/, 'Safe margin'],
+  [/^format-/, 'Format'],
   [/^output-profile-/, 'Printer'],
   [/^font-/, 'Font'],
   [/^(asset-|image-)/, 'Images'],
@@ -142,6 +144,16 @@ function titleFor(code: string, items: readonly CheckInput[], layers: number): s
       return one ? `${one} crosses the cut` : `${n} items cross the cut`
     case 'safe-area-clear':
       return 'Everything important is inside the safe line'
+    case 'safe-margin-generic':
+      return one ? `${one} is close to the edge` : `${n} items are close to the edge`
+    case 'safe-margin-generic-clear':
+      return 'Everything important is inside the safe margin'
+    case 'format-custom':
+      return 'Custom format'
+    case 'format-no-printer':
+      return 'No printer profile needed for PNG files'
+    case 'format-dslr-unsupported':
+      return 'No dslrBooth template for this size'
     case 'dslr-no-photo-slots':
       return 'dslrBooth needs at least one photo slot'
     case 'dslr-photo-number-range':

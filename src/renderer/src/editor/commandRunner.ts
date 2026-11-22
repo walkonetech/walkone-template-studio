@@ -131,6 +131,9 @@ export function runCommand(id: CommandId): void {
     case 'view.safeAreas':
       s.setShowSafeAreas(!s.showSafeAreas)
       return
+    case 'view.cutGuides':
+      s.setShowCutGuides(!s.showCutGuides)
+      return
     case 'view.outputProfile':
       layoutStore.getState().setOutputProfileOpen(true)
       return

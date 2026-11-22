@@ -45,7 +45,11 @@ export const TIPS = {
   },
   safeAreasNoProfile: {
     label: 'Safe areas',
-    hint: 'Safe areas need an output profile. Choose one with the Output button in the status bar.'
+    hint: 'Safe areas need a printer profile (or a custom format with a safe margin). Choose a printer with the Output button in the status bar.'
+  },
+  cutGuides: {
+    label: 'Cut guides',
+    hint: 'Show where the copies are cut apart in Print Preview. View only: never printed.'
   },
   overflow: {
     label: 'Overflow',

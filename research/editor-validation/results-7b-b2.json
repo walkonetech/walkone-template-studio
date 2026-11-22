@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-22T07:10:06.475Z",
+  "when": "2026-11-22T16:14:29.892Z",
   "pass": 27,
   "total": 27,
   "results": [
@@ -291,12 +291,15 @@
       }
     },
     {
-      "name": "9b Tab stays trapped inside the dialog, with a visible focus ring",
+      "name": "9b Tab stays trapped inside the dialog, with a visible focus ring (outline, or the field focus border + shadow)",
       "ok": true,
       "detail": {
-        "style": "solid",
-        "width": "2px",
-        "color": "rgb(68, 86, 224)"
+        "tag": "SELECT",
+        "style": "none",
+        "width": "3px",
+        "color": "rgb(27, 28, 34)",
+        "border": "rgb(68, 86, 224)",
+        "shadow": "rgb(68, 86, 224) 0px 0px 0px 1px"
       }
     },
     {

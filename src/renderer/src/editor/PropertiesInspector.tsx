@@ -11,7 +11,8 @@ import {
 } from '@domain'
 import { wrapDegrees } from '@canvas/geometry/geometry'
 import { copiesPerSheet, printSizeName } from '@editor/describe'
-import { recentFormatLabel } from '@editor/welcome'
+import { isStripFormat, recentFormatLabel } from '@editor/welcome'
+import { hasDerivedCopies } from '@canvas/rendering/composition'
 import { selectOutputProfile } from '@editor/store'
 import { selectionBounds } from '@editor/arrange'
 import {
@@ -899,13 +900,24 @@ function ProjectProperties({ project }: { project: TemplateProject }): React.JSX
             <dd>{project.layers.length}</dd>
           </div>
         </dl>
-        {copies > 1 && (
+        {copies > 1 && isStripFormat(project.canvas.print) && (
           <p className="sheet-info" data-testid="printer-guidance">
             Prints as {copies} identical {printSizeName(project.canvas.print)} copies on one{' '}
             {printSizeName(project.output.print)} sheet. Design one strip; Template Studio places
             the copies. Printer finishing: configure dslrBooth and your printer for the 2-inch
             center cut. To see where the printer trims and cuts, choose Printer &amp; cutting… in
             the View menu.
+          </p>
+        )}
+        {hasDerivedCopies(project) && !isStripFormat(project.canvas.print) && (
+          // Custom sheets (B5.5): the same facts without strip-specific finishing advice.
+          <p className="sheet-info" data-testid="printer-guidance">
+            Prints as {copies === 1 ? 'one copy' : `${copies} identical copies`} of the{' '}
+            {printSizeName(project.canvas.print)} design on one{' '}
+            {printSizeName(project.output.print)} sheet, each at exactly the design size. Design one
+            copy; Template Studio places {copies === 1 ? 'it' : 'the copies'}. Print Preview shows
+            the cut guides. To see where a printer trims, choose Printer &amp; cutting… in the View
+            menu.
           </p>
         )}
       </Section>

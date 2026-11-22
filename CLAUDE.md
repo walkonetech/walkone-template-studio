@@ -24,10 +24,12 @@ WalkOne Template Studio is an internal desktop tool (Electron + React + TypeScri
 | Editor shell layout rules (7B B3/B3.1: tiers, drawer, right column, top bar, Escape/F6, key ownership, Print Preview closes the drawer) | src/editor/layout.ts, src/editor/tools.ts, docs/CURRENT_STATE.md (B3, B3.1) |
 | Checks / Export / Printer & cutting / dslrBooth import presentation (7B B4; one Checks model, first-use Export defaults, plain-language printer view) | src/editor/checks.ts, src/editor/exportCards.ts, src/editor/importView.ts, src/output/printerView.ts, docs/UX_SPEC.md §23 |
 | Editor experience (7B B5: selection toolbar, Properties Essentials + sections, Settings, getting-started tips, new-text default font) | src/editor/selectionToolbar.ts, src/editor/propertiesModel.ts, src/editor/firstRun.ts, docs/UX_SPEC.md §24, docs/DECISIONS.md ADR-057/058 |
-| Next phase: B5.5 Custom Format / Custom Size Wizard (not started; Format ≠ Output Profile) and the B6 carry-forward ledger | docs/ROADMAP.md |
+| Custom formats (7B B5.5, ADR-059: one format model, optional grid margins/row gap/align and `canvas.safeMarginMm` (schemaVersion 2 when used), app-local My formats, dslrBooth only for proven sizes; Format ≠ Output Composition ≠ Output Profile) | src/domain/print/format.ts, src/editor/formatWizard.ts, src/projects/formatPresets.ts, src/export/dslrbooth/compat.ts, docs/UX_SPEC.md §25, docs/DATA_MODEL.md §3a |
+| Next phase: B6 accessibility and platform polish (after B5.5 is approved and Windows-validated) and its carry-forward ledger; 7C later | docs/ROADMAP.md |
 | Built-app suites and the responsive right-column contract (stacked ≥ 860 CSS px, tabs below; `WTS_VALIDATE_SIZE`; results written Prettier-clean via `results-writer.js`, float tolerances in `tolerance.js`, B5.1) | research/editor-validation/README.md, research/editor-validation/harness.js, docs/TESTING_STRATEGY.md §9n |
 | Design tokens, themes, density (7B B2, ADR-055) | src/renderer/src/styles/tokens.css, src/editor/appearance.ts, docs/DECISIONS.md ADR-055 |
 | Domain model | docs/DATA_MODEL.md |
+| Schema-version policy (a file carries the oldest version that can read it; any new persisted field, optional or not, bumps it with a migration + stored previous-version sample + tests) | docs/DECISIONS.md ADR-060, docs/DATA_MODEL.md §8, src/domain/project/serialization.ts, tests/fixtures/projects/ |
 | DSLR Booth | docs/DSLRBOOTH_COMPATIBILITY.md |
 | Assets / providers | docs/ASSET_AND_INTEGRATION_STRATEGY.md |
 | Architecture | docs/ARCHITECTURE_PLAN.md |
@@ -44,7 +46,7 @@ WalkOne Template Studio is an internal desktop tool (Electron + React + TypeScri
 - The internal `TemplateProject` model is **vendor-neutral**. DSLR Booth's XML schema must never become the internal model. Use adapters only (`DSLRBoothImporter`, `DSLRBoothExporter`).
 - Photo placeholders are a distinct `PhotoLayer` type, never just rectangles.
 - Physical size + DPI are first-class project properties; pixels are derived.
-- Native project files carry a `schemaVersion` and must remain migratable.
+- Native project files carry a `schemaVersion` and must remain migratable. The number is the oldest file-format version whose readers can parse the file (ADR-060): bump it for ANY persisted change an older reader would reject or misread — including optional fields, since unknown fields are rejected.
 - External providers (Magnific/Freepik, Envato, …) live behind provider adapters; core must work without them.
 - Never silently discard imported data — warn, and preserve unknown values where feasible.
 - Prefer deterministic rendering/export.

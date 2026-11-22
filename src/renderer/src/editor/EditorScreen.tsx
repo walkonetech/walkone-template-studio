@@ -21,6 +21,7 @@ import { installDebug } from './debugHooks'
 import { layoutStore, useLayout } from './layoutStore'
 import { LayersPanel } from './LayersPanel'
 import { NewProjectDialog } from './NewProjectDialog'
+import { CustomFormatDialog } from './CustomFormatDialog'
 import { ExportDialog } from './ExportDialog'
 import { DslrImportDialog } from './DslrImportDialog'
 import { OutputProfileDialog } from './OutputProfileDialog'
@@ -201,6 +202,7 @@ export function EditorScreen(): React.JSX.Element {
     <div className="editor" data-has-project={project ? 'true' : 'false'}>
       <RecoveryDialog />
       <NewProjectDialog />
+      <CustomFormatDialog />
       <ExportDialog />
       <DslrImportDialog />
       <OutputProfileDialog />

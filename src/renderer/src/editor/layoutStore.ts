@@ -1,3 +1,4 @@
+import type { FormatDefinition } from '@domain'
 import { useStore } from 'zustand'
 import { createStore } from 'zustand/vanilla'
 import {
@@ -45,6 +46,11 @@ interface LayoutState extends LayoutPrefs {
   tipsSession: string | null
   tipsClosed: boolean
   newProjectOpen: boolean
+  /**
+   * The Custom Size wizard (B5.5): null = closed; otherwise what it starts from (null format = a fresh custom size, a
+   * format = My formats → Use, opened on Review) and the project name to suggest.
+   */
+  customFormat: { format: FormatDefinition | null; projectName?: string } | null
   exportOpen: boolean
   /** View › Printer & cutting… (B4; the Output Profile underneath: choose it and read its evidence). */
   outputProfileOpen: boolean
@@ -64,6 +70,7 @@ interface LayoutState extends LayoutPrefs {
   startTips(sessionId: string): void
   closeTips(): void
   setNewProjectOpen(open: boolean): void
+  setCustomFormat(state: LayoutState['customFormat']): void
   setExportOpen(open: boolean): void
   setOutputProfileOpen(open: boolean): void
   setShortcutsOpen(open: boolean): void
@@ -101,6 +108,7 @@ export const layoutStore = createStore<LayoutState>((set, get) => ({
   tipsSession: null,
   tipsClosed: false,
   newProjectOpen: false,
+  customFormat: null,
   exportOpen: false,
   outputProfileOpen: false,
   shortcutsOpen: false,
@@ -124,6 +132,7 @@ export const layoutStore = createStore<LayoutState>((set, get) => ({
   closeTips: () => set({ tipsClosed: true }),
 
   setNewProjectOpen: (newProjectOpen) => set({ newProjectOpen }),
+  setCustomFormat: (customFormat) => set({ customFormat }),
   setExportOpen: (exportOpen) => set({ exportOpen }),
   setOutputProfileOpen: (outputProfileOpen) => set({ outputProfileOpen }),
   setShortcutsOpen: (shortcutsOpen) => set({ shortcutsOpen }),

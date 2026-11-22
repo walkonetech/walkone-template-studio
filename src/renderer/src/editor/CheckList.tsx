@@ -11,6 +11,7 @@ import {
   type ChecksModel
 } from '@editor/checks'
 import { runExportPreflight } from '@editor/exportPreflight'
+import { formatCheckItems } from '@export/formatChecks'
 import type { StatusTone } from '@editor/severity'
 import { selectViewMode } from '@editor/store'
 import { editorStore, useEditor } from './editorStore'
@@ -40,14 +41,20 @@ export const TONE_ICON: Record<StatusTone, LucideIcon> = {
  */
 export function useProjectCheckInputs(): CheckInput[] | null {
   const project = useEditor((s) => s.project)
+  const hasOutputProfile = useEditor((s) => s.outputProfileId !== null)
   const safe = useSafeAreaReport()
   const catalog = useFontCatalog()
   return useMemo(() => {
     // `catalog` is read so the checks re-run when installed fonts arrive after launch.
     if (!project || !catalog) return null
     const pre = runExportPreflight(project, { fonts: fontEnvironment() })
-    return [...pre.items, ...(safe?.items ?? []).filter((i) => i.code !== 'output-profile-none')]
-  }, [project, safe, catalog])
+    return [
+      ...pre.items,
+      ...(safe?.items ?? []).filter((i) => i.code !== 'output-profile-none'),
+      // Custom format notes (B5.5): never errors.
+      ...formatCheckItems(project, { hasOutputProfile })
+    ]
+  }, [project, safe, catalog, hasOutputProfile])
 }
 
 /** The project's checks as a model (null without a project). */

@@ -1,0 +1,169 @@
+{
+  "format": "walkone.template-project",
+  "schemaVersion": 1,
+  "id": "e259d4fc-70de-4b4e-abbb-4dddbd801d13",
+  "metadata": {
+    "name": "Controlled B5",
+    "createdAt": "2026-11-22T13:29:00.476Z",
+    "updatedAt": "2026-11-22T13:29:01.752Z"
+  },
+  "event": {},
+  "design": {
+    "styleTags": []
+  },
+  "canvas": {
+    "print": {
+      "width": 6,
+      "height": 4,
+      "unit": "in",
+      "dpi": 600
+    },
+    "backgroundColor": {
+      "kind": "literal",
+      "value": "#f3e9dc"
+    }
+  },
+  "output": {
+    "print": {
+      "width": 6,
+      "height": 4,
+      "unit": "in",
+      "dpi": 600
+    },
+    "layout": {
+      "kind": "single"
+    }
+  },
+  "palette": {
+    "colors": []
+  },
+  "layers": [
+    {
+      "id": "7a7aad7c-4bb1-4898-82c3-3b4ce6a9a92e",
+      "name": "Photo 1",
+      "x": 90,
+      "y": 120,
+      "width": 1020,
+      "height": 760,
+      "rotation": 0,
+      "opacity": 1,
+      "zIndex": 0,
+      "visible": true,
+      "locked": false,
+      "type": "photo",
+      "photoNumber": 1,
+      "fit": "cover",
+      "frame": {
+        "style": "solid",
+        "thickness": 18,
+        "color": {
+          "kind": "literal",
+          "value": "#ffffff"
+        }
+      },
+      "cornerRadius": 0
+    },
+    {
+      "id": "7065a458-dbed-4911-a015-869e164a608f",
+      "name": "Photo 2",
+      "x": 90,
+      "y": 940,
+      "width": 1020,
+      "height": 760,
+      "rotation": 3,
+      "opacity": 1,
+      "zIndex": 1,
+      "visible": true,
+      "locked": false,
+      "type": "photo",
+      "photoNumber": 2,
+      "fit": "cover",
+      "frame": {
+        "style": "solid",
+        "thickness": 18,
+        "color": {
+          "kind": "literal",
+          "value": "#ffffff"
+        }
+      },
+      "cornerRadius": 0
+    },
+    {
+      "id": "6733eb6a-5e25-4b0a-b221-3c141305542c",
+      "name": "Photo 3",
+      "x": 90,
+      "y": 1760,
+      "width": 1020,
+      "height": 760,
+      "rotation": 0,
+      "opacity": 1,
+      "zIndex": 2,
+      "visible": true,
+      "locked": false,
+      "type": "photo",
+      "photoNumber": 3,
+      "fit": "cover",
+      "frame": {
+        "style": "solid",
+        "thickness": 18,
+        "color": {
+          "kind": "literal",
+          "value": "#ffffff"
+        }
+      },
+      "cornerRadius": 0
+    },
+    {
+      "id": "baf8219a-3591-4270-8743-05a274b8258d",
+      "name": "Text",
+      "x": 100,
+      "y": 2900,
+      "width": 1000,
+      "height": 200,
+      "rotation": 0,
+      "opacity": 1,
+      "zIndex": 3,
+      "visible": true,
+      "locked": false,
+      "type": "text",
+      "content": "JUNE 14 · 2027",
+      "fontFamily": "Helvetica",
+      "fontSize": 90,
+      "fontWeight": 400,
+      "fontStyle": "normal",
+      "align": "center",
+      "lineHeight": 1.2,
+      "letterSpacing": 0,
+      "fill": {
+        "kind": "literal",
+        "value": "#222222"
+      }
+    },
+    {
+      "id": "73e32986-5c79-453c-b70b-78e99e2f150e",
+      "name": "Rectangle",
+      "x": 0,
+      "y": 2650,
+      "width": 1200,
+      "height": 950,
+      "rotation": 0,
+      "opacity": 1,
+      "zIndex": 4,
+      "visible": true,
+      "locked": false,
+      "type": "shape",
+      "shape": "rectangle",
+      "fill": {
+        "kind": "literal",
+        "value": "#2f4858"
+      },
+      "stroke": null,
+      "cornerRadius": 0
+    }
+  ],
+  "assets": [],
+  "export": {
+    "preferredExporterId": null,
+    "includePreview": true
+  }
+}

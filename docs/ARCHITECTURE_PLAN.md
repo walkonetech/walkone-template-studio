@@ -89,7 +89,7 @@ src/
   main/            Electron main: windows, IPC handlers, services wiring
   preload/         typed contextBridge API
   renderer/        React app, panels, dialogs
-  domain/          (IMPLEMENTED Phase 2) zod schemas/types, print math, composition, validation, serialization, migrations
+  domain/          (IMPLEMENTED Phase 2) zod schemas/types, print math, composition, validation, serialization, migrations (schema-version policy ADR-060)
   editor/          editor state, commands, history, selection
   canvas/          (Phase 3B) engine contract + Konva implementation; pure geometry/viewport/snap promoted from the spike
   projects/        (IMPLEMENTED Phase 2B) package read/write, sessions, atomic save, recents, project service
@@ -136,6 +136,13 @@ Renderer is authoritative for pixels; main only verifies and writes. Shared pure
 
 ## 5h2. Editor experience models (Phase 7B B5)
 Pure, DOM-free rules in `src/editor`: `selectionToolbar.ts` (action sets per selection kind, visibility, placement through the shared `floatingPlacement`), `propertiesModel.ts` (Essentials, section defaults, summaries, header, mixed values, the text Style choice), `firstRun.ts` (when tips show, the three steps). The renderer components (`SelectionToolbar`, `PropertiesInspector`, `SettingsDialog`, `FirstRunTips`) only map them to the existing store commands; every edit still goes through `editLayers` / the existing actions (one history entry each). Settings are app-local appearance preferences (`appearance.ts`, ADR-055; `showSelectionToolbar` added); tips and open sections are UI state in `layoutStore`. Nothing here touches `TemplateProject` or exports. B5.5 (custom formats) will extend `DesignCanvas` / `OutputComposition` separately from Output Profiles.
+
+## 5h3. Formats and custom sizes (Phase 7B B5.5, ADR-059)
+- **Domain** (`src/domain/print/format.ts`): `FormatDefinition` (design inches + DPI + entered unit + arrangement + generic safe margin + cut guides), unit conversion (inches canonical), validation with plain messages and renderer-memory limits, `summarizeFormat`, `builtInFormat(presetId)`; `createProjectFromFormat` (factory) is the single creation path. `composition.ts`: optional grid `rowGap` / `margins` / `align`, `gridSpacing`, `normalizeGridLayout`.
+- **Schema version (ADR-060):** `project.ts` `CURRENT_SCHEMA_VERSION = 2`; `serialization.ts` holds the migration registry (1 → 2 re-labels), `fileSchemaVersion` (the lowest version that represents a project; `serializeProject` stamps it, so standard projects stay v1) and the `schema-version-mismatch` refusal. The layer package manifest records the file version. Stored previous-version samples: `tests/fixtures/projects/schema-v1/`.
+- **Editor model** (`src/editor/formatWizard.ts`): the wizard's pure state (steps, unit/DPI rules, orientation, repeat vs custom, diagram geometry). **Renderer:** `CustomFormatDialog.tsx`, `FormatDiagram.tsx` (neutral SVG), `MyFormats.tsx` (Start section, rename/delete dialogs), `formatsStore.ts`, New project › Other sizes.
+- **Main:** `src/projects/formatPresets.ts` (`FormatPresetStore`, app-data `formats.json`), handlers `formatsList/Save/Rename/Delete`, `newProject` accepts `{ name, format }` (validated again); IPC `formats:*`. Company Formats would be another `FormatDefinition` source beside this store.
+- **Output / export:** `src/output/genericSafeArea.ts` (generic margin zones; folded into `checkSafeAreas` only without a fitting profile), `src/export/dslrbooth/compat.ts` (`dslrSupport`: proven sizes only), `src/export/formatChecks.ts` (Checks notes), `canvas/rendering/composition.ts` (`hasDerivedCopies` includes one copy on a larger sheet; accurate `cutLines`; `marginBox`). Cut guides are an editor view preference (`showCutGuides`).
 
 ## 5i. DSLR Booth export and import (implemented in Phases 6B and 6D, ADR-047/048)
 Exporter `src/export/dslrbooth/` (pure, shared by renderer and main): `profile.ts` (7.48 constants, ARGB, US dates, stable 25-char Id), `templateXml.ts` (fixture-exact writer + flat reader), `plan.ts` (project → native `<Photo>` elements + full-canvas PNG `<Image>`s flattened by stacking order; strip/sheet/single variants), `preflight.ts`, `container.ts` (verifier used by main before writing), `outputs.ts`. The renderer renders the PNGs (`exportActions.ts`); main verifies and writes the ZIP (`exportService.ts`).

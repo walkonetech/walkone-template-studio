@@ -59,9 +59,12 @@ function ViewToggle({
 export function CanvasStateBar(): React.JSX.Element {
   const viewMode = useEditor(selectViewMode)
   const showOverflow = useEditor((s) => s.showOverflow)
+  const showCuts = useEditor((s) => s.showCutGuides)
   const showSafe = useEditor((s) => s.showSafeAreas)
   const profile = useEditor(selectOutputProfile)
-  const safe = safeAreasControl(profile !== null, showSafe)
+  // A format's generic safe margin (B5.5) also gives the Safe areas view something to show without a printer profile.
+  const hasGeneric = useEditor((s) => (s.project?.canvas.safeMarginMm ?? 0) > 0)
+  const safe = safeAreasControl(profile !== null || hasGeneric, showSafe)
   return (
     <div
       className="viewbar"
@@ -92,6 +95,16 @@ export function CanvasStateBar(): React.JSX.Element {
         tip={{ label: 'Overflow', ...tipProps('overflow') }}
         onClick={() => runCommand('view.showOverflow')}
       />
+      {viewMode === 'preview' && (
+        <ViewToggle
+          name="Cut guides"
+          value={showCuts ? 'On' : 'Off'}
+          pressed={showCuts}
+          testId="view-cut-guides"
+          tip={{ label: 'Cut guides', ...tipProps('cutGuides') }}
+          onClick={() => runCommand('view.cutGuides')}
+        />
+      )}
       {viewMode === 'preview' && (
         <div className="viewbar-readonly" role="status" data-testid="preview-readonly">
           <span className="readonly-text">

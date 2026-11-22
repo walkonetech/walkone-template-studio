@@ -33,9 +33,9 @@ describe('serialization', () => {
   })
 
   it('reports unsupported newer schema versions clearly', () => {
-    const r = loadProject({ ...baseProject(), schemaVersion: 2 })
+    const r = loadProject({ ...baseProject(), schemaVersion: 3 })
     expect(r).toMatchObject({ ok: false, errors: [{ code: 'unsupported-schema-version' }] })
-    if (!r.ok) expect(r.errors[0]?.message).toMatch(/schema version 2/)
+    if (!r.ok) expect(r.errors[0]?.message).toMatch(/schema version 3/)
   })
 
   it('rejects missing or invalid schema versions', () => {
