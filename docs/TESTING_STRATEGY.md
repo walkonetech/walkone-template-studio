@@ -98,7 +98,9 @@ Built app: `research/editor-validation/validate-7b-b3.js` (40 checks, ports 9573
 
 ## 9p. B5 editor experience (Phase 7B B5)
 **Unit:** `src/editor/__tests__/b5.test.ts` (toolbar action sets per kind, 3–5 + More, colour target, visibility rules, placement containment incl. oversized selections, design → screen mapping; Essentials, closed sections, summaries, header, mixed values, Style round-trip; tips visibility and steps; default font Arial, available on both platforms' standard lists, existing fonts kept; Settings preference parse + command/shortcut/menu; recents search and strip drawing) + appearance/command tests updated for the new preference and command.
-**Built app, `validate-7b-b5.js` (46 checks):** see the validation README. Uses the committed synthetic `live-text-fixture.zip`; no private fixtures.
+**B5.1:** `recentsLocate.test.ts`, `b51.test.ts`, `main/__tests__/b51Sources.test.ts`; suites write results through `results-writer.js` (Prettier-clean) and compare DPR with `tolerance.js` (1e-6).
+
+**Built app, `validate-7b-b5.js` (50 checks incl. B5.1-1…4):** see the validation README. Uses the committed synthetic `live-text-fixture.zip`; no private fixtures.
 **Older suites changed by design (each re-verified):** 4C, 4D, 5A, 5B, 5D open the closed Properties section before using its fields; 5C uses the Fit segmented control; 4C expects Settings… enabled without a project; 7B-B2 expects `showSelectionToolbar` in the stored preference.
 **Before/after evidence (one-off):** B4.1 (`1c57753`, temporary worktree) vs B5 exports of the same controlled project: PNGs byte-identical; ZIP images identical; `template.xml` differs only in `LastSavedDate` and Id.
 

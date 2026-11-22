@@ -13,6 +13,7 @@
 // Run: npm run build && node research/editor-validation/validate-7b-b3.js
 const fs = require('fs')
 const path = require('path')
+const { writeResults } = require('./results-writer')
 const h = require('./harness')
 const cdp = require('./cdp')
 const { sleep } = h
@@ -1286,10 +1287,7 @@ async function tooltipsInside(c, sel, height) {
 
   check('34 no console errors or uncaught exceptions', errors.length === 0, errors.slice(0, 5))
   const failed = results.filter((r) => !r.ok)
-  fs.writeFileSync(
-    path.join(__dirname, 'results-7b-b3.json'),
-    JSON.stringify(results, null, 2) + '\n'
-  )
+  writeResults('results-7b-b3.json', JSON.stringify(results, null, 2) + '\n')
   console.log(`\n${results.length - failed.length}/${results.length} checks passed`)
   fs.rmSync(work, { recursive: true, force: true })
   process.exit(failed.length ? 1 : 0)

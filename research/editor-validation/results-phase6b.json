@@ -1,19 +1,12 @@
 {
-  "when": "2026-11-22T03:41:31.792Z",
+  "when": "2026-11-22T07:15:41.601Z",
   "pass": 26,
   "total": 26,
   "results": [
     {
       "name": "1 strip built: band, photos 1–3 (frame / rounded / rotated), text, gold line",
       "ok": true,
-      "detail": [
-        "shape:",
-        "photo:1",
-        "photo:2",
-        "photo:3",
-        "text:",
-        "shape:"
-      ]
+      "detail": ["shape:", "photo:1", "photo:2", "photo:3", "text:", "shape:"]
     },
     {
       "name": "2 outputs: dslrBooth strip (ticked; since B4 the only first-use choice), dslrBooth 4×6, then print, design, proof",
@@ -40,19 +33,12 @@
     {
       "name": "2c grouped under “For dslrBooth” and “Images”",
       "ok": true,
-      "detail": [
-        "For dslrBooth",
-        "Images"
-      ]
+      "detail": ["For dslrBooth", "Images"]
     },
     {
       "name": "2d dslrBooth notes shown (rotation, flattened, two-up); nothing blocks",
       "ok": true,
-      "detail": [
-        "dslr-photo-rotation",
-        "dslr-flattened",
-        "dslr-two-up"
-      ]
+      "detail": ["dslr-photo-rotation", "dslr-flattened", "dslr-two-up"]
     },
     {
       "name": "3 export finishes",
@@ -72,12 +58,7 @@
     {
       "name": "4 entries in case-insensitive alphabetical order, all deflated, ZIP intact",
       "ok": true,
-      "detail": [
-        "artwork-1.png",
-        "background.png",
-        "preview.png",
-        "template.xml"
-      ]
+      "detail": ["artwork-1.png", "background.png", "preview.png", "template.xml"]
     },
     {
       "name": "4b template.xml: BOM, CRLF only, XML declaration, ends with </Template>",
@@ -95,8 +76,8 @@
         "BackgroundColor": "#FFFFFFFF",
         "print_2_per_page": "True",
         "PrintToSecondaryPrinter": "False",
-        "LastSavedDate": "11/21/2026 22:41:29",
-        "Id": "sqvgw0yCNJslxUvcEDgH8h8hk",
+        "LastSavedDate": "11/22/2026 02:15:39",
+        "Id": "VCGp60u3OQwAOFUMdRNRsrij1",
         "IsLegacy": "True",
         "OriginalDevice": "WalkOneTemplateStudio"
       }
@@ -136,30 +117,9 @@
       "name": "4g every PNG is 600×1800 at 300 DPI",
       "ok": true,
       "detail": {
-        "artwork-1.png": [
-          600,
-          1800,
-          [
-            300,
-            300
-          ]
-        ],
-        "background.png": [
-          600,
-          1800,
-          [
-            300,
-            300
-          ]
-        ],
-        "preview.png": [
-          600,
-          1800,
-          [
-            300,
-            300
-          ]
-        ]
+        "artwork-1.png": [600, 1800, [300, 300]],
+        "background.png": [600, 1800, [300, 300]],
+        "preview.png": [600, 1800, [300, 300]]
       }
     },
     {
@@ -174,96 +134,31 @@
       "name": "4i booth composite: photo shows in slot 1, its red frame on top",
       "ok": true,
       "detail": {
-        "c": [
-          255,
-          0,
-          255,
-          255
-        ],
-        "f": [
-          255,
-          0,
-          0,
-          255
-        ]
+        "c": [255, 0, 255, 255],
+        "f": [255, 0, 0, 255]
       }
     },
     {
       "name": "4j rounded slot 2: photo inside, background in the rounded corner, photo up to the edge",
       "ok": true,
       "detail": {
-        "c": [
-          255,
-          0,
-          255,
-          255
-        ],
-        "corner": [
-          32,
-          48,
-          74,
-          255
-        ],
-        "edge": [
-          255,
-          0,
-          255,
-          255
-        ]
+        "c": [255, 0, 255, 255],
+        "corner": [32, 48, 74, 255],
+        "edge": [255, 0, 255, 255]
       }
     },
     {
       "name": "4k artwork stays above and around: gold line, band between slots, rotated slot filled",
       "ok": true,
       "detail": {
-        "p1Centre": [
-          255,
-          0,
-          255,
-          255
-        ],
-        "p1Frame": [
-          255,
-          0,
-          0,
-          255
-        ],
-        "p2Centre": [
-          255,
-          0,
-          255,
-          255
-        ],
-        "p2Corner": [
-          32,
-          48,
-          74,
-          255
-        ],
-        "p2Edge": [
-          255,
-          0,
-          255,
-          255
-        ],
-        "gap": [
-          32,
-          48,
-          74,
-          255
-        ],
-        "gold": [
-          200,
-          160,
-          64,
-          255
-        ],
-        "p3Centre": [
-          255,
-          0,
-          255,
-          255
-        ]
+        "p1Centre": [255, 0, 255, 255],
+        "p1Frame": [255, 0, 0, 255],
+        "p2Centre": [255, 0, 255, 255],
+        "p2Corner": [32, 48, 74, 255],
+        "p2Edge": [255, 0, 255, 255],
+        "gap": [32, 48, 74, 255],
+        "gold": [200, 160, 64, 255],
+        "p3Centre": [255, 0, 255, 255]
       }
     },
     {
@@ -278,8 +173,8 @@
         "BackgroundColor": "#FFFFFFFF",
         "print_2_per_page": "False",
         "PrintToSecondaryPrinter": "False",
-        "LastSavedDate": "11/21/2026 22:41:29",
-        "Id": "NY8S6wumcAlMRC5vTQOZMnehS",
+        "LastSavedDate": "11/22/2026 02:15:39",
+        "Id": "zxT74zoV0Dwm5R2ohZuBflcce",
         "IsLegacy": "True",
         "OriginalDevice": "WalkOneTemplateStudio"
       }
@@ -308,30 +203,10 @@
       "name": "5d both copies: photo, frame and rounded-corner mask",
       "ok": true,
       "detail": {
-        "c1": [
-          255,
-          0,
-          255,
-          255
-        ],
-        "c2": [
-          255,
-          0,
-          255,
-          255
-        ],
-        "corner2": [
-          32,
-          48,
-          74,
-          255
-        ],
-        "frame2": [
-          255,
-          0,
-          0,
-          255
-        ]
+        "c1": [255, 0, 255, 255],
+        "c2": [255, 0, 255, 255],
+        "corner2": [32, 48, 74, 255],
+        "frame2": [255, 0, 0, 255]
       }
     },
     {
@@ -356,9 +231,7 @@
       "name": "6b unticking the dslrBooth templates (and ticking the print PNG, since B4 starts with the template only) hides their checks and allows the PNG export",
       "ok": true,
       "detail": {
-        "codes": [
-          "photo-number-gap"
-        ],
+        "codes": ["photo-number-gap"],
         "disabled": false
       }
     },
@@ -367,11 +240,7 @@
       "ok": true,
       "detail": {
         "nPhotos": 0,
-        "codes": [
-          "dslr-no-photo-slots",
-          "no-photo-slots",
-          "dslr-two-up"
-        ],
+        "codes": ["dslr-no-photo-slots", "no-photo-slots", "dslr-two-up"],
         "disabled": true
       }
     }

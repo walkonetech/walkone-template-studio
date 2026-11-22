@@ -31,6 +31,12 @@ export interface RecentProjectEntry extends RecentProject {
 
 export const DEFAULT_MAX_RECENTS = 10
 
+const fileExists = (path: string): Promise<boolean> =>
+  fs.stat(path).then(
+    (s) => s.isFile(),
+    () => false
+  )
+
 /**
  * Small JSON list of recently used project paths (no project contents). Lives in the app-data
  * directory; local only. A corrupted file is set aside as `<file>.corrupt` and treated as empty.
@@ -61,15 +67,39 @@ export class RecentProjectsStore {
     await writeFileAtomic(this.filePath, JSON.stringify({ version: 1, items }, null, 2) + '\n')
   }
 
-  /** Adds or moves a project to the top; the list is capped at `max`. */
-  async add(entry: {
-    path: string
-    projectId?: string
-    name: string
-    print?: PrintConfiguration
-  }): Promise<void> {
+  /**
+   * Adds or moves a project to the top; the list is capped at `max`.
+   *
+   * Reconciliation (Phase 7B B5.1): one logical project keeps one card. Besides an entry at the same path, the new
+   * entry replaces
+   *  - any entry for the SAME project id whose file is no longer on disk (the file was moved or renamed and has now
+   *    been opened from its new place), and
+   *  - the entry the user pressed Locate… on (`replacing`), when that file is missing and it is the same project
+   *    (same id, or an older entry written without an id).
+   * An entry whose file still exists is never removed this way (two real copies of a project stay two cards), and a
+   * Locate that picks a different project leaves the missing card as it was.
+   */
+  async add(
+    entry: {
+      path: string
+      projectId?: string
+      name: string
+      print?: PrintConfiguration
+    },
+    options: { replacing?: string } = {}
+  ): Promise<void> {
     const path = resolve(entry.path)
-    const items = (await this.read()).filter((i) => i.path !== path)
+    const replacing = options.replacing !== undefined ? resolve(options.replacing) : undefined
+    const all = await this.read()
+    const missing = new Set<string>()
+    for (const i of all) {
+      if (i.path === path) continue
+      const sameProject = entry.projectId !== undefined && i.projectId === entry.projectId
+      const located =
+        i.path === replacing && (i.projectId === undefined || i.projectId === entry.projectId)
+      if ((sameProject || located) && !(await fileExists(i.path))) missing.add(i.path)
+    }
+    const items = all.filter((i) => i.path !== path && !missing.has(i.path))
     const item: RecentProject = {
       path,
       name: entry.name,
@@ -88,15 +118,7 @@ export class RecentProjectsStore {
   /** Most recent first, each flagged with whether the file still exists. */
   async list(): Promise<RecentProjectEntry[]> {
     const items = await this.read()
-    return Promise.all(
-      items.map(async (i) => ({
-        ...i,
-        exists: await fs.stat(i.path).then(
-          (s) => s.isFile(),
-          () => false
-        )
-      }))
-    )
+    return Promise.all(items.map(async (i) => ({ ...i, exists: await fileExists(i.path) })))
   }
 
   async has(path: string): Promise<boolean> {

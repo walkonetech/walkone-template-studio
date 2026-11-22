@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-22T03:35:57.429Z",
+  "when": "2026-11-22T07:10:06.475Z",
   "pass": 27,
   "total": 27,
   "results": [
@@ -47,9 +47,7 @@
       "name": "2b the font files come from the app bundle (file://), and nothing is requested from the network",
       "ok": true,
       "detail": {
-        "fonts": [
-          "inter-latin-wght-normal-Dx4kXJAl.woff2"
-        ],
+        "fonts": ["inter-latin-wght-normal-Dx4kXJAl.woff2"],
         "remote": []
       }
     },
@@ -139,12 +137,7 @@
     {
       "name": "5 export under Light / Comfortable finishes",
       "ok": true,
-      "detail": [
-        "B2 Strip 4x6.zip",
-        "B2 Strip-design.png",
-        "B2 Strip-print.png",
-        "B2 Strip.zip"
-      ]
+      "detail": ["B2 Strip 4x6.zip", "B2 Strip-design.png", "B2 Strip-print.png", "B2 Strip.zip"]
     },
     {
       "name": "6 View › Dark theme switches live: dark chrome, light text",
@@ -173,10 +166,7 @@
       "ok": true,
       "detail": {
         "state": "Saved",
-        "past": [
-          3,
-          3
-        ]
+        "past": [3, 3]
       }
     },
     {
@@ -216,31 +206,18 @@
       "ok": true,
       "detail": {
         "same": true,
-        "files": [
-          "B2 Strip 4x6.zip",
-          "B2 Strip-design.png",
-          "B2 Strip-print.png",
-          "B2 Strip.zip"
-        ],
+        "files": ["B2 Strip 4x6.zip", "B2 Strip-design.png", "B2 Strip-print.png", "B2 Strip.zip"],
         "diffs": [],
         "tolerated": [],
-        "masked": [
-          "template.xml: LastSavedDate"
-        ]
+        "masked": ["template.xml: LastSavedDate"]
       }
     },
     {
       "name": "7 Match system theme follows the operating system live (dark → light without a restart)",
       "ok": true,
       "detail": {
-        "m1": [
-          "system",
-          "dark"
-        ],
-        "m2": [
-          "system",
-          "light"
-        ]
+        "m1": ["system", "dark"],
+        "m2": ["system", "light"]
       }
     },
     {
@@ -269,16 +246,7 @@
       "name": "8b the shell keeps the same regions; the project stays Saved and unchanged; design geometry identical",
       "ok": true,
       "detail": {
-        "structure": [
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true
-        ],
+        "structure": [true, true, true, true, true, true, true, true],
         "state": "Saved"
       }
     },
@@ -303,17 +271,10 @@
       "ok": true,
       "detail": {
         "same": true,
-        "files": [
-          "B2 Strip 4x6.zip",
-          "B2 Strip-design.png",
-          "B2 Strip-print.png",
-          "B2 Strip.zip"
-        ],
+        "files": ["B2 Strip 4x6.zip", "B2 Strip-design.png", "B2 Strip-print.png", "B2 Strip.zip"],
         "diffs": [],
         "tolerated": [],
-        "masked": [
-          "template.xml: LastSavedDate"
-        ]
+        "masked": ["template.xml: LastSavedDate"]
       }
     },
     {
@@ -323,10 +284,7 @@
         "role": "dialog",
         "modal": "true",
         "labelled": true,
-        "order": [
-          "Cancel",
-          "Create"
-        ],
+        "order": ["Cancel", "Create"],
         "lastPrimary": true,
         "focusInside": true,
         "width": 560

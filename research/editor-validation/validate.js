@@ -1,6 +1,7 @@
 const cdp = require('./cdp')
 const fs = require('fs')
 const path = require('path')
+const { writeResults } = require('./results-writer')
 const results = []
 const R = (n) => Math.round(n * 100) / 100
 const check = (name, ok, detail) => {
@@ -908,7 +909,7 @@ cdp.onEvent = (m) => {
 
   const failed = results.filter((r) => !r.ok)
   console.log(`\n${results.length - failed.length}/${results.length} checks passed`)
-  fs.writeFileSync(path.join(__dirname, 'results-phase4.json'), JSON.stringify(results, null, 1))
+  writeResults('results-phase4.json', JSON.stringify(results, null, 1))
   c.close()
   process.exit(failed.length ? 1 : 0)
 })().catch((e) => {

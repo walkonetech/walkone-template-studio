@@ -14,6 +14,7 @@
 // Run: npm run build && node research/editor-validation/validate-7b-b4.js
 const fs = require('fs')
 const path = require('path')
+const { writeResults } = require('./results-writer')
 const { execFileSync } = require('child_process')
 const h = require('./harness')
 const cdp = require('./cdp')
@@ -970,10 +971,7 @@ const SAMPLE_WORDS = /sample photo|shuffle|reset samples|choose photo|reposition
     await h.kill(proc)
     const passed = results.filter((r) => r.ok).length
     console.log(`\n${passed}/${results.length} passed`)
-    fs.writeFileSync(
-      path.join(__dirname, 'results-7b-b4.json'),
-      JSON.stringify(results, null, 2) + '\n'
-    )
+    writeResults('results-7b-b4.json', JSON.stringify(results, null, 2) + '\n')
     fs.rmSync(work, { recursive: true, force: true })
     process.exit(passed === results.length ? 0 : 1)
   }

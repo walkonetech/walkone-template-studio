@@ -8,9 +8,14 @@
 // Settings restores them, not on an imported project); recent cards (format drawn, search, missing file + Locate…);
 // the new-text default font (Arial, no missing-font check; saved and imported fonts unchanged); Dark + Compact + 125 %;
 // no Sample Photos anywhere; owner screenshots. Uses the committed synthetic dslrBooth fixture; no private fixtures.
+// B5.1 adds: Settings focus return (Ctrl/⌘+, → the control that had focus; File › Settings… → the File menu button),
+// Locate… → Cancel leaves the missing card, Locate… reconnects that card (one card, reopens), DPR checked within a
+// small float tolerance (tolerance.js). Results are written Prettier-formatted (results-writer.js).
 // Run: npm run build && node research/editor-validation/validate-7b-b5.js
 const fs = require('fs')
 const path = require('path')
+const { writeResults } = require('./results-writer')
+const { dprIs } = require('./tolerance')
 const h = require('./harness')
 const cdp = require('./cdp')
 const { sleep } = h
@@ -528,11 +533,11 @@ const settingsPage = async (c, page) => {
       `({scale:document.documentElement.style.getPropertyValue('--ui-scale'), iw:innerWidth, zoom:document.documentElement.style.zoom||document.body.style.zoom||'', dpr:devicePixelRatio, topbar:Math.round(document.querySelector('.topbar').getBoundingClientRect().height)})`
     )
     check(
-      '12 Interface scale → 125 % scales the interface through the app’s own scale, not page zoom (window width and zoom unchanged)',
+      '12 Interface scale → 125 % scales the interface through the app’s own scale, not page zoom (window width and zoom unchanged; DPR 1 within the harness tolerance)',
       scaled.scale === '1.25' &&
         scaled.iw === appearanceBefore.iw &&
         scaled.zoom === '' &&
-        scaled.dpr === 1,
+        dprIs(scaled.dpr, 1),
       scaled
     )
     await shot(c, '09-settings-dark-compact-125')
@@ -565,6 +570,44 @@ const settingsPage = async (c, page) => {
       '9c Escape closes Settings; Selection toolbar off hides the toolbar',
       settingsClosed && !offTb,
       { settingsClosed, offTb }
+    )
+    // B5.1: where focus goes when Settings closes. Ctrl/⌘+, from a button returns to that button; File › Settings…
+    // returns to the File menu button (the menu item itself is gone), never <body>, no tooltip, menu not reopened.
+    const focusState = (c) =>
+      J(c)(
+        `({id:document.activeElement&&document.activeElement.id, menu:document.activeElement&&document.activeElement.dataset&&document.activeElement.dataset.menuId||null, body:document.activeElement===document.body, menus:document.querySelectorAll('[role=menu]').length, tips:document.querySelectorAll('[role=tooltip]').length, dialog:!!document.querySelector('[data-testid=settings-dialog]')})`
+      )
+    await c.ev(`document.getElementById('checks-button').focus(); 1`)
+    await openSettings(c)
+    await escape(c)
+    await sleep(300)
+    const viaKey = await focusState(c)
+    check(
+      'B5.1-1 Ctrl/⌘+, → Escape returns focus to the control that had it (Checks button), no tooltip',
+      !viaKey.dialog && viaKey.id === 'checks-button' && viaKey.tips === 0,
+      viaKey
+    )
+    const viaMenu = []
+    for (const closeWith of ['escape', 'done']) {
+      await realClick(c, '.menubar-btn[data-menu-id="file"]')
+      await sleep(250)
+      await c.ev(
+        `(()=>{const b=[...document.querySelectorAll('.ui-menuitem')].find(b=>/^Settings…/.test(b.textContent.trim())); b&&b.setAttribute('data-b51','settings'); return 1})()`
+      )
+      await realClick(c, '[data-b51="settings"]')
+      await waitFor(c, `!!document.querySelector('[data-testid=settings-dialog]')`, 4000)
+      await sleep(200)
+      if (closeWith === 'escape') await escape(c)
+      else await c.ev(`document.getElementById('settings-done').click(); 1`)
+      await sleep(400)
+      viaMenu.push({ closeWith, ...(await focusState(c)) })
+    }
+    check(
+      'B5.1-2 File › Settings… → Escape or Done returns focus to the File menu button (not the page), no tooltip, menu not reopened',
+      viaMenu.every(
+        (v) => !v.dialog && v.menu === 'file' && !v.body && v.menus === 0 && v.tips === 0
+      ),
+      viaMenu
     )
     // Dark + Compact + 125 % at the Windows target: toolbar contained, Properties usable, no horizontal scroll.
     await size(c, 1426, 779)
@@ -690,7 +733,8 @@ const settingsPage = async (c, page) => {
   ;({ proc, c } = await h.launch({
     port: PORT + 2,
     userData: ud,
-    env: { ...env, WALKONE_DEV_OPEN_PATH: movedPath },
+    // The first Open dialog is cancelled (Locate… → Cancel), the second answers the moved file.
+    env: { ...env, WALKONE_DEV_OPEN_PATH: `CANCEL;${movedPath}` },
     size: h.STANDARD_SIZE
   }))
   try {
@@ -702,10 +746,47 @@ const settingsPage = async (c, page) => {
       `[...document.querySelectorAll('.recent-grid > li')].map(x=>({t:x.textContent, dis:x.querySelector('.recent-card').disabled, locate:!!x.querySelector('[aria-label^="Locate"]')}))`
     )
     await shot(c, '13-start-missing-recent')
+    const cards = (c) =>
+      J(c)(
+        `[...document.querySelectorAll('.recent-grid > li')].map(x=>({t:x.textContent, missing:x.classList.contains('missing'), dis:x.querySelector('.recent-card').disabled}))`
+      )
+    // B5.1: Locate… → Cancel leaves the missing card exactly as it was.
+    await realClick(c, '.recent-grid > li [aria-label^="Locate"]')
+    await sleep(800)
+    const afterCancel = await cards(c)
+    const stillStart = await c.ev(`!${S}.project && !!document.getElementById('open-project')`)
+    check(
+      'B5.1-3 Locate… → Cancel: nothing opens and the missing card is unchanged',
+      stillStart &&
+        JSON.stringify(afterCancel) ===
+          JSON.stringify(missing.map((m) => ({ t: m.t, missing: true, dis: m.dis }))),
+      { afterCancel, stillStart }
+    )
     await realClick(c, '.recent-grid > li [aria-label^="Locate"]')
     await waitFor(c, `!!${S}.project`, 10000)
     const located = await J(c)(
       `(()=>{const s=${S}; const t=s.project&&s.project.layers.find(l=>l.type==='text'); return {name:s.project&&s.project.metadata.name, font:t&&t.fontFamily, tips:!!document.querySelector('[data-testid=first-run-tips]')}})()`
+    )
+    // B5.1: back on the Start screen there is ONE card for this project, connected to its new place, and it reopens.
+    await c.ev(`${S}.closeProject().then(()=>1)`)
+    await waitFor(c, `!!document.getElementById('open-project')`, 8000)
+    await waitFor(c, `document.querySelectorAll('.recent-grid > li').length>0`, 8000)
+    await sleep(300)
+    const recovered = await cards(c)
+    await realClick(c, '.recent-grid > li .recent-card')
+    await waitFor(c, `!!${S}.project`, 10000)
+    const reopened = await J(c)(
+      `({name:${S}.project&&${S}.project.metadata.name, file:${S}.session&&${S}.session.fileName})`
+    )
+    check(
+      'B5.1-4 after Locate the Start screen shows exactly one card for the project (no stale "File not found" card) and it reopens',
+      recovered.length === 1 &&
+        !recovered[0].missing &&
+        !recovered[0].dis &&
+        !/File not found/.test(recovered[0].t) &&
+        reopened.name === 'Untitled' &&
+        reopened.file === path.basename(movedPath),
+      { recovered, reopened }
     )
     check(
       '20 a missing recent file stays listed ("File not found", not clickable) and Locate… opens it from its new place',
@@ -810,10 +891,7 @@ const settingsPage = async (c, page) => {
 
   check('28 no console errors or uncaught exceptions', errors.length === 0, errors.slice(0, 5))
   const failed = results.filter((r) => !r.ok)
-  fs.writeFileSync(
-    path.join(__dirname, 'results-7b-b5.json'),
-    JSON.stringify(results, null, 2) + '\n'
-  )
+  writeResults('results-7b-b5.json', JSON.stringify(results, null, 2) + '\n')
   console.log(`\n${results.length - failed.length}/${results.length} passed`)
   fs.rmSync(work, { recursive: true, force: true })
   process.exit(failed.length ? 1 : 0)

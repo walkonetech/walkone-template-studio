@@ -3,6 +3,7 @@
 // Run: npm run build && node research/editor-validation/validate-4c.js
 const fs = require('fs')
 const path = require('path')
+const { writeResults } = require('./results-writer')
 const h = require('./harness')
 const { sleep } = h
 
@@ -952,10 +953,7 @@ async function session(opts, fn) {
   }
 
   const failed = results.filter((r) => !r.ok)
-  fs.writeFileSync(
-    path.join(__dirname, 'results-phase4c.json'),
-    JSON.stringify(results, null, 2) + '\n'
-  )
+  writeResults('results-phase4c.json', JSON.stringify(results, null, 2) + '\n')
   console.log(`\n${results.length - failed.length}/${results.length} checks passed`)
   fs.rmSync(tmp, { recursive: true, force: true })
   process.exit(failed.length ? 1 : 0)

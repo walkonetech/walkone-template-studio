@@ -117,6 +117,10 @@ export function registerProjectIpc(
     guard((_e, p: unknown) => handlers.openRecent(p))
   )
   ipcMain.handle(
+    IpcChannel.ProjectLocateRecent,
+    guard((e, p: unknown) => handlers.locateRecent(win(e), p))
+  )
+  ipcMain.handle(
     IpcChannel.ProjectSave,
     guard((e, p: unknown) => handlers.save(win(e), p))
   )

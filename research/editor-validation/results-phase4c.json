@@ -316,14 +316,7 @@
   {
     "name": "Edit menu shows shortcut hints and enablement",
     "ok": true,
-    "detail": [
-      "Undo",
-      "Redo(off)",
-      "Duplicate",
-      "Delete",
-      "Group",
-      "Ungroup"
-    ]
+    "detail": ["Undo", "Redo(off)", "Duplicate", "Delete", "Group", "Ungroup"]
   },
   {
     "name": "Edit > Duplicate routes to the store",
@@ -423,11 +416,7 @@
   {
     "name": "recovery dialog: Recover / Discard / Decide later, focus starts on Recover",
     "ok": true,
-    "detail": [
-      "Discard",
-      "Decide later",
-      "Recover"
-    ]
+    "detail": ["Discard", "Decide later", "Recover"]
   },
   {
     "name": "recovery dialog is not color-only and has no file paths",

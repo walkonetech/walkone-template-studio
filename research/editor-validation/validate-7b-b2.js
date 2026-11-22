@@ -8,6 +8,7 @@
 // Run: npm run build && node research/editor-validation/validate-7b-b2.js
 const fs = require('fs')
 const path = require('path')
+const { writeResults } = require('./results-writer')
 const h = require('./harness')
 const cdp = require('./cdp')
 const { sleep } = h
@@ -684,8 +685,8 @@ async function sameExports(c, a, b) {
     await h.kill(proc)
     const pass = results.filter((r) => r.ok).length
     console.log(`\n${pass}/${results.length} passed`)
-    fs.writeFileSync(
-      path.join(__dirname, 'results-7b-b2.json'),
+    writeResults(
+      'results-7b-b2.json',
       JSON.stringify(
         { when: new Date().toISOString(), pass, total: results.length, results },
         null,

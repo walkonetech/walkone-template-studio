@@ -6,6 +6,7 @@
 // Needs python3 + Pillow. Run: npm run build && node research/editor-validation/validate-6a.js
 const fs = require('fs')
 const path = require('path')
+const { writeResults } = require('./results-writer')
 const zlib = require('zlib')
 const { execFileSync } = require('child_process')
 const h = require('./harness')
@@ -505,8 +506,8 @@ const RED = [255, 0, 0, 255]
   } finally {
     await h.kill(proc)
     const failed = results.filter((r) => !r.ok)
-    fs.writeFileSync(
-      path.join(__dirname, 'results-phase6a.json'),
+    writeResults(
+      'results-phase6a.json',
       JSON.stringify(
         {
           passed: results.length - failed.length,

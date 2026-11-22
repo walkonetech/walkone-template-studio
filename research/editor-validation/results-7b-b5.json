@@ -3,11 +3,7 @@
     "name": "15 a new blank project shows the getting-started tips beside the artboard (three steps, Hide these tips, not modal, inside the canvas area)",
     "ok": true,
     "detail": {
-      "steps": [
-        "photo",
-        "text",
-        "colors"
-      ],
+      "steps": ["photo", "text", "colors"],
       "inside": true,
       "placement": "beside",
       "hide": true,
@@ -55,20 +51,8 @@
     "detail": {
       "kind": "text",
       "side": "top",
-      "words": [
-        "Edit text",
-        "Event colors…",
-        "Arrange",
-        "Duplicate",
-        "More actions"
-      ],
-      "actions": [
-        "edit-text",
-        "colors",
-        "arrange",
-        "duplicate",
-        "more"
-      ],
+      "words": ["Edit text", "Event colors…", "Arrange", "Duplicate", "More actions"],
+      "actions": ["edit-text", "colors", "arrange", "duplicate", "more"],
       "inside": true,
       "visible": true,
       "w": 456,
@@ -78,13 +62,7 @@
   {
     "name": "2 text actions in words: Edit text · Event colors… (no palette yet) · Arrange · Duplicate · More",
     "ok": true,
-    "detail": [
-      "Edit text",
-      "Event colors…",
-      "Arrange",
-      "Duplicate",
-      "More actions"
-    ]
+    "detail": ["Edit text", "Event colors…", "Arrange", "Duplicate", "More actions"]
   },
   {
     "name": "2b Duplicate in the toolbar is the existing Duplicate: one new layer on top, same size and font, selected, one history step",
@@ -101,14 +79,11 @@
     "name": "2c Event Palette dots are the project’s real palette colours; a dot links the text colour to that palette entry",
     "ok": true,
     "detail": {
-      "dots": [
-        "Gold (#b39b74)",
-        "Ink (#1f2430)"
-      ],
+      "dots": ["Gold (#b39b74)", "Ink (#1f2430)"],
       "linked": {
         "fill": {
           "kind": "palette",
-          "paletteColorId": "46b8d026-7089-4c0b-bbd3-85ba490eb47f"
+          "paletteColorId": "21d47d61-2b5a-41af-8ae3-fc66069a24ba"
         },
         "checked": "true"
       }
@@ -118,13 +93,7 @@
     "name": "2d photo slot actions: Photo number (− n +) · Frame · Arrange · Duplicate · More; + changes the slot’s photo number",
     "ok": true,
     "detail": {
-      "actions": [
-        "photo-number",
-        "frame",
-        "arrange",
-        "duplicate",
-        "more"
-      ],
+      "actions": ["photo-number", "frame", "arrange", "duplicate", "more"],
       "pBefore": 2,
       "pAfter": 3
     }
@@ -133,25 +102,14 @@
     "name": "2e several layers: Align (align/distribute popover) · Group · Arrange · Duplicate · More",
     "ok": true,
     "detail": {
-      "actions": [
-        "align",
-        "group",
-        "arrange",
-        "duplicate",
-        "more"
-      ],
+      "actions": ["align", "group", "arrange", "duplicate", "more"],
       "alignPop": true
     }
   },
   {
     "name": "2f Arrange offers the four stacking commands and Bring to front puts the slot on top",
     "ok": true,
-    "detail": [
-      "Bring to front",
-      "Bring forward",
-      "Send backward",
-      "Send to back"
-    ]
+    "detail": ["Bring to front", "Bring forward", "Send backward", "Send to back"]
   },
   {
     "name": "3 the toolbar never appears in Print Preview",
@@ -171,13 +129,7 @@
     "detail": {
       "head": "TextText",
       "essentials": "text",
-      "labels": [
-        "Content",
-        "Font",
-        "Style",
-        "Color",
-        "Align"
-      ],
+      "labels": ["Content", "Font", "Style", "Color", "Align"],
       "sections": [
         {
           "id": "position",
@@ -219,13 +171,7 @@
       "pPhoto": {
         "head": "Photo 1Photo slot #1",
         "essentials": "photo",
-        "labels": [
-          "Photo number",
-          "Fit",
-          "Frame",
-          "Frame color",
-          "Corner radius (px)"
-        ],
+        "labels": ["Photo number", "Fit", "Frame", "Frame color", "Corner radius (px)"],
         "sections": [
           {
             "id": "position",
@@ -259,11 +205,7 @@
           }
         ]
       },
-      "fitRadios": [
-        "Cover:true",
-        "Contain:false",
-        "Stretch:false"
-      ]
+      "fitRadios": ["Cover:true", "Contain:false", "Stretch:false"]
     }
   },
   {
@@ -319,13 +261,7 @@
           "Duplicate",
           "More actions"
         ],
-        "actions": [
-          "edit-text",
-          "colors",
-          "arrange",
-          "duplicate",
-          "more"
-        ],
+        "actions": ["edit-text", "colors", "arrange", "duplicate", "more"],
         "inside": true,
         "visible": true,
         "w": 387,
@@ -334,20 +270,8 @@
       "tTop": {
         "kind": "photo",
         "side": "bottom",
-        "words": [
-          "Photo 1",
-          "Frame",
-          "Arrange",
-          "Duplicate",
-          "More actions"
-        ],
-        "actions": [
-          "photo-number",
-          "frame",
-          "arrange",
-          "duplicate",
-          "more"
-        ],
+        "words": ["Photo 1", "Frame", "Arrange", "Duplicate", "More actions"],
+        "actions": ["photo-number", "frame", "arrange", "duplicate", "more"],
         "inside": true,
         "visible": true,
         "w": 462,
@@ -379,13 +303,7 @@
           "Duplicate",
           "More actions"
         ],
-        "actions": [
-          "edit-text",
-          "colors",
-          "arrange",
-          "duplicate",
-          "more"
-        ],
+        "actions": ["edit-text", "colors", "arrange", "duplicate", "more"],
         "inside": true,
         "visible": true,
         "w": 387,
@@ -394,20 +312,8 @@
       "tTop": {
         "kind": "photo",
         "side": "bottom",
-        "words": [
-          "Photo 1",
-          "Frame",
-          "Arrange",
-          "Duplicate",
-          "More actions"
-        ],
-        "actions": [
-          "photo-number",
-          "frame",
-          "arrange",
-          "duplicate",
-          "more"
-        ],
+        "words": ["Photo 1", "Frame", "Arrange", "Duplicate", "More actions"],
+        "actions": ["photo-number", "frame", "arrange", "duplicate", "more"],
         "inside": true,
         "visible": true,
         "w": 462,
@@ -431,17 +337,9 @@
     "detail": {
       "title": "Settings",
       "desc": "Settings for this computer. They are never stored in a project.",
-      "pages": [
-        "Appearance",
-        "Printing",
-        "Editor"
-      ],
+      "pages": ["Appearance", "Printing", "Editor"],
       "current": "appearance",
-      "themes": [
-        "Light · default",
-        "Dark",
-        "Match system"
-      ],
+      "themes": ["Light · default", "Dark", "Match system"],
       "done": true
     }
   },
@@ -456,7 +354,7 @@
     "detail": "compact"
   },
   {
-    "name": "12 Interface scale → 125 % scales the interface through the app’s own scale, not page zoom (window width and zoom unchanged)",
+    "name": "12 Interface scale → 125 % scales the interface through the app’s own scale, not page zoom (window width and zoom unchanged; DPR 1 within the harness tolerance)",
     "ok": true,
     "detail": {
       "scale": "1.25",
@@ -486,6 +384,42 @@
     }
   },
   {
+    "name": "B5.1-1 Ctrl/⌘+, → Escape returns focus to the control that had it (Checks button), no tooltip",
+    "ok": true,
+    "detail": {
+      "id": "checks-button",
+      "menu": null,
+      "body": false,
+      "menus": 0,
+      "tips": 0,
+      "dialog": false
+    }
+  },
+  {
+    "name": "B5.1-2 File › Settings… → Escape or Done returns focus to the File menu button (not the page), no tooltip, menu not reopened",
+    "ok": true,
+    "detail": [
+      {
+        "closeWith": "escape",
+        "id": "",
+        "menu": "file",
+        "body": false,
+        "menus": 0,
+        "tips": 0,
+        "dialog": false
+      },
+      {
+        "closeWith": "done",
+        "id": "",
+        "menu": "file",
+        "body": false,
+        "menus": 0,
+        "tips": 0,
+        "dialog": false
+      }
+    ]
+  },
+  {
     "name": "26 Dark + Compact + 125 % at 1426×779: Settings footer visible, toolbar contained, Properties header visible, no horizontal scroll",
     "ok": true,
     "detail": {
@@ -503,13 +437,7 @@
           "Duplicate",
           "More actions"
         ],
-        "actions": [
-          "edit-text",
-          "colors",
-          "arrange",
-          "duplicate",
-          "more"
-        ],
+        "actions": ["edit-text", "colors", "arrange", "duplicate", "more"],
         "inside": true,
         "visible": true,
         "w": 433,
@@ -563,6 +491,37 @@
     }
   },
   {
+    "name": "B5.1-3 Locate… → Cancel: nothing opens and the missing card is unchanged",
+    "ok": true,
+    "detail": {
+      "afterCancel": [
+        {
+          "t": "Untitled2×6 strip · opened just now File not foundLocate…",
+          "missing": true,
+          "dis": true
+        }
+      ],
+      "stillStart": true
+    }
+  },
+  {
+    "name": "B5.1-4 after Locate the Start screen shows exactly one card for the project (no stale \"File not found\" card) and it reopens",
+    "ok": true,
+    "detail": {
+      "recovered": [
+        {
+          "t": "Untitled2×6 strip · opened just now",
+          "missing": false,
+          "dis": false
+        }
+      ],
+      "reopened": {
+        "name": "Untitled",
+        "file": "B5 Editor.boothproject"
+      }
+    }
+  },
+  {
     "name": "20 a missing recent file stays listed (\"File not found\", not clickable) and Locate… opens it from its new place",
     "ok": true,
     "detail": {
@@ -592,10 +551,7 @@
   {
     "name": "23b new text in that project uses Arial; the old text is unchanged",
     "ok": true,
-    "detail": [
-      "Helvetica",
-      "Arial"
-    ]
+    "detail": ["Helvetica", "Arial"]
   },
   {
     "name": "16 Hide these tips hides them and turns the preference off on this computer",
@@ -620,10 +576,7 @@
     "name": "24 imported text keeps its dslrBooth fonts exactly (Arial and Segoe UI; never replaced by the new default); no tips on an import",
     "ok": true,
     "detail": {
-      "fonts": [
-        "Arial",
-        "Segoe UI"
-      ],
+      "fonts": ["Arial", "Segoe UI"],
       "tips": false
     }
   },

@@ -58,19 +58,8 @@
     "name": "3 groups read Error → Needs attention → Good to know (plain words, no check codes in titles)",
     "ok": true,
     "detail": [
-      [
-        "Error",
-        [
-          "A colour points to a deleted palette colour"
-        ]
-      ],
-      [
-        "Needs attention",
-        [
-          "2 texts use a font that isn’t installed",
-          "2 items may be trimmed"
-        ]
-      ],
+      ["Error", ["A colour points to a deleted palette colour"]],
+      ["Needs attention", ["2 texts use a font that isn’t installed", "2 items may be trimmed"]],
       [
         "Good to know",
         [
@@ -85,18 +74,9 @@
     "name": "4 Good to know starts collapsed; Error and Needs attention start open",
     "ok": true,
     "detail": [
-      [
-        "error",
-        true
-      ],
-      [
-        "warning",
-        true
-      ],
-      [
-        "info",
-        false
-      ]
+      ["error", true],
+      ["warning", true],
+      ["info", false]
     ]
   },
   {
@@ -107,9 +87,7 @@
       "count": 1,
       "topic": "Font",
       "title": "2 texts use a font that isn’t installed",
-      "actions": [
-        "Select all 2"
-      ],
+      "actions": ["Select all 2"],
       "details": true
     }
   },
@@ -131,10 +109,7 @@
     "name": "6b Select all selects exactly the merged layers; Details opens with their names; the panel stays open",
     "ok": true,
     "detail": {
-      "sel": [
-        "5e6b57fb-12ba-4f3a-a1c0-cca14fc0069b",
-        "77040257-ab09-4e74-afa6-6e939a1a0766"
-      ],
+      "sel": ["c2ad4887-d629-429f-851d-a4b1f408e364", "2f95c1b2-707d-42fc-95d2-f54d5ba436c9"],
       "det": "Layers JUNE 14 · 2027, Hashtag"
     }
   },
@@ -143,10 +118,7 @@
     "ok": true,
     "detail": {
       "state": "1 error",
-      "counts": [
-        "error:1",
-        "attention:2"
-      ],
+      "counts": ["error:1", "attention:2"],
       "tone": "error"
     }
   },
@@ -355,14 +327,8 @@
     "name": "B4.1-8 Checks focus handling changes nothing in the project: not Modified, no new undo step",
     "ok": true,
     "detail": {
-      "past": [
-        11,
-        11
-      ],
-      "dirty": [
-        true,
-        true
-      ]
+      "past": [11, 11],
+      "dirty": [true, true]
     }
   },
   {
@@ -371,9 +337,7 @@
     "detail": {
       "summary": "Ready · 3 notes",
       "state": "Ready",
-      "groups": [
-        "info:false"
-      ]
+      "groups": ["info:false"]
     }
   },
   {
@@ -560,10 +524,7 @@
     "ok": true,
     "detail": {
       "open": true,
-      "groups": [
-        "warning:true",
-        "info:false"
-      ],
+      "groups": ["warning:true", "info:false"],
       "codes": [
         "font-missing",
         "safe-area-trim",
@@ -676,13 +637,7 @@
         "Ava & Theo-proof.png",
         "Ava & Theo.zip"
       ],
-      "more": [
-        "dslrbooth:true",
-        "dslrbooth-4x6:true",
-        "print:true",
-        "design:true",
-        "proof:true"
-      ],
+      "more": ["dslrbooth:true", "dslrbooth-4x6:true", "print:true", "design:true", "proof:true"],
       "z": "[\"artwork-1.png\", \"artwork-2.png\", \"artwork-3.png\", \"background.png\", \"preview.png\", \"template.xml\"]\n [\"artwork-1.png\", \"artwork-2.png\", \"artwork-3.png\", \"background.png\", \"preview.png\", \"template.xml"
     }
   },
@@ -734,11 +689,7 @@
   {
     "name": "18 the 3-step meter: Estimated · Tested on a print · Measured",
     "ok": true,
-    "detail": [
-      "estimated",
-      "tested*",
-      "measured"
-    ]
+    "detail": ["estimated", "tested*", "measured"]
   },
   {
     "name": "19 DS-RX1 reads \"Tested on a print\" and \"Ready to use\"",
@@ -864,11 +815,7 @@
       "dark": 2,
       "flag": 9,
       "n": 13,
-      "bg": [
-        208,
-        32,
-        28
-      ],
+      "bg": [208, 32, 28],
       "bgLum": 69
     }
   },
@@ -885,8 +832,8 @@
     "name": "30b safe areas (and the halo) never reach a render or an export: renders are identical with safe areas on and off",
     "ok": true,
     "detail": {
-      "r1": "689614:1301730",
-      "r2": "689614:1301730",
+      "r1": "689614:1301670",
+      "r2": "689614:1301670",
       "renders": {}
     }
   },
@@ -950,16 +897,8 @@
     "name": "27 Compatibility details start collapsed and hold the facts and the technical notes (nothing dropped)",
     "ok": true,
     "detail": {
-      "forYou": [
-        "locked",
-        "flattened-artwork"
-      ],
-      "technical": [
-        "unknown-attributes",
-        "two-up",
-        "two-up-offset",
-        "original-device"
-      ]
+      "forYou": ["locked", "flattened-artwork"],
+      "technical": ["unknown-attributes", "two-up", "two-up-offset", "original-device"]
     }
   },
   {
@@ -989,14 +928,8 @@
     "name": "28 the import result is unchanged: one 2×6 strip printed two per sheet (4×6), 3 photo slots",
     "ok": true,
     "detail": {
-      "design": [
-        2,
-        6
-      ],
-      "sheet": [
-        4,
-        6
-      ],
+      "design": [2, 6],
+      "sheet": [4, 6],
       "slots": 3,
       "name": "Synthetic Two Strips"
     }

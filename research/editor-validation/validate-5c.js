@@ -5,6 +5,7 @@
 // Run: npm run build && node research/editor-validation/validate-5c.js
 const fs = require('fs')
 const path = require('path')
+const { writeResults } = require('./results-writer')
 const zlib = require('zlib')
 const h = require('./harness')
 const { sleep } = h
@@ -1166,8 +1167,8 @@ const tipText = (c) =>
   } finally {
     await h.kill(proc)
     const failed = results.filter((r) => !r.ok)
-    fs.writeFileSync(
-      path.join(__dirname, 'results-phase5c.json'),
+    writeResults(
+      'results-phase5c.json',
       JSON.stringify(
         {
           passed: results.length - failed.length,

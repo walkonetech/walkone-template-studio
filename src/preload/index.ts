@@ -16,6 +16,7 @@ const api: RendererApi = {
     newSample: () => ipcRenderer.invoke(IpcChannel.ProjectNewSample),
     open: () => ipcRenderer.invoke(IpcChannel.ProjectOpen),
     openRecent: (req) => ipcRenderer.invoke(IpcChannel.ProjectOpenRecent, req),
+    locateRecent: (req) => ipcRenderer.invoke(IpcChannel.ProjectLocateRecent, req),
     save: (req) => ipcRenderer.invoke(IpcChannel.ProjectSave, req),
     saveAs: (req) => ipcRenderer.invoke(IpcChannel.ProjectSaveAs, req),
     updateWorkingCopy: (req) => ipcRenderer.invoke(IpcChannel.ProjectUpdateWorkingCopy, req),

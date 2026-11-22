@@ -3,6 +3,7 @@
 // emulation, which exercises the same layout code. Also records computed-style facts for the polish items.
 const fs = require('fs')
 const path = require('path')
+const { writeResults } = require('./results-writer')
 const h = require('./harness')
 const { sleep } = h
 const results = []
@@ -137,10 +138,7 @@ const check = (name, ok, detail) => {
     await h.kill(proc)
   }
   const failed = results.filter((r) => !r.ok)
-  fs.writeFileSync(
-    path.join(__dirname, 'results-phase4d.json'),
-    JSON.stringify(results, null, 2) + '\n'
-  )
+  writeResults('results-phase4d.json', JSON.stringify(results, null, 2) + '\n')
   console.log(`\n${results.length - failed.length}/${results.length} checks passed`)
   process.exit(failed.length ? 1 : 0)
 })().catch((e) => {

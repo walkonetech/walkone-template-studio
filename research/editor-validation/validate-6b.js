@@ -8,6 +8,7 @@
 // Run: npm run build && node research/editor-validation/validate-6b.js
 const fs = require('fs')
 const path = require('path')
+const { writeResults } = require('./results-writer')
 const { execFileSync } = require('child_process')
 const h = require('./harness')
 const { sleep } = h
@@ -405,8 +406,8 @@ print(json.dumps({'roots': sorted(roots), 'orders': sorted(orders)}))`
     await h.kill(proc)
     const pass = results.filter((r) => r.ok).length
     console.log(`\n${pass}/${results.length} passed`)
-    fs.writeFileSync(
-      path.join(__dirname, 'results-phase6b.json'),
+    writeResults(
+      'results-phase6b.json',
       JSON.stringify(
         { when: new Date().toISOString(), pass, total: results.length, results },
         null,

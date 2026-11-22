@@ -25,7 +25,7 @@ WalkOne Template Studio is an internal desktop tool (Electron + React + TypeScri
 | Checks / Export / Printer & cutting / dslrBooth import presentation (7B B4; one Checks model, first-use Export defaults, plain-language printer view) | src/editor/checks.ts, src/editor/exportCards.ts, src/editor/importView.ts, src/output/printerView.ts, docs/UX_SPEC.md §23 |
 | Editor experience (7B B5: selection toolbar, Properties Essentials + sections, Settings, getting-started tips, new-text default font) | src/editor/selectionToolbar.ts, src/editor/propertiesModel.ts, src/editor/firstRun.ts, docs/UX_SPEC.md §24, docs/DECISIONS.md ADR-057/058 |
 | Next phase: B5.5 Custom Format / Custom Size Wizard (not started; Format ≠ Output Profile) and the B6 carry-forward ledger | docs/ROADMAP.md |
-| Built-app suites and the responsive right-column contract (stacked ≥ 860 CSS px, tabs below; `WTS_VALIDATE_SIZE`) | research/editor-validation/README.md, research/editor-validation/harness.js, docs/TESTING_STRATEGY.md §9n |
+| Built-app suites and the responsive right-column contract (stacked ≥ 860 CSS px, tabs below; `WTS_VALIDATE_SIZE`; results written Prettier-clean via `results-writer.js`, float tolerances in `tolerance.js`, B5.1) | research/editor-validation/README.md, research/editor-validation/harness.js, docs/TESTING_STRATEGY.md §9n |
 | Design tokens, themes, density (7B B2, ADR-055) | src/renderer/src/styles/tokens.css, src/editor/appearance.ts, docs/DECISIONS.md ADR-055 |
 | Domain model | docs/DATA_MODEL.md |
 | DSLR Booth | docs/DSLRBOOTH_COMPATIBILITY.md |

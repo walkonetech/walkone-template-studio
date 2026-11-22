@@ -23,6 +23,7 @@ const ports: EditorPorts = {
   newSample: () => api.newSample(),
   open: () => api.open(),
   openRecent: (path) => api.openRecent({ path }),
+  locateRecent: (path) => api.locateRecent({ path }),
   save: (sessionId, project) => api.save({ sessionId, project }),
   saveAs: (sessionId, project) => api.saveAs({ sessionId, project }),
   updateWorkingCopy: (sessionId, project) => api.updateWorkingCopy({ sessionId, project }),

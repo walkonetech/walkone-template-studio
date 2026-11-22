@@ -19,6 +19,8 @@ export interface EditorPorts {
   newSample(): Promise<IpcResult<OpenProjectInfo>>
   open(): Promise<IpcResult<OpenProjectInfo>>
   openRecent(path: string): Promise<IpcResult<OpenProjectInfo>>
+  /** Locate… on a missing recent card (B5.1). */
+  locateRecent(path: string): Promise<IpcResult<OpenProjectInfo>>
   save(sessionId: string, project: TemplateProject): Promise<IpcResult<OpenProjectInfo>>
   saveAs(sessionId: string, project: TemplateProject): Promise<IpcResult<OpenProjectInfo>>
   /** Writes the working-session manifest only (never rebuilds the .boothproject). */

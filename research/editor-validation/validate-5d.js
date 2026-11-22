@@ -3,6 +3,7 @@
 // Run: npm run build && node research/editor-validation/validate-5d.js
 const fs = require('fs')
 const path = require('path')
+const { writeResults } = require('./results-writer')
 const h = require('./harness')
 const { sleep } = h
 
@@ -711,8 +712,8 @@ const openSections = async (c, ids) => {
   } finally {
     await h.kill(proc)
     const failed = results.filter((r) => !r.ok)
-    fs.writeFileSync(
-      path.join(__dirname, 'results-phase5d.json'),
+    writeResults(
+      'results-phase5d.json',
       JSON.stringify(
         {
           passed: results.length - failed.length,

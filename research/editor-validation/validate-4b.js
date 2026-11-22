@@ -4,6 +4,7 @@ const { spawn, execSync } = require('child_process')
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
+const { writeResults } = require('./results-writer')
 const cdp = require('./cdp')
 
 const root = path.resolve(__dirname, '../..')
@@ -334,10 +335,7 @@ const click = async (c, label) => {
   await waitExit()
 
   const failed = results.filter((r) => !r.ok)
-  fs.writeFileSync(
-    path.join(__dirname, 'results-phase4b.json'),
-    JSON.stringify(results, null, 2) + '\n'
-  )
+  writeResults('results-phase4b.json', JSON.stringify(results, null, 2) + '\n')
   console.log(`\n${results.length - failed.length}/${results.length} checks passed`)
   fs.rmSync(tmp, { recursive: true, force: true })
   process.exit(failed.length ? 1 : 0)

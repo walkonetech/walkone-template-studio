@@ -163,6 +163,13 @@ export function fakePorts(initial?: TemplateProject): FakePorts {
         value: info(initial ?? scene(), false)
       })
     },
+    locateRecent: (path) => {
+      file = 'located.boothproject'
+      return rec('locateRecent', [path], {
+        status: 'ok' as const,
+        value: info(initial ?? scene(), false)
+      })
+    },
     save: (sessionId, project) => {
       file = file ?? 'saved.boothproject'
       return rec('save', [sessionId, project], {

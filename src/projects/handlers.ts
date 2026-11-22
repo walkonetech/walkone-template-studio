@@ -260,6 +260,21 @@ export function createProjectHandlers(deps: HandlerDeps) {
         }
       }),
 
+    /**
+     * Locate… on a missing recent card (B5.1): the user finds the moved file, it opens, and that card is reconnected
+     * to the new place instead of a second card appearing. Cancel changes nothing.
+     */
+    locateRecent: (ctx: unknown, payload: unknown): Promise<IpcResult<OpenProjectInfo>> =>
+      run(async () => {
+        const req: OpenRecentRequest = parse(OpenRecentSchema, payload)
+        if (!(await recents.has(req.path))) {
+          throw new PersistenceError('not-allowed', 'That project is not in the recent list.')
+        }
+        const chosen = await dialogs.showOpen(ctx)
+        if (chosen === null) return { status: 'cancelled' }
+        return ok(await service.openFile(chosen, { replacingRecent: req.path }))
+      }),
+
     save: (ctx: unknown, payload: unknown): Promise<IpcResult<OpenProjectInfo>> =>
       run(async () => {
         const req = parse(SessionProjectSchema, payload)

@@ -190,6 +190,23 @@ export function escapeTarget(s: {
 export const panelReturnsFocus = (s: { focusInPanel: boolean; focusOnPage: boolean }): boolean =>
   s.focusInPanel || s.focusOnPage
 
+/**
+ * Where a dialog hands focus back when it closes (B5.1). Normally the control that was focused when it opened. A dialog
+ * opened from a menu item (File › Settings…) opens after that item has gone, so the menu's trigger (the File button)
+ * stands in: it still exists, and it is where a keyboard user expects to be. The menu's note is only used when the
+ * remembered element is unusable (gone, the page body, or inside the closed menu) and only if it is fresh, so an old
+ * menu choice never steers a later dialog.
+ */
+export const MENU_OPENER_FRESH_MS = 1000
+export function dialogReturnTarget(s: {
+  activeUsable: boolean
+  menuOpenerAgeMs: number | null
+}): 'active' | 'menu-trigger' | 'none' {
+  if (s.activeUsable) return 'active'
+  if (s.menuOpenerAgeMs !== null && s.menuOpenerAgeMs <= MENU_OPENER_FRESH_MS) return 'menu-trigger'
+  return 'none'
+}
+
 /** F6 / Shift+F6 cycle through these landmarks, skipping the ones not on screen (7A). */
 export const REGION_ORDER = [
   'topbar',

@@ -3,6 +3,7 @@
 // Launches the BUILT app itself. Run: npm run build && node research/editor-validation/validate-5b.js
 const fs = require('fs')
 const path = require('path')
+const { writeResults } = require('./results-writer')
 const zlib = require('zlib')
 const h = require('./harness')
 const { sleep } = h
@@ -597,8 +598,8 @@ const openSections = async (c, ids) => {
   } finally {
     await h.kill(proc)
     const failed = results.filter((r) => !r.ok)
-    fs.writeFileSync(
-      path.join(__dirname, 'results-phase5b.json'),
+    writeResults(
+      'results-phase5b.json',
       JSON.stringify(
         {
           passed: results.length - failed.length,

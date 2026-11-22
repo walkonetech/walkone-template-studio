@@ -14,6 +14,7 @@ export const IpcChannel = {
   ProjectNewSample: 'project:newSample',
   ProjectOpen: 'project:open',
   ProjectOpenRecent: 'project:openRecent',
+  ProjectLocateRecent: 'project:locateRecent',
   ProjectSave: 'project:save',
   ProjectSaveAs: 'project:saveAs',
   ProjectUpdateWorkingCopy: 'project:updateWorkingCopy',
@@ -292,6 +293,8 @@ export interface RendererApi {
     open(): Promise<IpcResult<OpenProjectInfo>>
     /** Opens a project from the recent list (the path must be in that list). */
     openRecent(req: OpenRecentRequest): Promise<IpcResult<OpenProjectInfo>>
+    /** Locate… on a missing recent card: choose the moved file; that card is reconnected to it (cancel: no change). */
+    locateRecent(req: OpenRecentRequest): Promise<IpcResult<OpenProjectInfo>>
     /** Saves to the existing file, or shows the Save dialog if the project was never saved. */
     save(req: SessionProjectRequest): Promise<IpcResult<OpenProjectInfo>>
     /** Always shows the native Save dialog. */

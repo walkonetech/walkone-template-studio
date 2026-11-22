@@ -192,7 +192,11 @@ export class ProjectService {
   }
 
   /** Opens a `.boothproject`: validates it, extracts assets into a new session, returns clean state. */
-  async openFile(path: string): Promise<OpenProjectInfo> {
+  /** Opens a project file. `replacingRecent`: the missing recent entry the user pressed Locate… on (B5.1). */
+  async openFile(
+    path: string,
+    options: { replacingRecent?: string } = {}
+  ): Promise<OpenProjectInfo> {
     const pkg = await openPackage(path)
     let session: WorkingSession | undefined
     try {
@@ -208,12 +212,15 @@ export class ProjectService {
       await pkg.extractAssets(session.dir)
       const entry: OpenEntry = { session, filePath: path, assets: indexAssets(project) }
       this.open.set(session.id, entry)
-      await this.options.recents.add({
-        path,
-        projectId: project.id,
-        name: project.metadata.name,
-        print: project.canvas.print
-      })
+      await this.options.recents.add(
+        {
+          path,
+          projectId: project.id,
+          name: project.metadata.name,
+          print: project.canvas.print
+        },
+        options.replacingRecent !== undefined ? { replacing: options.replacingRecent } : {}
+      )
       const warnings = unreferencedEntries.length
         ? [
             `${unreferencedEntries.length} unused file(s) in the package were not carried over: ${unreferencedEntries.join(', ')}`

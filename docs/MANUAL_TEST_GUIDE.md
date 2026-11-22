@@ -180,7 +180,7 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] **Settings** (File › Settings… or Ctrl/⌘+,): Theme, Button and text size, Interface scale apply right away; Printing shows the printer; Editor has Selection toolbar and getting-started tips switches. Restart: the choices are kept. The project stays Saved.
 - [ ] Hide these tips → the next new blank project has none → Settings › Editor turns them on → the next one has them again. Opened or imported projects never show tips.
 - [ ] A new text uses **Arial** and shows no missing-font note. An older project's Helvetica text stays Helvetica.
-- [ ] Start: Search recent filters the cards; a 2×6 strip card shows two strips; a moved file shows File not found + Locate….
+- [ ] Start: Search recent filters the cards; a 2×6 strip card shows two strips; a moved file shows File not found + Locate…; Locate… → Cancel leaves the card; Locate… → the moved file opens it, and back on Start there is ONE card for it (no stale File not found card) that reopens. File › Settings… → Escape puts focus on the File menu button (B5.1).
 - [ ] Repeat in Dark + Compact + 125 % at a short window: toolbar and Properties stay usable; no sideways scrolling. No "Sample photos" anywhere.
 
 ### H. UI, accessibility, polish

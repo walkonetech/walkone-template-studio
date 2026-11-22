@@ -276,7 +276,7 @@ export function Welcome(): React.JSX.Element {
                         type="button"
                         className="link"
                         aria-label={`Locate ${r.name}…`}
-                        onClick={() => runCommand('file.open')}
+                        onClick={() => void guarded('replace', () => st().locateRecent(r.path))()}
                       >
                         Locate…
                       </button>

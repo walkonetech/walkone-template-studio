@@ -5,6 +5,7 @@
 // Needs python3 + Pillow. Run: npm run build && node research/editor-validation/validate-resize-snap.js
 const fs = require('fs')
 const path = require('path')
+const { writeResults } = require('./results-writer')
 const { execFileSync } = require('child_process')
 const h = require('./harness')
 const { sleep } = h
@@ -168,8 +169,8 @@ print(json.dumps({'minEdge': min(min(px) for px in edge), 'inner': inner}))
     await h.kill(proc)
     const pass = results.filter((r) => r.ok).length
     console.log(`\n${pass}/${results.length} passed`)
-    fs.writeFileSync(
-      path.join(__dirname, 'results-resize-snap.json'),
+    writeResults(
+      'results-resize-snap.json',
       JSON.stringify(
         { when: new Date().toISOString(), pass, total: results.length, results },
         null,

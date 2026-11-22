@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { restoreFocus } from './restoreFocus'
+import { dialogOpener, restoreFocus } from './restoreFocus'
 
 const FOCUSABLE =
   'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])'
@@ -68,7 +68,7 @@ export function Dialog({
   const px = width ?? (size ? DIALOG_SIZES[size] : undefined)
 
   useEffect(() => {
-    const previous = document.activeElement as HTMLElement | null
+    const previous = dialogOpener(document.activeElement)
     const target =
       box.current?.querySelector<HTMLElement>('[data-autofocus]') ??
       box.current?.querySelector<HTMLElement>(FOCUSABLE)

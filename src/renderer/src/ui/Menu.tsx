@@ -1,7 +1,7 @@
 import { Check } from 'lucide-react'
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { restoreFocus } from './restoreFocus'
+import { noteMenuOpener, restoreFocus } from './restoreFocus'
 
 export type MenuEntry =
   | {
@@ -108,6 +108,7 @@ export function MenuPopover({
             disabled={e.disabled}
             className="ui-menuitem"
             onClick={() => {
+              noteMenuOpener(anchor)
               onClose()
               e.onSelect()
             }}

@@ -183,6 +183,8 @@ export interface EditorActions {
   /** DSLR Booth importer: adopts the project created from an analysed ZIP (new, unsaved). */
   importDslr(token: string, layout: DslrImportLayout): Promise<OpResult>
   openRecent(path: string): Promise<OpResult>
+  /** Locate… on a missing recent card: open the moved file and reconnect that card to it (B5.1). */
+  locateRecent(path: string): Promise<OpResult>
   save(): Promise<OpResult>
   saveAs(): Promise<OpResult>
   closeProject(): Promise<OpResult>
@@ -638,6 +640,7 @@ export function createEditorStore(options: EditorStoreOptions): EditorStore {
       openFromDialog: () => run(() => ports.open()),
       importDslr: (token, layout) => run(() => ports.dslrImportCommit(token, layout)),
       openRecent: (path) => run(() => ports.openRecent(path)),
+      locateRecent: (path) => run(() => ports.locateRecent(path)),
       save: () => saveWith('save'),
       saveAs: () => saveWith('saveAs'),
       async closeProject() {

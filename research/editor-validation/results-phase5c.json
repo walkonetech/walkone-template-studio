@@ -1,651 +1,455 @@
 {
- "passed": 49,
- "total": 49,
- "failed": [],
- "results": [
-  {
-   "name": "setup: 2×6 strip with 3 photos and an imported overlay placed partly outside the artboard (x+width = 1500 > 1200)",
-   "ok": true,
-   "detail": {
-    "overlay": {
-     "id": "00b7f199-07dd-4382-94a0-c80318c6a387",
-     "type": "image",
-     "name": "petals",
-     "x": 900,
-     "y": 2300,
-     "width": 600,
-     "height": 600,
-     "rotation": 0,
-     "z": 3,
-     "fit": "stretch",
-     "role": "overlay",
-     "locked": false
+  "passed": 49,
+  "total": 49,
+  "failed": [],
+  "results": [
+    {
+      "name": "setup: 2×6 strip with 3 photos and an imported overlay placed partly outside the artboard (x+width = 1500 > 1200)",
+      "ok": true,
+      "detail": {
+        "overlay": {
+          "id": "8d89d024-eb87-4870-a4f1-3d352eeba879",
+          "type": "image",
+          "name": "petals",
+          "x": 900,
+          "y": 2300,
+          "width": 600,
+          "height": 600,
+          "rotation": 0,
+          "z": 3,
+          "fit": "stretch",
+          "role": "overlay",
+          "locked": false
+        }
+      }
+    },
+    {
+      "name": "1 Show Overflow (default): the off-artboard part of the overlay is visible and still reddish (dimmed, not hidden)",
+      "ok": true,
+      "detail": [226, 147, 158, 255]
+    },
+    {
+      "name": "2 clipped view hides everything beyond the artboard (the pixel there is the workspace, not red) while the inside stays",
+      "ok": true,
+      "detail": [
+        [0, 0, 0, 0],
+        [220, 20, 40, 255],
+        [220, 20, 40, 255]
+      ]
+    },
+    {
+      "name": "2b toggling overflow does not mark Modified, enter history or change any layer",
+      "ok": true
+    },
+    {
+      "name": "2c button states are not colour-only: aria-pressed and a changing visible value (Overflow: Hide)",
+      "ok": true
+    },
+    {
+      "name": "2d Show overflow restored",
+      "ok": true
+    },
+    {
+      "name": "3 exact design render is the artboard only (1200×3600): overlay inside is drawn, nothing can exist beyond",
+      "ok": true,
+      "detail": [
+        [220, 20, 40, 255],
+        [220, 20, 40, 255],
+        [255, 255, 255, 255]
+      ]
+    },
+    {
+      "name": "3b two-up: copy 1 overflow does NOT bleed into copy 2 (x=1250 white), each copy shows its own inside part (x=1150 and x=2150 red), copy 2 clipped at its own edge",
+      "ok": true,
+      "detail": [
+        [220, 20, 40, 255],
+        [255, 255, 255, 255],
+        [255, 255, 255, 255],
+        [220, 20, 40, 255],
+        [220, 20, 40, 255]
+      ]
+    },
+    {
+      "name": "3c both copies are identical translations",
+      "ok": true,
+      "detail": {
+        "w": 2400,
+        "diff": 1,
+        "max": 1
+      }
+    },
+    {
+      "name": "4 off-artboard artwork is selectable by clicking its outside part at fit, ~25%, 100%, 200% and 400%",
+      "ok": true,
+      "detail": [
+        {
+          "label": "fit",
+          "selected": true
+        },
+        {
+          "label": "~25%",
+          "selected": true
+        },
+        {
+          "label": "100%",
+          "selected": true
+        },
+        {
+          "label": "200%",
+          "selected": true
+        },
+        {
+          "label": "400%",
+          "selected": true
+        }
+      ]
+    },
+    {
+      "name": "4b a layer entirely outside the artboard keeps its geometry and stays selectable",
+      "ok": true
+    },
+    {
+      "name": "5 Zoom In / Zoom Out / 100% / Fit buttons and a visible zoom percentage",
+      "ok": true,
+      "detail": {
+        "z0": "19%",
+        "z1": "24%",
+        "z2": "19%",
+        "z100": "100%",
+        "zFit": "19%"
+      }
+    },
+    {
+      "name": "5b Ctrl/Cmd + wheel zooms around the pointer: the design point under the pointer stays put (±2 design px, or one screen pixel when that is larger) while the scale grows",
+      "ok": true,
+      "detail": {
+        "d0": {
+          "x": 874.6685878962537,
+          "y": 1415.1008645533143,
+          "scale": 0.19277777777777777
+        },
+        "d1": {
+          "x": 872.4505116005128,
+          "y": 1411.1576178053308,
+          "scale": 3.8720451735256223
+        },
+        "tol": 5.187319884726225
+      }
+    },
+    {
+      "name": "5c plain wheel scrolls (pans) and never zooms",
+      "ok": true
+    },
+    {
+      "name": "5d zoom and pan never changed project geometry (and left no history entry)",
+      "ok": true
+    },
+    {
+      "name": "5e zoom works in Print Preview (read-only)",
+      "ok": true
+    },
+    {
+      "name": "6 Shift + mostly-horizontal drag keeps Y exactly and moves X, at fit / 100% / 200% zoom (one history entry each)",
+      "ok": true,
+      "detail": [
+        {
+          "label": "fit",
+          "y": true,
+          "dxDesign": 778.098,
+          "history": 1
+        },
+        {
+          "label": "100%",
+          "y": true,
+          "dxDesign": 150,
+          "history": 1
+        },
+        {
+          "label": "200%",
+          "y": true,
+          "dxDesign": 76.79999999999995,
+          "history": 1
+        }
+      ]
+    },
+    {
+      "name": "6b Shift + mostly-vertical drag keeps X exactly and moves Y, at fit / 100% / 200% zoom",
+      "ok": true,
+      "detail": [
+        {
+          "label": "fit",
+          "xKept": true,
+          "dyDesign": 700
+        },
+        {
+          "label": "100%",
+          "xKept": true,
+          "dyDesign": 140
+        },
+        {
+          "label": "200%",
+          "xKept": true,
+          "dyDesign": 71.67999999999984
+        }
+      ]
+    },
+    {
+      "name": "6c jitter below the 6 px threshold with Shift neither moves nor flips axes",
+      "ok": true,
+      "detail": {
+        "dx": 0,
+        "dy": 0
+      }
+    },
+    {
+      "name": "6d releasing Shift mid-gesture frees the movement (Y moves after release)",
+      "ok": true,
+      "detail": {
+        "dx": 466.8589999999999,
+        "dy": 414.9859999999999
+      }
+    },
+    {
+      "name": "7 Shift horizontal lock cannot be broken by a vertical snap (the other layer’s top is 3 px away): Y stays exactly 2300",
+      "ok": true,
+      "detail": {
+        "pre": [100, 2300],
+        "post": [300, 2300]
+      }
+    },
+    {
+      "name": "7b the same drag WITHOUT Shift snaps vertically to the neighbour (Y moved to 2303: proves snapping was live)",
+      "ok": true,
+      "detail": {
+        "y": 2303
+      }
+    },
+    {
+      "name": "7c Shift horizontal drag still snaps along the free axis (centre lands exactly on the artboard centre 600) and keeps Y",
+      "ok": true,
+      "detail": {
+        "cx": 600,
+        "y": 2300
+      }
+    },
+    {
+      "name": "8 Shift-constrained drag of a multi-selection (partly beyond the artboard, no clamping): both move by the same ΔX, neither changes Y, one history entry",
+      "ok": true,
+      "detail": {
+        "dxO": 564.4770000000001,
+        "dxP": 564.477,
+        "dyO": 0,
+        "dyP": 0,
+        "past": 1
+      }
+    },
+    {
+      "name": "8b undo reverts the whole constrained multi-drag in one step",
+      "ok": true
+    },
+    {
+      "name": "9 Shift+Arrow is still 10 design px and Arrow 1 (mouse Shift logic does not interfere)",
+      "ok": true,
+      "detail": {
+        "a": 700,
+        "b": 710,
+        "d": 711
+      }
+    },
+    {
+      "name": "10 Space + drag pans the workspace (hand cursor class while held, restored on release)",
+      "ok": true,
+      "detail": {
+        "ready": true,
+        "released": true,
+        "dx": 160,
+        "dy": 60
+      }
+    },
+    {
+      "name": "10b Space-pan leaves the project untouched: same layers, not newly dirty, no history, nothing selected by the drag",
+      "ok": true
+    },
+    {
+      "name": "10c Space is ignored while typing in an input",
+      "ok": true
+    },
+    {
+      "name": "11 placeholder mode: numbered tinted blocks (photo 1 red-ish, photo 2 green-ish)",
+      "ok": true,
+      "detail": [
+        [231, 109, 101, 255],
+        [253, 247, 246, 255],
+        [209, 78, 69, 255],
+        [154, 201, 101, 255],
+        [249, 251, 246, 255],
+        [127, 176, 69, 255]
+      ]
+    },
+    {
+      "name": "12 no Sample photos anywhere (view bar, Photos drawer, Properties, buttons) and no sample/crop editor state; the Photos drawer adds photo slots and Properties edits the photo number",
+      "ok": true,
+      "detail": {
+        "viewbar": false,
+        "drawer": false,
+        "drawerAdd": true,
+        "inspector": false,
+        "photoNumber": true,
+        "buttons": 0,
+        "state": []
+      }
+    },
+    {
+      "name": "12b every render draws the numbered placeholder (a legacy preview request changes nothing): no picture ever enters a photo slot",
+      "ok": true,
+      "detail": [
+        [231, 109, 101, 255],
+        [253, 247, 246, 255],
+        [209, 78, 69, 255],
+        [154, 201, 101, 255],
+        [249, 251, 246, 255],
+        [127, 176, 69, 255]
+      ]
+    },
+    {
+      "name": "12c the live canvas shows the placeholder tints (photo 1 red-ish, photo 2 green-ish)",
+      "ok": true,
+      "detail": [
+        [253, 247, 246, 255],
+        [249, 251, 246, 255]
+      ]
+    },
+    {
+      "name": "13 two photo layers sharing PhotoNumber 1 show the same placeholder tint",
+      "ok": true,
+      "detail": {
+        "same": [
+          [231, 109, 101, 255],
+          [209, 78, 69, 255]
+        ],
+        "ref": [
+          [231, 109, 101, 255],
+          [253, 247, 246, 255],
+          [209, 78, 69, 255]
+        ]
+      }
+    },
+    {
+      "name": "15 Print Preview: both copies show identical numbered placeholders",
+      "ok": true,
+      "detail": {
+        "w": 2400,
+        "diff": 1,
+        "max": 1
+      }
+    },
+    {
+      "name": "16 double-clicking a photo slot starts no Reposition mode: no crop bar, interaction idle, the project and history unchanged",
+      "ok": true,
+      "detail": {
+        "interaction": "idle"
+      }
+    },
+    {
+      "name": "17 Photo fit stays a real slot property: Properties sets Contain (one history step, Modified); the slot still draws its placeholder",
+      "ok": true,
+      "detail": {
+        "fit": "contain",
+        "past": 36,
+        "fitPast": 35
+      }
+    },
+    {
+      "name": "17b Undo returns the fit to Cover",
+      "ok": true
+    },
+    {
+      "name": "22 native solid frame: 40 px gold border drawn on top of the placeholder (and inside it only)",
+      "ok": true,
+      "detail": [
+        [201, 168, 96, 255],
+        [201, 168, 96, 255],
+        [98, 186, 177, 255]
+      ]
+    },
+    {
+      "name": "22b corner radius 200 clips the placeholder and the frame: the very corner shows the canvas colour, the straight edge keeps the frame",
+      "ok": true,
+      "detail": [
+        [255, 255, 255, 255],
+        [201, 168, 96, 255]
+      ]
+    },
+    {
+      "name": "22c a radius beyond half the shorter side is clamped (pill shape), not broken",
+      "ok": true,
+      "detail": [
+        [255, 255, 255, 255],
+        [201, 168, 96, 255]
+      ]
+    },
+    {
+      "name": "23 hover tooltips explain what each key control does (label + hint + shortcut from the command model)",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "name": "23b align tooltip: \"Align left\" + what it does",
+      "ok": true,
+      "detail": "Align leftAlign the selected objects to the left edge"
+    },
+    {
+      "name": "23c the Photos rail tooltip describes photo slots only (no sample photos, B3.1)",
+      "ok": true,
+      "detail": "PhotosPhoto slots: where the booth places guest photos"
+    },
+    {
+      "name": "24 view controls are real buttons with accessible names and pressed state (Safe areas, Overflow)",
+      "ok": true
+    },
+    {
+      "name": "25 save → reopen: negative X, rotation and oversized extent are preserved exactly",
+      "ok": true,
+      "detail": {
+        "id": "8d89d024-eb87-4870-a4f1-3d352eeba879",
+        "type": "image",
+        "name": "petals",
+        "x": -120,
+        "y": 2300,
+        "width": 900,
+        "height": 900,
+        "rotation": 15,
+        "z": 3,
+        "fit": "stretch",
+        "role": "overlay",
+        "locked": false
+      }
+    },
+    {
+      "name": "25b editor-only state follows the documented policy after reopen: overflow view kept, Design mode",
+      "ok": true
+    },
+    {
+      "name": "26 crash recovery restores the off-artboard asset geometry (x −300) and its image",
+      "ok": true,
+      "detail": {
+        "id": "8d89d024-eb87-4870-a4f1-3d352eeba879",
+        "type": "image",
+        "name": "petals",
+        "x": -300,
+        "y": 2000,
+        "width": 900,
+        "height": 900,
+        "rotation": 15,
+        "z": 3,
+        "fit": "stretch",
+        "role": "overlay",
+        "locked": false
+      }
+    },
+    {
+      "name": "S1 renderer still has no Node access and the CSP is unchanged",
+      "ok": true
     }
-   }
-  },
-  {
-   "name": "1 Show Overflow (default): the off-artboard part of the overlay is visible and still reddish (dimmed, not hidden)",
-   "ok": true,
-   "detail": [
-    226,
-    147,
-    158,
-    255
-   ]
-  },
-  {
-   "name": "2 clipped view hides everything beyond the artboard (the pixel there is the workspace, not red) while the inside stays",
-   "ok": true,
-   "detail": [
-    [
-     0,
-     0,
-     0,
-     0
-    ],
-    [
-     220,
-     20,
-     40,
-     255
-    ],
-    [
-     220,
-     20,
-     40,
-     255
-    ]
-   ]
-  },
-  {
-   "name": "2b toggling overflow does not mark Modified, enter history or change any layer",
-   "ok": true
-  },
-  {
-   "name": "2c button states are not colour-only: aria-pressed and a changing visible value (Overflow: Hide)",
-   "ok": true
-  },
-  {
-   "name": "2d Show overflow restored",
-   "ok": true
-  },
-  {
-   "name": "3 exact design render is the artboard only (1200×3600): overlay inside is drawn, nothing can exist beyond",
-   "ok": true,
-   "detail": [
-    [
-     220,
-     20,
-     40,
-     255
-    ],
-    [
-     220,
-     20,
-     40,
-     255
-    ],
-    [
-     255,
-     255,
-     255,
-     255
-    ]
-   ]
-  },
-  {
-   "name": "3b two-up: copy 1 overflow does NOT bleed into copy 2 (x=1250 white), each copy shows its own inside part (x=1150 and x=2150 red), copy 2 clipped at its own edge",
-   "ok": true,
-   "detail": [
-    [
-     220,
-     20,
-     40,
-     255
-    ],
-    [
-     255,
-     255,
-     255,
-     255
-    ],
-    [
-     255,
-     255,
-     255,
-     255
-    ],
-    [
-     220,
-     20,
-     40,
-     255
-    ],
-    [
-     220,
-     20,
-     40,
-     255
-    ]
-   ]
-  },
-  {
-   "name": "3c both copies are identical translations",
-   "ok": true,
-   "detail": {
-    "w": 2400,
-    "diff": 1,
-    "max": 1
-   }
-  },
-  {
-   "name": "4 off-artboard artwork is selectable by clicking its outside part at fit, ~25%, 100%, 200% and 400%",
-   "ok": true,
-   "detail": [
-    {
-     "label": "fit",
-     "selected": true
-    },
-    {
-     "label": "~25%",
-     "selected": true
-    },
-    {
-     "label": "100%",
-     "selected": true
-    },
-    {
-     "label": "200%",
-     "selected": true
-    },
-    {
-     "label": "400%",
-     "selected": true
-    }
-   ]
-  },
-  {
-   "name": "4b a layer entirely outside the artboard keeps its geometry and stays selectable",
-   "ok": true
-  },
-  {
-   "name": "5 Zoom In / Zoom Out / 100% / Fit buttons and a visible zoom percentage",
-   "ok": true,
-   "detail": {
-    "z0": "19%",
-    "z1": "24%",
-    "z2": "19%",
-    "z100": "100%",
-    "zFit": "19%"
-   }
-  },
-  {
-   "name": "5b Ctrl/Cmd + wheel zooms around the pointer: the design point under the pointer stays put (±2 design px, or one screen pixel when that is larger) while the scale grows",
-   "ok": true,
-   "detail": {
-    "d0": {
-     "x": 874.6685878962537,
-     "y": 1415.1008645533143,
-     "scale": 0.19277777777777777
-    },
-    "d1": {
-     "x": 872.4505116005128,
-     "y": 1411.1576178053308,
-     "scale": 3.8720451735256223
-    },
-    "tol": 5.187319884726225
-   }
-  },
-  {
-   "name": "5c plain wheel scrolls (pans) and never zooms",
-   "ok": true
-  },
-  {
-   "name": "5d zoom and pan never changed project geometry (and left no history entry)",
-   "ok": true
-  },
-  {
-   "name": "5e zoom works in Print Preview (read-only)",
-   "ok": true
-  },
-  {
-   "name": "6 Shift + mostly-horizontal drag keeps Y exactly and moves X, at fit / 100% / 200% zoom (one history entry each)",
-   "ok": true,
-   "detail": [
-    {
-     "label": "fit",
-     "y": true,
-     "dxDesign": 778.098,
-     "history": 1
-    },
-    {
-     "label": "100%",
-     "y": true,
-     "dxDesign": 150,
-     "history": 1
-    },
-    {
-     "label": "200%",
-     "y": true,
-     "dxDesign": 76.79999999999995,
-     "history": 1
-    }
-   ]
-  },
-  {
-   "name": "6b Shift + mostly-vertical drag keeps X exactly and moves Y, at fit / 100% / 200% zoom",
-   "ok": true,
-   "detail": [
-    {
-     "label": "fit",
-     "xKept": true,
-     "dyDesign": 700
-    },
-    {
-     "label": "100%",
-     "xKept": true,
-     "dyDesign": 140
-    },
-    {
-     "label": "200%",
-     "xKept": true,
-     "dyDesign": 71.67999999999984
-    }
-   ]
-  },
-  {
-   "name": "6c jitter below the 6 px threshold with Shift neither moves nor flips axes",
-   "ok": true,
-   "detail": {
-    "dx": 0,
-    "dy": 0
-   }
-  },
-  {
-   "name": "6d releasing Shift mid-gesture frees the movement (Y moves after release)",
-   "ok": true,
-   "detail": {
-    "dx": 466.8589999999999,
-    "dy": 414.9859999999999
-   }
-  },
-  {
-   "name": "7 Shift horizontal lock cannot be broken by a vertical snap (the other layer’s top is 3 px away): Y stays exactly 2300",
-   "ok": true,
-   "detail": {
-    "pre": [
-     100,
-     2300
-    ],
-    "post": [
-     300,
-     2300
-    ]
-   }
-  },
-  {
-   "name": "7b the same drag WITHOUT Shift snaps vertically to the neighbour (Y moved to 2303: proves snapping was live)",
-   "ok": true,
-   "detail": {
-    "y": 2303
-   }
-  },
-  {
-   "name": "7c Shift horizontal drag still snaps along the free axis (centre lands exactly on the artboard centre 600) and keeps Y",
-   "ok": true,
-   "detail": {
-    "cx": 600,
-    "y": 2300
-   }
-  },
-  {
-   "name": "8 Shift-constrained drag of a multi-selection (partly beyond the artboard, no clamping): both move by the same ΔX, neither changes Y, one history entry",
-   "ok": true,
-   "detail": {
-    "dxO": 564.4770000000001,
-    "dxP": 564.477,
-    "dyO": 0,
-    "dyP": 0,
-    "past": 1
-   }
-  },
-  {
-   "name": "8b undo reverts the whole constrained multi-drag in one step",
-   "ok": true
-  },
-  {
-   "name": "9 Shift+Arrow is still 10 design px and Arrow 1 (mouse Shift logic does not interfere)",
-   "ok": true,
-   "detail": {
-    "a": 700,
-    "b": 710,
-    "d": 711
-   }
-  },
-  {
-   "name": "10 Space + drag pans the workspace (hand cursor class while held, restored on release)",
-   "ok": true,
-   "detail": {
-    "ready": true,
-    "released": true,
-    "dx": 160,
-    "dy": 60
-   }
-  },
-  {
-   "name": "10b Space-pan leaves the project untouched: same layers, not newly dirty, no history, nothing selected by the drag",
-   "ok": true
-  },
-  {
-   "name": "10c Space is ignored while typing in an input",
-   "ok": true
-  },
-  {
-   "name": "11 placeholder mode: numbered tinted blocks (photo 1 red-ish, photo 2 green-ish)",
-   "ok": true,
-   "detail": [
-    [
-     231,
-     109,
-     101,
-     255
-    ],
-    [
-     253,
-     247,
-     246,
-     255
-    ],
-    [
-     209,
-     78,
-     69,
-     255
-    ],
-    [
-     154,
-     201,
-     101,
-     255
-    ],
-    [
-     249,
-     251,
-     246,
-     255
-    ],
-    [
-     127,
-     176,
-     69,
-     255
-    ]
-   ]
-  },
-  {
-   "name": "12 no Sample photos anywhere (view bar, Photos drawer, Properties, buttons) and no sample/crop editor state; the Photos drawer adds photo slots and Properties edits the photo number",
-   "ok": true,
-   "detail": {
-    "viewbar": false,
-    "drawer": false,
-    "drawerAdd": true,
-    "inspector": false,
-    "photoNumber": true,
-    "buttons": 0,
-    "state": []
-   }
-  },
-  {
-   "name": "12b every render draws the numbered placeholder (a legacy preview request changes nothing): no picture ever enters a photo slot",
-   "ok": true,
-   "detail": [
-    [
-     231,
-     109,
-     101,
-     255
-    ],
-    [
-     253,
-     247,
-     246,
-     255
-    ],
-    [
-     209,
-     78,
-     69,
-     255
-    ],
-    [
-     154,
-     201,
-     101,
-     255
-    ],
-    [
-     249,
-     251,
-     246,
-     255
-    ],
-    [
-     127,
-     176,
-     69,
-     255
-    ]
-   ]
-  },
-  {
-   "name": "12c the live canvas shows the placeholder tints (photo 1 red-ish, photo 2 green-ish)",
-   "ok": true,
-   "detail": [
-    [
-     253,
-     247,
-     246,
-     255
-    ],
-    [
-     249,
-     251,
-     246,
-     255
-    ]
-   ]
-  },
-  {
-   "name": "13 two photo layers sharing PhotoNumber 1 show the same placeholder tint",
-   "ok": true,
-   "detail": {
-    "same": [
-     [
-      231,
-      109,
-      101,
-      255
-     ],
-     [
-      209,
-      78,
-      69,
-      255
-     ]
-    ],
-    "ref": [
-     [
-      231,
-      109,
-      101,
-      255
-     ],
-     [
-      253,
-      247,
-      246,
-      255
-     ],
-     [
-      209,
-      78,
-      69,
-      255
-     ]
-    ]
-   }
-  },
-  {
-   "name": "15 Print Preview: both copies show identical numbered placeholders",
-   "ok": true,
-   "detail": {
-    "w": 2400,
-    "diff": 1,
-    "max": 1
-   }
-  },
-  {
-   "name": "16 double-clicking a photo slot starts no Reposition mode: no crop bar, interaction idle, the project and history unchanged",
-   "ok": true,
-   "detail": {
-    "interaction": "idle"
-   }
-  },
-  {
-   "name": "17 Photo fit stays a real slot property: Properties sets Contain (one history step, Modified); the slot still draws its placeholder",
-   "ok": true,
-   "detail": {
-    "fit": "contain",
-    "past": 36,
-    "fitPast": 35
-   }
-  },
-  {
-   "name": "17b Undo returns the fit to Cover",
-   "ok": true
-  },
-  {
-   "name": "22 native solid frame: 40 px gold border drawn on top of the placeholder (and inside it only)",
-   "ok": true,
-   "detail": [
-    [
-     201,
-     168,
-     96,
-     255
-    ],
-    [
-     201,
-     168,
-     96,
-     255
-    ],
-    [
-     98,
-     186,
-     177,
-     255
-    ]
-   ]
-  },
-  {
-   "name": "22b corner radius 200 clips the placeholder and the frame: the very corner shows the canvas colour, the straight edge keeps the frame",
-   "ok": true,
-   "detail": [
-    [
-     255,
-     255,
-     255,
-     255
-    ],
-    [
-     201,
-     168,
-     96,
-     255
-    ]
-   ]
-  },
-  {
-   "name": "22c a radius beyond half the shorter side is clamped (pill shape), not broken",
-   "ok": true,
-   "detail": [
-    [
-     255,
-     255,
-     255,
-     255
-    ],
-    [
-     201,
-     168,
-     96,
-     255
-    ]
-   ]
-  },
-  {
-   "name": "23 hover tooltips explain what each key control does (label + hint + shortcut from the command model)",
-   "ok": true,
-   "detail": []
-  },
-  {
-   "name": "23b align tooltip: \"Align left\" + what it does",
-   "ok": true,
-   "detail": "Align leftAlign the selected objects to the left edge"
-  },
-  {
-   "name": "23c the Photos rail tooltip describes photo slots only (no sample photos, B3.1)",
-   "ok": true,
-   "detail": "PhotosPhoto slots: where the booth places guest photos"
-  },
-  {
-   "name": "24 view controls are real buttons with accessible names and pressed state (Safe areas, Overflow)",
-   "ok": true
-  },
-  {
-   "name": "25 save → reopen: negative X, rotation and oversized extent are preserved exactly",
-   "ok": true,
-   "detail": {
-    "id": "00b7f199-07dd-4382-94a0-c80318c6a387",
-    "type": "image",
-    "name": "petals",
-    "x": -120,
-    "y": 2300,
-    "width": 900,
-    "height": 900,
-    "rotation": 15,
-    "z": 3,
-    "fit": "stretch",
-    "role": "overlay",
-    "locked": false
-   }
-  },
-  {
-   "name": "25b editor-only state follows the documented policy after reopen: overflow view kept, Design mode",
-   "ok": true
-  },
-  {
-   "name": "26 crash recovery restores the off-artboard asset geometry (x −300) and its image",
-   "ok": true,
-   "detail": {
-    "id": "00b7f199-07dd-4382-94a0-c80318c6a387",
-    "type": "image",
-    "name": "petals",
-    "x": -300,
-    "y": 2000,
-    "width": 900,
-    "height": 900,
-    "rotation": 15,
-    "z": 3,
-    "fit": "stretch",
-    "role": "overlay",
-    "locked": false
-   }
-  },
-  {
-   "name": "S1 renderer still has no Node access and the CSP is unchanged",
-   "ok": true
-  }
- ]
+  ]
 }
