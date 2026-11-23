@@ -192,6 +192,17 @@ const LayerRow = memo(function LayerRow({
       aria-selected={selected}
       aria-level={row.depth + 1}
       aria-expanded={row.hasChildren ? !row.collapsed : undefined}
+      // B6: the row's name is its type, name, photo number and state only — not the labels of the eye/lock buttons
+      // inside it ("Text: Title, hidden" rather than "Text: Title Hide layer Title Lock layer Title").
+      aria-labelledby={[
+        `lr-type-${layer.id}`,
+        renaming ? '' : `lr-name-${layer.id}`,
+        meta ? `lr-meta-${layer.id}` : '',
+        !row.effectivelyVisible || row.effectivelyLocked ? `lr-state-${layer.id}` : '',
+        warning ? `lr-warn-${layer.id}` : ''
+      ]
+        .filter(Boolean)
+        .join(' ')}
       data-layer-id={layer.id}
       data-parent-id={layer.parentId ?? ''}
       data-selected={selected || undefined}
@@ -234,20 +245,42 @@ const LayerRow = memo(function LayerRow({
       )}
       <span className="type-icon" title={layerTypeLabel(layer)}>
         <LayerTypeIcon layer={layer} />
-        <span className="sr-only">{layerTypeLabel(layer)}: </span>
+        <span className="sr-only" id={`lr-type-${layer.id}`}>
+          {layerTypeLabel(layer)}:{' '}
+        </span>
       </span>
       {renaming ? (
         <RenameInput id={layer.id} initial={layer.name} onClose={stopRename} />
       ) : (
-        <span className="layer-name" title={`${layer.name} — ${layerTypeLabel(layer)}`}>
+        <span
+          className="layer-name"
+          id={`lr-name-${layer.id}`}
+          title={`${layer.name} — ${layerTypeLabel(layer)}`}
+        >
           {layer.name}
         </span>
       )}
-      {meta && <span className="layer-meta">{meta}</span>}
+      {meta && (
+        <span className="layer-meta" id={`lr-meta-${layer.id}`}>
+          {meta}
+        </span>
+      )}
+      {(!row.effectivelyVisible || row.effectivelyLocked) && (
+        // B6: hidden / locked are said in words too (the eye and lock icons are only pictures).
+        <span className="sr-only" id={`lr-state-${layer.id}`} data-testid="layer-state-text">
+          {[!row.effectivelyVisible ? 'hidden' : '', row.effectivelyLocked ? 'locked' : '']
+            .filter(Boolean)
+            .map((w) => `, ${w}`)
+            .join('')}
+        </span>
+      )}
       {warning && (
         <span className="row-warning" title="Needs attention: close to a trim line or across a cut">
           <TriangleAlert size={14} aria-hidden="true" />
-          <span className="sr-only"> (needs attention: close to a trim line or across a cut)</span>
+          <span className="sr-only" id={`lr-warn-${layer.id}`}>
+            {' '}
+            (needs attention: close to a trim line or across a cut)
+          </span>
         </span>
       )}
       <span className="row-actions">

@@ -156,7 +156,7 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] Floating drawer (window < 1600 px wide): drag its right edge, then press **Esc** once: the drawer closes and focus moves to its rail button. With the edge focused, the arrow keys still resize it.
 - [ ] Open a drawer, then press **See how it prints** / Design | Print Preview: the drawer closes; nothing covers the preview caption. Back in Design the drawer stays closed. Clicking a rail item while in Print Preview goes back to Design and opens it.
 - [ ] Open Export, close it with the mouse (Cancel or ✕) and move the mouse away: no Export tooltip stays on screen. Same with Esc. Tabbing onto Export, or hovering it, still shows its tooltip.
-- [ ] Windows: the window cannot be made narrower than 1100 DIP; at 1920×1080 125 % a half-screen Snap docks the minimum-size window at the left (expected, owner decision). F10 focuses the menus without underlines (holding Alt shows them) — known, B6.
+- [ ] Windows: the window cannot be made narrower than 1100 DIP; at 1920×1080 125 % a half-screen Snap docks the minimum-size window at the left (expected, owner decision). F10 (or a tap on Alt) focuses the menus WITH the access-key underlines and every menu item has its own letter (B6, H6).
 
 ### H3. B4 workflow surfaces (Phase 7B B4)
 - [ ] **Checks:** the top-bar **Checks** button shows a green check when nothing needs fixing, otherwise its icon and separate red (errors) / amber (needs attention) counts. Clicking it opens the Checks panel on the LEFT (where drawers open); Properties stays visible. Groups **Error · Needs attention · Good to know**; Good to know starts collapsed. With only notes the panel says **Ready · n notes**.
@@ -196,6 +196,18 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] Schema version (ADR-060): unzip the saved magnet `.boothproject` → `project.json` says `"schemaVersion": 2`; a standard 2×6 project saved by this build says `1`. An older build (e.g. `cb2f75d`) opening the magnet file shows "supports up to 1. Update the app" and still opens the 2×6 file.
 - [ ] With a saved project open: File › New project… › Custom size…, click through the steps, Cancel → the project is unchanged and still Saved.
 - [ ] An older 2×6 or 4×6 project opens unchanged and exports exactly as before. Dark theme, 1426 × 779 and the minimum window: every wizard step fits, no sideways scrolling. No "Sample photos" anywhere.
+
+### H6. Keyboard, screen readers, high contrast (Phase 7B B6)
+- [ ] Put the mouse over the canvas. Press Tab until **See how it prints** has a focus ring, then press **Space**: Print Preview opens. Enter works too. Click the canvas and hold Space: the hand cursor pans.
+- [ ] Windows: press **F10** — File gets a ring and F/E/A/V/H are underlined; Escape goes back. Tap **Alt** alone — same; tap again — back. **Alt+V** opens View with every item's letter underlined; press a letter (e.g. the one in "Printer & cutting…") and the item runs; Escape returns focus to View. Opening a menu with the mouse shows no underlines.
+- [ ] macOS: open File and type **s**: focus jumps to Save, then Save As…
+- [ ] Arrow keys change choices in New project (print type), the Custom size wizard (units, DPI, printing, safe margin), Typography alignment and Settings.
+- [ ] **F6** walks top bar → rail → drawer → view bar → canvas → Properties/Layers → status bar; Shift+F6 goes back.
+- [ ] Do a whole 2×6 project without the mouse: Start › Blank design › Create, add text and a photo slot from the rail, pick a layer in Layers, change Font size, open Checks, Export (Ctrl/⌘E).
+- [ ] Windows High Contrast (Settings › Accessibility › Contrast themes): focus rings, the selected layer, the open rail item, chosen options, menus and dialogs are all visible; warnings keep their icon and words.
+- [ ] Reduce motion (macOS: Accessibility › Display › Reduce motion; Windows: Animation effects off): tooltips, menus and the tips card appear without animation.
+- [ ] **VoiceOver (⌘F5) / Narrator (Ctrl+Win+Enter):** Start cards read their name and description; the rail reads "Text, button, collapsed/expanded"; the canvas reads its description (format, copies, layers, selection); a Layers row reads "Text: Title, hidden, locked"; the wizard announces "Step 2 of 4…", reads the arrangement sentence and the error next to a bad width; Export cards read checked/unchecked.
+- [ ] With the getting-started tips showing, select a layer near them at 1426 × 779 and at the minimum window: the selection toolbar never hides a tips button.
 
 ### H. UI, accessibility, polish
 - [ ] Tooltips on icon-only controls, with shortcut hints.

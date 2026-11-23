@@ -42,3 +42,31 @@ export function describeWorkspace(project: TemplateProject, mode: 'design' | 'pr
   const px = getPixelSize(project.canvas.print)
   return `${printSizeName(project.canvas.print)} • ${project.canvas.print.dpi} DPI • Design ${px.width}×${px.height} px`
 }
+
+/**
+ * B6: the canvas's text equivalent for assistive technology (its accessible description). The canvas pixels are not
+ * individually exposed; this says which design is in the workspace, how it prints and what is selected. Layers and
+ * Properties remain the accessible way to reach each layer.
+ */
+export function describeCanvasForScreenReader(
+  project: TemplateProject,
+  mode: 'design' | 'preview',
+  selected: readonly { name: string; type: string }[]
+): string {
+  const parts = [
+    mode === 'preview' ? 'Print Preview, read only' : 'Design',
+    describeWorkspace(project, mode).replace(/ • /g, ', ')
+  ]
+  const copies = copiesPerSheet(project)
+  if (copies > 1) parts.push(`${copies} copies per sheet`)
+  const count = project.layers.length
+  parts.push(count === 1 ? '1 layer' : `${count} layers`)
+  if (mode === 'design') {
+    if (selected.length === 0) parts.push('Nothing selected')
+    else if (selected.length === 1)
+      parts.push(`Selected: ${selected[0]!.type} “${selected[0]!.name}”`)
+    else parts.push(`${selected.length} layers selected`)
+    parts.push('Use the Layers panel to choose a layer and Properties to change it')
+  }
+  return parts.join('. ') + '.'
+}

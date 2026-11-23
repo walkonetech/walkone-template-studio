@@ -17,6 +17,7 @@ import {
   STEP_TITLES,
   WIZARD_STEPS,
   goBack,
+  arrangementInWords,
   goNext,
   initialWizard,
   parseNumberField,
@@ -42,6 +43,7 @@ import { FormatDiagram } from './FormatDiagram'
 import { layoutStore, useLayout } from './layoutStore'
 import { Button } from '../ui/Button'
 import { Dialog, DialogActions } from '../ui/Dialog'
+import { onRadioGroupKeyDown } from '../ui/radioGroupKeys'
 
 /**
  * The Custom Size wizard (Phase 7B B5.5): Size → Printing → Safe margin → Review → Create design. It only sets up the
@@ -149,7 +151,13 @@ function Seg<T extends string | number>({
       <span id={id} className="cf-label">
         {label}
       </span>
-      <div className="seg" role="radiogroup" aria-labelledby={id} data-testid={testId}>
+      <div
+        className="seg"
+        role="radiogroup"
+        onKeyDown={onRadioGroupKeyDown}
+        aria-labelledby={id}
+        data-testid={testId}
+      >
         {options.map(([v, text]) => (
           <button
             key={String(v)}
@@ -434,6 +442,7 @@ function OutputStep({
       <div
         className="cf-modes"
         role="radiogroup"
+        onKeyDown={onRadioGroupKeyDown}
         aria-label="How should it print?"
         data-testid="cf-mode"
       >
@@ -567,6 +576,9 @@ function OutputStep({
             box={200}
             testId="cf-sheet-diagram"
           />
+          <p className="sr-only" data-testid="cf-arrangement-words">
+            {arrangementInWords(s)}
+          </p>
           <p className="cf-diagram-caption" data-testid="cf-output-caption">
             {summarizeFormat(wizardFormat(s)).output}
             {s.mode !== 'exact' && Number.isFinite(sheet.columns) && Number.isFinite(sheet.rows)
@@ -574,7 +586,8 @@ function OutputStep({
               : ''}
           </p>
           {fit && (
-            <p className="cf-fit-error" role="alert" data-testid="cf-fit-error">
+            // Polite, not assertive: it can change on every keystroke while a number is typed.
+            <p className="cf-fit-error" role="status" data-testid="cf-fit-error">
               <CircleAlert size={15} aria-hidden="true" />
               <span>{fit}</span>
             </p>
@@ -619,6 +632,7 @@ function SafeStep({
           <div
             className="cf-modes vertical"
             role="radiogroup"
+            onKeyDown={onRadioGroupKeyDown}
             aria-label="Safe margin"
             data-testid="cf-safe"
           >
@@ -910,6 +924,14 @@ function Wizard({
               variant="primary"
               data-testid={last ? 'cf-create' : 'cf-next'}
               disabled={last ? blocking.length > 0 || busy : issues.length > 0}
+              // B6: a disabled Next / Create says why (the summary above, or the review error).
+              aria-describedby={
+                !last && issues.length > 0
+                  ? 'cf-issue-summary'
+                  : last && blocking.length > 0
+                    ? 'cf-review-error'
+                    : undefined
+              }
               onClick={next}
             >
               {last ? 'Create design' : 'Next'}
@@ -932,13 +954,23 @@ function Wizard({
         }}
       >
         {issues.length > 0 && s.step !== 'review' && (
-          <p className="cf-issue-summary" role="status" data-testid="cf-issue-summary">
+          <p
+            id="cf-issue-summary"
+            className="cf-issue-summary"
+            role="status"
+            data-testid="cf-issue-summary"
+          >
             <CircleAlert size={15} aria-hidden="true" />
             {issues.length === 1
               ? 'Fix 1 thing to continue.'
               : `Fix ${issues.length} things to continue.`}
           </p>
         )}
+        {/* B6: the step change is announced once (focus moves to the step's first field, which alone would not say
+            that the step changed). */}
+        <p className="sr-only" aria-live="polite" data-testid="cf-step-announce">
+          {`Step ${index + 1} of ${WIZARD_STEPS.length}: ${STEP_TITLES[s.step]}`}
+        </p>
         {s.step === 'size' && <SizeStep s={s} set={set} issues={issues} />}
         {s.step === 'output' && <OutputStep s={s} set={set} issues={issues} />}
         {s.step === 'safe' && <SafeStep s={s} set={set} issues={issues} />}
@@ -952,7 +984,12 @@ function Wizard({
           />
         )}
         {s.step === 'review' && blocking.length > 0 && (
-          <p className="cf-fit-error" role="alert" data-testid="cf-review-error">
+          <p
+            id="cf-review-error"
+            className="cf-fit-error"
+            role="alert"
+            data-testid="cf-review-error"
+          >
             <CircleAlert size={15} aria-hidden="true" />
             <span>{blocking[0]!.message}</span>
           </p>

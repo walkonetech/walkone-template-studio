@@ -1,3 +1,5 @@
+import { onRadioGroupKeyDown } from './radioGroupKeys'
+
 /** Small radio-style segmented control (one of N). Arrow keys move and select, per the radiogroup pattern. */
 export function Segmented<T extends string | number>({
   label,
@@ -17,20 +19,7 @@ export function Segmented<T extends string | number>({
       role="radiogroup"
       aria-label={label}
       className="ui-seg"
-      onKeyDown={(e) => {
-        if (disabled) return
-        const i = options.findIndex((o) => o.value === value)
-        const d =
-          e.key === 'ArrowRight' || e.key === 'ArrowDown'
-            ? 1
-            : e.key === 'ArrowLeft' || e.key === 'ArrowUp'
-              ? -1
-              : 0
-        if (!d) return
-        e.preventDefault()
-        const next = options[(i + d + options.length) % options.length]
-        if (next) onChange(next.value)
-      }}
+      onKeyDown={disabled ? undefined : onRadioGroupKeyDown}
     >
       {options.map((o) => (
         <button

@@ -2,6 +2,8 @@
 
 Source of truth is the code in `src/domain/` (zod schemas; TypeScript types are inferred from them). This document explains the model and why. It is vendor-neutral: DSLR Booth structures are handled only by adapters ([DSLRBOOTH_COMPATIBILITY.md](DSLRBOOTH_COMPATIBILITY.md), ADR-002/003). Evidence behind the choices: [../research/DSLRBOOTH_FIXTURE_ANALYSIS.md](../research/DSLRBOOTH_FIXTURE_ANALYSIS.md). Decisions: [DECISIONS.md](DECISIONS.md).
 
+_Phase 7B B6 (accessibility and platform polish, ADR-061) changed nothing in this model: no field, no schema version, no file-format change._
+
 ## 1. Shape of `TemplateProject` (schemaVersion 2; files are written at the lowest version that represents them, ADR-060)
 ```
 format: "walkone.template-project"      marker

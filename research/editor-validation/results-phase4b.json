@@ -106,7 +106,7 @@
   {
     "name": "status bar exposes the recovery-copy state",
     "ok": true,
-    "detail": "Recovery copy 11:16 AM"
+    "detail": "Recovery copy 12:22 AM"
   },
   {
     "name": "Quit → Cancel: app stays open",
@@ -157,7 +157,7 @@
     "name": "relaunch shows the recovery dialog (accessible role=dialog, aria-modal)",
     "ok": true,
     "detail": {
-      "label": "_r_0_"
+      "label": "_r_2_"
     }
   },
   {

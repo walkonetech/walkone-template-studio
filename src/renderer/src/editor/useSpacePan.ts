@@ -1,6 +1,26 @@
 import { useEffect, useState, type RefObject } from 'react'
 import { canStartSpacePan } from '@editor/spacePan'
 import { editorStore } from './editorStore'
+import { focusArrivedByKeyboard } from '../ui/focusModality'
+
+/**
+ * Where the pointer last was (window coordinates), shared by every workspace. "Over the workspace" is decided from it
+ * when Space is pressed, not from enter/leave events: the canvas host re-mounts (Design ↔ Print Preview) under a
+ * pointer that has not moved, and then no mouseenter ever fires (B6). Forgotten when the pointer leaves the window.
+ */
+let pointer: { x: number; y: number } | null = null
+if (typeof window !== 'undefined') {
+  window.addEventListener(
+    'pointermove',
+    (e) => {
+      pointer = { x: e.clientX, y: e.clientY }
+    },
+    { capture: true, passive: true }
+  )
+  document.documentElement.addEventListener('pointerleave', () => {
+    pointer = null
+  })
+}
 
 /**
  * Hold Space to pan the workspace: the cursor becomes a hand, dragging pans (a capture-phase listener keeps the canvas
@@ -17,7 +37,11 @@ export function useSpacePan(hostRef: RefObject<HTMLElement | null>): {
   useEffect(() => {
     const host = hostRef.current
     if (!host) return
-    let over = false
+    const overWorkspace = (): boolean => {
+      if (!pointer) return false
+      const hit = document.elementFromPoint(pointer.x, pointer.y)
+      return hit !== null && host.contains(hit)
+    }
     let held = false
     let last: { x: number; y: number } | null = null
 
@@ -42,7 +66,9 @@ export function useSpacePan(hostRef: RefObject<HTMLElement | null>): {
                 role: t.getAttribute('role')
               }
             : null,
-          pointerOverWorkspace: over,
+          pointerOverWorkspace: overWorkspace(),
+          keyboardFocused:
+            t instanceof HTMLElement && t !== document.body && focusArrivedByKeyboard(),
           hasModifier: e.metaKey || e.ctrlKey || e.altKey,
           editingText: editorStore.getState().editingTextId !== null
         })
@@ -76,28 +102,20 @@ export function useSpacePan(hostRef: RefObject<HTMLElement | null>): {
       last = null
       setPanning(false)
     }
-    const enter = (): void => {
-      over = true
-    }
-    const leave = (): void => {
-      over = false
-    }
     host.addEventListener('mousedown', onMouseDown, true) // capture: runs before the canvas sees the press
-    host.addEventListener('mouseenter', enter)
-    host.addEventListener('mouseleave', leave)
     window.addEventListener('keydown', onKeyDown)
     window.addEventListener('keyup', onKeyUp)
     window.addEventListener('mousemove', onMouseMove)
     window.addEventListener('mouseup', onMouseUp)
-    window.addEventListener('blur', () => setHeld(false))
+    const onBlur = (): void => setHeld(false)
+    window.addEventListener('blur', onBlur)
     return () => {
       host.removeEventListener('mousedown', onMouseDown, true)
-      host.removeEventListener('mouseenter', enter)
-      host.removeEventListener('mouseleave', leave)
       window.removeEventListener('keydown', onKeyDown)
       window.removeEventListener('keyup', onKeyUp)
       window.removeEventListener('mousemove', onMouseMove)
       window.removeEventListener('mouseup', onMouseUp)
+      window.removeEventListener('blur', onBlur)
     }
   }, [hostRef])
 

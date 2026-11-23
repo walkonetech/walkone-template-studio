@@ -15,6 +15,7 @@ import { editorStore } from './editorStore'
 import { layoutStore, useLayout } from './layoutStore'
 import { Button } from '../ui/Button'
 import { Dialog, DialogActions } from '../ui/Dialog'
+import { onRadioGroupKeyDown } from '../ui/radioGroupKeys'
 
 /**
  * Other sizes (B5.5): Custom size… opens the Custom Size wizard; My formats are saved custom formats. The built-in
@@ -146,7 +147,12 @@ function Form(): React.JSX.Element {
           onFocus={(e) => e.currentTarget.select()}
         />
         <span id={typeId}>Print type</span>
-        <div className="seg wide" role="radiogroup" aria-labelledby={typeId}>
+        <div
+          className="seg wide"
+          role="radiogroup"
+          onKeyDown={onRadioGroupKeyDown}
+          aria-labelledby={typeId}
+        >
           {(
             [
               ['photo-4x6', '4×6 Photo'],

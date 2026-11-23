@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { placeFloating, type Side } from '@editor/floatingPlacement'
 import { isRestoringFocus } from './restoreFocus'
@@ -34,6 +34,23 @@ export function Tooltip({
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const [open, setOpen] = useState(false)
   const [pos, setPos] = useState<{ left: number; top: number; side: Side } | null>(null)
+  const descId = useId()
+  const described = !!(hint || shortcut)
+
+  // B6: the hint and shortcut are also the control's accessible DESCRIPTION, available at once (not only after the
+  // hover delay): the first focusable element inside gets aria-describedby → a hidden copy of them. The control's
+  // accessible NAME never comes from the tooltip.
+  useLayoutEffect(() => {
+    if (!described) return
+    const el = ref.current?.querySelector<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]'
+    )
+    if (!el || el.hasAttribute('aria-describedby')) return
+    el.setAttribute('aria-describedby', descId)
+    return () => {
+      if (el.getAttribute('aria-describedby') === descId) el.removeAttribute('aria-describedby')
+    }
+  }, [described, descId])
 
   const show = (): void => {
     clearTimeout(timer.current)
@@ -88,6 +105,11 @@ export function Tooltip({
       onBlur={hide}
     >
       {children}
+      {described && (
+        <span id={descId} hidden>
+          {[hint, shortcut ? `Shortcut ${shortcut}` : ''].filter(Boolean).join('. ')}
+        </span>
+      )}
       {open &&
         createPortal(
           <div

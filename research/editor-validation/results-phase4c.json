@@ -167,7 +167,7 @@
     "ok": true,
     "detail": [
       {
-        "t": "Studio Test2×6 strip · opened just now File not foundLocate…",
+        "t": "Studio Test2×6 strip · opened just now File not foundLocate…The file was moved or renamed. Find it and open it from its new place.",
         "dis": true,
         "locate": true
       }
@@ -178,11 +178,11 @@
     "ok": true
   },
   {
-    "name": "labelled rail (B3): Elements, Text, Photos, Uploads, Colors; all real, none pressed while closed",
+    "name": "labelled rail (B3): Elements, Text, Photos, Uploads, Colors; all real, none expanded while closed (B6: aria-expanded)",
     "ok": true
   },
   {
-    "name": "Elements opens the drawer floating over the canvas; the rail button shows it pressed",
+    "name": "Elements opens the drawer floating over the canvas; the rail button shows it expanded (B6: aria-expanded)",
     "ok": true
   },
   {

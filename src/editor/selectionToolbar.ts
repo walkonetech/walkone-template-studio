@@ -1,5 +1,5 @@
 import { isEditable, type ColorValue, type Layer, type TemplateProject } from '@domain'
-import { placeFloating, type Rect } from './floatingPlacement'
+import { placeFloating, sideOrder, type Placement, type Side, type Rect } from './floatingPlacement'
 import type { Bounds } from './arrange'
 
 /**
@@ -134,15 +134,26 @@ export function toScreenRect(
  */
 export const ROTATE_HANDLE_ROOM = 36
 
+const overlaps = (a: Rect, b: Rect): boolean =>
+  a.left < b.left + b.width &&
+  b.left < a.left + a.width &&
+  a.top < b.top + b.height &&
+  b.top < a.top + a.height
+
 /**
  * Where the toolbar goes inside the canvas host: above the selection (clear of the rotate handle), else below, else
  * beside it; always fully inside the host (the shared `placeFloating` rule). The anchor is clipped to the host first,
  * so a selection scrolled partly out of view still gets a toolbar next to its visible part.
+ * B6: `avoid` lists boxes the toolbar must not cover (the getting-started tips card, whose buttons it used to hide).
+ * The usual place is kept when it is clear; otherwise the first clear side in the usual order; otherwise the toolbar
+ * is slid along its side to the nearest clear spot; when nothing is clear (a very small canvas area) it takes the spot
+ * that covers the least of the card.
  */
 export function placeToolbar(opts: {
   selection: Rect
   size: { width: number; height: number }
   host: { width: number; height: number }
+  avoid?: readonly Rect[]
 }): { left: number; top: number; side: 'top' | 'bottom' | 'left' | 'right' } {
   const { selection: s, host } = opts
   const left = Math.max(0, Math.min(s.left, host.width))
@@ -150,12 +161,55 @@ export function placeToolbar(opts: {
   const right = Math.max(left, Math.min(s.left + s.width, host.width))
   const bottom = Math.max(top, Math.min(s.top + s.height, host.height))
   const room = Math.min(ROTATE_HANDLE_ROOM, top)
-  return placeFloating({
-    anchor: { left, top: top - room, width: right - left, height: bottom - top + room },
-    size: opts.size,
-    viewport: host,
-    preferred: 'top',
-    gap: 10,
-    margin: 8
-  })
+  const anchor = { left, top: top - room, width: right - left, height: bottom - top + room }
+  const place = (preferred: Side): Placement =>
+    placeFloating({ anchor, size: opts.size, viewport: host, preferred, gap: 10, margin: 8 })
+  const usual = place('top')
+  const avoid = (opts.avoid ?? []).filter((r) => r.width > 0 && r.height > 0)
+  const clear = (p: { left: number; top: number }): boolean =>
+    !avoid.some((r) => overlaps({ ...p, ...opts.size }, r))
+  if (clear(usual)) return usual
+  for (const side of sideOrder('top')) {
+    const p = place(side)
+    if (p.side === side && clear(p)) return p
+  }
+  // Slide along the usual side (left or right of each obstacle), staying inside the host.
+  const margin = 8
+  const minLeft = margin
+  const maxLeft = host.width - opts.size.width - margin
+  const candidates = avoid
+    .flatMap((r) => [r.left - opts.size.width - margin, r.left + r.width + margin])
+    .filter((x) => x >= minLeft && x <= maxLeft)
+    .sort((a, b) => Math.abs(a - usual.left) - Math.abs(b - usual.left))
+  for (const x of candidates) {
+    const p = { ...usual, left: x }
+    if (clear(p)) return p
+  }
+  // Nothing is clear (a very small canvas area): the spot that covers the least of the obstacles.
+  const area = (p: { left: number; top: number }): number =>
+    avoid.reduce((sum, r) => {
+      const w = Math.min(p.left + opts.size.width, r.left + r.width) - Math.max(p.left, r.left)
+      const h = Math.min(p.top + opts.size.height, r.top + r.height) - Math.max(p.top, r.top)
+      return sum + (w > 0 && h > 0 ? w * h : 0)
+    }, 0)
+  const maxTop = host.height - opts.size.height - margin
+  const edgesX = [minLeft, maxLeft].filter((x) => x >= minLeft)
+  const all: Placement[] = [
+    usual,
+    ...edgesX.map((x) => ({ ...usual, left: x })),
+    ...edgesX.flatMap((x) =>
+      [margin, maxTop].filter((y) => y >= margin).map((y) => ({ ...usual, left: x, top: y }))
+    ),
+    ...sideOrder('top').map(place),
+    ...candidates.map((x) => ({ ...usual, left: x })),
+    ...avoid.flatMap((r) =>
+      [r.top - opts.size.height - margin, r.top + r.height + margin]
+        .filter((y) => y >= margin && y <= maxTop)
+        .flatMap((y) => [
+          { ...usual, top: y },
+          ...candidates.map((x) => ({ ...usual, left: x, top: y }))
+        ])
+    )
+  ]
+  return all.reduce((best, p) => (area(p) < area(best) ? p : best), usual)
 }

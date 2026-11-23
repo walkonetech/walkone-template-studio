@@ -9,6 +9,7 @@ import { FontPicker } from './FontPicker'
 import { ColorField, FieldRow, NumberField, NumberInputBare, TextAreaField } from './fields'
 import { Button } from '../ui/Button'
 import { Tooltip } from '../ui/Tooltip'
+import { onRadioGroupKeyDown } from '../ui/radioGroupKeys'
 
 const ALIGNS = [
   { value: 'left', label: 'Left', icon: AlignLeft },
@@ -151,7 +152,12 @@ export function TextEssentials({
         onCommit={(fill, c) => edit(layer.id, { fill }, c)}
       />
       <FieldRow label="Align">
-        <span className="seg" role="radiogroup" aria-label="Text alignment">
+        <span
+          className="seg"
+          role="radiogroup"
+          onKeyDown={onRadioGroupKeyDown}
+          aria-label="Text alignment"
+        >
           {ALIGNS.map((a) => (
             <button
               key={a.value}

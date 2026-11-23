@@ -161,10 +161,10 @@
     }
   },
   {
-    "name": "7b the active rail item uses the accent (subtle background, accent icon and marker), not a kind colour",
+    "name": "7b the active rail item uses the accent (subtle background, accent icon and marker), not a kind colour; it says expanded (B6: aria-expanded)",
     "ok": true,
     "detail": {
-      "pressed": "true",
+      "expanded": "true",
       "bg": "rgba(68, 86, 224, 0.09)",
       "accentSubtle": "rgba(68, 86, 224, 0.09)",
       "icon": "rgb(68, 86, 224)",
@@ -387,7 +387,7 @@
     "ok": true,
     "detail": {
       "mode": "preview",
-      "ro": "Print Preview · read onlyEdit in Design",
+      "ro": "Print Preview · read onlyEdit in DesignGo back to the design to make changes",
       "topPressed": "true"
     }
   },
@@ -398,7 +398,7 @@
       "items": ["Design", "Print Preview", "Safe areas", "Overflow"],
       "preview": {
         "mode": "preview",
-        "ro": "Print Preview · read onlyEdit in Design",
+        "ro": "Print Preview · read onlyEdit in DesignGo back to the design to make changes",
         "topPressed": "true"
       },
       "back": "design",
@@ -515,7 +515,7 @@
       },
       "propsTab": {
         "props": true,
-        "sel": ["5b8e21dd-9871-4b8b-9c84-10227ccd1322"]
+        "sel": ["fa555523-422f-4e7a-8923-e05e175f3b21"]
       }
     }
   },
@@ -544,7 +544,7 @@
     "ok": true,
     "detail": {
       "slot": {
-        "id": "9cddf937-2883-4555-9306-a7f3ca59a7ce",
+        "id": "e98166c2-75c5-43e8-b788-f92836995f04",
         "type": "photo",
         "n": 4
       },

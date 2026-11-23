@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-22T16:15:31.142Z",
+  "when": "2026-11-23T05:29:13.162Z",
   "fixtures": 5,
   "pass": 29,
   "total": 29,
@@ -350,7 +350,7 @@
       "ok": true,
       "detail": {
         "fam": "Segoe UI",
-        "warn": " Font unavailable“Segoe UI” is not installed on this computer. Template Studio is displaying a fallback font; the project keeps asking for “Segoe UI”.Replace withReplace on this layerReplace all uses (1)"
+        "warn": " Font unavailable“Segoe UI” is not installed on this computer. Template Studio is displaying a fallback font; the project keeps asking for “Segoe UI”.Replace withReplace on this layerReplace all uses (1)Replace this font on every matching text layer"
       }
     },
     {

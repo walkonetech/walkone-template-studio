@@ -64,7 +64,8 @@ export function ToolRail(): React.JSX.Element {
               type="button"
               className={`toolrail-btn ${active ? 'active' : ''}`}
               data-tool={t.id}
-              aria-pressed={active}
+              // B6: the rail button discloses its drawer (expanded + the drawer it controls), not a toggle state.
+              aria-expanded={active}
               aria-controls={active ? 'tool-drawer' : undefined}
               onClick={() => {
                 // A creation drawer never floats above the read-only Print Preview: choosing a category there goes

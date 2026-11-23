@@ -1,5 +1,6 @@
 import {
   RECOMMENDED_SAFE_MARGIN_MM,
+  displayNumber,
   formatOrientation,
   isSheetArrangement,
   validateFormat,
@@ -296,4 +297,42 @@ export function sheetDiagram(s: WizardState): {
         height: s.height
       })
   return { sheet, copies }
+}
+
+/**
+ * B6: the arrangement diagram in words (its text equivalent), e.g. "2 copies across by 2 down on a 4 by 6 in sheet.
+ * Top margin 0.5 in, left margin 0.25 in. Placed from the top-left margin." Sheet lengths are physical: shown in mm
+ * when the wizard uses mm, otherwise in inches.
+ */
+export function arrangementInWords(s: WizardState): string {
+  if (s.mode === 'exact') return 'Prints one copy at exactly the design size.'
+  const { columns, rows, sheetWidth, sheetHeight, margins, columnGap, rowGap, align } = s.sheet
+  const unit: LengthUnit = s.unit === 'mm' ? 'mm' : 'in'
+  const len = (inches: number): string =>
+    `${displayNumber(inches * (unit === 'mm' ? 25.4 : 1), unit)} ${unit}`
+  const unitWord = unit === 'mm' ? 'mm' : 'inch'
+  const n = (v: number, one: string, many: string): string => `${v} ${v === 1 ? one : many}`
+  const parts = [
+    `${n(columns, 'copy', 'copies')} across by ${rows} down on a ${displayNumber(sheetWidth * (unit === 'mm' ? 25.4 : 1), unit)} by ${displayNumber(sheetHeight * (unit === 'mm' ? 25.4 : 1), unit)} ${unitWord} sheet.`
+  ]
+  if (columnGap > 0 || rowGap > 0)
+    parts.push(
+      columnGap === rowGap
+        ? `Gap ${len(columnGap)} between copies.`
+        : `Gap across ${len(columnGap)}, gap down ${len(rowGap)}.`
+    )
+  const sides = (['top', 'right', 'bottom', 'left'] as const).filter((k) => margins[k] > 0)
+  if (sides.length > 0)
+    parts.push(
+      sides.length === 4 && sides.every((k) => margins[k] === margins.top)
+        ? `Margin ${len(margins.top)} on every side.`
+        : sides
+            .map(
+              (k, i) =>
+                `${i === 0 ? k[0]!.toUpperCase() + k.slice(1) : k} margin ${len(margins[k])}`
+            )
+            .join(', ') + '.'
+    )
+  parts.push(align === 'start' ? 'Placed from the top-left margin.' : 'Centred on the sheet.')
+  return parts.join(' ')
 }

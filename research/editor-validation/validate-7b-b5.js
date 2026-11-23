@@ -216,9 +216,13 @@ const settingsPage = async (c, page) => {
     await c.ev(`${S}.selectLayer(${JSON.stringify(textId)}); 1`)
     await sleep(400)
     const tText = await tb(c)
+    const tipsShown = await c.ev(`!!document.querySelector('.first-run')`)
     check(
-      '1 selecting a layer shows the contextual toolbar next to it, inside the canvas area',
-      tText && tText.visible && tText.inside && tText.side === 'top',
+      '1 selecting a layer shows the contextual toolbar next to it, inside the canvas area (above it, or beside it when above would cover the getting-started tips card — B6)',
+      tText &&
+        tText.visible &&
+        tText.inside &&
+        (tText.side === 'top' || (['left', 'right', 'bottom'].includes(tText.side) && tipsShown)),
       tText
     )
     check(

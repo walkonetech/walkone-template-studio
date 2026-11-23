@@ -332,17 +332,17 @@ async function session(opts, fn) {
         await a.S(`!document.querySelector('.tooldrawer')`)
       )
       check(
-        'labelled rail (B3): Elements, Text, Photos, Uploads, Colors; all real, none pressed while closed',
+        'labelled rail (B3): Elements, Text, Photos, Uploads, Colors; all real, none expanded while closed (B6: aria-expanded)',
         await a.S(
-          `(()=>{const b=[...document.querySelectorAll('.toolrail-btn')]; return b.map(x=>x.textContent.trim()).join()==='Elements,Text,Photos,Uploads,Colors' && b.every(x=>x.getAttribute('aria-pressed')==='false' && !x.hasAttribute('aria-disabled'))})()`
+          `(()=>{const b=[...document.querySelectorAll('.toolrail-btn')]; return b.map(x=>x.textContent.trim()).join()==='Elements,Text,Photos,Uploads,Colors' && b.every(x=>x.getAttribute('aria-expanded')==='false' && !x.hasAttribute('aria-disabled'))})()`
         )
       )
       await c.ev(`document.querySelector('[data-tool=elements]').click(); 1`)
       await sleep(300)
       check(
-        'Elements opens the drawer floating over the canvas; the rail button shows it pressed',
+        'Elements opens the drawer floating over the canvas; the rail button shows it expanded (B6: aria-expanded)',
         await a.S(
-          `document.querySelector('.tooldrawer')?.dataset.mode==='floating' && document.querySelector('[data-tool=elements]').getAttribute('aria-pressed')==='true'`
+          `document.querySelector('.tooldrawer')?.dataset.mode==='floating' && document.querySelector('[data-tool=elements]').getAttribute('aria-expanded')==='true'`
         )
       )
       await a.shot('4c-05-editor-1440')

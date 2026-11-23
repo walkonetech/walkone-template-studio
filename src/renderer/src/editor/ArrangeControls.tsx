@@ -14,6 +14,7 @@ import type { CommandId } from '@editor/commands'
 import { commandTipProps } from './tips'
 import { editorStore } from './editorStore'
 import { IconButton } from '../ui/IconButton'
+import { onRadioGroupKeyDown } from '../ui/radioGroupKeys'
 
 const ALIGN: readonly {
   mode: AlignMode
@@ -50,7 +51,12 @@ export function ArrangeControls({ count }: { count: number }): React.JSX.Element
   return (
     <div className="arrange" role="group" aria-label="Align and distribute">
       {count > 1 && (
-        <div className="seg" role="radiogroup" aria-label="Align to">
+        <div
+          className="seg"
+          role="radiogroup"
+          onKeyDown={onRadioGroupKeyDown}
+          aria-label="Align to"
+        >
           {(['selection', 'canvas'] as const).map((t) => (
             <button
               key={t}

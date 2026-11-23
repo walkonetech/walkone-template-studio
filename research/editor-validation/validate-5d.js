@@ -232,7 +232,7 @@ const openSections = async (c, ids) => {
     )
     const invDbg = await J(
       c,
-      `{drawer:!!document.querySelector('.tooldrawer'), bg:!!document.querySelector('[data-testid=canvas-background]'), invHtml:(document.querySelector('[data-testid=font-inventory]')||{}).outerHTML?.slice(0,300), tool:[...document.querySelectorAll('.toolrail-btn[aria-pressed=true]')].map(b=>b.textContent.trim())}`
+      `{drawer:!!document.querySelector('.tooldrawer'), bg:!!document.querySelector('[data-testid=canvas-background]'), invHtml:(document.querySelector('[data-testid=font-inventory]')||{}).outerHTML?.slice(0,300), tool:[...document.querySelectorAll('.toolrail-btn[aria-expanded=true]')].map(b=>b.textContent.trim())}`
     )
     check(
       '6 project font inventory lists the fonts used and flags the missing one',

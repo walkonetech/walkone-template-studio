@@ -233,7 +233,11 @@ function ExportForm({
   const review = (): void => {
     setChecksOpen(true)
     requestAnimationFrame(() =>
-      checksRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+      // B6: no smooth scrolling when the system asks for reduced motion.
+      checksRef.current?.scrollIntoView({
+        block: 'nearest',
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+      })
     )
   }
   const handlers = {

@@ -923,3 +923,13 @@ button.ui-chip[aria-pressed='true'] {
   color: var(--c-on-tooltip-2);
   font-weight: 400;
 }
+
+/* Menu access keys (Windows / Linux, B6): underlined only while the menu is used from the keyboard. */
+.ui-menu .access-key {
+  text-decoration: none;
+}
+.ui-menu.show-access-keys .access-key {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}

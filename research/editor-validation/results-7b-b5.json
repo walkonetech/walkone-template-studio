@@ -46,11 +46,11 @@
     }
   },
   {
-    "name": "1 selecting a layer shows the contextual toolbar next to it, inside the canvas area",
+    "name": "1 selecting a layer shows the contextual toolbar next to it, inside the canvas area (above it, or beside it when above would cover the getting-started tips card — B6)",
     "ok": true,
     "detail": {
       "kind": "text",
-      "side": "top",
+      "side": "left",
       "words": ["Edit text", "Event colors…", "Arrange", "Duplicate", "More actions"],
       "actions": ["edit-text", "colors", "arrange", "duplicate", "more"],
       "inside": true,
@@ -83,7 +83,7 @@
       "linked": {
         "fill": {
           "kind": "palette",
-          "paletteColorId": "ee984658-a0cb-4067-8aee-74fface232e1"
+          "paletteColorId": "5ff1f05a-86a3-4ac5-bbbe-388f779f56e2"
         },
         "checked": "true"
       }
@@ -253,7 +253,7 @@
     "detail": {
       "t": {
         "kind": "text",
-        "side": "top",
+        "side": "left",
         "words": [
           "Edit text",
           "Color from the Event Palette",
@@ -429,7 +429,7 @@
       },
       "dc": {
         "kind": "text",
-        "side": "top",
+        "side": "left",
         "words": [
           "Edit text",
           "Color from the Event Palette",
@@ -496,7 +496,7 @@
     "detail": {
       "afterCancel": [
         {
-          "t": "Untitled2×6 strip · opened just now File not foundLocate…",
+          "t": "Untitled2×6 strip · opened just now File not foundLocate…The file was moved or renamed. Find it and open it from its new place.",
           "missing": true,
           "dis": true
         }
@@ -527,7 +527,7 @@
     "detail": {
       "missing": [
         {
-          "t": "Untitled2×6 strip · opened just now File not foundLocate…",
+          "t": "Untitled2×6 strip · opened just now File not foundLocate…The file was moved or renamed. Find it and open it from its new place.",
           "dis": true,
           "locate": true
         }

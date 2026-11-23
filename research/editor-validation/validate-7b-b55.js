@@ -419,8 +419,8 @@ const exportFiles = async (c, out, kinds) => {
       { gapBad, gapOk }
     )
     check(
-      '13 invalid arrangement blocked: the error is announced (role=alert), drawn in the error style and Next is disabled; nothing is scaled',
-      gapBad.role === 'alert' &&
+      '13 invalid arrangement blocked: the error is announced (politely, role=status since B6: it changes while a number is typed), drawn in the error style and Next is disabled; nothing is scaled',
+      gapBad.role === 'status' &&
         gapBad.next === true &&
         gapBad.invalid &&
         /never scaled/.test(gapBad.fit || ''),

@@ -28,14 +28,16 @@ import {
   toolbarVisible,
   type ToolbarAction
 } from '@editor/selectionToolbar'
+import type { Rect } from '@editor/floatingPlacement'
 import { selectViewMode, selectViewTransform } from '@editor/store'
 import { editorStore, useEditor } from './editorStore'
-import { layoutStore } from './layoutStore'
+import { layoutStore, useLayout } from './layoutStore'
 import { runCommand } from './commandRunner'
 import { ArrangeControls } from './ArrangeControls'
 import { useAppearance } from '../appearance/appearanceStore'
 import { MenuPopover, type MenuEntry } from '../ui/Menu'
 import { Popover } from '../ui/Popover'
+import { onRadioGroupKeyDown } from '../ui/radioGroupKeys'
 
 const st = editorStore.getState
 
@@ -119,6 +121,7 @@ function ColorDots({ layer }: { layer: Layer }): React.JSX.Element | null {
     <span
       className="seltb-dots"
       role="radiogroup"
+      onKeyDown={onRadioGroupKeyDown}
       aria-label={`${target === 'fill' ? 'Color' : 'Line color'} from the Event Palette`}
       data-action="colors"
     >
@@ -354,6 +357,38 @@ export function SelectionToolbar(): React.JSX.Element | null {
   const enabled = useAppearance((s) => s.showSelectionToolbar)
   const ref = useRef<HTMLDivElement>(null)
   const [size, setSize] = useState<{ width: number; height: number } | null>(null)
+  // B6: things the toolbar must not cover — the getting-started tips card (in the canvas host) and a floating drawer
+  // or Checks panel over the canvas. Re-measured after every render (no dependency list on purpose: they move with
+  // zoom, pan, window size and their own content); the state only changes when a box really moved, so this never loops.
+  const [obstacles, setObstacles] = useState<readonly Rect[]>([])
+  // Re-render (and so re-measure) when a drawer, the Checks panel, the tool or the window changes.
+  useLayout((s) => s.drawerOpen)
+  useLayout((s) => s.checksOpen)
+  useLayout((s) => s.tool)
+  useLayout((s) => s.viewport.width)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useLayoutEffect(() => {
+    const host = ref.current?.parentElement
+    const next: Rect[] = []
+    if (host) {
+      const h = host.getBoundingClientRect()
+      for (const el of document.querySelectorAll<HTMLElement>(
+        '.first-run, .tooldrawer[data-mode="floating"]'
+      )) {
+        const t = el.getBoundingClientRect()
+        if (t.width > 0 && t.height > 0)
+          next.push({
+            left: Math.round(t.left - h.left),
+            top: Math.round(t.top - h.top),
+            width: Math.round(t.width),
+            height: Math.round(t.height)
+          })
+      }
+    }
+    // Measuring the DOM after layout is what this effect is for; the guard keeps it to one extra render.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setObstacles((prev) => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next))
+  })
 
   const visible = toolbarVisible({
     enabled,
@@ -395,7 +430,8 @@ export function SelectionToolbar(): React.JSX.Element | null {
     ? placeToolbar({
         selection: toScreenRect(bounds, view),
         size,
-        host: viewport
+        host: viewport,
+        avoid: obstacles
       })
     : null
   return (

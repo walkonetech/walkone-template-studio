@@ -9,6 +9,7 @@ import './styles/base.css'
 import './styles/ui.css'
 import './styles/shell.css'
 import './styles/panels.css'
+import './styles/a11y.css'
 
 // Theme, density and scale are applied before the first render, so the stored look is the first thing painted.
 startAppearance()

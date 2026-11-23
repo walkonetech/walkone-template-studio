@@ -232,6 +232,33 @@ describe('Space pan eligibility', () => {
     ).toBe(true)
     expect(canStartSpacePan({ ...ok, target: { tagName: 'DIV', role: 'radio' } })).toBe(false)
   })
+  it('B6: a control reached with the keyboard keeps Space wherever the pointer rests', () => {
+    for (const target of [
+      { tagName: 'BUTTON' },
+      { tagName: 'DIV', role: 'tab' },
+      { tagName: 'DIV', role: 'menuitem' }
+    ]) {
+      expect(
+        canStartSpacePan({ ...ok, target, pointerOverWorkspace: true, keyboardFocused: true })
+      ).toBe(false)
+      expect(
+        canStartSpacePan({ ...ok, target, pointerOverWorkspace: false, keyboardFocused: true })
+      ).toBe(false)
+    }
+    // Focus left on a button by a mouse click: over the workspace, Space still pans.
+    expect(
+      canStartSpacePan({
+        ...ok,
+        target: { tagName: 'BUTTON' },
+        pointerOverWorkspace: true,
+        keyboardFocused: false
+      })
+    ).toBe(true)
+    // A neutral target (the canvas, the page) pans whether or not it shows a ring.
+    expect(canStartSpacePan({ ...ok, pointerOverWorkspace: true, keyboardFocused: true })).toBe(
+      true
+    )
+  })
   it('ignores other keys, key repeat and shortcuts', () => {
     expect(canStartSpacePan({ ...ok, code: 'KeyA' })).toBe(false)
     expect(canStartSpacePan({ ...ok, repeat: true })).toBe(false)

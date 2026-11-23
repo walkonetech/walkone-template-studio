@@ -45,7 +45,7 @@ WalkOne Entertainment, LLC is a mobile entertainment business: DJ, MC/hosting, p
 5. Stay focused on photo booth print templates.
 
 ## 5. Product principles
-Desktop-first; local-first and offline-capable; vendor-neutral internal model; DSLR Booth via adapters; parameterized (not flattened) designs; manual control preserved; deterministic export; never silently drop data; modern, readable, uncluttered UI. Engineering principles are in [CLAUDE.md](../CLAUDE.md) and [ARCHITECTURE_PLAN.md](ARCHITECTURE_PLAN.md).
+Desktop-first; local-first and offline-capable; vendor-neutral internal model; DSLR Booth via adapters; parameterized (not flattened) designs; manual control preserved; deterministic export; never silently drop data; modern, readable, uncluttered UI; **usable without a mouse and with assistive technology** — every action reachable by keyboard, every control named, Windows High Contrast and reduced motion respected, platform conventions on Windows and macOS (Phase 7B B6, ADR-061; no screen-reader certification is claimed). Engineering principles are in [CLAUDE.md](../CLAUDE.md) and [ARCHITECTURE_PLAN.md](ARCHITECTURE_PLAN.md).
 
 ## 6. Supported formats
 Physical dimensions + DPI are first-class; pixels are derived (see [DATA_MODEL.md](DATA_MODEL.md)).

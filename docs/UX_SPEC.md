@@ -99,7 +99,7 @@ Title shows dirty indicator; autosave to recovery location (status: Saved / Modi
 Proposed defaults (platform-adjusted Cmd/Ctrl): Undo/Redo, Copy/Paste/Duplicate, Delete, arrow nudge (Shift = larger), Save, Zoom in/out/fit, Group/Ungroup, bring forward/back, lock/hide, Space-drag pan, Tab through layers, Escape to deselect. Command palette is **Future Research**.
 
 ## 16. Accessibility
-Sufficient contrast; visible focus; full keyboard reachability of panels and dialogs; don't rely on color alone for error/warning; scalable UI text; reduced-motion respect; screen reader labels for controls (canvas objects themselves are limited — **Needs Validation** how far to go).
+Sufficient contrast; visible focus; full keyboard reachability of panels and dialogs; don't rely on color alone for error/warning; scalable UI text; reduced-motion respect; screen reader labels for controls (canvas objects themselves are limited — **Needs Validation** how far to go). _B6 (2026-11-22, §26, ADR-061): decided — the canvas is described as a whole (format, copies, layers, selection) and each layer is reached through Layers and Properties; canvas objects are not individually exposed. Windows High Contrast (`forced-colors`) is supported._
 
 ## 17. Typography & readability
 Minimum comfortable UI text size (e.g., not below ~12–13px equivalent; **Proposed**); clear hierarchy; adequate spacing; avoid dense icon-only toolbars without labels/tooltips.
@@ -126,7 +126,19 @@ Minimum window size defined later; panels collapsible and resizable; canvas gets
 - **Color field:** hex text plus a native picker for literal colors; a palette-linked color is shown as such and only changes through the explicit "Use fixed color" button.
 - **Not built yet:** context menu, rulers, layer thumbnails, final visual design (Phase 4C delivered a first design system; see §20).
 
-## 25. Phase 7B B5.5 — Custom Size wizard and My formats (implemented 2026-11-22; owner visual/product checkpoint APPROVED as implemented; ADR-059)
+## 26. Phase 7B B6 — keyboard, screen readers, high contrast and platform conventions (implemented 2026-11-22; ADR-061 Accepted; owner-approved 2026-11-23)
+No visual redesign; these rules apply everywhere.
+- **Space and Enter** activate the control the user reached with the keyboard, wherever the mouse pointer rests. Holding Space pans the canvas when focus is on the canvas, on nothing in particular, or on a button that was only clicked with the mouse. Text fields and the text editor always keep Space.
+- **Menus on Windows:** F10 or a tap on Alt moves to the menu bar and underlines each menu's letter; Escape or another tap goes back to where you were. Alt + F / E / A / V / H opens File, Edit, Arrange, View, Help. Inside a menu every item has its own underlined letter; pressing it runs the item. Underlines appear only while the menus are used from the keyboard. **On macOS** there are no underlines; typing a letter in an open menu jumps to the next item starting with it.
+- **Radio choices** (print type, units, printing mode, safe margin, text alignment, align options, colour dots, segmented controls): arrow keys and Home/End move and choose.
+- **F6 / Shift+F6** visit top bar → rail → drawer (when open) → view bar → canvas → Properties/Layers → status bar and wrap; hidden regions are skipped; inside a dialog Tab order applies.
+- **Focus returns** to the control that opened a dialog, panel or menu — or to the menu's title when the menu item is gone — without popping its tooltip.
+- **Screen readers:** every control has its own name (tooltips only add a description: the hint and the shortcut); rail buttons say expanded/collapsed and which drawer they control; the canvas is described in words ("Design. 2×6 Strip, 600 DPI, Design 1200×3600 px. 2 copies per sheet. 3 layers. Selected: Text “Title”…"); Layers rows say type, name, photo number and hidden/locked; the Custom size wizard announces each step, describes the sheet arrangement in a sentence, ties each error to its field and says why Next is unavailable. Live announcements are kept to the wizard step and existing status messages.
+- **Windows High Contrast:** focus is a 2 px system-highlight outline on every control (fields and menu items included); selected, open and on states use the system highlight; menus, tooltips, dialogs, drawers, the selection toolbar and the tips card get borders; warnings and errors keep their icon and words.
+- **Reduced motion:** no transitions, animations or smooth scrolling when the system asks for less motion.
+- **Selection toolbar and tips card:** the toolbar is placed so it does not cover the getting-started tips; in a very small canvas area it takes the spot that covers the least.
+
+## 25. Phase 7B B5.5 — Custom Size wizard and My formats (implemented 2026-11-22; owner-approved; Mac + Windows validated at `86f69fd`; ADR-059)
 **Words:** a *format* is what you design (size + resolution); *how it prints* is the arrangement on the paper; *printer* is the Output Profile (Printer & cutting). The wizard never talks about a printer except to say none is needed for PNG files.
 - **Entry points:** Start › **Custom size** card (a first-class card between Blank design and Import dslrBooth; the three cards wrap on narrow windows) and New project › Other sizes › **Custom size…**; saved formats appear as **My formats** cards on Start and as buttons in New project. The built-in New project controls (4×6 Photo / 2×6 Photo Strip, orientation, 300/600 DPI) are unchanged.
 - **Wizard** (one dialog, `lg`; title = the step question; "Custom size · Step n of 4"; a step list Size · Printing · Safe margin · Review; Back · Cancel · Next / **Create design**; Enter = Next; Escape = Cancel; focus returns to the control that opened it):
@@ -165,7 +177,7 @@ Visual reference: B1 mockups 07–10 (review doc §0d lists the deliberate diffe
 - **Escape:** popover/menu → floating drawer → selection. A focused splitter or radio group keeps its arrow keys but lets Escape through (so Escape works right after resizing the drawer); closing the drawer from inside it returns focus to its rail button.
 - **Tooltips:** focus handed back by a closing dialog, popover or menu does not open the trigger's tooltip; Tab and hover still do.
 - **Window minimum stays 1100 DIP wide** (owner decision): on a 1920×1080 display at 125 % Windows cannot make a true half-screen Snap window of that width, so the minimum-size window docks at the left; the layout stays usable. Intentional for now.
-- **Deferred to B6:** F10 does not show the access-key underlines (holding Alt does); menu items have no mnemonics.
+- ~~**Deferred to B6:** F10 does not show the access-key underlines (holding Alt does); menu items have no mnemonics.~~ Done in B6 (§26).
 
 ## 21. Phase 7B B3 — editor shell (implemented 2026-11-19; supersedes the shell parts of §20 and §13)
 Visual reference: the approved B1 mockups (`design/phase-7b-b1/`, review doc §0a/§0b). Rules in `src/editor/layout.ts` and `src/editor/tools.ts`.

@@ -1,0 +1,125 @@
+/*
+ * Phase 7B B6 — Windows High Contrast (`forced-colors: active`).
+ *
+ * In forced colours the system replaces every author colour and drops box-shadows and background tints, so the
+ * states this app draws with a tint (selected rows, pressed toggles, the open rail item, checked cards) or with a
+ * shadow (text-field focus, menu-item focus) would vanish. Here every such state gets a system-colour equivalent:
+ *   - focus        → a 2 px Highlight outline on every focusable control (fields included);
+ *   - selected/on  → Highlight background + HighlightText (as in native Windows lists and menus);
+ *   - disabled     → GrayText;
+ *   - warnings/errors keep their icon and words (never colour alone) and get a visible border.
+ * `forced-color-adjust: none` is used only where BOTH colours are set to system colours here.
+ * The canvas artwork itself is never affected (it is pixels, and exports never read CSS).
+ */
+@media (forced-colors: active) {
+  /* Focus: one visible ring for everything, including fields and menu items that draw focus with a shadow. */
+  :focus-visible,
+  .ui-input:focus,
+  .ui-select:focus,
+  .ui-textarea:focus,
+  .ui-menuitem:focus-visible,
+  .export-card:focus-visible {
+    outline: 2px solid Highlight !important;
+    outline-offset: 1px;
+  }
+  .ui-range:focus-visible::-webkit-slider-thumb {
+    outline: 2px solid Highlight;
+  }
+
+  /* Selected / on / open: Highlight, like native lists, menus and toggle buttons. */
+  .layer-row.selected,
+  .slot-row.selected,
+  .font-option.active,
+  .toolrail-btn.active,
+  .ui-tab[aria-selected='true'],
+  .ui-seg button[aria-checked='true'],
+  .seg button[aria-checked='true'],
+  .workspace-mode button[aria-checked='true'],
+  .settings-nav-item[aria-current='page'],
+  .theme-card[aria-checked='true'],
+  .cf-mode[aria-checked='true'],
+  .cf-steps li.current,
+  .export-card.on,
+  .view-pill.on,
+  .status-toggle.on,
+  .ui-iconbtn[aria-pressed='true'],
+  .ui-iconbtn.active,
+  button.ui-chip[aria-pressed='true'],
+  #print-preview-button[aria-pressed='true'],
+  .seltb-btn[aria-expanded='true'],
+  .seltb-dot[aria-checked='true'],
+  .menubar-btn.open,
+  .ui-menuitem:hover:not(:disabled),
+  .ui-menuitem:focus-visible {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+    border-color: HighlightText;
+  }
+  .layer-row.selected *,
+  .toolrail-btn.active *,
+  .export-card.on *,
+  .theme-card[aria-checked='true'] *,
+  .cf-mode[aria-checked='true'] *,
+  .ui-menuitem:focus-visible *,
+  .ui-menuitem:hover:not(:disabled) * {
+    color: HighlightText;
+  }
+  /* Indicator bars drawn with a background would disappear: draw them in Highlight explicitly. */
+  .toolrail-btn.active::before,
+  .layer-row.active::before {
+    forced-color-adjust: none;
+    background: Highlight;
+  }
+
+  /* Toggle switches: the track and thumb are tints; show the state with a border and a filled thumb. */
+  .ui-switch .track {
+    border: 1px solid ButtonText;
+  }
+  .ui-switch[aria-checked='true'] .track {
+    forced-color-adjust: none;
+    background: Highlight;
+    border-color: Highlight;
+  }
+  .ui-switch .thumb {
+    forced-color-adjust: none;
+    background: ButtonText;
+  }
+  .ui-switch[aria-checked='true'] .thumb {
+    background: HighlightText;
+  }
+
+  /* Disabled controls that are not native form controls (aria-disabled). */
+  [aria-disabled='true'] {
+    color: GrayText;
+  }
+
+  /* Surfaces that rely on a shadow or a tint to stand apart get a border. */
+  .ui-menu,
+  .ui-tip,
+  .ui-popover,
+  [role='dialog'],
+  .seltb,
+  .first-run,
+  .tooldrawer,
+  .checks-panel {
+    border: 1px solid CanvasText;
+  }
+
+  /* Warnings and errors: they always carry an icon and words; a border keeps the box visible too. */
+  .ui-badge,
+  .ui-notice,
+  .cf-fit-error,
+  .cf-issue-summary,
+  .field-error {
+    border: 1px solid CanvasText;
+  }
+  [aria-invalid='true'] {
+    border: 2px solid Highlight;
+  }
+
+  /* Links stay links. */
+  a {
+    color: LinkText;
+  }
+}

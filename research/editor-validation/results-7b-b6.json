@@ -1,0 +1,1410 @@
+[
+  {
+    "name": "1 Start cards are buttons with names (Blank design, Custom size, Import dslrBooth) and a description",
+    "ok": true,
+    "detail": {
+      "startCards": [
+        {
+          "tag": "BUTTON",
+          "id": "start-blank",
+          "text": "Blank design"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "start-custom",
+          "text": "Custom size"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "start-import",
+          "text": "Import dslrBooth"
+        }
+      ],
+      "startAx": [
+        {
+          "id": "start-blank",
+          "role": "button",
+          "name": "Blank design Choose a print size and design it your way in the full editor.",
+          "description": "Choose a print size and design it your way in the full editor.",
+          "expanded": null,
+          "selected": null,
+          "checked": null,
+          "pressed": null,
+          "invalid": "false",
+          "disabled": null,
+          "level": null,
+          "keyshortcuts": null
+        },
+        {
+          "id": "start-custom",
+          "role": "button",
+          "name": "Custom size Magnets, keychains, wallet prints, squares: any size, printed as is or repeated on a sheet.",
+          "description": "Magnets, keychains, wallet prints, squares: any size, printed as is or repeated on a sheet.",
+          "expanded": null,
+          "selected": null,
+          "checked": null,
+          "pressed": null,
+          "invalid": "false",
+          "disabled": null,
+          "level": null,
+          "keyshortcuts": null
+        },
+        {
+          "id": "start-import",
+          "role": "button",
+          "name": "Import dslrBooth Turn a dslrBooth template (.zip) into a project you can edit.",
+          "description": "Turn a dslrBooth template (.zip) into a project you can edit.",
+          "expanded": null,
+          "selected": null,
+          "checked": null,
+          "pressed": null,
+          "invalid": "false",
+          "disabled": null,
+          "level": null,
+          "keyshortcuts": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "2 Start: no interactive control without an accessible name",
+    "ok": true,
+    "detail": []
+  },
+  {
+    "name": "3 keyboard only: Start › Blank design › 2×6 strip › Create (Tab, arrows/Space, Enter)",
+    "ok": true,
+    "detail": {
+      "reachedBlank": true,
+      "npOpen": true,
+      "stripRadio": true,
+      "created": true,
+      "stripMade": {
+        "w": 2,
+        "h": 6
+      }
+    }
+  },
+  {
+    "name": "4 keyboard only: F6 reaches the rail; Enter on Text opens its drawer (aria-expanded true, controls the drawer); Enter on a text style adds text",
+    "ok": true,
+    "detail": {
+      "reg": {
+        "id": null,
+        "tag": "BUTTON",
+        "role": null,
+        "label": "Elements",
+        "testid": null,
+        "fv": true,
+        "region": "rail"
+      },
+      "railText": {
+        "role": "button",
+        "name": "Text",
+        "description": "Add text and apply quick text styles",
+        "expanded": true,
+        "selected": null,
+        "checked": null,
+        "pressed": null,
+        "invalid": "false",
+        "disabled": null,
+        "level": null,
+        "keyshortcuts": null
+      },
+      "layersBefore": 0,
+      "afterText": {
+        "n": 1,
+        "types": ["text"]
+      }
+    }
+  },
+  {
+    "name": "5 keyboard only: Shift+F6 back to the rail; Photos › add photo slot with Enter",
+    "ok": true,
+    "detail": {
+      "afterPhoto": ["text", "photo"],
+      "back": {
+        "id": null,
+        "tag": "BUTTON",
+        "role": null,
+        "label": "Elements",
+        "testid": null,
+        "fv": true,
+        "region": "rail"
+      },
+      "focus": {
+        "id": null,
+        "tag": "BUTTON",
+        "role": null,
+        "label": "Add photo slotWhere the booth places a g",
+        "testid": "add-photo",
+        "fv": true,
+        "region": "drawer"
+      }
+    }
+  },
+  {
+    "name": "6 keyboard only: F6 reaches Properties/Layers; Layers is a tree; arrow keys select a layer; the row names its type and is selected",
+    "ok": true,
+    "detail": {
+      "side": {
+        "id": null,
+        "tag": "BUTTON",
+        "role": null,
+        "label": "Hide Photo 1",
+        "testid": null,
+        "fv": true,
+        "region": "sidebar"
+      },
+      "tree": {
+        "role": "tree",
+        "name": "Layers, front to back",
+        "description": "",
+        "expanded": null,
+        "selected": null,
+        "checked": null,
+        "pressed": null,
+        "invalid": null,
+        "disabled": null,
+        "level": null,
+        "keyshortcuts": null
+      },
+      "sel1": ["bf487907-93aa-4f05-819b-1c7ff128ef78"],
+      "row": {
+        "role": "treeitem",
+        "name": "Photo: Photo 1 #1",
+        "description": "",
+        "expanded": null,
+        "selected": true,
+        "checked": null,
+        "pressed": null,
+        "invalid": null,
+        "disabled": null,
+        "level": 1,
+        "keyshortcuts": null
+      }
+    }
+  },
+  {
+    "name": "7 a hidden, locked layer says so in words (not only by the eye/lock icons)",
+    "ok": true,
+    "detail": {
+      "stateText": ", hidden, locked",
+      "name": "Photo: Photo 1 #1 , hidden, locked",
+      "focusBeforeV": {
+        "id": null,
+        "tag": "UL",
+        "role": "tree",
+        "label": "Layers, front to back",
+        "testid": null,
+        "fv": true,
+        "region": "sidebar"
+      },
+      "vis": [
+        ["text", true, false],
+        ["photo", false, true]
+      ]
+    }
+  },
+  {
+    "name": "8 Properties: collapsible sections say expanded/collapsed and what they control; every field has a name",
+    "ok": true,
+    "detail": {
+      "sections": [
+        {
+          "name": "",
+          "exp": "false",
+          "controls": null
+        },
+        {
+          "name": "Position & sizeX 180 · Y 1725 ",
+          "exp": "false",
+          "controls": "_r_2s_-body"
+        },
+        {
+          "name": "Spacing & boxLine 1.2 · Letter",
+          "exp": "false",
+          "controls": "_r_2t_-body"
+        },
+        {
+          "name": "AppearanceOpacity 100 %",
+          "exp": "false",
+          "controls": "_r_2u_-body"
+        },
+        {
+          "name": "Align to canvas",
+          "exp": "false",
+          "controls": "_r_2v_-body"
+        },
+        {
+          "name": "LayerVisible · Unlocked",
+          "exp": "false",
+          "controls": "_r_30_-body"
+        }
+      ],
+      "inspUnnamed": []
+    }
+  },
+  {
+    "name": "9 keyboard only: a Properties field (Font size) is reached with Tab, has its label as its name, and is edited by typing + Enter",
+    "ok": true,
+    "detail": {
+      "sizeField": {
+        "id": "_r_2m_",
+        "tag": "INPUT",
+        "role": null,
+        "label": "",
+        "testid": null,
+        "fv": true,
+        "region": "sidebar"
+      },
+      "fieldAx": {
+        "role": "textbox",
+        "name": "Font size (px)",
+        "description": "",
+        "expanded": null,
+        "selected": null,
+        "checked": null,
+        "pressed": null,
+        "invalid": "false",
+        "disabled": null,
+        "level": null,
+        "keyshortcuts": null
+      },
+      "fs0": 126,
+      "fs1": 136
+    }
+  },
+  {
+    "name": "10 Space activates a keyboard-focused top-bar button while the pointer rests over the canvas (See how it prints → Print Preview)",
+    "ok": true,
+    "detail": {
+      "pp0": {
+        "id": "print-preview-button",
+        "tag": "BUTTON",
+        "role": null,
+        "label": "See how it prints",
+        "testid": null,
+        "fv": true,
+        "region": "topbar"
+      },
+      "pressed0": "false",
+      "afterSpace": {
+        "pressed": "true",
+        "mode": "preview",
+        "focus": "print-preview-button"
+      }
+    }
+  },
+  {
+    "name": "11 Enter still activates it (back to Design)",
+    "ok": true,
+    "detail": "false"
+  },
+  {
+    "name": "12 Space still pans: after a click on the canvas, and with the pointer over the canvas when a button only kept focus from a mouse click (no ring)",
+    "ok": true,
+    "detail": {
+      "panReady": true,
+      "mouseFocus": {
+        "id": "print-preview-button",
+        "tag": "BUTTON",
+        "role": null,
+        "label": "See how it prints",
+        "testid": null,
+        "fv": false,
+        "region": "topbar"
+      },
+      "panAfterMouse": {
+        "ready": true,
+        "pressed": "false"
+      },
+      "pressedAfter": "false"
+    }
+  },
+  {
+    "name": "13 top bar: Undo, Redo, Checks, See how it prints, Save and Export have names; Print Preview says pressed; Checks says expanded",
+    "ok": true,
+    "detail": {
+      "undoRedo": 2,
+      "topNames": [
+        {
+          "sel": "#save-button",
+          "role": "button",
+          "name": "Save",
+          "description": "Save the project to its .boothproject file. Shortcut ⌘S",
+          "expanded": null,
+          "selected": null,
+          "checked": null,
+          "pressed": null,
+          "invalid": "false",
+          "disabled": null,
+          "level": null,
+          "keyshortcuts": null
+        },
+        {
+          "sel": "#export-button",
+          "role": "button",
+          "name": "Export",
+          "description": "Export a dslrBooth template, print PNGs or a proof after checking the design. Shortcut ⌘E",
+          "expanded": null,
+          "selected": null,
+          "checked": null,
+          "pressed": null,
+          "invalid": "false",
+          "disabled": null,
+          "level": null,
+          "keyshortcuts": null
+        },
+        {
+          "sel": "#print-preview-button",
+          "role": "button",
+          "name": "See how it prints",
+          "description": "See the print sheet with every copy (read-only)",
+          "expanded": null,
+          "selected": null,
+          "checked": null,
+          "pressed": "false",
+          "invalid": "false",
+          "disabled": null,
+          "level": null,
+          "keyshortcuts": null
+        },
+        {
+          "sel": "#checks-button",
+          "role": "button",
+          "name": "Checks: Ready",
+          "description": "What to fix or know before you export: missing fonts, photo numbers, safe areas",
+          "expanded": false,
+          "selected": null,
+          "checked": null,
+          "pressed": null,
+          "invalid": "false",
+          "disabled": null,
+          "level": null,
+          "keyshortcuts": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "14 rail: Elements, Text, Photos, Uploads, Colors are named and say expanded/collapsed (no pressed state)",
+    "ok": true,
+    "detail": [
+      {
+        "t": "Elements",
+        "exp": "false",
+        "pressed": null
+      },
+      {
+        "t": "Text",
+        "exp": "false",
+        "pressed": null
+      },
+      {
+        "t": "Photos",
+        "exp": "false",
+        "pressed": null
+      },
+      {
+        "t": "Uploads",
+        "exp": "false",
+        "pressed": null
+      },
+      {
+        "t": "Colors",
+        "exp": "false",
+        "pressed": null
+      }
+    ]
+  },
+  {
+    "name": "15 canvas: the workspace region is named and described in words (mode, format, copies, layers, selection)",
+    "ok": true,
+    "detail": {
+      "ws": {
+        "role": "main",
+        "name": "Canvas workspace",
+        "description": "Design. 2×6 Strip, 600 DPI, Design 1200×3600 px. 2 copies per sheet. 2 layers. Selected: Text “Text”. Use the Layers panel to choose a layer and Properties to change it.",
+        "expanded": null,
+        "selected": null,
+        "checked": null,
+        "pressed": null,
+        "invalid": null,
+        "disabled": null,
+        "level": null,
+        "keyshortcuts": null
+      },
+      "summary": "Design. 2×6 Strip, 600 DPI, Design 1200×3600 px. 2 copies per sheet. 2 layers. Selected: Text “Text”. Use the Layers panel to choose a layer and Properties to change it."
+    }
+  },
+  {
+    "name": "16 tooltips: the hint is the control’s accessible description at once (aria-describedby), the name never depends on it; on keyboard focus the tooltip appears inside the window (role=tooltip)",
+    "ok": true,
+    "detail": {
+      "tip": {
+        "id": "_r_g_",
+        "text": "Photo slots: where the booth places guest photos"
+      },
+      "tipAx": {
+        "role": "button",
+        "name": "Photos",
+        "description": "Photo slots: where the booth places guest photos",
+        "expanded": false,
+        "selected": null,
+        "checked": null,
+        "pressed": null,
+        "invalid": "false",
+        "disabled": null,
+        "level": null,
+        "keyshortcuts": null
+      },
+      "tipShown": {
+        "text": "PhotosPhoto slots: where the booth places guest photos",
+        "inside": true
+      }
+    }
+  },
+  {
+    "name": "17 editor: no interactive control without an accessible name (icon-only buttons included)",
+    "ok": true,
+    "detail": []
+  },
+  {
+    "name": "18 F6 visits every visible region in order (top bar → rail → drawer → view bar → canvas → Properties/Layers → status bar) and wraps",
+    "ok": true,
+    "detail": {
+      "forward": ["topbar", "rail", "viewbar", "canvas", "sidebar", "statusbar", "topbar", "rail"],
+      "expected": ["topbar", "rail", "viewbar", "canvas", "sidebar", "statusbar"]
+    }
+  },
+  {
+    "name": "19 Shift+F6 goes the other way through the same regions",
+    "ok": true,
+    "detail": {
+      "backward": [
+        "topbar",
+        "statusbar",
+        "sidebar",
+        "canvas",
+        "viewbar",
+        "rail",
+        "topbar",
+        "statusbar"
+      ],
+      "expectedBack": [
+        "topbar",
+        "statusbar",
+        "sidebar",
+        "canvas",
+        "viewbar",
+        "rail",
+        "topbar",
+        "statusbar"
+      ]
+    }
+  },
+  {
+    "name": "20 F6 skips regions that are not on screen (Print Preview has no drawer)",
+    "ok": true,
+    "detail": ["topbar", "rail", "viewbar", "canvas", "sidebar", "statusbar", "topbar"]
+  },
+  {
+    "name": "21 in a modal dialog F6 stays inside the dialog (its own Tab order applies)",
+    "ok": true,
+    "detail": {
+      "inDlg0": {
+        "id": null,
+        "tag": "BUTTON",
+        "role": null,
+        "label": "Appearance",
+        "testid": null,
+        "fv": true,
+        "region": null
+      }
+    }
+  },
+  {
+    "name": "22 Settings: the current page is marked (aria-current), choices are named radio groups, toggles are switches with on/off state, nothing unnamed",
+    "ok": true,
+    "detail": {
+      "settings": {
+        "nav": [
+          {
+            "t": "Appearance",
+            "cur": "page"
+          },
+          {
+            "t": "Printing",
+            "cur": null
+          },
+          {
+            "t": "Editor",
+            "cur": null
+          }
+        ],
+        "radiogroups": ["Theme", "Button and text size", "Interface scale"],
+        "switches": []
+      },
+      "settingsUnnamed": []
+    }
+  },
+  {
+    "name": "23 Settings › Editor toggles are switches that say on/off",
+    "ok": true,
+    "detail": ["true", "true"]
+  },
+  {
+    "name": "24 focus restoration: Export, Checks and Settings return focus to the control that opened them, with no stale tooltip",
+    "ok": true,
+    "detail": [
+      {
+        "name": "Export",
+        "opened": true,
+        "back": true,
+        "tipLeft": false,
+        "a": {
+          "id": "export-button",
+          "tag": "BUTTON",
+          "role": null,
+          "label": "Export",
+          "testid": null,
+          "fv": true,
+          "region": "topbar"
+        }
+      },
+      {
+        "name": "Checks",
+        "opened": true,
+        "back": true,
+        "tipLeft": false,
+        "a": {
+          "id": "checks-button",
+          "tag": "BUTTON",
+          "role": null,
+          "label": "Checks: Ready",
+          "testid": null,
+          "fv": true,
+          "region": "topbar"
+        }
+      },
+      {
+        "name": "Settings",
+        "opened": true,
+        "back": true,
+        "tipLeft": false
+      }
+    ]
+  },
+  {
+    "name": "25 Checks: a named panel; the Checks button says the state in words (not colour alone); nothing unnamed",
+    "ok": true,
+    "detail": {
+      "checksSem": {
+        "label": "Checks",
+        "groups": 0,
+        "status": true,
+        "button": "Checks: Ready"
+      },
+      "checksUnnamed": []
+    }
+  },
+  {
+    "name": "26 Export: output cards are checkboxes with checked state and a description; the file count is in words; nothing unnamed",
+    "ok": true,
+    "detail": {
+      "exp": {
+        "cards": [
+          {
+            "role": "checkbox",
+            "checked": "true",
+            "desc": true
+          },
+          {
+            "role": "checkbox",
+            "checked": "false",
+            "desc": true
+          },
+          {
+            "role": "checkbox",
+            "checked": "false",
+            "desc": true
+          }
+        ],
+        "files": "Creates 1 file: Untitled.zip",
+        "summary": true
+      },
+      "expUnnamed": []
+    }
+  },
+  {
+    "name": "27 Export cards toggle with Space and say checked/unchecked",
+    "ok": true,
+    "detail": {
+      "before": "true",
+      "after": "false"
+    }
+  },
+  {
+    "name": "28 focus ring: a keyboard-focused button draws a solid ring of at least 2 device pixels (device-aware: Chromium snaps 2 CSS px to whole device pixels)",
+    "ok": true,
+    "detail": {
+      "style": "solid",
+      "width": 2,
+      "device": 2,
+      "dpr": 1
+    }
+  },
+  {
+    "name": "29 reduced motion: transitions and animations are off (rail, buttons, tips card); state changes still show",
+    "ok": true,
+    "detail": {
+      "media": true,
+      "rail": {
+        "t": "0s",
+        "a": "none"
+      },
+      "btn": {
+        "t": "0s",
+        "a": "none"
+      },
+      "tip": {
+        "t": "0s",
+        "a": "none"
+      }
+    }
+  },
+  {
+    "name": "30 forced colours (Windows High Contrast): selected layer row and the open rail item use the system Highlight colour",
+    "ok": true,
+    "detail": {
+      "media": true,
+      "HL": "rgba(5, 0, 73, 0.8)",
+      "row": "rgba(5, 0, 73, 0.8)",
+      "rail": "rgba(5, 0, 73, 0.8)"
+    }
+  },
+  {
+    "name": "31 forced colours: a focused text field and a focused button both draw a visible solid outline (fields no longer rely on a box-shadow)",
+    "ok": true,
+    "detail": {
+      "forcedField": {
+        "tag": "INPUT",
+        "style": "solid",
+        "width": 2
+      },
+      "forcedBtn": {
+        "style": "solid",
+        "width": 2
+      }
+    }
+  },
+  {
+    "name": "32 keyboard only: New project › Custom size… opens the wizard; the step is named (title, \"Step 1 of 4\", aria-current=step, a polite announcement)",
+    "ok": true,
+    "detail": {
+      "customBtn": true,
+      "wiz": true,
+      "wizSem": {
+        "title": "What size are you designing?",
+        "desc": "Custom size · Step 1 of 4",
+        "current": "1Size",
+        "announce": "polite"
+      }
+    }
+  },
+  {
+    "name": "33 wizard size step: Inches / Millimetres / Pixels and the DPI choices are named radio groups with a checked choice; Width is a labelled field; nothing unnamed",
+    "ok": true,
+    "detail": {
+      "sizeSem": {
+        "groups": [
+          {
+            "lbl": "Units",
+            "opts": ["Inches:true", "Millimeters:false", "Pixels:false"]
+          },
+          {
+            "lbl": "Resolution",
+            "opts": ["300 DPI:true", "600 DPI:false", "Custom:false"]
+          },
+          {
+            "lbl": "Orientation",
+            "opts": ["Portrait:true", "Landscape:false"]
+          }
+        ]
+      },
+      "wAx": {
+        "role": "textbox",
+        "name": "Width",
+        "description": "",
+        "expanded": null,
+        "selected": null,
+        "checked": null,
+        "pressed": null,
+        "invalid": "false",
+        "disabled": null,
+        "level": null,
+        "keyshortcuts": null
+      },
+      "wizUnnamed": []
+    }
+  },
+  {
+    "name": "34 wizard error: the field says invalid and its error is its description; Next is disabled and described by \"Fix 1 thing to continue.\"; the summary is a status",
+    "ok": true,
+    "detail": {
+      "invalid": {
+        "inv": "true",
+        "described": ["The width must be greater than zero."],
+        "next": true,
+        "nextWhy": "Fix 1 thing to continue.",
+        "summaryRole": "status"
+      },
+      "wAxBad": {
+        "role": "textbox",
+        "name": "Width",
+        "description": "The width must be greater than zero.",
+        "expanded": null,
+        "selected": null,
+        "checked": null,
+        "pressed": null,
+        "invalid": "true",
+        "disabled": null,
+        "level": null,
+        "keyshortcuts": null
+      }
+    }
+  },
+  {
+    "name": "35 Enter in a field goes to the next step; the step change is announced (\"Step 2 of 4: …\") and focus moves to the step’s first control",
+    "ok": true,
+    "detail": {
+      "title": "How should it print?",
+      "announce": "Step 2 of 4: How should it print?",
+      "focus": "exact"
+    }
+  },
+  {
+    "name": "36 printing choices: Exact / Repeat / Custom sheet layout are radios that say which is chosen; the diagram has a text equivalent (\"2 copies across by 2 down on a 4 by 6 inch sheet…\")",
+    "ok": true,
+    "detail": {
+      "modes": ["exact:false", "repeat:true", "custom:false"],
+      "words": "2 copies across by 2 down on a 4 by 6 inch sheet. Centred on the sheet."
+    }
+  },
+  {
+    "name": "37 custom sheet layout in words: margins and placement are spelled out (no need to read the diagram)",
+    "ok": true,
+    "detail": "2 copies across by 2 down on a 4 by 6 inch sheet. Top margin 0.5 in, left margin 0.25 in. Placed from the top-left margin."
+  },
+  {
+    "name": "38 safe margin step: None / Recommended 3 mm / Custom are a named radio group with the recommended choice checked",
+    "ok": true,
+    "detail": {
+      "safeSem": {
+        "lbl": "Safe margin",
+        "opts": [
+          "NoneNo generic safe-:false",
+          "Recommended · 3 mmKe:true",
+          "CustomChoose your ow:false"
+        ]
+      },
+      "beforeSafe": {
+        "next": false,
+        "summary": null,
+        "errs": []
+      }
+    }
+  },
+  {
+    "name": "39 review: the summary is a definition list (Design, Pixels, Output, Safe margin, Printer…); \"Save to My formats\" is a labelled checkbox",
+    "ok": true,
+    "detail": {
+      "dl": true,
+      "terms": [
+        "Design",
+        "Output",
+        "Gaps / margins",
+        "Safe margin",
+        "Cut guides",
+        "Printer profile"
+      ],
+      "save": {
+        "tag": "INPUT",
+        "type": "checkbox",
+        "label": "Save to My formatsKeeps only the size and print setup on this computer, never artwork or photos."
+      }
+    }
+  },
+  {
+    "name": "40 keyboard only: Create design → editor → Print Preview (Space) → Export (Ctrl/⌘E, Tab, Enter) writes files",
+    "ok": true,
+    "detail": {
+      "customMade": true,
+      "custom": {
+        "w": 2,
+        "h": 3,
+        "out": "grid"
+      },
+      "inPreview": true,
+      "expOpen": true,
+      "exported": ["Untitled.zip"],
+      "expBtn": {
+        "id": "export-start",
+        "tag": "BUTTON",
+        "role": null,
+        "label": "Export 1 file…",
+        "testid": null,
+        "fv": true,
+        "region": null
+      },
+      "expAfter": {
+        "open": true,
+        "alerts": [
+          "Print Preview · read onlyEdit in DesignGo back to the design to make changes",
+          "Exported 1 file to “exports”.Dismiss",
+          "Exported 1 file to “exports”."
+        ]
+      },
+      "expState": {
+        "start": {
+          "dis": false,
+          "t": "Export 1 file…"
+        },
+        "summary": "Ready to export · 4 notesNo printer chosen",
+        "cards": ["booth:true", "print:false", "proof:false"]
+      }
+    }
+  },
+  {
+    "name": "41 keyboard only: Save, back to Start, open the recent project (Tab, Enter), F6 to the canvas, nudge with an arrow, Save",
+    "ok": true,
+    "detail": {
+      "saved": true,
+      "recent": true,
+      "recentAx": {
+        "role": "button",
+        "name": "Untitled 2×3 portrait · opened just now",
+        "description": "",
+        "expanded": null,
+        "selected": null,
+        "checked": null,
+        "pressed": null,
+        "invalid": "false",
+        "disabled": null,
+        "level": null,
+        "keyshortcuts": null
+      },
+      "reopened": true,
+      "cvs": {
+        "id": null,
+        "tag": "MAIN",
+        "role": null,
+        "label": "Canvas workspace",
+        "testid": null,
+        "fv": true,
+        "region": "canvas"
+      },
+      "past0": 0,
+      "past1": 1,
+      "savedAgain": "Saved",
+      "preSave": {
+        "active": "<button type=\"button\" id=\"print-preview-button\" aria-label=\"See how it prints\" aria-pressed=\"false\" ",
+        "menu": false,
+        "modal": false,
+        "project": true
+      },
+      "postSave": {
+        "state": "Saved",
+        "file": "B6 Keyboard.boothproject",
+        "modal": []
+      }
+    }
+  },
+  {
+    "name": "42 keyboard only: My formats › a saved format (Tab, Enter) opens it ready to create; Create design makes the project",
+    "ok": true,
+    "detail": {
+      "myCard": true,
+      "myAx": {
+        "name": "New design: Custom format, 2 × 3 in, 4 copies on a 4 × 6 in sheet"
+      },
+      "myWiz": true,
+      "myMade": true
+    }
+  },
+  {
+    "name": "43 Windows: F10 focuses the File menu with a visible ring and shows the access-key underlines",
+    "ok": true,
+    "detail": {
+      "focus": "file",
+      "fv": true,
+      "keys": true,
+      "underlined": "underline"
+    }
+  },
+  {
+    "name": "44 Windows: Escape leaves the menu bar (to where the user was, else the canvas) and the underlines go away",
+    "ok": true,
+    "detail": {
+      "inBar": false,
+      "region": "canvas",
+      "keys": false
+    }
+  },
+  {
+    "name": "45 Windows: a tap on Alt focuses the menu bar with underlines; another tap returns focus to the control the user was on; no stale underlines",
+    "ok": true,
+    "detail": {
+      "tap1": {
+        "focus": "file",
+        "keys": true
+      },
+      "tap2": {
+        "focus": "save-button",
+        "keys": false
+      }
+    }
+  },
+  {
+    "name": "46 Windows: Alt + F / E / A / V / H opens File, Edit, Arrange, View, Help with focus on the first item and the item access keys shown",
+    "ok": true,
+    "detail": [
+      {
+        "letter": "f",
+        "open": "file",
+        "first": true,
+        "shown": true
+      },
+      {
+        "letter": "e",
+        "open": "edit",
+        "first": true,
+        "shown": true
+      },
+      {
+        "letter": "a",
+        "open": "arrange",
+        "first": true,
+        "shown": true
+      },
+      {
+        "letter": "v",
+        "open": "view",
+        "first": true,
+        "shown": true
+      },
+      {
+        "letter": "h",
+        "open": "help",
+        "first": true,
+        "shown": true
+      }
+    ]
+  },
+  {
+    "name": "47 Windows: every item in every menu has its own underlined access key (no duplicates within a menu), also exposed as aria-keyshortcuts",
+    "ok": true,
+    "detail": [
+      {
+        "n": 8,
+        "keys": "noisaetc",
+        "unique": true,
+        "ks": true
+      },
+      {
+        "n": 6,
+        "keys": "urdegn",
+        "unique": true,
+        "ks": true
+      },
+      {
+        "n": 12,
+        "keys": "bfstahrlvidu",
+        "unique": true,
+        "ks": true
+      },
+      {
+        "n": 16,
+        "keys": "dpfazoshecrltmbi",
+        "unique": true,
+        "ks": true
+      },
+      {
+        "n": 1,
+        "keys": "k",
+        "unique": true,
+        "ks": true
+      }
+    ]
+  },
+  {
+    "name": "48 Windows: pressing an item’s access key runs it (Help › Keyboard shortcuts); Escape returns focus to the Help menu title, no stale tooltip",
+    "ok": true,
+    "detail": {
+      "helpItemKey": "K",
+      "shortcutsOpen": true,
+      "afterShortcuts": {
+        "menu": "help",
+        "tip": false
+      }
+    }
+  },
+  {
+    "name": "49 Keyboard shortcuts lists the current keys only (Ctrl labels on Windows, F10/Alt menu keys, Space pan, F6), nothing about sample photos",
+    "ok": true,
+    "detail": [
+      "New project",
+      "Open",
+      "Save",
+      "Save As",
+      "Export",
+      "Settings",
+      "Undo",
+      "Redo",
+      "Duplicate",
+      "Delete",
+      "Group",
+      "Ungroup",
+      "Bring to front",
+      "Bring forward",
+      "Send backward",
+      "Send to back",
+      "Fit to window",
+      "Actual size (100%)",
+      "Zoom in",
+      "Zoom out",
+      "Nudge 1 px (10 px with Shift)",
+      "Pan the canvas (pointer over the canvas)",
+      "Close a popover, then the floating drawer, then clear the selection",
+      "Move between areas of the window",
+      "Redo (also)",
+      "Go to the menu bar (and back)",
+      "Open a menu",
+      "Choose a menu item",
+      "Custom size: next step",
+      "Move between layers",
+      "Extend selection",
+      "Expand / collapse group",
+      "Rename",
+      "Lock / unlock",
+      "Show / hide",
+      "Delete",
+      "Toggle in selection",
+      "Select a range",
+      "Reorder"
+    ]
+  },
+  {
+    "name": "50 Windows: a menu opened with the mouse shows no underlines (they appear only for keyboard use)",
+    "ok": true,
+    "detail": false
+  },
+  {
+    "name": "51 Windows shortcut labels say Ctrl+ (never ⌘)",
+    "ok": true,
+    "detail": {
+      "fileKbd": ["Ctrl+N", "Ctrl+O", "Ctrl+S", "Ctrl+Shift+S", "Ctrl+E", "Ctrl+,"],
+      "winLabels": []
+    }
+  },
+  {
+    "name": "52 focus restoration: New project, Printer & cutting (from View), Import dslrBooth (from File) and Delete format return focus to a stable trigger (the control, or the menu title when the menu item is gone); Delete asks first with Keep focused; no stale tooltip",
+    "ok": true,
+    "detail": [
+      {
+        "name": "New project",
+        "shown": true,
+        "focus": "save-button",
+        "want": "save-button"
+      },
+      {
+        "name": "Printer & cutting",
+        "key": "r",
+        "shown": true,
+        "focus": "view",
+        "want": "view",
+        "tip": false
+      },
+      {
+        "name": "Import dslrBooth",
+        "key": "I",
+        "shown": true,
+        "focus": "file",
+        "want": "file",
+        "tip": false
+      },
+      {
+        "name": "Delete format",
+        "shown": true,
+        "firstFocus": "Keep it",
+        "focus": "Delete Custom format",
+        "want": "Delete Custom format",
+        "kept": true
+      }
+    ]
+  },
+  {
+    "name": "53 focus rings in Light/Comfortable 1426×779, Dark/Compact at the 1100×650 minimum and Dark 1920×1000: solid, fully inside the window, not under the status bar, colour differs from the background; no sideways scroll",
+    "ok": true,
+    "detail": [
+      {
+        "w": 1426,
+        "hh": 779,
+        "theme": "light",
+        "density": "comfortable",
+        "rings": [
+          {
+            "sel": "#save-button",
+            "solid": true,
+            "inside": true,
+            "underStatus": false,
+            "colour": "rgb(68, 86, 224)",
+            "bg": "rgb(246, 246, 249)"
+          },
+          {
+            "sel": "#export-button",
+            "solid": true,
+            "inside": true,
+            "underStatus": false,
+            "colour": "rgb(68, 86, 224)",
+            "bg": "rgb(246, 246, 249)"
+          },
+          {
+            "sel": "[data-tool=elements]",
+            "solid": true,
+            "inside": true,
+            "underStatus": false,
+            "colour": "rgb(68, 86, 224)",
+            "bg": "rgb(246, 246, 249)"
+          },
+          {
+            "sel": ".menubar-btn[data-menu-id=file]",
+            "solid": true,
+            "inside": true,
+            "underStatus": false,
+            "colour": "rgb(68, 86, 224)",
+            "bg": "rgb(246, 246, 249)"
+          }
+        ],
+        "scroll": true
+      },
+      {
+        "w": 1100,
+        "hh": 650,
+        "theme": "dark",
+        "density": "compact",
+        "rings": [
+          {
+            "sel": "#save-button",
+            "solid": true,
+            "inside": true,
+            "underStatus": false,
+            "colour": "rgb(159, 176, 255)",
+            "bg": "rgb(23, 24, 28)"
+          },
+          {
+            "sel": "#export-button",
+            "solid": true,
+            "inside": true,
+            "underStatus": false,
+            "colour": "rgb(159, 176, 255)",
+            "bg": "rgb(23, 24, 28)"
+          },
+          {
+            "sel": "[data-tool=elements]",
+            "solid": true,
+            "inside": true,
+            "underStatus": false,
+            "colour": "rgb(159, 176, 255)",
+            "bg": "rgb(23, 24, 28)"
+          },
+          {
+            "sel": ".menubar-btn[data-menu-id=file]",
+            "solid": true,
+            "inside": true,
+            "underStatus": false,
+            "colour": "rgb(159, 176, 255)",
+            "bg": "rgb(23, 24, 28)"
+          }
+        ],
+        "scroll": true
+      },
+      {
+        "w": 1920,
+        "hh": 1000,
+        "theme": "dark",
+        "density": "comfortable",
+        "rings": [
+          {
+            "sel": "#save-button",
+            "solid": true,
+            "inside": true,
+            "underStatus": false,
+            "colour": "rgb(159, 176, 255)",
+            "bg": "rgb(23, 24, 28)"
+          },
+          {
+            "sel": "#export-button",
+            "solid": true,
+            "inside": true,
+            "underStatus": false,
+            "colour": "rgb(159, 176, 255)",
+            "bg": "rgb(23, 24, 28)"
+          },
+          {
+            "sel": "[data-tool=elements]",
+            "solid": true,
+            "inside": true,
+            "underStatus": false,
+            "colour": "rgb(159, 176, 255)",
+            "bg": "rgb(23, 24, 28)"
+          },
+          {
+            "sel": ".menubar-btn[data-menu-id=file]",
+            "solid": true,
+            "inside": true,
+            "underStatus": false,
+            "colour": "rgb(159, 176, 255)",
+            "bg": "rgb(23, 24, 28)"
+          }
+        ],
+        "scroll": true
+      }
+    ]
+  },
+  {
+    "name": "54 hit targets at Compact: icon buttons, row toggles, rail, menus and Save are at least 20 × 20 CSS px",
+    "ok": true,
+    "detail": [
+      {
+        "s": ".layer-row .row-toggle",
+        "missing": true
+      },
+      {
+        "s": ".ui-iconbtn",
+        "w": 28,
+        "h": 28
+      },
+      {
+        "s": ".toolrail-btn",
+        "w": 68,
+        "h": 64
+      },
+      {
+        "s": ".menubar-btn",
+        "w": 43,
+        "h": 34
+      },
+      {
+        "s": "#save-button",
+        "w": 80,
+        "h": 34
+      },
+      {
+        "s": ".dialog-close, [aria-label^=\"Close\"]",
+        "w": 28,
+        "h": 28
+      }
+    ]
+  },
+  {
+    "name": "55 OS scale 100 % / 125 % × app interface scale 90–125 %: the focus ring stays solid and at least 2 device pixels; Save and the rail stay at least 24 CSS px; no sideways scroll",
+    "ok": true,
+    "detail": [
+      {
+        "dpr": 1,
+        "ui": "0.9",
+        "ringDevicePx": 2,
+        "solid": true,
+        "save": [73, 31],
+        "rail": [60, 58],
+        "scroll": true
+      },
+      {
+        "dpr": 1,
+        "ui": "1",
+        "ringDevicePx": 2,
+        "solid": true,
+        "save": [80, 34],
+        "rail": [68, 64],
+        "scroll": true
+      },
+      {
+        "dpr": 1,
+        "ui": "1.1",
+        "ringDevicePx": 2,
+        "solid": true,
+        "save": [86, 37],
+        "rail": [76, 70],
+        "scroll": true
+      },
+      {
+        "dpr": 1,
+        "ui": "1.25",
+        "ringDevicePx": 2,
+        "solid": true,
+        "save": [95, 43],
+        "rail": [88, 80],
+        "scroll": true
+      },
+      {
+        "dpr": 1.25,
+        "ui": "0.9",
+        "ringDevicePx": 2.5,
+        "solid": true,
+        "save": [73, 31],
+        "rail": [60, 58],
+        "scroll": true
+      },
+      {
+        "dpr": 1.25,
+        "ui": "1",
+        "ringDevicePx": 2.5,
+        "solid": true,
+        "save": [80, 34],
+        "rail": [68, 64],
+        "scroll": true
+      },
+      {
+        "dpr": 1.25,
+        "ui": "1.1",
+        "ringDevicePx": 2.5,
+        "solid": true,
+        "save": [86, 37],
+        "rail": [76, 70],
+        "scroll": true
+      },
+      {
+        "dpr": 1.25,
+        "ui": "1.25",
+        "ringDevicePx": 2.5,
+        "solid": true,
+        "save": [95, 43],
+        "rail": [88, 80],
+        "scroll": true
+      }
+    ]
+  },
+  {
+    "name": "56 the selection toolbar never covers a getting-started tips button (1426×779 and the 1100×650 minimum)",
+    "ok": true,
+    "detail": [
+      {
+        "covered": []
+      },
+      {
+        "covered": []
+      }
+    ]
+  },
+  {
+    "name": "57 no Sample Photos wording anywhere on screen",
+    "ok": true
+  },
+  {
+    "name": "58 no uncaught errors or console errors during the run",
+    "ok": true,
+    "detail": []
+  }
+]

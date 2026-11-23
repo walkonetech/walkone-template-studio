@@ -42,10 +42,18 @@ export function ShortcutsDialog(): React.JSX.Element | null {
   ]
   const canvasRows: [string, string][] = [
     ['Nudge 1 px (10 px with Shift)', 'Arrow keys'],
-    ['Pan the canvas', 'Space + drag'],
+    ['Pan the canvas (pointer over the canvas)', 'Space + drag'],
     ['Close a popover, then the floating drawer, then clear the selection', 'Esc'],
     ['Move between areas of the window', 'F6 / Shift+F6'],
-    ...(mac ? [] : ([['Open the menus', 'F10 or Alt']] as [string, string][]))
+    ...((mac
+      ? [['In an open menu, jump to an item', 'Type its first letter']]
+      : [
+          ['Redo (also)', 'Ctrl+Y'],
+          ['Go to the menu bar (and back)', 'F10 or Alt'],
+          ['Open a menu', 'Alt + its underlined letter'],
+          ['Choose a menu item', 'Its underlined letter']
+        ]) as [string, string][]),
+    ['Custom size: next step', 'Enter in a field']
   ]
   const section = (title: string, rows: [string, string][]): React.JSX.Element => (
     <section aria-label={title}>

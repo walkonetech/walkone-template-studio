@@ -481,15 +481,15 @@ async function tooltipsInside(c, sel, height) {
     const railActive = await J(
       c
     )(`(()=>{const b=document.querySelector('.toolrail-btn[data-tool=elements]'); const cs=getComputedStyle(b), svg=getComputedStyle(b.querySelector('svg')); const tok=(v)=>{const p=document.createElement('span'); p.style.color='var('+v+')'; document.body.appendChild(p); const x=getComputedStyle(p).color; p.remove(); return x}; const bg=(v)=>{const p=document.createElement('span'); p.style.background='var('+v+')'; document.body.appendChild(p); const x=getComputedStyle(p).backgroundColor; p.remove(); return x};
-      return {pressed:b.getAttribute('aria-pressed'), bg:cs.backgroundColor, accentSubtle:bg('--c-accent-subtle'), icon:svg.color, accent:tok('--c-accent'), marker:getComputedStyle(b,'::before').backgroundColor}})()`)
+      return {expanded:b.getAttribute('aria-expanded'), bg:cs.backgroundColor, accentSubtle:bg('--c-accent-subtle'), icon:svg.color, accent:tok('--c-accent'), marker:getComputedStyle(b,'::before').backgroundColor}})()`)
     check(
       '7 at 1920×1000 the drawer DOCKS: its own 264 px column that pushes the canvas',
       dr && dr.mode === 'docked' && dr.w === 264 && ws1.l >= dr.r - 1 && ws0.w - ws1.w >= 260,
       { dr, ws0, ws1 }
     )
     check(
-      '7b the active rail item uses the accent (subtle background, accent icon and marker), not a kind colour',
-      railActive.pressed === 'true' &&
+      '7b the active rail item uses the accent (subtle background, accent icon and marker), not a kind colour; it says expanded (B6: aria-expanded)',
+      railActive.expanded === 'true' &&
         railActive.bg === railActive.accentSubtle &&
         railActive.icon === railActive.accent &&
         railActive.marker === railActive.accent,

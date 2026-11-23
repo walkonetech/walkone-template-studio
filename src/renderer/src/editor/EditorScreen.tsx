@@ -10,6 +10,8 @@ import {
   sidebarWidthFor
 } from '@editor/layout'
 import { selectViewMode } from '@editor/store'
+import { describeCanvasForScreenReader } from '@editor/describe'
+import { layerTypeLabel } from '@editor/layerTree'
 import { EditorCanvas } from './EditorCanvas'
 import { PrintPreviewCanvas } from './PrintPreviewCanvas'
 import { CanvasStateBar } from './CanvasStateBar'
@@ -215,7 +217,13 @@ export function EditorScreen(): React.JSX.Element {
         {project && mode === 'docked' && <ChecksPanel mode="docked" />}
         <div className="canvas-column">
           {project && <CanvasStateBar />}
-          <main className="workspace" aria-label="Canvas workspace" data-region="canvas">
+          <main
+            className="workspace"
+            aria-label="Canvas workspace"
+            data-region="canvas"
+            aria-describedby={project ? 'canvas-summary' : undefined}
+          >
+            {project && <CanvasSummary />}
             {project ? (
               viewMode === 'preview' ? (
                 <PrintPreviewCanvas />
@@ -233,5 +241,25 @@ export function EditorScreen(): React.JSX.Element {
       </div>
       <StatusBar />
     </div>
+  )
+}
+
+/**
+ * B6: the canvas region's text equivalent (its accessible description; not a live region, so selecting things is not
+ * announced twice — the Layers panel already says it). Visually hidden.
+ */
+function CanvasSummary(): React.JSX.Element | null {
+  const text = useEditor((s) => {
+    if (!s.project) return ''
+    const selected = s.project.layers
+      .filter((l) => s.selectedIds.includes(l.id))
+      .map((l) => ({ name: l.name, type: layerTypeLabel(l) }))
+    return describeCanvasForScreenReader(s.project, selectViewMode(s), selected)
+  })
+  if (!text) return null
+  return (
+    <p id="canvas-summary" className="sr-only" data-testid="canvas-summary">
+      {text}
+    </p>
   )
 }
