@@ -208,6 +208,8 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] Reduce motion (macOS: Accessibility › Display › Reduce motion; Windows: Animation effects off): tooltips, menus and the tips card appear without animation.
 - [ ] **VoiceOver (⌘F5) / Narrator (Ctrl+Win+Enter):** Start cards read their name and description; the rail reads "Text, button, collapsed/expanded"; the canvas reads its description (format, copies, layers, selection); a Layers row reads "Text: Title, hidden, locked"; the wizard announces "Step 2 of 4…", reads the arrangement sentence and the error next to a bad width; Export cards read checked/unchecked.
 - [ ] With the getting-started tips showing, select a layer near them at 1426 × 779 and at the minimum window: the selection toolbar never hides a tips button.
+- [ ] (B6.1) File › Open… and File › Import dslrBooth template… — by keyboard (F10 / Alt, arrows, Enter) and by mouse — then **Cancel** the Windows/macOS file picker: focus is on **File** (ring after keyboard use), the menu stays closed, no tooltip; Tab / F6 continue from there. Choose a project / a template instead: the project opens, or the import review opens with focus inside it — focus is not pulled back to File.
+- [ ] (B6.1) Windows **High Contrast White** (and Black): pressed view toggles (Safe areas, Overflow, Cut guides) show both the label and the value (On / Show) in the highlight text colour, clearly readable.
 
 ### H. UI, accessibility, polish
 - [ ] Tooltips on icon-only controls, with shortcut hints.

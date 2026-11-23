@@ -1,4 +1,4 @@
-import { dialogReturnTarget } from '@editor/layout'
+import { dialogReturnTarget, nativePickerReturnsFocus } from '@editor/layout'
 
 /**
  * Programmatic focus RESTORATION (a dialog, popover or menu handing focus back to the control that opened it). Focus
@@ -47,3 +47,31 @@ export function dialogOpener(active: Element | null): HTMLElement | null {
 
 export const isRestoringFocus = (target: EventTarget | null): boolean =>
   restoring !== null && restoring === target
+
+/**
+ * Where a command that shows a NATIVE file picker should hand focus back if the picker is cancelled (B6.1): the menu
+ * title when it ran from a menu (the item is gone once the menu closes), otherwise the control that ran it (the Start
+ * screen's Open… card). Read synchronously when the command starts, before anything closes.
+ */
+export const commandOrigin = (active: Element | null): HTMLElement | null => dialogOpener(active)
+
+const focusOnPage = (): boolean =>
+  document.activeElement === null || document.activeElement === document.body
+
+/**
+ * Called when a native picker's command has finished. The picker is its own OS window, so the app window may get
+ * focus back slightly AFTER the IPC answer arrives (Windows); wait for that one `focus` event, then one frame so the
+ * browser's own focus bookkeeping has run, and only then restore — and only if focus is still on the page.
+ */
+export async function afterNativePicker(
+  origin: HTMLElement | null,
+  outcome: 'ok' | 'cancelled' | 'error'
+): Promise<void> {
+  if (!origin || outcome === 'ok') return
+  if (!document.hasFocus())
+    await new Promise<void>((resolve) =>
+      window.addEventListener('focus', () => resolve(), { once: true })
+    )
+  await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
+  if (nativePickerReturnsFocus({ outcome, focusOnPage: focusOnPage() })) restoreFocus(origin)
+}

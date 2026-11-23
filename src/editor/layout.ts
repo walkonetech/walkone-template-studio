@@ -207,6 +207,18 @@ export function dialogReturnTarget(s: {
   return 'none'
 }
 
+/**
+ * After a native file picker (File › Open…, File › Import dslrBooth template…) does focus go back to where the command
+ * came from (B6.1)? The picker is a separate OS window: the menu item that ran the command unmounted before it opened,
+ * so when the picker closes the page has nothing focused. Only when the command did NOT go on to something else
+ * (cancelled, or failed with a status message) and focus is still stranded on the page; a project that opened, or an
+ * import preview that took focus, is never pulled back.
+ */
+export const nativePickerReturnsFocus = (s: {
+  outcome: 'ok' | 'cancelled' | 'error'
+  focusOnPage: boolean
+}): boolean => s.outcome !== 'ok' && s.focusOnPage
+
 /** F6 / Shift+F6 cycle through these landmarks, skipping the ones not on screen (7A). */
 export const REGION_ORDER = [
   'topbar',

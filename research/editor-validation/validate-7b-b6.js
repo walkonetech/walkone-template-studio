@@ -8,6 +8,7 @@
 const fs = require('fs')
 const path = require('path')
 const { writeResults } = require('./results-writer')
+const { ringDevicePx } = require('./tolerance')
 const h = require('./harness')
 const cdp = require('./cdp')
 const { sleep } = h
@@ -248,6 +249,18 @@ const newProject = async (c, label = '2×6') => {
   await waitFor(c, `!!${S}.project && !document.querySelector('[role=dialog]')`)
   await sleep(500)
 }
+/**
+ * The display's real devicePixelRatio, read once before any device-metrics emulation (B6.1). Focus-ring checks use it
+ * through `ringDevicePx` because emulation does not change the backing scale Chromium snaps outlines to (tolerance.js).
+ */
+let NATIVE_DPR = null
+const readNativeDpr = async (c) => {
+  if (NATIVE_DPR !== null) return NATIVE_DPR
+  await c.send('Emulation.clearDeviceMetricsOverride').catch(() => undefined)
+  await sleep(200)
+  NATIVE_DPR = Number(await c.ev('devicePixelRatio'))
+  return NATIVE_DPR
+}
 const size = async (c, width, height) => {
   await c.send('Emulation.setDeviceMetricsOverride', {
     width,
@@ -292,6 +305,8 @@ const closeDialogs = async (c) => {
   try {
     await c.send('DOM.enable')
     await c.send('Accessibility.enable')
+    // Before any emulation: the display's real scale, for physical focus-ring widths (B6.1, tolerance.js).
+    await readNativeDpr(c)
     await size(c, 1440, 900)
 
     // ============================================================ START SCREEN SEMANTICS
@@ -819,12 +834,19 @@ const closeDialogs = async (c) => {
     // ============================================================ REDUCED MOTION + FORCED COLOURS + FOCUS RING
     await press(c, 'Shift')
     await c.ev(`document.getElementById('save-button').focus(); 1`)
-    const ringNormal = await J(c)(
-      `(()=>{const b=document.getElementById('save-button'); const s=getComputedStyle(b); return {style:s.outlineStyle, width:parseFloat(s.outlineWidth), device:parseFloat(s.outlineWidth)*devicePixelRatio, dpr:devicePixelRatio}})()`
+    const ringCss = await J(c)(
+      `(()=>{const b=document.getElementById('save-button'); const s=getComputedStyle(b); return {style:s.outlineStyle, width:parseFloat(s.outlineWidth), dpr:devicePixelRatio}})()`
     )
+    // Physical pixels: the computed width times the scale Chromium actually snapped it to (B6.1 — under emulation on a
+    // Windows 125 % display the page reports ~1 while the ring is snapped to 1.25; see tolerance.js ringDevicePx).
+    const ringNormal = {
+      ...ringCss,
+      nativeDpr: NATIVE_DPR,
+      ...ringDevicePx({ cssWidth: ringCss.width, reportedDpr: ringCss.dpr, nativeDpr: NATIVE_DPR })
+    }
     check(
-      '28 focus ring: a keyboard-focused button draws a solid ring of at least 2 device pixels (device-aware: Chromium snaps 2 CSS px to whole device pixels)',
-      ringNormal.style === 'solid' && ringNormal.device >= 1.99,
+      '28 focus ring: a keyboard-focused button draws a solid ring of at least 2 physical device pixels (device-aware: Chromium snaps 2 CSS px to whole pixels of the real display, even under emulation)',
+      ringNormal.style === 'solid' && ringNormal.devicePx >= 1.99,
       ringNormal
     )
     await c.send('Emulation.setEmulatedMedia', {
@@ -881,6 +903,71 @@ const closeDialogs = async (c) => {
         forcedBtn.width >= 1.5,
       { forcedField, forcedBtn }
     )
+    // B6.1 — text INSIDE a Highlight state must be HighlightText. `forced-color-adjust` is inherited, so a child with
+    // its own author colour under `none` kept it (Windows High Contrast White: a pressed view toggle's value was the
+    // light theme's near-black on Highlight, 2.26:1). The selector list is read from styles/a11y.css itself, so a
+    // state added there is audited automatically. Checked with the app in Light (≈ HC White) and Dark (≈ HC Black),
+    // plus a negative control proving the audit catches the original defect.
+    const a11yCss = fs.readFileSync(path.join(h.root, 'src/renderer/src/styles/a11y.css'), 'utf8')
+    const hlBlock = a11yCss.match(
+      /\/\* Selected \/ on \/ open[^\n]*\n([\s\S]*?)\{\s*forced-color-adjust: none;\s*background: Highlight;/
+    )
+    const hlSelectors = hlBlock
+      ? hlBlock[1]
+          .split(',')
+          .map((x) => x.trim())
+          .filter(Boolean)
+      : []
+    const pills = ['view-safe-areas', 'view-overflow', 'view-cut-guides']
+    // Safe areas need a safe margin (or a printer profile) and Cut guides exist only in Print Preview: give the project
+    // a 3 mm margin (undone below) and turn Print Preview on, so all three toggles and the preview button are pressed.
+    await c.ev(
+      `${S}.commit((p) => ({ ...p, canvas: { ...p.canvas, safeMarginMm: 3 } })); document.getElementById('print-preview-button').getAttribute('aria-pressed')==='false' && document.getElementById('print-preview-button').click(); 1`
+    )
+    await sleep(500)
+    const turnedOn = await J(c)(
+      `${JSON.stringify(pills)}.filter(t=>{const b=document.querySelector('[data-testid='+t+']'); if(b && b.getAttribute('aria-pressed')==='false' && b.getAttribute('aria-disabled')!=='true'){b.click(); return true} return false})`
+    )
+    await sleep(300)
+    const auditHL = () =>
+      J(c)(
+        `(()=>{const sel=${JSON.stringify(hlSelectors)}; const sys=(c)=>{const p=document.createElement('div'); p.style.cssText='position:absolute;forced-color-adjust:none;color:'+c; document.body.appendChild(p); const v=getComputedStyle(p).color; p.remove(); return v}; const HLT=sys('HighlightText'); const lum=(c)=>{const m=c.match(/[\\d.]+/g).slice(0,3).map(Number).map(v=>{v/=255; return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4)}); return 0.2126*m[0]+0.7152*m[1]+0.0722*m[2]}; const ratio=(a,b)=>{const x=lum(a), y=lum(b); return +( (Math.max(x,y)+0.05)/(Math.min(x,y)+0.05) ).toFixed(2)}; const states=[...document.querySelectorAll(sel.join(','))].filter(e=>e.getClientRects().length>0); const bad=[]; let texts=0; let minRatio=99; for(const e of states){const bg=getComputedStyle(e).backgroundColor; for(const n of [e,...e.querySelectorAll('*')]){ if(n.getClientRects().length===0) continue; const own=[...n.childNodes].some(t=>t.nodeType===3&&t.textContent.trim()); if(!own) continue; texts++; const col=getComputedStyle(n).color; const r=ratio(col,bg); minRatio=Math.min(minRatio,r); if(col!==HLT) bad.push({state:e.className||e.tagName, text:n.textContent.trim().slice(0,20), col, bg, r})}} return {selectors:sel.length, states:states.length, pressedPills:[...document.querySelectorAll('.view-pill.on')].map(b=>b.dataset.testid), texts, HLT, minRatio, bad:bad.slice(0,6)}})()`
+      )
+    const hlByTheme = {}
+    for (const theme of ['light', 'dark']) {
+      await c.ev(`document.documentElement.setAttribute('data-theme','${theme}'); 1`)
+      await sleep(200)
+      hlByTheme[theme] = await auditHL()
+    }
+    // Negative control: re-create the original defect (an author colour on the value under a pressed toggle).
+    await c.ev(
+      `(()=>{const st=document.createElement('style'); st.id='b61-neg'; st.textContent='.view-pill.on b{color:rgb(27,28,25)!important}'; document.head.appendChild(st)})(); 1`
+    )
+    await c.ev(`document.documentElement.setAttribute('data-theme','light'); 1`)
+    await sleep(150)
+    const hlNegative = await auditHL()
+    await c.ev(`document.getElementById('b61-neg')?.remove(); 1`)
+    check(
+      '59 forced colours (B6.1): every text inside a Highlight state — pressed view toggles (Safe areas, Overflow, Cut guides), selected layer row, open rail item — uses HighlightText, with the app in Light (≈ High Contrast White) and Dark (≈ High Contrast Black); selectors read from a11y.css; a re-created near-black value is caught',
+      hlSelectors.length >= 20 &&
+        ['light', 'dark'].every(
+          (t) =>
+            hlByTheme[t].bad.length === 0 &&
+            hlByTheme[t].pressedPills.length >= 3 &&
+            hlByTheme[t].texts >= 4
+        ) &&
+        hlNegative.bad.length > 0,
+      { hlByTheme, negativeCaught: hlNegative.bad.length, negativeSample: hlNegative.bad[0] }
+    )
+    // Put the view toggles, Print Preview and the project back as they were for the checks that follow.
+    await c.ev(
+      `${JSON.stringify(turnedOn)}.forEach(t=>document.querySelector('[data-testid='+t+']')?.click()); document.documentElement.setAttribute('data-theme','light'); 1`
+    )
+    await sleep(200)
+    await c.ev(
+      `document.getElementById('print-preview-button').getAttribute('aria-pressed')==='true' && document.getElementById('print-preview-button').click(); ${S}.undo(); 1`
+    )
+    await sleep(200)
     await c.send('Emulation.setEmulatedMedia', { features: [] })
     await sleep(200)
 
@@ -1457,16 +1544,22 @@ const closeDialogs = async (c) => {
         await c.ev(`document.getElementById('save-button')?.focus(); 1`)
         scaleRuns.push(
           await J(c)(
-            `(()=>{const e=document.activeElement; const s=getComputedStyle(e); const r=e.getBoundingClientRect(); const t=document.querySelector('.toolrail-btn').getBoundingClientRect(); return {dpr:devicePixelRatio, ui:${JSON.stringify(ui)}, ringDevicePx:+(parseFloat(s.outlineWidth)*devicePixelRatio).toFixed(2), solid:s.outlineStyle==='solid', save:[Math.round(r.width),Math.round(r.height)], rail:[Math.round(t.width),Math.round(t.height)], scroll:document.documentElement.scrollWidth<=innerWidth}})()`
+            `(()=>{const e=document.activeElement; const s=getComputedStyle(e); const r=e.getBoundingClientRect(); const t=document.querySelector('.toolrail-btn').getBoundingClientRect(); return {dpr:devicePixelRatio, ui:${JSON.stringify(ui)}, ringCss:parseFloat(s.outlineWidth), solid:s.outlineStyle==='solid', save:[Math.round(r.width),Math.round(r.height)], rail:[Math.round(t.width),Math.round(t.height)], scroll:document.documentElement.scrollWidth<=innerWidth}})()`
           )
         )
       }
+    }
+    // Physical ring width per run (B6.1): emulating 100 % on a 125 % display does not change the backing scale.
+    for (const r of scaleRuns) {
+      const d = ringDevicePx({ cssWidth: r.ringCss, reportedDpr: r.dpr, nativeDpr: NATIVE_DPR })
+      r.ringDevicePx = d.devicePx
+      r.snappedTo = d.basis
     }
     await c.ev(`document.documentElement.style.removeProperty('--ui-scale'); 1`)
     await c.send('Emulation.clearDeviceMetricsOverride')
     await size(c, 1440, 900)
     check(
-      '55 OS scale 100 % / 125 % × app interface scale 90–125 %: the focus ring stays solid and at least 2 device pixels; Save and the rail stay at least 24 CSS px; no sideways scroll',
+      '55 OS scale 100 % / 125 % × app interface scale 90–125 %: the focus ring stays solid and at least 2 physical device pixels (snap scale per tolerance.js); Save and the rail stay at least 24 CSS px; no sideways scroll',
       scaleRuns.every(
         (r) =>
           r.solid &&
@@ -1476,7 +1569,7 @@ const closeDialogs = async (c) => {
           r.rail[1] >= 24 &&
           r.scroll
       ),
-      scaleRuns
+      { nativeDpr: NATIVE_DPR, scaleRuns }
     )
 
     // ============================================================ TIPS VS TOOLBAR, SAMPLE PHOTOS, ERRORS
@@ -1501,6 +1594,94 @@ const closeDialogs = async (c) => {
       tipsCover
     )
     await size(c, 1440, 900)
+
+    // ============================================================ NATIVE FILE PICKERS (B6.1)
+    // File › Open… and File › Import dslrBooth template… show a native picker; the menu item that ran the command is
+    // gone by then. Cancelling must leave focus on the File title (not the page body); a successful open/import must
+    // not be pulled back there. A fresh launch answers the dev-only dialogs in sequence: cancel first, then succeed.
+    // (The REAL native picker's window-focus cycle is covered by afterNativePicker's unit tests and the Windows run.)
+    await h.kill(proc)
+    const pickerProject = path.join(work, 'B6.1 Picker.boothproject')
+    const pickerFixture = env.WALKONE_DEV_IMPORT_DSLR_PATH
+    ;({ proc, c } = await h.launch({
+      port: PORT,
+      userData: path.join(work, 'ud-picker'),
+      env: {
+        ...env,
+        WALKONE_DEV_SAVE_PATH: pickerProject,
+        WALKONE_DEV_OPEN_PATH: `CANCEL;CANCEL;${pickerProject}`,
+        WALKONE_DEV_IMPORT_DSLR_PATH: `CANCEL;${pickerFixture}`
+      },
+      size: h.STANDARD_SIZE
+    }))
+    await size(c, 1440, 900)
+    await newProject(c)
+    await c.ev(`${S}.save().then(()=>1)`)
+    await sleep(400)
+    const fileTitle = `document.querySelector('.menubar-btn[data-menu-id=file]')`
+    const pickerState = () =>
+      J(c)(
+        `(()=>{const a=document.activeElement; const f=${fileTitle}; return {onFile:a===f, body:a===document.body||a===null, fv:a?a.matches(':focus-visible'):false, menuOpen:!!document.querySelector('[role=menu]')||f.getAttribute('aria-expanded')==='true', tooltip:[...document.querySelectorAll('[role=tooltip]')].some(t=>t.getClientRects().length>0&&getComputedStyle(t).visibility!=='hidden'&&getComputedStyle(t).opacity!=='0'), dialog:!!document.querySelector('[role=dialog][aria-modal=true]'), inDialog:!!a?.closest?.('[role=dialog]'), project:${S}.project?.metadata?.name??null, file:${S}.session?.fileName??null}})()`
+      )
+    /** Keyboard: focus File, Enter opens it, arrows to the item, Enter runs it. */
+    const viaKeyboard = async (item) => {
+      await press(c, 'Shift', 0, 40)
+      await c.ev(`${fileTitle}.focus(); 1`)
+      await press(c, 'Enter', 0, 300)
+      for (let i = 0; i < 12; i++) {
+        const t = await c.ev(`(document.activeElement?.textContent||'').trim()`)
+        if (t.startsWith(item)) break
+        await press(c, 'ArrowDown', 0, 60)
+      }
+      await press(c, 'Enter', 0, 900)
+    }
+    /** Pointer: click File, then click the item. */
+    const viaPointer = async (item) => {
+      await c.click(await centre(c, '.menubar-btn[data-menu-id=file]'))
+      await sleep(300)
+      const pt = await J(c)(
+        `(()=>{const b=[...document.querySelectorAll('[role=menu] button')].find(x=>x.textContent.trim().startsWith(${JSON.stringify(item)})); const r=b.getBoundingClientRect(); return {x:r.left+r.width/2, y:r.top+r.height/2}})()`
+      )
+      await c.click(pt)
+      await sleep(900)
+    }
+    const openCancelKb = (await viaKeyboard('Open'), await pickerState())
+    const openCancelMouse = (await viaPointer('Open'), await pickerState())
+    const importCancelKb = (await viaKeyboard('Import dslrBooth'), await pickerState())
+    check(
+      '60 native picker cancelled (B6.1): File › Open… (keyboard and mouse) and File › Import dslrBooth template… (keyboard) leave focus on the File title — not the page — with the menu closed and no tooltip; the keyboard route shows the ring',
+      [openCancelKb, openCancelMouse, importCancelKb].every(
+        (r) => r.onFile && !r.menuOpen && !r.tooltip && !r.dialog
+      ) &&
+        openCancelKb.fv &&
+        importCancelKb.fv,
+      { openCancelKb, openCancelMouse, importCancelKb }
+    )
+    // Successful Import: the import review takes focus (not File); closing it returns to File.
+    await viaKeyboard('Import dslrBooth')
+    await waitFor(c, `!!document.querySelector('[role=dialog][aria-modal=true]')`, 6000)
+    await sleep(400)
+    const importOk = await pickerState()
+    await press(c, 'Escape', 0, 500)
+    const importClosed = await pickerState()
+    // Successful Open (the third Open answer is the saved project): the project opens; focus is not forced to File.
+    await c.ev(`${S}.commit(p=>({...p, metadata:{...p.metadata, name:'Changed'}})); 1`)
+    await viaKeyboard('Open')
+    await waitFor(c, `${S}.project?.metadata?.name !== 'Changed'`, 6000)
+    await sleep(500)
+    const openOk = await pickerState()
+    check(
+      '61 native picker used (B6.1): a successful Import opens its review with focus inside it (closing it returns to File); a successful Open loads the project without pulling focus back to File',
+      importOk.dialog &&
+        importOk.inDialog &&
+        !importOk.onFile &&
+        importClosed.onFile &&
+        !importClosed.dialog &&
+        openOk.project !== 'Changed' &&
+        openOk.project !== null &&
+        !openOk.onFile,
+      { importOk, importClosed, openOk }
+    )
     const sampleFree = await c.ev(`!${SAMPLE_WORDS}.test(document.body.innerText)`)
     check('57 no Sample Photos wording anywhere on screen', sampleFree)
     check(

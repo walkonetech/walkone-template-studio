@@ -56,14 +56,39 @@
     color: HighlightText;
     border-color: HighlightText;
   }
+  /*
+   * Text INSIDE those states (B6.1): `forced-color-adjust` is inherited, so under `none` a child that sets its own
+   * author colour (e.g. the bold value of a view toggle, `.view-pill b`) keeps that colour — in High Contrast White
+   * that was the light theme's near-black text on Highlight (2.26:1). Every descendant takes HighlightText instead.
+   */
   .layer-row.selected *,
+  .slot-row.selected *,
+  .font-option.active *,
   .toolrail-btn.active *,
-  .export-card.on *,
+  .ui-tab[aria-selected='true'] *,
+  .ui-seg button[aria-checked='true'] *,
+  .seg button[aria-checked='true'] *,
+  .workspace-mode button[aria-checked='true'] *,
+  .settings-nav-item[aria-current='page'] *,
   .theme-card[aria-checked='true'] *,
   .cf-mode[aria-checked='true'] *,
-  .ui-menuitem:focus-visible *,
-  .ui-menuitem:hover:not(:disabled) * {
+  .cf-steps li.current *,
+  .export-card.on *,
+  .view-pill.on *,
+  .status-toggle.on *,
+  .ui-iconbtn[aria-pressed='true'] *,
+  .ui-iconbtn.active *,
+  button.ui-chip[aria-pressed='true'] *,
+  #print-preview-button[aria-pressed='true'] *,
+  .seltb-btn[aria-expanded='true'] *,
+  .seltb-dot[aria-checked='true'] *,
+  .menubar-btn.open *,
+  .ui-menuitem:hover:not(:disabled) *,
+  .ui-menuitem:focus-visible * {
     color: HighlightText;
+  }
+  .view-pill.on .led {
+    background: HighlightText;
   }
   /* Indicator bars drawn with a background would disappear: draw them in Highlight explicitly. */
   .toolrail-btn.active::before,

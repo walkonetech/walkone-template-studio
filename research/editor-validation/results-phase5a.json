@@ -20,14 +20,14 @@
       "ok": true,
       "detail": [
         {
-          "id": "cf154803-490c-45d4-89b3-98ca1fc5f5c1",
+          "id": "9ee92777-29e6-428d-8646-832e64801918",
           "filename": "marble.png",
           "mt": "image/png",
           "w": 1200,
           "h": 1800,
           "alpha": true,
           "bytes": 37581,
-          "path": "assets/cf154803-490c-45d4-89b3-98ca1fc5f5c1.png"
+          "path": "assets/9ee92777-29e6-428d-8646-832e64801918.png"
         }
       ]
     },
@@ -35,14 +35,14 @@
       "name": "3b metadata: 1200x1800, png, alpha true, size, hash path inside assets/",
       "ok": true,
       "detail": {
-        "id": "cf154803-490c-45d4-89b3-98ca1fc5f5c1",
+        "id": "9ee92777-29e6-428d-8646-832e64801918",
         "filename": "marble.png",
         "mt": "image/png",
         "w": 1200,
         "h": 1800,
         "alpha": true,
         "bytes": 37581,
-        "path": "assets/cf154803-490c-45d4-89b3-98ca1fc5f5c1.png"
+        "path": "assets/9ee92777-29e6-428d-8646-832e64801918.png"
       }
     },
     {
@@ -62,7 +62,7 @@
       "ok": true,
       "detail": {
         "marbleLayer": {
-          "id": "b68898d6-5e82-49fc-9337-b3ca2c90c7d7",
+          "id": "bc399624-e605-4448-85c5-0d9b7cf445e4",
           "type": "image",
           "name": "marble",
           "x": 600,
@@ -72,7 +72,7 @@
           "rotation": 0,
           "z": 0,
           "locked": false,
-          "assetId": "cf154803-490c-45d4-89b3-98ca1fc5f5c1",
+          "assetId": "9ee92777-29e6-428d-8646-832e64801918",
           "role": "graphic",
           "fit": "contain"
         },
@@ -83,7 +83,7 @@
       "name": "5b initial size: native 1200x1800 (fits within 80%: 2400x3600 → 1920x2880), centred, no upscale",
       "ok": true,
       "detail": {
-        "id": "b68898d6-5e82-49fc-9337-b3ca2c90c7d7",
+        "id": "bc399624-e605-4448-85c5-0d9b7cf445e4",
         "type": "image",
         "name": "marble",
         "x": 600,
@@ -93,7 +93,7 @@
         "rotation": 0,
         "z": 0,
         "locked": false,
-        "assetId": "cf154803-490c-45d4-89b3-98ca1fc5f5c1",
+        "assetId": "9ee92777-29e6-428d-8646-832e64801918",
         "role": "graphic",
         "fit": "contain"
       }
@@ -116,7 +116,7 @@
           "x": 609.5,
           "y": 471
         },
-        "dbg0": "{\"vp\":{\"width\":1059,\"height\":742},\"view\":{\"mode\":\"fit\"},\"sel\":[\"b68898d6-5e82-49fc-9337-b3ca2c90c7d7\"],\"canv\":3,\"host\":{\"x\":80,\"y\":100,\"width\":1059,\"height\":742,\"top\":100,\"right\":1139,\"bottom\":842,\"left\":80},\"focus\":true}"
+        "dbg0": "{\"vp\":{\"width\":1059,\"height\":742},\"view\":{\"mode\":\"fit\"},\"sel\":[\"bc399624-e605-4448-85c5-0d9b7cf445e4\"],\"canv\":3,\"host\":{\"x\":80,\"y\":100,\"width\":1059,\"height\":742,\"top\":100,\"right\":1139,\"bottom\":842,\"left\":80},\"focus\":false}"
       }
     },
     {
@@ -149,7 +149,7 @@
     {
       "name": "8b package contains project.json and exactly the referenced asset",
       "ok": true,
-      "detail": ["project.json", "assets/cf154803-490c-45d4-89b3-98ca1fc5f5c1.png"]
+      "detail": ["project.json", "assets/9ee92777-29e6-428d-8646-832e64801918.png"]
     },
     {
       "name": "9 closed (no project)",
@@ -184,7 +184,7 @@
       "name": "12b large JPEG metadata read from headers (6000x4000) and import time recorded",
       "ok": true,
       "detail": {
-        "importMs": 206,
+        "importMs": 205,
         "bytes": 17365500
       }
     },
@@ -217,7 +217,7 @@
       "name": "14 Set as background: ONE locked role=background layer 0,0,2400x3600 cover, at the very back",
       "ok": true,
       "detail": {
-        "id": "680efc97-c0a4-4839-bb02-5ce2062fc4ba",
+        "id": "fbc156ee-3107-4943-b40f-4d12fa5d0b4c",
         "type": "image",
         "name": "Background",
         "x": 0,
@@ -227,7 +227,7 @@
         "rotation": 0,
         "z": 0,
         "locked": true,
-        "assetId": "cf154803-490c-45d4-89b3-98ca1fc5f5c1",
+        "assetId": "9ee92777-29e6-428d-8646-832e64801918",
         "role": "background",
         "fit": "cover"
       }
@@ -246,7 +246,7 @@
       "name": "15b background Fit inside → fit=contain, still full canvas box, still one background layer",
       "ok": true,
       "detail": {
-        "id": "680efc97-c0a4-4839-bb02-5ce2062fc4ba",
+        "id": "fbc156ee-3107-4943-b40f-4d12fa5d0b4c",
         "type": "image",
         "name": "Background",
         "x": 0,
@@ -256,7 +256,7 @@
         "rotation": 0,
         "z": 0,
         "locked": true,
-        "assetId": "cf154803-490c-45d4-89b3-98ca1fc5f5c1",
+        "assetId": "9ee92777-29e6-428d-8646-832e64801918",
         "role": "background",
         "fit": "contain"
       }
@@ -353,12 +353,12 @@
       "ok": true,
       "detail": [
         {
-          "sessionId": "981f835c-4756-40d9-b69d-b929f203e59e",
+          "sessionId": "12b4b85a-93ec-4530-8267-375a43981581",
           "projectName": "Assets Test",
           "originalFileName": "Assets Test.boothproject",
           "neverSaved": false,
-          "lastWorkingSaveAt": "2026-11-23T05:25:58.003Z",
-          "lastPortableSaveAt": "2026-11-23T05:25:44.121Z",
+          "lastWorkingSaveAt": "2026-11-23T20:41:48.465Z",
+          "lastPortableSaveAt": "2026-11-23T20:41:34.486Z",
           "conflict": "none",
           "missingAssets": 0
         }

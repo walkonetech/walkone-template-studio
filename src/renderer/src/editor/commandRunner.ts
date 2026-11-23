@@ -5,6 +5,7 @@ import { editorStore } from './editorStore'
 import { layoutStore } from './layoutStore'
 import { appearanceStore } from '../appearance/appearanceStore'
 import { chooseDslrTemplate } from './dslrImportActions'
+import { afterNativePicker, commandOrigin } from '../ui/restoreFocus'
 
 const st = editorStore.getState
 
@@ -26,9 +27,17 @@ export function runCommand(id: CommandId): void {
         .guardClose('replace')
         .then((ok) => ok && layoutStore.getState().setNewProjectOpen(true))
       return
-    case 'file.open':
-      void guarded('replace', () => s.openFromDialog())()
+    case 'file.open': {
+      // Cancelling the native picker (or the unsaved-changes prompt) returns focus to File / the Open card (B6.1).
+      const origin = commandOrigin(document.activeElement)
+      void (async () => {
+        const outcome = (await s.guardClose('replace'))
+          ? (await s.openFromDialog()).status
+          : 'cancelled'
+        await afterNativePicker(origin, outcome)
+      })()
       return
+    }
     case 'file.importDslr':
       void chooseDslrTemplate()
       return

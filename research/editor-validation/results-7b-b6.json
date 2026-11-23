@@ -169,7 +169,7 @@
         "level": null,
         "keyshortcuts": null
       },
-      "sel1": ["bf487907-93aa-4f05-819b-1c7ff128ef78"],
+      "sel1": ["cd2d3286-2328-4258-b9b9-c53a5b2cda70"],
       "row": {
         "role": "treeitem",
         "name": "Photo: Photo 1 #1",
@@ -646,13 +646,16 @@
     }
   },
   {
-    "name": "28 focus ring: a keyboard-focused button draws a solid ring of at least 2 device pixels (device-aware: Chromium snaps 2 CSS px to whole device pixels)",
+    "name": "28 focus ring: a keyboard-focused button draws a solid ring of at least 2 physical device pixels (device-aware: Chromium snaps 2 CSS px to whole pixels of the real display, even under emulation)",
     "ok": true,
     "detail": {
       "style": "solid",
       "width": 2,
-      "device": 2,
-      "dpr": 1
+      "dpr": 1,
+      "nativeDpr": 2,
+      "devicePx": 2,
+      "scale": 1,
+      "basis": "reported"
     }
   },
   {
@@ -696,6 +699,40 @@
       "forcedBtn": {
         "style": "solid",
         "width": 2
+      }
+    }
+  },
+  {
+    "name": "59 forced colours (B6.1): every text inside a Highlight state — pressed view toggles (Safe areas, Overflow, Cut guides), selected layer row, open rail item — uses HighlightText, with the app in Light (≈ High Contrast White) and Dark (≈ High Contrast Black); selectors read from a11y.css; a re-created near-black value is caught",
+    "ok": true,
+    "detail": {
+      "hlByTheme": {
+        "light": {
+          "selectors": 24,
+          "states": 8,
+          "pressedPills": ["view-safe-areas", "view-overflow", "view-cut-guides"],
+          "texts": 11,
+          "HLT": "rgb(255, 255, 255)",
+          "minRatio": 19.04,
+          "bad": []
+        },
+        "dark": {
+          "selectors": 24,
+          "states": 8,
+          "pressedPills": ["view-safe-areas", "view-overflow", "view-cut-guides"],
+          "texts": 11,
+          "HLT": "rgb(255, 255, 255)",
+          "minRatio": 15.13,
+          "bad": []
+        }
+      },
+      "negativeCaught": 3,
+      "negativeSample": {
+        "state": "view-pill on",
+        "text": "On",
+        "col": "rgb(27, 28, 25)",
+        "bg": "rgba(5, 0, 73, 0.8)",
+        "r": 1.11
       }
     }
   },
@@ -1309,82 +1346,101 @@
     ]
   },
   {
-    "name": "55 OS scale 100 % / 125 % × app interface scale 90–125 %: the focus ring stays solid and at least 2 device pixels; Save and the rail stay at least 24 CSS px; no sideways scroll",
+    "name": "55 OS scale 100 % / 125 % × app interface scale 90–125 %: the focus ring stays solid and at least 2 physical device pixels (snap scale per tolerance.js); Save and the rail stay at least 24 CSS px; no sideways scroll",
     "ok": true,
-    "detail": [
-      {
-        "dpr": 1,
-        "ui": "0.9",
-        "ringDevicePx": 2,
-        "solid": true,
-        "save": [73, 31],
-        "rail": [60, 58],
-        "scroll": true
-      },
-      {
-        "dpr": 1,
-        "ui": "1",
-        "ringDevicePx": 2,
-        "solid": true,
-        "save": [80, 34],
-        "rail": [68, 64],
-        "scroll": true
-      },
-      {
-        "dpr": 1,
-        "ui": "1.1",
-        "ringDevicePx": 2,
-        "solid": true,
-        "save": [86, 37],
-        "rail": [76, 70],
-        "scroll": true
-      },
-      {
-        "dpr": 1,
-        "ui": "1.25",
-        "ringDevicePx": 2,
-        "solid": true,
-        "save": [95, 43],
-        "rail": [88, 80],
-        "scroll": true
-      },
-      {
-        "dpr": 1.25,
-        "ui": "0.9",
-        "ringDevicePx": 2.5,
-        "solid": true,
-        "save": [73, 31],
-        "rail": [60, 58],
-        "scroll": true
-      },
-      {
-        "dpr": 1.25,
-        "ui": "1",
-        "ringDevicePx": 2.5,
-        "solid": true,
-        "save": [80, 34],
-        "rail": [68, 64],
-        "scroll": true
-      },
-      {
-        "dpr": 1.25,
-        "ui": "1.1",
-        "ringDevicePx": 2.5,
-        "solid": true,
-        "save": [86, 37],
-        "rail": [76, 70],
-        "scroll": true
-      },
-      {
-        "dpr": 1.25,
-        "ui": "1.25",
-        "ringDevicePx": 2.5,
-        "solid": true,
-        "save": [95, 43],
-        "rail": [88, 80],
-        "scroll": true
-      }
-    ]
+    "detail": {
+      "nativeDpr": 2,
+      "scaleRuns": [
+        {
+          "dpr": 1,
+          "ui": "0.9",
+          "ringCss": 2,
+          "solid": true,
+          "save": [73, 31],
+          "rail": [60, 58],
+          "scroll": true,
+          "ringDevicePx": 2,
+          "snappedTo": "reported"
+        },
+        {
+          "dpr": 1,
+          "ui": "1",
+          "ringCss": 2,
+          "solid": true,
+          "save": [80, 34],
+          "rail": [68, 64],
+          "scroll": true,
+          "ringDevicePx": 2,
+          "snappedTo": "reported"
+        },
+        {
+          "dpr": 1,
+          "ui": "1.1",
+          "ringCss": 2,
+          "solid": true,
+          "save": [86, 37],
+          "rail": [76, 70],
+          "scroll": true,
+          "ringDevicePx": 2,
+          "snappedTo": "reported"
+        },
+        {
+          "dpr": 1,
+          "ui": "1.25",
+          "ringCss": 2,
+          "solid": true,
+          "save": [95, 43],
+          "rail": [88, 80],
+          "scroll": true,
+          "ringDevicePx": 2,
+          "snappedTo": "reported"
+        },
+        {
+          "dpr": 1.25,
+          "ui": "0.9",
+          "ringCss": 2,
+          "solid": true,
+          "save": [73, 31],
+          "rail": [60, 58],
+          "scroll": true,
+          "ringDevicePx": 4,
+          "snappedTo": "native"
+        },
+        {
+          "dpr": 1.25,
+          "ui": "1",
+          "ringCss": 2,
+          "solid": true,
+          "save": [80, 34],
+          "rail": [68, 64],
+          "scroll": true,
+          "ringDevicePx": 4,
+          "snappedTo": "native"
+        },
+        {
+          "dpr": 1.25,
+          "ui": "1.1",
+          "ringCss": 2,
+          "solid": true,
+          "save": [86, 37],
+          "rail": [76, 70],
+          "scroll": true,
+          "ringDevicePx": 4,
+          "snappedTo": "native"
+        },
+        {
+          "dpr": 1.25,
+          "ui": "1.25",
+          "ringCss": 2,
+          "solid": true,
+          "save": [95, 43],
+          "rail": [88, 80],
+          "scroll": true,
+          "ringDevicePx": 4,
+          "snappedTo": "native"
+        }
+      ]
+    }
   },
   {
     "name": "56 the selection toolbar never covers a getting-started tips button (1426×779 and the 1100×650 minimum)",
@@ -1397,6 +1453,84 @@
         "covered": []
       }
     ]
+  },
+  {
+    "name": "60 native picker cancelled (B6.1): File › Open… (keyboard and mouse) and File › Import dslrBooth template… (keyboard) leave focus on the File title — not the page — with the menu closed and no tooltip; the keyboard route shows the ring",
+    "ok": true,
+    "detail": {
+      "openCancelKb": {
+        "onFile": true,
+        "body": false,
+        "fv": true,
+        "menuOpen": false,
+        "tooltip": false,
+        "dialog": false,
+        "inDialog": false,
+        "project": "Untitled",
+        "file": "B6.1 Picker.boothproject"
+      },
+      "openCancelMouse": {
+        "onFile": true,
+        "body": false,
+        "fv": false,
+        "menuOpen": false,
+        "tooltip": false,
+        "dialog": false,
+        "inDialog": false,
+        "project": "Untitled",
+        "file": "B6.1 Picker.boothproject"
+      },
+      "importCancelKb": {
+        "onFile": true,
+        "body": false,
+        "fv": true,
+        "menuOpen": false,
+        "tooltip": false,
+        "dialog": false,
+        "inDialog": false,
+        "project": "Untitled",
+        "file": "B6.1 Picker.boothproject"
+      }
+    }
+  },
+  {
+    "name": "61 native picker used (B6.1): a successful Import opens its review with focus inside it (closing it returns to File); a successful Open loads the project without pulling focus back to File",
+    "ok": true,
+    "detail": {
+      "importOk": {
+        "onFile": false,
+        "body": false,
+        "fv": true,
+        "menuOpen": false,
+        "tooltip": false,
+        "dialog": true,
+        "inDialog": true,
+        "project": "Untitled",
+        "file": "B6.1 Picker.boothproject"
+      },
+      "importClosed": {
+        "onFile": true,
+        "body": false,
+        "fv": true,
+        "menuOpen": false,
+        "tooltip": false,
+        "dialog": false,
+        "inDialog": false,
+        "project": "Untitled",
+        "file": "B6.1 Picker.boothproject"
+      },
+      "openOk": {
+        "onFile": false,
+        "body": true,
+        "fv": false,
+        "menuOpen": false,
+        "tooltip": false,
+        "dialog": false,
+        "inDialog": false,
+        "project": "Untitled",
+        "file": "B6.1 Picker.boothproject"
+      }
+    }
   },
   {
     "name": "57 no Sample Photos wording anywhere on screen",
