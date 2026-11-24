@@ -1,0 +1,1096 @@
+[
+  {
+    "name": "1 Start offers Design Guide as a card beside Blank design, Custom size and Import dslrBooth (same size, one row); Open project stays",
+    "ok": true,
+    "detail": {
+      "titles": ["Design Guide", "Blank design", "Custom size", "Import dslrBooth"],
+      "tops": [155, 155, 155, 155],
+      "widths": [259, 259, 259, 259],
+      "desc": "Answer a few questions and get a starting design you can edit.",
+      "open": true,
+      "sw": 1440,
+      "iw": 1440
+    }
+  },
+  {
+    "name": "1b the Guide opens as a labelled modal: \"Choose your print size\", Step 1 of 5, steps Size · Photos · Colors · Text · Review; focus on the chosen size; no project yet",
+    "ok": true,
+    "detail": {
+      "opened": {
+        "role": "dialog",
+        "modal": "true",
+        "title": "Choose your print size",
+        "desc": "Design Guide · Step 1 of 5",
+        "steps": ["1Size", "2Photos", "3Colors", "4Text", "5Review"],
+        "current": "format",
+        "project": false
+      },
+      "focus0": {
+        "tag": "BUTTON",
+        "testid": null,
+        "value": "strip",
+        "text": "2×6 StripPrints two per 4×6 sheet",
+        "id": "",
+        "inGuide": true,
+        "visible": false
+      }
+    }
+  },
+  {
+    "name": "2 sizes: 2×6 Strip, 4×6 Portrait, 6×4 Landscape (the built-in formats, with their real sizes and print sheets) and Custom size",
+    "ok": true,
+    "detail": {
+      "portrait": {
+        "checked": "portrait",
+        "note": "4 × 6 in · 2400 × 3600 px @ 600 DPI · Exact size: one design per print",
+        "choice": "portrait"
+      },
+      "landscape": {
+        "checked": "landscape",
+        "note": "6 × 4 in · 3600 × 2400 px @ 600 DPI · Exact size: one design per print",
+        "choice": "landscape"
+      },
+      "strip": {
+        "checked": "strip",
+        "note": "2 × 6 in · 1200 × 3600 px @ 600 DPI · 2 copies on a 4 × 6 in sheet",
+        "choice": "strip"
+      }
+    }
+  },
+  {
+    "name": "2b Custom size with no size made yet: Next is disabled and says why (\"Fix 1 thing to continue.\"), the error is next to the button",
+    "ok": true,
+    "detail": {
+      "disabled": true,
+      "describedby": "guide-issue-summary",
+      "summary": "Fix 1 thing to continue.",
+      "err": "Make a custom size first, or choose another size.",
+      "openEditor": false
+    }
+  },
+  {
+    "name": "3 Custom size reuses the B5.5 wizard unchanged (same dialog, on top of the Guide); it ends with \"Use this size\" and no project-name field",
+    "ok": true,
+    "detail": {
+      "title": "What size are you designing?",
+      "onTop": true,
+      "guideStill": true
+    }
+  },
+  {
+    "name": "3b \"Use this size\" hands the format back to the Guide (no project created); the Guide shows it and focus returns to its button",
+    "ok": true,
+    "detail": {
+      "wizReview": {
+        "name": false,
+        "button": "Use this size",
+        "output": "4 copies on a 4 × 6 in sheet"
+      },
+      "afterWiz": {
+        "choice": "custom",
+        "format": {
+          "name": "Custom format",
+          "width": 2,
+          "height": 3,
+          "dpi": 300,
+          "unit": "in",
+          "arrangement": {
+            "kind": "repeat",
+            "sheetWidth": 4,
+            "sheetHeight": 6,
+            "columns": 2,
+            "rows": 2,
+            "columnGap": 0,
+            "rowGap": 0,
+            "margins": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            },
+            "align": "center"
+          },
+          "safeMarginMm": 3,
+          "cutGuides": true
+        },
+        "chosen": "Custom format2 × 3 in · 4 copies on a 4 × 6 in sheet",
+        "project": false,
+        "focus": "guide-custom-open",
+        "next": false
+      }
+    }
+  },
+  {
+    "name": "4 Next walks Size → Photos → Colors → Text → Review: title, step list (aria-current) and one live announcement change; focus moves into the new step",
+    "ok": true,
+    "detail": [
+      {
+        "step": "photos",
+        "title": "How many photos?",
+        "current": "photos",
+        "announce": "Step 2 of 5: How many photos?",
+        "focusIn": true
+      },
+      {
+        "step": "style",
+        "title": "Choose your colors",
+        "current": "style",
+        "announce": "Step 3 of 5: Choose your colors",
+        "focusIn": true
+      },
+      {
+        "step": "text",
+        "title": "Add event text",
+        "current": "text",
+        "announce": "Step 4 of 5: Add event text",
+        "focusIn": true
+      },
+      {
+        "step": "review",
+        "title": "Review your design",
+        "current": "review",
+        "announce": "Step 5 of 5: Review your design",
+        "focusIn": true
+      }
+    ]
+  },
+  {
+    "name": "5 Back and Next keep every answer and never duplicate anything (preview: 3 photo slots + 1 text, before, while and after going back)",
+    "ok": true,
+    "detail": {
+      "backStep": "photos",
+      "counts1": {
+        "photos": 3,
+        "texts": 1
+      },
+      "counts2": {
+        "photos": 3,
+        "texts": 1
+      },
+      "counts3": {
+        "photos": 3,
+        "texts": 1
+      }
+    }
+  },
+  {
+    "name": "6 1 photo: Large / Centered — each layout drawn with 1 slot and the preview shows 1",
+    "ok": true,
+    "detail": {
+      "layouts": [
+        {
+          "v": "1-large",
+          "on": true,
+          "label": "Large",
+          "slots": 1
+        },
+        {
+          "v": "1-centered",
+          "on": false,
+          "label": "Centered",
+          "slots": 1
+        }
+      ],
+      "preview": [
+        {
+          "v": "1-large",
+          "photos": 1,
+          "texts": 1
+        },
+        {
+          "v": "1-centered",
+          "photos": 1,
+          "texts": 1
+        }
+      ]
+    }
+  },
+  {
+    "name": "7 2 photos: Stacked / Side by side — each layout drawn with 2 slots and the preview shows 2",
+    "ok": true,
+    "detail": {
+      "layouts": [
+        {
+          "v": "2-stacked",
+          "on": true,
+          "label": "Stacked",
+          "slots": 2
+        },
+        {
+          "v": "2-side",
+          "on": false,
+          "label": "Side by side",
+          "slots": 2
+        }
+      ],
+      "preview": [
+        {
+          "v": "2-stacked",
+          "photos": 2,
+          "texts": 1
+        },
+        {
+          "v": "2-side",
+          "photos": 2,
+          "texts": 1
+        }
+      ]
+    }
+  },
+  {
+    "name": "8 3 photos: Stacked / One large, two small — each layout drawn with 3 slots and the preview shows 3",
+    "ok": true,
+    "detail": {
+      "layouts": [
+        {
+          "v": "3-stacked",
+          "on": true,
+          "label": "Stacked",
+          "slots": 3
+        },
+        {
+          "v": "3-feature",
+          "on": false,
+          "label": "One large, two small",
+          "slots": 3
+        }
+      ],
+      "preview": [
+        {
+          "v": "3-stacked",
+          "photos": 3,
+          "texts": 1
+        },
+        {
+          "v": "3-feature",
+          "photos": 3,
+          "texts": 1
+        }
+      ]
+    }
+  },
+  {
+    "name": "9 4 photos: Grid / Stacked — each layout drawn with 4 slots and the preview shows 4",
+    "ok": true,
+    "detail": {
+      "layouts": [
+        {
+          "v": "4-grid",
+          "on": false,
+          "label": "Grid",
+          "slots": 4
+        },
+        {
+          "v": "4-stacked",
+          "on": true,
+          "label": "Stacked",
+          "slots": 4
+        }
+      ],
+      "preview": [
+        {
+          "v": "4-grid",
+          "photos": 4,
+          "texts": 1
+        },
+        {
+          "v": "4-stacked",
+          "photos": 4,
+          "texts": 1
+        }
+      ]
+    }
+  },
+  {
+    "name": "11 portrait 4×6 starts with 2 stacked, one large + two small, a 2×2 grid",
+    "ok": true,
+    "detail": {
+      "strip": ["2-stacked", "3-stacked", "4-stacked"],
+      "portrait": ["2-stacked", "3-feature", "4-grid"],
+      "landscape": ["2-side", "3-feature", "4-grid"]
+    }
+  },
+  {
+    "name": "12 landscape 6×4 starts with 2 side by side, one large + two small (beside), a 2×2 grid",
+    "ok": true,
+    "detail": {
+      "strip": ["2-stacked", "3-stacked", "4-stacked"],
+      "portrait": ["2-stacked", "3-feature", "4-grid"],
+      "landscape": ["2-side", "3-feature", "4-grid"]
+    }
+  },
+  {
+    "name": "13 the 2×6 strip starts with photos stacked (2, 3 and 4)",
+    "ok": true,
+    "detail": {
+      "strip": ["2-stacked", "3-stacked", "4-stacked"],
+      "portrait": ["2-stacked", "3-feature", "4-grid"],
+      "landscape": ["2-side", "3-feature", "4-grid"]
+    }
+  },
+  {
+    "name": "19 Review summarises size, prints, photos, colours, text, safe margin and printer profile; Finish is the primary action; the preview is the real render with a text description",
+    "ok": true,
+    "detail": {
+      "size": "2×6 Strip · 2 × 6 in",
+      "out": "2 copies on a 4 × 6 in sheet",
+      "photos": "3 photos · Stacked · shape chosen automatically",
+      "colors": "Background #fbf1ee, accent #c97b84, text #4a3438",
+      "text": "Event name: “Sam & Alex” · Date: “June 14, 2027”Georgia, bold event name · aligned center",
+      "safe": "No generic safe margin",
+      "printer": "No printer profile selectedThat is fine for PNG files. You can choose one later.",
+      "finish": "Finish",
+      "openEditor": false,
+      "canvas": true,
+      "label": "Preview. Design. 2×6 Strip, 600 DPI, Design 1200×3600 px. 2 copies per sheet. 5 layers. Nothing selected. Use the Layers panel to choose a layer and Properties to change it."
+    }
+  },
+  {
+    "name": "14 style applies: the Blush colours, thick accent frames and rounded corners are on the real project",
+    "ok": true,
+    "detail": {
+      "palette": {
+        "colors": [
+          {
+            "id": "22658189-220b-4bb8-9133-43c043323df8",
+            "role": "background",
+            "name": "Background",
+            "value": "#fbf1ee"
+          },
+          {
+            "id": "52950e3f-5d19-47ba-9e83-39f0c8a80f9a",
+            "role": "accent",
+            "name": "Accent",
+            "value": "#c97b84"
+          },
+          {
+            "id": "00c5ae1d-0c13-4ce2-8243-2d9da2f9395d",
+            "role": "text",
+            "name": "Text",
+            "value": "#4a3438"
+          }
+        ]
+      },
+      "frames": [
+        [
+          {
+            "style": "solid",
+            "thickness": 15,
+            "color": {
+              "kind": "palette",
+              "paletteColorId": "52950e3f-5d19-47ba-9e83-39f0c8a80f9a"
+            }
+          },
+          35
+        ],
+        [
+          {
+            "style": "solid",
+            "thickness": 15,
+            "color": {
+              "kind": "palette",
+              "paletteColorId": "52950e3f-5d19-47ba-9e83-39f0c8a80f9a"
+            }
+          },
+          35
+        ],
+        [
+          {
+            "style": "solid",
+            "thickness": 15,
+            "color": {
+              "kind": "palette",
+              "paletteColorId": "52950e3f-5d19-47ba-9e83-39f0c8a80f9a"
+            }
+          },
+          35
+        ]
+      ]
+    }
+  },
+  {
+    "name": "15 Event Palette: the Guide wrote Background, Accent and Text as normal palette colours; frames, text and background are LINKED to them (changing Accent in the editor changes every frame)",
+    "ok": true,
+    "detail": {
+      "paletteUi": ["Background", "Accent", "Text"],
+      "relinked": [
+        {
+          "kind": "palette",
+          "paletteColorId": "52950e3f-5d19-47ba-9e83-39f0c8a80f9a"
+        },
+        {
+          "kind": "palette",
+          "paletteColorId": "52950e3f-5d19-47ba-9e83-39f0c8a80f9a"
+        },
+        {
+          "kind": "palette",
+          "paletteColorId": "52950e3f-5d19-47ba-9e83-39f0c8a80f9a"
+        }
+      ]
+    }
+  },
+  {
+    "name": "16 text: one normal text layer per filled-in line (\"Event name\", \"Date\"), bold event name, centred, inside the design, on top of the photos",
+    "ok": true,
+    "detail": [
+      {
+        "name": "Event name",
+        "content": "Sam & Alex",
+        "size": 181,
+        "w": 700,
+        "y": 2959
+      },
+      {
+        "name": "Date",
+        "content": "June 14, 2027",
+        "size": 142,
+        "w": 400,
+        "y": 3237
+      }
+    ]
+  },
+  {
+    "name": "17 font choice offers only installed common fonts (Arial first among them); the chosen font raises no missing-font check",
+    "ok": true,
+    "detail": {
+      "fontOptions": [
+        "Arial",
+        "Helvetica",
+        "Georgia",
+        "Times New Roman",
+        "Courier New",
+        "Verdana",
+        "Trebuchet MS",
+        "Palatino",
+        "Didot",
+        "Bodoni 72",
+        "Snell Roundhand",
+        "Brush Script MT",
+        "Impact"
+      ],
+      "family": "Georgia",
+      "missing": {
+        "alert": false,
+        "checks": "Ready"
+      }
+    }
+  },
+  {
+    "name": "18 missing-font behaviour unchanged: a family that is not installed is kept as requested and flagged by the normal Checks",
+    "ok": true,
+    "detail": {
+      "card": true,
+      "family": "No Such Font 7C"
+    }
+  },
+  {
+    "name": "20 Finish opens the normal editor with the design: rail, Layers (5 rows), Guide closed and cleared, project new and unsaved (Modified), a short ready message",
+    "ok": true,
+    "detail": {
+      "past": 0,
+      "future": 0,
+      "dirty": true,
+      "neverSaved": true,
+      "guideOpen": false,
+      "step": "format",
+      "rail": true,
+      "layersRows": 5,
+      "msg": "Your design is ready. Fine-tune it, check it and export when you are happy.",
+      "focusCanvas": false
+    }
+  },
+  {
+    "name": "18b history: the Guide result is the starting point (no undo entries); Undo never removes it piece by piece",
+    "ok": true,
+    "detail": {
+      "past": 0,
+      "future": 0,
+      "dirty": true,
+      "neverSaved": true,
+      "guideOpen": false,
+      "step": "format",
+      "rail": true,
+      "layersRows": 5,
+      "msg": "Your design is ready. Fine-tune it, check it and export when you are happy.",
+      "focusCanvas": false
+    }
+  },
+  {
+    "name": "21 the editor has normal layers: photo slots numbered 1, 2, 3 (\"Photo 1…3\"), no sample image, then two text layers",
+    "ok": true,
+    "detail": [
+      ["Photo 1", 1, 72, 327, 1056, 704],
+      ["Photo 2", 2, 72, 1079, 1056, 704],
+      ["Photo 3", 3, 72, 1831, 1056, 704]
+    ]
+  },
+  {
+    "name": "22 Guide → editor: a slot is selected and moved like any layer (one history entry), Undo puts it back; the Guide does not come back and overwrite it",
+    "ok": true,
+    "detail": {
+      "edited": {
+        "x": 10,
+        "y": 20,
+        "sel": ["de124eab-c6d5-4835-83eb-97a8a0fc5684"],
+        "past": 1,
+        "props": true
+      },
+      "undone": 72
+    }
+  },
+  {
+    "name": "23 no Guide data is saved: the file has no Guide fields or words, no event metadata, the same keys as a blank project",
+    "ok": true,
+    "detail": [
+      "format",
+      "schemaVersion",
+      "id",
+      "metadata",
+      "event",
+      "design",
+      "canvas",
+      "output",
+      "palette",
+      "layers",
+      "assets",
+      "export"
+    ]
+  },
+  {
+    "name": "24 save and reopen: the project opens with the same layers, palette and canvas (a normal .boothproject)",
+    "ok": true,
+    "detail": {
+      "layers": 5
+    }
+  },
+  {
+    "name": "41 schema unchanged: a Guide-made 2×6 is saved as schemaVersion 1, like any standard project (ADR-060)",
+    "ok": true,
+    "detail": 1
+  },
+  {
+    "name": "25 normal export: Print, Design and Proof PNGs are written through the normal Export dialog",
+    "ok": true,
+    "detail": {
+      "outputsA": ["dslrbooth", "dslrbooth-4x6", "print", "design", "proof"],
+      "filesA": ["Pair A-design.png", "Pair A-print.png", "Pair A-proof.png", "Pair A.zip"]
+    }
+  },
+  {
+    "name": "26 dslrBooth export works unchanged for a Guide project (a normal template ZIP: XML + artwork; no Guide data)",
+    "ok": true,
+    "detail": {
+      "zipA": "Pair A.zip",
+      "zipEntries": ["artwork-1.png", "background.png", "preview.png", "template.xml"]
+    }
+  },
+  {
+    "name": "27 custom size: the Guide project has the B5.5 format exactly (2×3 in @ 300 DPI, 2×2 on a 4×6 sheet, 3 mm safe margin), and photos/text keep clear of the safe margin",
+    "ok": true,
+    "detail": {
+      "canvas": {
+        "print": {
+          "width": 2,
+          "height": 3,
+          "unit": "in",
+          "dpi": 300
+        },
+        "backgroundColor": {
+          "kind": "palette",
+          "paletteColorId": "df2fc7e2-5fde-4a5f-aaff-1417e1071d4d"
+        },
+        "safeMarginMm": 3
+      },
+      "output": {
+        "print": {
+          "width": 4,
+          "height": 6,
+          "unit": "in",
+          "dpi": 300
+        },
+        "layout": {
+          "kind": "grid",
+          "columns": 2,
+          "rows": 2,
+          "gap": 0
+        }
+      },
+      "layers": [
+        ["photo", 76, 47, 448, 299],
+        ["photo", 76, 370, 448, 299],
+        ["text", 47, 719, 506, 107]
+      ]
+    }
+  },
+  {
+    "name": "40 Guide output = the same design built by hand in the editor, for all three pairs: same project content; Design, Print and Proof pixel-identical (bytes too unless listed under bytesOnly); dslrBooth package equivalent (same files, XML except LastSavedDate/Id, artwork pixels — transparent-artwork text edges within 1/255, listed under edgeAlpha1)",
+    "ok": true,
+    "detail": {
+      "semA": true,
+      "semB": true,
+      "semC": true,
+      "A": {
+        "files": ["Pair A-design.png", "Pair A-print.png", "Pair A-proof.png", "Pair A.zip"],
+        "diffs": [],
+        "bytesOnly": ["Pair A-proof.png", "Pair A.zip:preview.png"],
+        "edgeAlpha1": ["Pair A.zip:artwork-1.png"]
+      },
+      "B": {
+        "files": ["Pair B-print.png", "Pair B-proof.png", "Pair B.zip"],
+        "diffs": [],
+        "bytesOnly": [],
+        "edgeAlpha1": []
+      },
+      "C": {
+        "files": ["Pair C-design.png", "Pair C-print.png", "Pair C-proof.png"],
+        "diffs": [],
+        "bytesOnly": [],
+        "edgeAlpha1": []
+      }
+    }
+  },
+  {
+    "name": "41b schema unchanged: a Guide-made custom size with a safe margin is saved as schemaVersion 2, exactly like the same size made with Custom size (ADR-060); no new fields",
+    "ok": true,
+    "detail": 2
+  },
+  {
+    "name": "20b Open in editor works from earlier steps (Text: pair B; Photos: pair C) with the answers so far; the 6×4/4×6 photo has a camera shape",
+    "ok": true,
+    "detail": {
+      "B": [
+        ["Photo 1", 1703, 2554],
+        ["Event name", 2112, 330],
+        ["Message", 2112, 163]
+      ],
+      "C": ["Photo 1", "Photo 2", "Event name"]
+    }
+  },
+  {
+    "name": "28 keyboard only: Tab to the Start card, Enter; arrows choose size, count and colours; Tab to Next and Enter on each step; type the event name; Finish — the project matches every choice",
+    "ok": true,
+    "detail": {
+      "onCard": {
+        "tag": "BUTTON",
+        "testid": null,
+        "value": null,
+        "text": "123Design GuideAnswer a few questions an",
+        "id": "start-guide",
+        "inGuide": false,
+        "visible": true
+      },
+      "k1": {
+        "tag": "BUTTON",
+        "testid": null,
+        "value": "portrait",
+        "text": "4×6 PortraitOne per 4×6 print",
+        "id": "",
+        "inGuide": true,
+        "visible": true
+      },
+      "k2": {
+        "tag": "BUTTON",
+        "testid": null,
+        "value": null,
+        "text": "3",
+        "id": "",
+        "inGuide": true,
+        "visible": true
+      },
+      "k3": {
+        "tag": "BUTTON",
+        "testid": null,
+        "value": "classic",
+        "text": "Classic",
+        "id": "",
+        "inGuide": true,
+        "visible": true
+      },
+      "k4": {
+        "tag": "INPUT",
+        "testid": "guide-text-title-on",
+        "value": null,
+        "text": "",
+        "id": "",
+        "inGuide": true,
+        "visible": true
+      },
+      "k5": {
+        "tag": "INPUT",
+        "testid": "guide-text-title",
+        "value": null,
+        "text": "",
+        "id": "_r_ee_-title",
+        "inGuide": true,
+        "visible": true
+      },
+      "k6": "review"
+    }
+  },
+  {
+    "name": "29 focus: each new step focuses its chosen option (or first field), with a visible keyboard ring; nothing focusable is lost",
+    "ok": true,
+    "detail": {
+      "k1": {
+        "tag": "BUTTON",
+        "testid": null,
+        "value": "portrait",
+        "text": "4×6 PortraitOne per 4×6 print",
+        "id": "",
+        "inGuide": true,
+        "visible": true
+      },
+      "k2": {
+        "tag": "BUTTON",
+        "testid": null,
+        "value": null,
+        "text": "3",
+        "id": "",
+        "inGuide": true,
+        "visible": true
+      },
+      "k3": {
+        "tag": "BUTTON",
+        "testid": null,
+        "value": "classic",
+        "text": "Classic",
+        "id": "",
+        "inGuide": true,
+        "visible": true
+      },
+      "k4": {
+        "tag": "INPUT",
+        "testid": "guide-text-title-on",
+        "value": null,
+        "text": "",
+        "id": "",
+        "inGuide": true,
+        "visible": true
+      }
+    }
+  },
+  {
+    "name": "29b Escape / Cancel before Finish: back to Start (no project, focus on the Design Guide card); the answers are kept and the Guide resumes; Start over clears them",
+    "ok": true,
+    "detail": {
+      "afterEsc": {
+        "open": false,
+        "project": false,
+        "focus": "start-guide",
+        "count": 2
+      },
+      "resumed": {
+        "step": "photos",
+        "startOver": true
+      },
+      "fresh": {
+        "step": "format",
+        "count": 3
+      }
+    }
+  },
+  {
+    "name": "30 errors: a turned-on line left empty marks its field invalid with the reason as its description; Next is disabled and described by \"Fix 2 things to continue.\"; Open in editor stays available",
+    "ok": true,
+    "detail": {
+      "disabled": true,
+      "summary": "Fix 2 things to continue.",
+      "invalid": "true",
+      "desc": "Type the event name, or turn it off.",
+      "dateDesc": "Type the date, or turn it off.",
+      "openEditor": true
+    }
+  },
+  {
+    "name": "31 High Contrast: chosen layout, chosen photo count and the current step use the system Highlight with HighlightText text; layout drawings and colour swatches stay visible",
+    "ok": true,
+    "detail": {
+      "forced": {
+        "media": true,
+        "HL": "rgba(5, 0, 73, 0.8)",
+        "HT": "rgb(255, 255, 255)",
+        "card": "rgba(5, 0, 73, 0.8)",
+        "title": "rgb(255, 255, 255)",
+        "step": "rgba(5, 0, 73, 0.8)",
+        "seg": "rgba(5, 0, 73, 0.8)",
+        "slot": "rgb(0, 0, 0)"
+      },
+      "forcedSw": {
+        "bg": "rgb(255, 255, 255)",
+        "border": "solid"
+      }
+    }
+  },
+  {
+    "name": "32 reduced motion: no transitions in the Guide",
+    "ok": true,
+    "detail": {
+      "media": true,
+      "card": "0s",
+      "btn": "0s"
+    }
+  },
+  {
+    "name": "33 light: Guide text readable (title ≥ 7:1, notes ≥ 4.5:1), the window fits, no horizontal scroll",
+    "ok": true,
+    "detail": {
+      "bg": "rgb(255, 255, 255)",
+      "title": "rgb(27, 28, 34)",
+      "note": "rgb(79, 82, 96)",
+      "dd": "rgb(27, 28, 34)",
+      "sw": 1440,
+      "iw": 1440,
+      "cTitle": 17,
+      "cNote": 7.8,
+      "box": {
+        "l": 280,
+        "t": 94,
+        "r": 1160,
+        "b": 778,
+        "iw": 1440,
+        "ih": 872,
+        "sw": 1440,
+        "inside": true,
+        "footer": true,
+        "hscroll": false
+      }
+    }
+  },
+  {
+    "name": "34 dark: Guide text readable (title ≥ 7:1, notes ≥ 4.5:1), the window fits, no horizontal scroll",
+    "ok": true,
+    "detail": {
+      "bg": "rgb(30, 31, 36)",
+      "title": "rgb(237, 237, 241)",
+      "note": "rgb(170, 173, 186)",
+      "dd": "rgb(237, 237, 241)",
+      "sw": 1440,
+      "iw": 1440,
+      "cTitle": 14.1,
+      "cNote": 7.4,
+      "box": {
+        "l": 280,
+        "t": 94,
+        "r": 1160,
+        "b": 778,
+        "iw": 1440,
+        "ih": 872,
+        "sw": 1440,
+        "inside": true,
+        "footer": true,
+        "hscroll": false
+      }
+    }
+  },
+  {
+    "name": "35 Compact: Guide text readable (title ≥ 7:1, notes ≥ 4.5:1), the window fits, no horizontal scroll",
+    "ok": true,
+    "detail": {
+      "bg": "rgb(255, 255, 255)",
+      "title": "rgb(27, 28, 34)",
+      "note": "rgb(79, 82, 96)",
+      "dd": "rgb(27, 28, 34)",
+      "sw": 1440,
+      "iw": 1440,
+      "cTitle": 17,
+      "cNote": 7.8,
+      "box": {
+        "l": 280,
+        "t": 101,
+        "r": 1160,
+        "b": 771,
+        "iw": 1440,
+        "ih": 872,
+        "sw": 1440,
+        "inside": true,
+        "footer": true,
+        "hscroll": false
+      }
+    }
+  },
+  {
+    "name": "36 Windows target 1426×779: every step fits, the footer (Back, Open in editor, Next) is visible, the preview is drawn",
+    "ok": true,
+    "detail": {
+      "format": {
+        "l": 273,
+        "t": 61,
+        "r": 1153,
+        "b": 718,
+        "iw": 1426,
+        "ih": 779,
+        "sw": 1426,
+        "inside": true,
+        "footer": true,
+        "hscroll": false,
+        "preview": {
+          "w": 124,
+          "h": 374
+        }
+      },
+      "photos": {
+        "l": 273,
+        "t": 61,
+        "r": 1153,
+        "b": 718,
+        "iw": 1426,
+        "ih": 779,
+        "sw": 1426,
+        "inside": true,
+        "footer": true,
+        "hscroll": false,
+        "preview": {
+          "w": 124,
+          "h": 374
+        }
+      },
+      "style": {
+        "l": 273,
+        "t": 61,
+        "r": 1153,
+        "b": 718,
+        "iw": 1426,
+        "ih": 779,
+        "sw": 1426,
+        "inside": true,
+        "footer": true,
+        "hscroll": false,
+        "preview": {
+          "w": 124,
+          "h": 374
+        }
+      },
+      "text": {
+        "l": 273,
+        "t": 61,
+        "r": 1153,
+        "b": 718,
+        "iw": 1426,
+        "ih": 779,
+        "sw": 1426,
+        "inside": true,
+        "footer": true,
+        "hscroll": false,
+        "preview": {
+          "w": 124,
+          "h": 374
+        }
+      },
+      "review": {
+        "l": 273,
+        "t": 61,
+        "r": 1153,
+        "b": 718,
+        "iw": 1426,
+        "ih": 779,
+        "sw": 1426,
+        "inside": true,
+        "footer": true,
+        "hscroll": false,
+        "preview": {
+          "w": 124,
+          "h": 374
+        }
+      }
+    }
+  },
+  {
+    "name": "37 minimum window 1087×643: every step fits with its footer reachable and a visible preview",
+    "ok": true,
+    "detail": {
+      "format": {
+        "l": 104,
+        "t": 16,
+        "r": 984,
+        "b": 627,
+        "iw": 1087,
+        "ih": 643,
+        "sw": 1087,
+        "inside": true,
+        "footer": true,
+        "hscroll": false,
+        "preview": {
+          "w": 103,
+          "h": 309
+        }
+      },
+      "photos": {
+        "l": 104,
+        "t": 16,
+        "r": 984,
+        "b": 627,
+        "iw": 1087,
+        "ih": 643,
+        "sw": 1087,
+        "inside": true,
+        "footer": true,
+        "hscroll": false,
+        "preview": {
+          "w": 103,
+          "h": 309
+        }
+      },
+      "style": {
+        "l": 104,
+        "t": 16,
+        "r": 984,
+        "b": 627,
+        "iw": 1087,
+        "ih": 643,
+        "sw": 1087,
+        "inside": true,
+        "footer": true,
+        "hscroll": false,
+        "preview": {
+          "w": 103,
+          "h": 309
+        }
+      },
+      "text": {
+        "l": 104,
+        "t": 16,
+        "r": 984,
+        "b": 627,
+        "iw": 1087,
+        "ih": 643,
+        "sw": 1087,
+        "inside": true,
+        "footer": true,
+        "hscroll": false,
+        "preview": {
+          "w": 103,
+          "h": 309
+        }
+      },
+      "review": {
+        "l": 104,
+        "t": 16,
+        "r": 984,
+        "b": 627,
+        "iw": 1087,
+        "ih": 643,
+        "sw": 1087,
+        "inside": true,
+        "footer": true,
+        "hscroll": false,
+        "preview": {
+          "w": 103,
+          "h": 309
+        }
+      }
+    }
+  },
+  {
+    "name": "38 no horizontal scroll at any tested size (page or Guide)",
+    "ok": true
+  },
+  {
+    "name": "39 no Sample Photos anywhere: no sample words in the Guide or Start, no sample images or assets in any Guide project",
+    "ok": true
+  },
+  {
+    "name": "42 no console errors or uncaught exceptions",
+    "ok": true,
+    "detail": []
+  }
+]

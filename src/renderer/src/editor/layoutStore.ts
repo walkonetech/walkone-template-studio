@@ -48,9 +48,14 @@ interface LayoutState extends LayoutPrefs {
   newProjectOpen: boolean
   /**
    * The Custom Size wizard (B5.5): null = closed; otherwise what it starts from (null format = a fresh custom size, a
-   * format = My formats → Use, opened on Review) and the project name to suggest.
+   * format = My formats → Use, opened on Review) and the project name to suggest. `purpose: 'guide'` (7C): the size is
+   * for the Design Guide — the wizard hands it back to the Guide instead of creating a project.
    */
-  customFormat: { format: FormatDefinition | null; projectName?: string } | null
+  customFormat: {
+    format: FormatDefinition | null
+    projectName?: string
+    purpose?: 'project' | 'guide'
+  } | null
   exportOpen: boolean
   /** View › Printer & cutting… (B4; the Output Profile underneath: choose it and read its evidence). */
   outputProfileOpen: boolean

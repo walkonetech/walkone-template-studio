@@ -25,6 +25,9 @@ export const canvasTargets = (): CanvasDebugTargets =>
 export interface DebugApi {
   store: unknown
   imageCache: unknown
+  /** Design Guide state (7C) and UI layout state, for the built-app suites. */
+  guide?: unknown
+  layout?: unknown
   /** Renders the current project offscreen at an exact size and reports what came out. */
   renderToDataUrl: (
     width?: number,

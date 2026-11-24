@@ -211,6 +211,22 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] (B6.1) File › Open… and File › Import dslrBooth template… — by keyboard (F10 / Alt, arrows, Enter) and by mouse — then **Cancel** the Windows/macOS file picker: focus is on **File** (ring after keyboard use), the menu stays closed, no tooltip; Tab / F6 continue from there. Choose a project / a template instead: the project opens, or the import review opens with focus inside it — focus is not pulled back to File.
 - [ ] (B6.1) Windows **High Contrast White** (and Black): pressed view toggles (Safe areas, Overflow, Cut guides) show both the label and the value (On / Show) in the highlight text colour, clearly readable.
 
+### H7. Design Guide (Phase 7C)
+- [ ] Start shows **Design Guide** first, the same size as Blank design, Custom size and Import dslrBooth; Open project and Recent unchanged.
+- [ ] Open it: "Choose your print size", Step 1 of 5. Pick each size; the line under Resolution shows the size, pixels and how it prints; the preview changes (2×6: Design / Print sheet).
+- [ ] Custom size → **Make a custom size…**: the Custom Size wizard opens on top; its last button says **Use this size** and has no project name. Back in the Guide the chosen size is shown; Next works.
+- [ ] Photos: 1, 2, 3, 4 — each layout card is drawn with that many slots and the preview follows; Auto / Portrait / Landscape / Square change the slot shapes; photos are numbered 1, 2, 3…
+- [ ] Colors: each starting set recolours the preview; typing a hex value changes it; frame None / Thin / Thick, Accent / White, corners Rounded.
+- [ ] Text: Event name, Date, Message — turn one on and leave it empty: the field explains and Next is disabled (it says why). Font list shows only fonts this computer has.
+- [ ] Back to Photos and forward again: nothing doubles in the preview.
+- [ ] Review → **Finish**: the editor opens with Photo 1…n, the text layers and the palette (Colors drawer: Background, Accent, Text). Change Accent in the palette: every frame follows. Undo right away does nothing (the design is the starting point).
+- [ ] From Photos (or Text) use **Open in editor**: the editor opens with the answers so far.
+- [ ] Escape in the Guide: back to Start, focus on the Design Guide card; open it again — it resumes; **Start over** resets.
+- [ ] Keyboard only: Tab to the card, Enter; arrows choose; Tab to Next, Enter; type the event name; Finish.
+- [ ] Windows High Contrast (White and Black): the chosen size / layout / colour set and the current step are highlighted and readable; layout drawings and swatches visible.
+- [ ] 1426 × 779 (Windows 125 %) and the minimum window: every step fits, the footer is visible, no sideways scrolling.
+- [ ] Save, close, reopen a Guide project; export PNG and dslrBooth: same as any project. No sample photos anywhere.
+
 ### H. UI, accessibility, polish
 - [ ] Tooltips on icon-only controls, with shortcut hints.
 - [ ] Everything reachable by keyboard; visible focus ring; labels on fields.
@@ -223,7 +239,7 @@ Mark each item `[x]` when passed. Add a note line for any failure.
 - [ ] No client data appears in `git status`.
 
 ### J. Not built yet (expect absent)
-Design Guide, one-click fixes and custom output profiles (the safe-area check itself exists, G5), event themes, bundled font library, company profile, asset library, client approval, Settings › Appearance (theme and size are in the View menu for now), the later 7B redesigns (selection toolbar, first-run tips, full Properties content, Settings, Learn links, recent-project thumbnails, drawer Pin, Elements search; the Checks panel and the Export / Printer & cutting / Import dialogs arrived in B4), installer, Windows installer/packaging, font embedding, image palette extraction, badge builder, templates/recipes.
+Design Guide re-entry ("Guide me") and its later steps (event type, styles, logo, company branding), one-click fixes and custom output profiles (the safe-area check itself exists, G5), event themes, bundled font library, company profile, asset library, client approval, Settings › Appearance (theme and size are in the View menu for now), the later 7B redesigns (selection toolbar, first-run tips, full Properties content, Settings, Learn links, recent-project thumbnails, drawer Pin, Elements search; the Checks panel and the Export / Printer & cutting / Import dialogs arrived in B4), installer, Windows installer/packaging, font embedding, image palette extraction, badge builder, templates/recipes.
 
 ## 3. Automated suites (optional cross-check)
 

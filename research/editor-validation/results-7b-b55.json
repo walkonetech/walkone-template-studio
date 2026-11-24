@@ -1,10 +1,10 @@
 [
   {
-    "name": "1 Start screen offers Custom size as a first-class card beside Blank design and Import dslrBooth (one row, no horizontal scroll)",
+    "name": "1 Start screen offers Custom size as a first-class card beside Blank design and Import dslrBooth (one row, no horizontal scroll; since 7C the Design Guide card comes first)",
     "ok": true,
     "detail": {
-      "titles": ["Blank design", "Custom size", "Import dslrBooth"],
-      "tops": [155, 155, 155],
+      "titles": ["Design Guide", "Blank design", "Custom size", "Import dslrBooth"],
+      "tops": [155, 155, 155, 155],
       "custom": true,
       "sw": 1920,
       "iw": 1920
@@ -617,7 +617,7 @@
     "detail": {
       "sw": 1087,
       "iw": 1087,
-      "cards": [360, 700, 1039]
+      "cards": [278, 536, 793, 1050]
     }
   },
   {

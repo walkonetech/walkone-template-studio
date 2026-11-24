@@ -24,6 +24,8 @@ import { layoutStore, useLayout } from './layoutStore'
 import { LayersPanel } from './LayersPanel'
 import { NewProjectDialog } from './NewProjectDialog'
 import { CustomFormatDialog } from './CustomFormatDialog'
+import { DesignGuide } from './DesignGuide'
+import { guideStore } from './guideStore'
 import { ExportDialog } from './ExportDialog'
 import { DslrImportDialog } from './DslrImportDialog'
 import { OutputProfileDialog } from './OutputProfileDialog'
@@ -194,6 +196,8 @@ export function EditorScreen(): React.JSX.Element {
     installDebug({
       store: editorStore,
       imageCache,
+      guide: guideStore,
+      layout: layoutStore,
       renderToDataUrl: (width, height) => renderDebug(renderProjectToCanvas, width, height),
       renderSheetToDataUrl: (width, height) => renderDebug(renderOutputToCanvas, width, height)
     })
@@ -204,6 +208,7 @@ export function EditorScreen(): React.JSX.Element {
     <div className="editor" data-has-project={project ? 'true' : 'false'}>
       <RecoveryDialog />
       <NewProjectDialog />
+      <DesignGuide />
       <CustomFormatDialog />
       <ExportDialog />
       <DslrImportDialog />

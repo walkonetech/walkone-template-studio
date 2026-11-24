@@ -40,7 +40,9 @@
 - **Proof PNG** — The print with each photo slot shown as its numbered placeholder, for client approval only; never production artwork. (Before B3.1 it showed sample photos, which were removed.)
 - **Print PNG / Design PNG** — Production raster exports: the whole print sheet / one copy of the design. Photo areas empty, native frames drawn.
 - **Provider Adapter** — An isolated module integrating an external asset/AI service.
-- **Design Guide** — (planned) the guided way to make a template, one question per screen with a live preview, for first-time staff; produces an export-ready template.
+- **Design Guide** — (7C v1) the guided start: Size → Photos → Colors → Text → Review, with a live preview; creates a normal project (numbered photo slots, text layers, Event Palette) and opens it in the editor. One-way in v1; never exports by itself.
+- **Starting layout** — (7C) a Design Guide photo arrangement (e.g. Stacked, Grid, One large + two small). Geometry only: once created, every slot is a normal layer; nothing keeps the arrangement.
+- **Guide answers** — (7C) the Design Guide's choices; UI state of the running app, never saved in the project.
 - **Editor** — the Canva-style canvas editor for power users (exists; redesign planned).
 - **Event Theme** — (planned) a saved set of design choices (style, colours, fonts, layout) to start a similar event from.
 - **Safe area / 2-inch cut** — the region of a print that survives the printer's cut (a 4×6 cut into two 2×6 strips); content outside it is lost. The cut is printer/driver configuration, never stored in a template.

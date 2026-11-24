@@ -203,9 +203,9 @@ const exportFiles = async (c, out, kinds) => {
         return {titles:cards.map(e=>e.querySelector('.start-card-title').textContent.trim()), tops:cards.map(e=>Math.round(r(e).top)), custom:!!document.getElementById('start-custom'), sw:document.documentElement.scrollWidth, iw:innerWidth}})()`
     )
     check(
-      '1 Start screen offers Custom size as a first-class card beside Blank design and Import dslrBooth (one row, no horizontal scroll)',
+      '1 Start screen offers Custom size as a first-class card beside Blank design and Import dslrBooth (one row, no horizontal scroll; since 7C the Design Guide card comes first)',
       start.custom &&
-        start.titles.join('|') === 'Blank design|Custom size|Import dslrBooth' &&
+        start.titles.join('|') === 'Design Guide|Blank design|Custom size|Import dslrBooth' &&
         new Set(start.tops).size === 1 &&
         start.sw <= start.iw,
       start

@@ -38,6 +38,7 @@ import {
   type WizardState
 } from '@editor/formatWizard'
 import { editorStore } from './editorStore'
+import { guideStore } from './guideStore'
 import { formatsStore } from './formatsStore'
 import { FormatDiagram } from './FormatDiagram'
 import { layoutStore, useLayout } from './layoutStore'
@@ -697,13 +698,15 @@ function ReviewStep({
   set,
   issues,
   projectName,
-  setProjectName
+  setProjectName,
+  forGuide
 }: {
   s: WizardState
   set: (f: (s: WizardState) => WizardState) => void
   issues: readonly FormatIssue[]
   projectName: string
   setProjectName: (v: string) => void
+  forGuide: boolean
 }): React.JSX.Element {
   const id = useId()
   const f = wizardFormat(s)
@@ -746,21 +749,24 @@ function ReviewStep({
               <span className="muted">That is fine for PNG files. You can choose one later.</span>
             </dd>
           </dl>
-          <div className="cf-field">
-            <label htmlFor={`${id}-pname`}>Project name</label>
-            <input
-              id={`${id}-pname`}
-              className="ui-input"
-              data-testid="cf-project-name"
-              data-autofocus
-              value={projectName}
-              maxLength={120}
-              autoComplete="off"
-              spellCheck={false}
-              onChange={(e) => setProjectName(e.target.value)}
-              onFocus={(e) => e.currentTarget.select()}
-            />
-          </div>
+          {/* From the Design Guide the project is named in the Guide; this size goes back to it. */}
+          {!forGuide && (
+            <div className="cf-field">
+              <label htmlFor={`${id}-pname`}>Project name</label>
+              <input
+                id={`${id}-pname`}
+                className="ui-input"
+                data-testid="cf-project-name"
+                data-autofocus
+                value={projectName}
+                maxLength={120}
+                autoComplete="off"
+                spellCheck={false}
+                onChange={(e) => setProjectName(e.target.value)}
+                onFocus={(e) => e.currentTarget.select()}
+              />
+            </div>
+          )}
           <label className="cf-check">
             <input
               type="checkbox"
@@ -820,10 +826,13 @@ function ReviewStep({
 
 function Wizard({
   initial,
-  projectName: initialName
+  projectName: initialName,
+  forGuide
 }: {
   initial: WizardState
   projectName: string
+  /** 7C: the size is for the Design Guide (handed back to it; no project is created here). */
+  forGuide: boolean
 }): React.JSX.Element {
   const [s, setS] = useState(initial)
   const [projectName, setProjectName] = useState(initialName)
@@ -866,6 +875,10 @@ function Wizard({
       }
     }
     close()
+    if (forGuide) {
+      guideStore.getState().update((a) => ({ ...a, formatChoice: 'custom', customFormat: format }))
+      return
+    }
     const r = await editorStore
       .getState()
       .createProject({ name: projectName.trim() || 'Untitled', format })
@@ -934,7 +947,7 @@ function Wizard({
               }
               onClick={next}
             >
-              {last ? 'Create design' : 'Next'}
+              {last ? (forGuide ? 'Use this size' : 'Create design') : 'Next'}
             </Button>
           }
         />
@@ -981,6 +994,7 @@ function Wizard({
             issues={all}
             projectName={projectName}
             setProjectName={setProjectName}
+            forGuide={forGuide}
           />
         )}
         {s.step === 'review' && blocking.length > 0 && (
@@ -1014,6 +1028,7 @@ export function CustomFormatDialog(): React.JSX.Element | null {
       key={open.format ? `preset-${open.format.name}` : 'new'}
       initial={initial}
       projectName={open.projectName ?? (open.format ? open.format.name : 'Untitled')}
+      forGuide={open.purpose === 'guide'}
     />
   )
 }

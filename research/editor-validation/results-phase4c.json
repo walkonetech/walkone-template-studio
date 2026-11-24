@@ -570,8 +570,8 @@
     "detail": {
       "sw": 1728,
       "iw": 1728,
-      "sh": 1005,
-      "ih": 1005
+      "sh": 1004,
+      "ih": 1004
     }
   },
   {
@@ -583,10 +583,10 @@
     }
   },
   {
-    "name": "1920×1005: Properties above Layers, each ≥ 150 px tall",
+    "name": "1920×1004: Properties above Layers, each ≥ 150 px tall",
     "ok": true,
     "detail": {
-      "layers": 415,
+      "layers": 414,
       "props": 507
     }
   },

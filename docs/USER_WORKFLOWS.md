@@ -1,6 +1,6 @@
 # User Workflows
 
-Workflows A–O were written before the build as **Proposed** behaviour; sections marked "implemented" describe what exists. D (import), K (dslrBooth export) and V/W are implemented; L (layer package) was withdrawn (ADR-041 §8); the Design Guide (X) is planned. UI details: [UX_SPEC.md](UX_SPEC.md). Each lists happy path and key failure/edge states.
+Workflows A–O were written before the build as **Proposed** behaviour; sections marked "implemented" describe what exists. D (import), K (dslrBooth export) and V/W are implemented; L (layer package) was withdrawn (ADR-041 §8); the Design Guide (X) is implemented in 7C v1 (working tree, owner review pending). UI details: [UX_SPEC.md](UX_SPEC.md). Each lists happy path and key failure/edge states.
 
 ## A. Create new template from scratch
 **Happy path:** New Project → enter event info → choose format/orientation/DPI (pixel size shown) → choose design direction/palette → "Blank" layout with photo count → editor opens with print canvas and photo placeholders numbered 1..N → add background, text, badge → save.
@@ -141,9 +141,11 @@ DSLR Booth packages (workflow K) are Phase 6B; workflow L (layer package) was bu
 4. **Review**, name the project, optionally **Save to My formats**, then **Create design**: the normal editor opens. Print Preview shows every copy and the cut guides; Export gives the print sheet, single design and proof PNGs (and a dslrBooth template for 4×6/6×4/2×6 sizes).
 5. Next time: Start › **My formats** › the saved card opens the wizard ready to create. Rename or delete saved formats on their cards.
 
-## X. Design Guide (planned; owner direction, mockups first)
-Architecture defined in Phase 7A ([PHASE_7A_UX_ARCHITECTURE.md](PHASE_7A_UX_ARCHITECTURE.md) §38, Appendix B flows A–E; ADR-054): the project is created at the format step and each step is one undoable change to the same project; build is Phase 7C.
-Print size → event type → style → colours/background → photos (count, orientation, size) → logo/monogram → words → company branding → layout → done (export, client proof, open in the editor). Conditional steps per event type; automatic safe-area / 2-inch-cut check; "Save as event theme" for the next similar event. Clients never use it; the main client approves the proof.
+## X. Design Guide (7C v1, owner-approved 2026-11-24; ADR-067 Accepted)
+**Happy:** Start → **Design Guide** → name the project, pick 2×6 Strip (600 DPI) → Next → 3 photos, Stacked → Next → Blush colours, thin accent frames → Next → Event name "Sam & Alex", Date "June 14, 2027", a font → Next → Review (size, prints, photos, colours, text, safe margin, printer profile) → **Finish** → the normal editor with numbered photo slots 1–3, two text layers and the Event Palette → fine-tune → Checks → Export (PNG / dslrBooth) as any project.
+**Variants:** **Open in editor** from Photos, Colors or Text uses the answers so far. **Custom size** opens the Custom Size wizard, which ends with **Use this size** and returns to the Guide; a saved My format can be picked instead.
+**Edge:** Custom size chosen but none made → Next disabled ("Fix 1 thing to continue."); a turned-on text line left empty → the field says "Type the event name, or turn it off." and Next is disabled (Open in editor still works and simply leaves that line out); Cancel / Escape → back to Start, nothing created, the answers kept for this run (Start over clears them); after Finish, Undo starts empty and the Guide cannot be re-entered (v1).
+**Later (not 7C):** event type and styles, logo / monogram, company branding, "Guide me" re-entry, themes (7A §38).
 
 ## Y. Edit an event's template inside WalkOne Booth (future, ADR-049; not approved to build)
 **Happy:** WalkOne Booth → Event → Template → Open Template Studio (the same editor as the standalone app) → event name, date, client, venue, format, output profile, company branding and palette arrive prefilled → design or adjust → Save → back to Event Setup → Event Readiness checks the template (valid, safe-area passed) together with camera, printer, sharing and storage → Launch Event.

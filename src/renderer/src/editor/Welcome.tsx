@@ -8,7 +8,8 @@ import {
   Upload,
   FileText,
   ChevronRight,
-  Ruler
+  Ruler,
+  Sparkles
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import type { RecentProjectItem } from '@shared/ipc'
@@ -27,6 +28,7 @@ import { isMac } from './platform'
 import { Button } from '../ui/Button'
 import { Tooltip } from '../ui/Tooltip'
 import { MyFormatsSection, openCustomFormat } from './MyFormats'
+import { openDesignGuide } from './DesignGuide'
 
 const st = editorStore.getState
 
@@ -47,6 +49,25 @@ function BlankArt(): React.JSX.Element {
           <span className="format-label">{f.label}</span>
         </span>
       ))}
+    </span>
+  )
+}
+
+/** Design Guide (7C): a strip being filled in step by step — numbered photo slots and a text line. Shapes only. */
+function GuideArt(): React.JSX.Element {
+  return (
+    <span className="start-art guide" aria-hidden="true">
+      <span className="guide-steps-art">
+        <span className="on" />
+        <span className="on" />
+        <span />
+      </span>
+      <span className="guide-strip-art">
+        <span>1</span>
+        <span>2</span>
+        <span>3</span>
+        <i />
+      </span>
     </span>
   )
 }
@@ -144,8 +165,8 @@ function RecoveryBanner(): React.JSX.Element | null {
 }
 
 /**
- * The Start screen (B1): Blank design and Import dslrBooth as visual cards, Open project…, recent projects as cards,
- * and recovered work as a banner. Guided Design is not shown until it works (Phase 7C).
+ * The Start screen (B1): Design Guide (7C), Blank design, Custom size and Import dslrBooth as visual cards, Open
+ * project…, recent projects as cards, and recovered work as a banner.
  */
 export function Welcome(): React.JSX.Element {
   const [recents, setRecents] = useState<RecentProjectItem[] | null>(null)
@@ -215,6 +236,22 @@ export function Welcome(): React.JSX.Element {
         </div>
         <RecoveryBanner />
         <div className="start-cards">
+          <button
+            type="button"
+            className="start-card"
+            id="start-guide"
+            aria-describedby="start-guide-desc"
+            onClick={openDesignGuide}
+          >
+            <GuideArt />
+            <span className="start-card-title">
+              <Sparkles size={20} aria-hidden="true" />
+              Design Guide
+            </span>
+            <span className="start-card-desc" id="start-guide-desc">
+              Answer a few questions and get a starting design you can edit.
+            </span>
+          </button>
           <button
             type="button"
             className="start-card"

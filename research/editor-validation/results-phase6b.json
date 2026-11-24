@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-23T20:44:06.144Z",
+  "when": "2026-11-24T12:28:38.502Z",
   "pass": 26,
   "total": 26,
   "results": [
@@ -76,8 +76,8 @@
         "BackgroundColor": "#FFFFFFFF",
         "print_2_per_page": "True",
         "PrintToSecondaryPrinter": "False",
-        "LastSavedDate": "11/23/2026 15:44:03",
-        "Id": "gXA0A6p0IvgsibJdHvFyCoeOz",
+        "LastSavedDate": "11/24/2026 07:28:36",
+        "Id": "TBffCu2Wl7jWG1Y7VbP5tUqyv",
         "IsLegacy": "True",
         "OriginalDevice": "WalkOneTemplateStudio"
       }
@@ -173,8 +173,8 @@
         "BackgroundColor": "#FFFFFFFF",
         "print_2_per_page": "False",
         "PrintToSecondaryPrinter": "False",
-        "LastSavedDate": "11/23/2026 15:44:03",
-        "Id": "h9o9WiQNV2OL67HLJwTpP6zP8",
+        "LastSavedDate": "11/24/2026 07:28:36",
+        "Id": "o2AbgLzUf8LDxMPduVhNGLaOj",
         "IsLegacy": "True",
         "OriginalDevice": "WalkOneTemplateStudio"
       }

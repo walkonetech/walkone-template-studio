@@ -901,8 +901,8 @@
 }
 .start-cards {
   display: grid;
-  /* B5.5: Blank design, Custom size, Import dslrBooth; three across when there is room, then they wrap. */
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  /* 7C: Design Guide, Blank design, Custom size, Import dslrBooth; four across when there is room, then they wrap. */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
   gap: var(--sp-5);
 }
 .start-card {
@@ -3037,5 +3037,230 @@
   }
   .cf-row.four {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---- Phase 7C: Design Guide ----------------------------------------------------------------------------------------- */
+.start-art.guide {
+  gap: var(--sp-5);
+}
+.guide-steps-art {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.guide-steps-art span {
+  width: 34px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--c-border-strong);
+}
+.guide-steps-art span.on {
+  background: var(--c-accent);
+}
+.guide-strip-art {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 30px;
+  padding: 3px;
+  border-radius: 2px;
+  background: var(--c-surface-raised);
+  box-shadow:
+    0 0 0 1px var(--c-border),
+    var(--shadow-1);
+}
+.guide-strip-art span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 18px;
+  border: 1.5px solid var(--c-accent);
+  border-radius: 1px;
+  background: var(--c-accent-subtle);
+  color: var(--c-accent);
+  font-size: 9px;
+  font-weight: 700;
+}
+.guide-strip-art i {
+  height: 4px;
+  margin: 3px 5px 1px;
+  border-radius: 2px;
+  background: var(--c-text-3);
+}
+.guide-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+.guide-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) calc(300px * var(--ui-scale));
+  gap: var(--sp-5);
+  align-items: start;
+}
+.guide-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+.guide-step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+.guide-step .cf-modes {
+  margin-bottom: 0;
+}
+.guide-formats {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.guide-format {
+  align-items: flex-start;
+}
+.guide-format-art {
+  display: flex;
+  align-items: flex-end;
+  height: 44px;
+  color: var(--c-text-3);
+}
+.guide-format-art > span {
+  border: 1.5px solid var(--c-text-3);
+  border-radius: 2px;
+  background: var(--c-surface-raised);
+}
+.guide-format[aria-checked='true'] .guide-format-art > span {
+  border-color: var(--c-accent);
+  background: var(--c-accent-subtle);
+}
+.guide-custom {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.guide-custom-chosen {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-md);
+  background: var(--c-elevated);
+}
+.guide-custom-chosen .muted {
+  color: var(--c-text-3);
+  font-size: var(--fs-meta);
+}
+.guide-custom-actions {
+  display: flex;
+  gap: var(--sp-2);
+}
+.guide-mine {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 190px), 1fr));
+  gap: var(--sp-2);
+}
+.guide-mine .new-format-btn[aria-pressed='true'] {
+  border-color: var(--c-accent);
+  box-shadow: inset 0 0 0 1px var(--c-accent);
+  background: var(--c-accent-subtle);
+}
+.guide-layouts {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.guide-layout {
+  align-items: center;
+  text-align: center;
+}
+.guide-layout-art {
+  width: auto;
+  height: calc(92px * var(--ui-scale));
+  max-width: 100%;
+}
+.guide-layout-art .paper {
+  fill: var(--c-surface-raised);
+  stroke: var(--c-border-strong);
+  stroke-width: 0.6%;
+}
+.guide-layout-art .slot {
+  fill: var(--c-accent-subtle);
+  stroke: var(--c-accent);
+  stroke-width: 0.8%;
+}
+.guide-colorsets {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.guide-colorset {
+  align-items: center;
+  text-align: center;
+}
+.guide-swatches {
+  display: flex;
+  gap: 3px;
+}
+.guide-swatches span {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px var(--c-swatch-ring);
+}
+.guide-swatches.inline {
+  margin-bottom: 2px;
+}
+.guide-swatches.inline span {
+  width: 14px;
+  height: 14px;
+}
+.guide-color-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  max-width: calc(420px * var(--ui-scale));
+}
+.guide-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3) var(--sp-5);
+}
+.guide-text-line {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+.guide-preview {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  border-radius: var(--r-md);
+  background: var(--c-surface-canvas);
+}
+.guide-preview-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: min(calc(400px * var(--ui-scale)), 48vh);
+}
+.guide-preview-box canvas {
+  box-shadow:
+    0 0 0 1px var(--c-border),
+    var(--shadow-1);
+}
+.guide-preview-note {
+  text-align: center;
+}
+@media (max-width: 1180px) {
+  .guide-cols {
+    grid-template-columns: minmax(0, 1fr) calc(240px * var(--ui-scale));
+  }
+  .guide-formats,
+  .guide-colorsets {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 110px), 1fr));
   }
 }

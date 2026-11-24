@@ -423,3 +423,19 @@ _Note (2026-11-23): flagged for an owner decision before the controlled beta (AD
 4. **Catalogue source — Needs Validation:** the official Google Fonts Developer API needs an API key (no keys in source — CLAUDE.md; would need key storage or a different source); the open `google/fonts` repository is a keyless alternative. Decide in the scoping round.
 5. **Not covered:** fonts for text typed inside dslrBooth itself — the booth PC still needs those installed; Template Studio could at most list them in the export notes.
 **Until decided:** system fonts only (ADR-039); the existing missing-font warning stays.
+
+## ADR-067 — Design Guide v1: a one-way creation path over the same project and editor — Accepted (Phase 7C, implemented 2026-11-24; owner visual review approved 2026-11-24)
+**Context:** ADR-054 set two ways in (Design Guide + Full Editor) over one project and one editor; 7A §38 sketched a ten-step Guide with re-entry. The owner's 7C brief (2026-11-24) cuts v1 to five steps and asks for the simplest predictable model.
+**Decision (Accepted 2026-11-24, owner visual review):**
+1. **Steps:** Size → Photos → Colors → Text → Review; Open in editor on Photos–Text; Finish on Review opens the Full Editor (never exports).
+2. **Answers are UI state only** (`guideStore`): never in the project, history, autosave, recents or Modified. Kept after Cancel until the app quits (resume; Start over clears).
+3. **The project is created when the operator leaves for the editor**, through the normal create path (`createProject({ name, format })`), and the answers are applied ONCE by a pure function (`applyGuide`) built only from the editor's existing mutations and new-layer defaults. The preview recomputes the same function from an empty project, so Back/Next can never duplicate layers.
+4. **History:** the Guide's result is the starting point — one commit, then history is cleared (no piece-by-piece undo of the Guide, no undo back to an empty canvas).
+5. **One-way in v1:** no re-entry into the Guide from an edited project ("Guide me" stays future).
+6. **Custom size is the B5.5 wizard itself** (`purpose: 'guide'`, ends with "Use this size"); My formats are offered; no Output Profile is required or written.
+7. **Starting photo layouts are geometry only:** two per count, camera-shaped slots (3:2 / 2:3 / 1:1, Auto from the space), clear of the edge and any generic safe margin; nothing persists or re-applies them; no orientation property.
+8. **Colours become the Event Palette** (Background, Accent, Text) with links; **fonts** are limited to common families installed on this computer (current font architecture; ADR-066 and ADR-052 stay OPEN).
+9. **No schema change, no Guide metadata, no Guide export path;** a Guide project saves at the same schema version as the same format made without the Guide.
+10. **Entry is the Start-screen card only** (not File › New in v1; beta feedback may revisit).
+**Owner decisions (visual review, 2026-11-24):** card name "Design Guide"; strip photo block centred above the text; starting colour sets Classic, Blush, Garden, Midnight, Bold (own Background / Accent / Text stays; no larger palette library in 7C); text under the photos (no "text at top" branch); Cancel keeps the answers until the app quits with Start over to clear them; after Finish history starts empty (no "Undo Design Guide" step); Start card only.
+**Consequences:** output of a Guide design equals the same design built by hand (validated, three pairs). Re-entry, event types/styles, logo, company branding and themes need their own approvals. The Feature Lab "Format-Aware Photo Slot Defaults & Orientation" concept is not promoted by this ADR; ADR-066 and ADR-052 stay OPEN.

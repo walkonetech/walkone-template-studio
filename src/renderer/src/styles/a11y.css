@@ -39,6 +39,7 @@
   .theme-card[aria-checked='true'],
   .cf-mode[aria-checked='true'],
   .cf-steps li.current,
+  .guide-mine .new-format-btn[aria-pressed='true'],
   .export-card.on,
   .view-pill.on,
   .status-toggle.on,
@@ -73,6 +74,7 @@
   .theme-card[aria-checked='true'] *,
   .cf-mode[aria-checked='true'] *,
   .cf-steps li.current *,
+  .guide-mine .new-format-btn[aria-pressed='true'] *,
   .export-card.on *,
   .view-pill.on *,
   .status-toggle.on *,
@@ -141,6 +143,27 @@
   }
   [aria-invalid='true'] {
     border: 2px solid Highlight;
+  }
+
+  /*
+   * Design Guide (7C): colour swatches show the operator's own chosen colours (content, like the canvas), so they keep
+   * them, with a system-colour ring. The layout drawings use system colours: paper Canvas, slots outlined in CanvasText.
+   */
+  .guide-swatches span {
+    forced-color-adjust: none;
+    box-shadow: none;
+    border: 1px solid CanvasText;
+  }
+  .guide-layout-art {
+    forced-color-adjust: none;
+  }
+  .guide-layout-art .paper {
+    fill: Canvas;
+    stroke: CanvasText;
+  }
+  .guide-layout-art .slot {
+    fill: Canvas;
+    stroke: CanvasText;
   }
 
   /* Links stay links. */

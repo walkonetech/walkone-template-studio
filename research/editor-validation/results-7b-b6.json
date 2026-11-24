@@ -6,6 +6,11 @@
       "startCards": [
         {
           "tag": "BUTTON",
+          "id": "start-guide",
+          "text": "Design Guide"
+        },
+        {
+          "tag": "BUTTON",
           "id": "start-blank",
           "text": "Blank design"
         },
@@ -169,7 +174,7 @@
         "level": null,
         "keyshortcuts": null
       },
-      "sel1": ["cd2d3286-2328-4258-b9b9-c53a5b2cda70"],
+      "sel1": ["47d1f6c1-af46-4cbc-a973-be9e079f6286"],
       "row": {
         "role": "treeitem",
         "name": "Photo: Photo 1 #1",
@@ -708,7 +713,7 @@
     "detail": {
       "hlByTheme": {
         "light": {
-          "selectors": 24,
+          "selectors": 25,
           "states": 8,
           "pressedPills": ["view-safe-areas", "view-overflow", "view-cut-guides"],
           "texts": 11,
@@ -717,7 +722,7 @@
           "bad": []
         },
         "dark": {
-          "selectors": 24,
+          "selectors": 25,
           "states": 8,
           "pressedPills": ["view-safe-areas", "view-overflow", "view-cut-guides"],
           "texts": 11,
